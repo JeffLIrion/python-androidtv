@@ -219,7 +219,7 @@ class AndroidTV:
             self.muted = re.findall(MUTED_REGEX, stream_block,
                                     re.DOTALL | re.MULTILINE)[0] == 'true'
 
-            volume_level = re.findall(self.device + DEVICE_REGEX, stream_block,
+            volume_level = re.findall(self.device + VOLUME_REGEX, stream_block,
                                       re.DOTALL | re.MULTILINE)[0]
             self.volume = round(1/15 * float(volume_level), 2)
 
