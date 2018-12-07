@@ -167,27 +167,10 @@ class AndroidTV:
         except socket_error as serr:
             logging.warning("Couldn't connect to host: %s, error: %s", self.host, serr.strerror)
 
-    # @property
-    # def state(self):
-    #     """ Compute and return the device state.
-    #
-    #     :returns: Device state.
-    #     """
-    #     # Check if device is disconnected.
-    #     if not self._adb:
-    #         return STATE_UNKNOWN
-    #
-    #     # Check if device is off.
-    #     if not self._screen_on:
-    #         return STATE_OFF
-    #
-    #     # Get the state from the audio.
-    #     return self._audio_state
-
     def update(self):
         """ Update the device status. """
         # Check if device is disconnected.
-        if not self._adb:
+        if not self.available:
             self.state = STATE_UNKNOWN
             # self.muted = False
             # self.device = None
@@ -196,7 +179,7 @@ class AndroidTV:
             # self.app_name = None
 
         # Check if device is off.
-        elif not self._screen_on:
+        elif not self.screen_on:
             self.state = STATE_OFF
             self.app_id = None
             # self.app_name = None
@@ -226,14 +209,22 @@ class AndroidTV:
             self.app_id = self.current_app
             # self.app_name = self.app_id
 
+    # def app_state(self, app):
+    #     """ Informs if application is running """
+    #     if not self.available or not self.screen_on:
+    #         return STATE_OFF
+    #     if self.current_app["package"] == app:
+    #         return STATE_ON
+    #     return STATE_OFF
+
     # def launch_app(self, app):
-    #     if not self._adb:
+    #     if not self.available:
     #         return None
     #
     #     return self._send_intent(app, INTENT_LAUNCH)
 
     # def stop_app(self, app):
-    #     if not self._adb:
+    #     if not self.available:
     #         return None
     #
     #     return self._send_intent(PACKAGE_LAUNCHER, INTENT_HOME)
@@ -243,6 +234,28 @@ class AndroidTV:
     #                               properties                                #
     #                                                                         #
     # ======================================================================= #
+    # @property
+    # def state(self):
+    #     """ Compute and return the device state.
+    #
+    #     :returns: Device state.
+    #     """
+    #     # Check if device is disconnected.
+    #     if not self.available:
+    #         return STATE_UNKNOWN
+    #
+    #     # Check if device is off.
+    #     if not self.screen_on:
+    #         return STATE_OFF
+    #
+    #     # Get the state from the audio.
+    #     return self._audio_state
+
+    @property
+    def available(self):
+        """ Check whether the ADB connection is intact. """
+        return bool(self._adb)
+
     @property
     def current_app(self):
         current_focus = self._dump("window windows", "mCurrentFocus").replace("\r", "")
@@ -260,36 +273,28 @@ class AndroidTV:
     #     """ Return an array of running user applications """
     #     return self._ps('u0_a')
 
-    # def app_state(self, app):
-    #     """ Informs if application is running """
-    #     if not self._adb or not self._screen_on:
-    #         return STATE_OFF
-    #     if self.current_app["package"] == app:
-    #         return STATE_ON
-    #     return STATE_OFF
-
     @property
-    def _screen_on(self):
+    def screen_on(self):
         """ Check if the screen is on. """
         return self._dump_has('power', 'Display Power', 'state=ON')
 
     @property
-    def _awake(self):
+    def awake(self):
         """ Check if the device is awake (screen saver is not running). """
         return self._dump_has('power', 'mWakefulness', 'Awake')
 
     @property
-    def _wake_lock(self):
+    def wake_lock(self):
         """ Check for wake locks (device is playing). """
         return not self._dump_has('power', 'Locks', 'size=0')
 
     # @property
-    # def _launcher(self):
+    # def launcher(self):
     #     """ Check if the active application is the Amazon TV launcher. """
     #     return self.current_app["package"] == PACKAGE_LAUNCHER
 
     # @property
-    # def _settings(self):
+    # def settings(self):
     #     """ Check if the active application is the Amazon menu. """
     #     return self.current_app["package"] == PACKAGE_SETTINGS
 
@@ -303,7 +308,7 @@ class AndroidTV:
 
         :param cmd: Input command.
         """
-        if not self._adb:
+        if not self.available:
             return
         self._adb.Shell('input {0}'.format(cmd))
 
@@ -314,7 +319,7 @@ class AndroidTV:
         :param grep: Grep for this string.
         :returns: Dump, optionally grepped.
         """
-        if not self._adb:
+        if not self.available:
             return
         if grep:
             return self._adb.Shell('dumpsys {0} | grep "{1}"'.format(service, grep))
@@ -331,7 +336,7 @@ class AndroidTV:
         return self._dump(service, grep=grep).strip().find(search) > -1
 
     # def _send_intent(self, pkg, intent, count=1):
-    #     if not self._adb:
+    #     if not self.available:
     #         return None
     #
     #     cmd = 'monkey -p {} -c {} {}; echo $?'.format(pkg, intent, count)
@@ -351,7 +356,7 @@ class AndroidTV:
     #     :param search: Check for this substring.
     #     :returns: List of matching fields
     #     """
-    #     if not self._adb:
+    #     if not self.available:
     #         return
     #     result = []
     #     ps = self._adb.StreamingShell('ps')
@@ -375,12 +380,12 @@ class AndroidTV:
     # ======================================================================= #
     def turn_on(self):
         """ Send power action if device is off. """
-        if self._adb and not self._screen_on:
+        if self._adb and not self.screen_on:
             self._power()
 
     def turn_off(self):
         """ Send power action if device is not off. """
-        if self._adb and self._screen_on:
+        if self._adb and self.screen_on:
             self._power()
 
     # ======================================================================= #
