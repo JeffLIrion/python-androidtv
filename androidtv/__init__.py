@@ -13,6 +13,7 @@ from socket import error as socket_error
 from adb import adb_commands
 from adb.sign_pythonrsa import PythonRSASigner
 from adb.adb_protocol import InvalidChecksumError
+from adb_messenger.client import Client as AdbClient
 
 
 Signer = PythonRSASigner.FromRSAKeyPath
@@ -117,8 +118,8 @@ KEY_Z = 54
 STATE_ON = 'on'
 STATE_IDLE = 'idle'
 STATE_OFF = 'off'
-STATE_PLAYING = 'play'
-STATE_PAUSED = 'pause'
+STATE_PLAYING = 'playing'
+STATE_PAUSED = 'pauseed'
 STATE_STANDBY = 'standby'
 STATE_UNKNOWN = 'unknown'
 
@@ -131,15 +132,18 @@ STATE_UNKNOWN = 'unknown'
 class AndroidTV:
     """ Represents an Android TV device. """
 
-    def __init__(self, host, adbkey=''):
+    def __init__(self, host, adbkey='', adb_client_ip='', adb_client_port=5037):
         """ Initialize AndroidTV object.
 
         :param host: Host in format <address>:port.
         :param adbkey: The path to the "adbkey" file
+        :param adb_client_ip: the IP address for the ADB server
+        :param adb_client_port: the port for the ADB server
         """
         self.host = host
         self.adbkey = adbkey
-        self._adb = None
+        self.adb_client_ip = adb_client_ip
+        self.adb_client_port = adb_client_port
 
         self.state = STATE_UNKNOWN
         self.muted = False
@@ -147,6 +151,19 @@ class AndroidTV:
         self.volume = 0.
         self.app_id = None
         # self.app_name = None
+
+        # the attributes used for sending ADB commands; filled in in `self.connect()`
+        self._adb = None  # python-adb
+        self._adb_client = None  # pure-python-adb
+        self._adb_device = None  # pure-python-adb
+
+        # the method used for sending ADB commands
+        if not self.adb_client_ip:
+            # python-adb
+            self._adb_shell = self._adb_shell_python_adb
+        else:
+            # pure-python-adb
+            self._adb_shell = self._adb_shell_pure_python_adb
 
         self.connect()
 
@@ -156,16 +173,23 @@ class AndroidTV:
         Will attempt to establish ADB connection to the given host.
         Failure sets state to UNKNOWN and disables sending actions.
         """
-        try:
-            if self.adbkey:
-                signer = Signer(self.adbkey)
+        if not self.adb_client_ip:
+            # python-adb
+            try:
+                if self.adbkey:
+                    signer = Signer(self.adbkey)
 
-                # Connect to the device
-                self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer])
-            else:
-                self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host)
-        except socket_error as serr:
-            logging.warning("Couldn't connect to host: %s, error: %s", self.host, serr.strerror)
+                    # Connect to the device
+                    self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer])
+                else:
+                    self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host)
+            except socket_error as serr:
+                logging.warning("Couldn't connect to host: %s, error: %s", self.host, serr.strerror)
+
+        else:
+            # pure-python-adb
+            self._adb_client = AdbClient(host=self.adb_client_ip, port=self.adb_client_port)
+            self._adb_device = self._adb_client.device(self.host)
 
     def update(self):
         """ Update the device status. """
@@ -254,7 +278,30 @@ class AndroidTV:
     @property
     def available(self):
         """ Check whether the ADB connection is intact. """
-        return bool(self._adb)
+        if not self.adb_client_ip:
+            # python-adb
+            return bool(self._adb)
+
+        # pure-python-adb
+        try:
+            # make sure the server is available
+            adb_devices = self._adb_client.devices()
+
+            # make sure the device is available
+            try:
+                if any([self.host in dev.get_serial_no() for dev in adb_devices]):
+                    return True
+                else:
+                    logging.error('ADB device is unavailable.')
+                    return False
+
+            except RuntimeError:
+                logging.error('ADB device is unavailable; encountered an error when searching for device.')
+                return False
+
+        except RuntimeError:
+            logging.error('ADB server is unavailable.')
+            return False
 
     @property
     def current_app(self):
@@ -303,6 +350,12 @@ class AndroidTV:
     #                               ADB methods                               #
     #                                                                         #
     # ======================================================================= #
+    def _adb_shell_python_adb(self, cmd):
+        return self._adb.Shell(cmd)
+
+    def _adb_shell_pure_python_adb(self, cmd):
+        return self._adb_device.shell(cmd)
+
     def _input(self, cmd):
         """ Send input to the device.
 
@@ -310,7 +363,7 @@ class AndroidTV:
         """
         if not self.available:
             return
-        self._adb.Shell('input {0}'.format(cmd))
+        self._adb_shell('input {0}'.format(cmd))
 
     def _dump(self, service, grep=None):
         """ Perform a service dump.
@@ -322,8 +375,8 @@ class AndroidTV:
         if not self.available:
             return
         if grep:
-            return self._adb.Shell('dumpsys {0} | grep "{1}"'.format(service, grep))
-        return self._adb.Shell('dumpsys {0}'.format(service))
+            return self._adb_shell('dumpsys {0} | grep "{1}"'.format(service, grep))
+        return self._adb_shell('dumpsys {0}'.format(service))
 
     def _dump_has(self, service, grep, search):
         """ Check if a dump has particular content.
@@ -344,7 +397,7 @@ class AndroidTV:
     #
     #     # adb shell outputs in weird format, so we cut it into lines,
     #     # separate the retcode and return info to the user
-    #     res = self._adb.Shell(cmd).strip().split("\r\n")
+    #     res = self._adb_shell(cmd).strip().split("\r\n")
     #     retcode = res[-1]
     #     output = "\n".join(res[:-1])
     #
