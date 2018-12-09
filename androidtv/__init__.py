@@ -196,7 +196,7 @@ class AndroidTV:
         self.app_id = None
         # self.app_name = None
 
-        # the attributes used for sending ADB commands; filled in `self.connect()`
+        # the attributes used for sending ADB commands; filled in in `self.connect()`
         self._adb = None  # python-adb
         self._adb_client = None  # pure-python-adb
         self._adb_device = None  # pure-python-adb
@@ -347,7 +347,7 @@ class AndroidTV:
                     if self._adb:
                         logging.error('ADB server is not connected to the device.')
                         self._adb = False
-                        return False
+                    return False
 
             except RuntimeError:
                 if self._adb:
