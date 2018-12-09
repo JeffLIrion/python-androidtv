@@ -224,11 +224,15 @@ class AndroidTV:
                     signer = Signer(self.adbkey)
 
                     # Connect to the device
-                    self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer])
+                    self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer], default_timeout_ms=9000)
                 else:
                     self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host)
             except socket_error as serr:
-                logging.warning("Couldn't connect to host: %s, error: %s", self.host, serr.strerror)
+                if bool(self._adb):
+                    self._adb = False
+                    if serr.strerror is None:
+                        serr.strerror = "Timed out trying to connect to ADB device."
+                    logging.warning("Couldn't connect to host: %s, error: %s", self.host, serr.strerror)
 
         else:
             # pure-python-adb
