@@ -114,12 +114,56 @@ KEY_X = 52
 KEY_Y = 53
 KEY_Z = 54
 
+# Android TV actions
+ACTIONS = {
+    "back": "4",
+    "blue": "186",
+    "component1": "249",
+    "component2": "250",
+    "composite1": "247",
+    "composite2": "248",
+    "down": "20",
+    "end": "123",
+    "enter": "66",
+    "green": "184",
+    "hdmi1": "243",
+    "hdmi2": "244",
+    "hdmi3": "245",
+    "hdmi4": "246",
+    "home": "3",
+    "input": "178",
+    "left": "21",
+    "menu": "82",
+    "move_home": "122",
+    "mute": "164",
+    "pairing": "225",
+    "power": "26",
+    "resume": "224",
+    "right": "22",
+    "sat": "237",
+    "search": "84",
+    "settings": "176",
+    "sleep": "223",
+    "suspend": "276",
+    "sysdown": "281",
+    "sysleft": "282",
+    "sysright": "283",
+    "sysup": "280",
+    "text": "233",
+    "top": "122",
+    "up": "19",
+    "vga": "251",
+    "voldown": "25",
+    "volup": "24",
+    "yellow": "185"
+}
+
 # Android TV states.
 STATE_ON = 'on'
 STATE_IDLE = 'idle'
 STATE_OFF = 'off'
 STATE_PLAYING = 'playing'
-STATE_PAUSED = 'pauseed'
+STATE_PAUSED = 'paused'
 STATE_STANDBY = 'standby'
 STATE_UNKNOWN = 'unknown'
 
@@ -132,18 +176,18 @@ STATE_UNKNOWN = 'unknown'
 class AndroidTV:
     """ Represents an Android TV device. """
 
-    def __init__(self, host, adbkey='', adb_client_ip='', adb_client_port=5037):
+    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037):
         """ Initialize AndroidTV object.
 
         :param host: Host in format <address>:port.
         :param adbkey: The path to the "adbkey" file
-        :param adb_client_ip: the IP address for the ADB server
-        :param adb_client_port: the port for the ADB server
+        :param adb_server_ip: the IP address for the ADB server
+        :param adb_server_port: the port for the ADB server
         """
         self.host = host
         self.adbkey = adbkey
-        self.adb_client_ip = adb_client_ip
-        self.adb_client_port = adb_client_port
+        self.adb_server_ip = adb_server_ip
+        self.adb_server_port = adb_server_port
 
         self.state = STATE_UNKNOWN
         self.muted = False
@@ -158,7 +202,7 @@ class AndroidTV:
         self._adb_device = None  # pure-python-adb
 
         # the method used for sending ADB commands
-        if not self.adb_client_ip:
+        if not self.adb_server_ip:
             # python-adb
             self._adb_shell = self._adb_shell_python_adb
         else:
@@ -173,7 +217,7 @@ class AndroidTV:
         Will attempt to establish ADB connection to the given host.
         Failure sets state to UNKNOWN and disables sending actions.
         """
-        if not self.adb_client_ip:
+        if not self.adb_server_ip:
             # python-adb
             try:
                 if self.adbkey:
@@ -188,7 +232,7 @@ class AndroidTV:
 
         else:
             # pure-python-adb
-            self._adb_client = AdbClient(host=self.adb_client_ip, port=self.adb_client_port)
+            self._adb_client = AdbClient(host=self.adb_server_ip, port=self.adb_server_port)
             self._adb_device = self._adb_client.device(self.host)
 
     def update(self):
@@ -278,7 +322,7 @@ class AndroidTV:
     @property
     def available(self):
         """ Check whether the ADB connection is intact. """
-        if not self.adb_client_ip:
+        if not self.adb_server_ip:
             # python-adb
             return bool(self._adb)
 
@@ -351,6 +395,8 @@ class AndroidTV:
     #                                                                         #
     # ======================================================================= #
     def _adb_shell_python_adb(self, cmd):
+        if not self.available:
+            return None
         return self._adb.Shell(cmd)
 
     def _adb_shell_pure_python_adb(self, cmd):
@@ -361,8 +407,6 @@ class AndroidTV:
 
         :param cmd: Input command.
         """
-        if not self.available:
-            return
         self._adb_shell('input {0}'.format(cmd))
 
     def _dump(self, service, grep=None):
@@ -372,10 +416,9 @@ class AndroidTV:
         :param grep: Grep for this string.
         :returns: Dump, optionally grepped.
         """
-        if not self.available:
-            return
         if grep:
             return self._adb_shell('dumpsys {0} | grep "{1}"'.format(service, grep))
+
         return self._adb_shell('dumpsys {0}'.format(service))
 
     def _dump_has(self, service, grep, search):
@@ -386,7 +429,12 @@ class AndroidTV:
         :param search: Check for this substring.
         :returns: Found or not.
         """
-        return self._dump(service, grep=grep).strip().find(search) > -1
+        dump_grep = self._dump(service, grep=grep)
+
+        if not dump_grep:
+            return False
+
+        return dump_grep.strip().find(search) > -1
 
     # def _send_intent(self, pkg, intent, count=1):
     #     if not self.available:
@@ -428,17 +476,36 @@ class AndroidTV:
 
     # ======================================================================= #
     #                                                                         #
+    #                         Home Assistant services                         #
+    #                                                                         #
+    # ======================================================================= #
+    def input_key(self, key):
+        """Input the key to the device."""
+        self._adb_shell("input keyevent {}".format(key))
+
+    def start_intent(self, uri):
+        """Start an intent on the device."""
+        self._adb_shell(
+            "am start -a android.intent.action.VIEW -d {}".format(uri))
+
+    def do_action(self, action):
+        """Input the key corresponding to the action."""
+        self._adb_shell(
+            "input keyevent {}".format(ACTIONS[action]))
+
+    # ======================================================================= #
+    #                                                                         #
     #                           turn on/off methods                           #
     #                                                                         #
     # ======================================================================= #
     def turn_on(self):
         """ Send power action if device is off. """
-        if self._adb and not self.screen_on:
+        if not self.screen_on:
             self._power()
 
     def turn_off(self):
         """ Send power action if device is not off. """
-        if self._adb and self.screen_on:
+        if self.screen_on:
             self._power()
 
     # ======================================================================= #
