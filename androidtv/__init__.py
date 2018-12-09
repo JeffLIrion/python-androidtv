@@ -194,7 +194,6 @@ class AndroidTV:
         self.device = None
         self.volume = 0.
         self.app_id = None
-        self._available = None
         # self.app_name = None
 
         # the attributes used for sending ADB commands; filled in `self.connect()`
@@ -342,24 +341,24 @@ class AndroidTV:
             # make sure the device is available
             try:
                 if any([self.host in dev.get_serial_no() for dev in adb_devices]):
-                    self._available = True
+                    self._adb = True
                     return True
                 else:
-                    if self._available:
+                    if self._adb:
                         logging.error('ADB server is not connected to the device.')
-                        self._available = False
+                        self._adb = False
                         return False
 
             except RuntimeError:
-                if self._available:
+                if self._adb:
                     logging.error('ADB device is unavailable; encountered an error when searching for device.')
-                    self._available = False
+                    self._adb = False
                 return False
 
         except RuntimeError:
-            if self._available:
+            if self._adb:
                 logging.error('ADB server is unavailable.')
-                self._available = False
+                self._adb = False
             return False
 
     @property
