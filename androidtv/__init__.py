@@ -194,9 +194,10 @@ class AndroidTV:
         self.device = None
         self.volume = 0.
         self.app_id = None
+        self._available = None
         # self.app_name = None
 
-        # the attributes used for sending ADB commands; filled in in `self.connect()`
+        # the attributes used for sending ADB commands; filled in `self.connect()`
         self._adb = None  # python-adb
         self._adb_client = None  # pure-python-adb
         self._adb_device = None  # pure-python-adb
@@ -236,8 +237,11 @@ class AndroidTV:
 
         else:
             # pure-python-adb
-            self._adb_client = AdbClient(host=self.adb_server_ip, port=self.adb_server_port)
-            self._adb_device = self._adb_client.device(self.host)
+            try:
+                self._adb_client = AdbClient(host=self.adb_server_ip, port=self.adb_server_port)
+                self._adb_device = self._adb_client.device(self.host)
+            except:
+                self._adb = False
 
     def update(self):
         """ Update the device status. """
@@ -338,17 +342,24 @@ class AndroidTV:
             # make sure the device is available
             try:
                 if any([self.host in dev.get_serial_no() for dev in adb_devices]):
+                    self._available = True
                     return True
                 else:
-                    logging.error('ADB device is unavailable.')
-                    return False
+                    if self._available:
+                        logging.error('ADB server is not connected to the device.')
+                        self._available = False
+                        return False
 
             except RuntimeError:
-                logging.error('ADB device is unavailable; encountered an error when searching for device.')
+                if self._available:
+                    logging.error('ADB device is unavailable; encountered an error when searching for device.')
+                    self._available = False
                 return False
 
         except RuntimeError:
-            logging.error('ADB server is unavailable.')
+            if self._available:
+                logging.error('ADB server is unavailable.')
+                self._available = False
             return False
 
     @property
