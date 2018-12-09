@@ -239,6 +239,10 @@ class AndroidTV:
             try:
                 self._adb_client = AdbClient(host=self.adb_server_ip, port=self.adb_server_port)
                 self._adb_device = self._adb_client.device(self.host)
+                if self._adb_device is None:
+                    self._adb = False
+                else:
+                    self._adb = True
             except:
                 self._adb = False
 
@@ -341,7 +345,8 @@ class AndroidTV:
             # make sure the device is available
             try:
                 if any([self.host in dev.get_serial_no() for dev in adb_devices]):
-                    self._adb = True
+                    if not self._adb:
+                        self._adb = True
                     return True
                 else:
                     if self._adb:
