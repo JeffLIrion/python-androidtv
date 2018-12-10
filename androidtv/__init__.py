@@ -228,6 +228,7 @@ class AndroidTV:
                     self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer], default_timeout_ms=9000)
                 else:
                     self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, default_timeout_ms=9000)
+                self._available = bool(self._adb)
             except socket_error as serr:
                 self._adb = None
                 if self._available:
