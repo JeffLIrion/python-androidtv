@@ -196,6 +196,9 @@ class AndroidTV:
         self.app_id = None
         # self.app_name = None
 
+        # keep track of whether the ADB connection is intact
+        self._available = False
+
         # the attributes used for sending ADB commands; filled in in `self.connect()`
         self._adb = None  # python-adb
         self._adb_client = None  # pure-python-adb
@@ -209,8 +212,8 @@ class AndroidTV:
             # pure-python-adb
             self._adb_shell = self._adb_shell_pure_python_adb
 
+        # establish the ADB connection
         self.connect()
-        self._available = self.available
 
     def connect(self):
         """ Connect to an Android TV device.
@@ -236,6 +239,7 @@ class AndroidTV:
                     if serr.strerror is None:
                         serr.strerror = "Timed out trying to connect to ADB device."
                     logging.warning("Couldn't connect to host: %s, error: %s", self.host, serr.strerror)
+                self._available = False
 
         else:
             # pure-python-adb
