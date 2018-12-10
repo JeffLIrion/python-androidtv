@@ -210,6 +210,7 @@ class AndroidTV:
             self._adb_shell = self._adb_shell_pure_python_adb
 
         self.connect()
+        self._available = self.available
 
     def connect(self):
         """ Connect to an Android TV device.
@@ -224,16 +225,25 @@ class AndroidTV:
                     signer = Signer(self.adbkey)
 
                     # Connect to the device
-                    self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer])
+                    self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer], default_timeout_ms=9000)
                 else:
-                    self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host)
+                    self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, default_timeout_ms=9000)
             except socket_error as serr:
-                logging.warning("Couldn't connect to host: %s, error: %s", self.host, serr.strerror)
+                self._adb = None
+                if self._available:
+                    self._available = False
+                    if serr.strerror is None:
+                        serr.strerror = "Timed out trying to connect to ADB device."
+                    logging.warning("Couldn't connect to host: %s, error: %s", self.host, serr.strerror)
 
         else:
             # pure-python-adb
-            self._adb_client = AdbClient(host=self.adb_server_ip, port=self.adb_server_port)
-            self._adb_device = self._adb_client.device(self.host)
+            try:
+                self._adb_client = AdbClient(host=self.adb_server_ip, port=self.adb_server_port)
+                self._adb_device = self._adb_client.device(self.host)
+                self._available = bool(self._adb_device)
+            except:
+                self._available = False
 
     def update(self):
         """ Update the device status. """
@@ -334,17 +344,25 @@ class AndroidTV:
             # make sure the device is available
             try:
                 if any([self.host in dev.get_serial_no() for dev in adb_devices]):
+                    if not self._available:
+                        self._available = True
                     return True
                 else:
-                    logging.error('ADB device is unavailable.')
+                    if self._available:
+                        logging.error('ADB server is not connected to the device.')
+                        self._available = False
                     return False
 
             except RuntimeError:
-                logging.error('ADB device is unavailable; encountered an error when searching for device.')
+                if self._available:
+                    logging.error('ADB device is unavailable; encountered an error when searching for device.')
+                    self._available = False
                 return False
 
         except RuntimeError:
-            logging.error('ADB server is unavailable.')
+            if self._available:
+                logging.error('ADB server is unavailable.')
+                self._available = False
             return False
 
     @property
@@ -400,6 +418,8 @@ class AndroidTV:
         return self._adb.Shell(cmd)
 
     def _adb_shell_pure_python_adb(self, cmd):
+        if not self._available:
+            return None
         return self._adb_device.shell(cmd)
 
     def _input(self, cmd):
