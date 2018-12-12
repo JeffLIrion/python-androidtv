@@ -194,6 +194,7 @@ class AndroidTV:
         self.device = None
         self.volume = 0.
         self.app_id = None
+        self.properties = None
         # self.app_name = None
 
         # keep track of whether the ADB connection is intact
@@ -214,6 +215,8 @@ class AndroidTV:
 
         # establish the ADB connection
         self.connect()
+        if self._available:
+            self.properties = self.device_info()
 
     def connect(self):
         """ Connect to an Android TV device.
@@ -239,7 +242,6 @@ class AndroidTV:
                     if serr.strerror is None:
                         serr.strerror = "Timed out trying to connect to ADB device."
                     logging.warning("Couldn't connect to host: %s, error: %s", self.host, serr.strerror)
-                self._available = False
 
         else:
             # pure-python-adb
@@ -291,6 +293,34 @@ class AndroidTV:
 
             self.app_id = self.current_app
             # self.app_name = self.app_id
+    
+    def device_info(self):
+        properties = self._adb_shell('getprop')
+
+        PROP_RGX='.*?\[(.*?)]'
+        BTMAC_RGX = 'btmac' + PROP_RGX
+        WIFIMAC_RGX = 'wifimac' + PROP_RGX
+        SERIALNO_RGX = 'serialno' + PROP_RGX
+        MANUF_RGX = 'manufacturer' + PROP_RGX
+        MODEL_RGX = 'product.model' + PROP_RGX
+        VERSION_RGX = 'version.release' + PROP_RGX
+
+        btmac = re.findall(BTMAC_RGX,properties)[0]        
+        wifimac = re.findall(WIFIMAC_RGX,properties)[0]
+        serialno = re.findall(SERIALNO_RGX,properties)[0]
+        manufacturer = re.findall(MANUF_RGX,properties)[0]
+        model = re.findall(MODEL_RGX,properties)[0]
+        version = re.findall(VERSION_RGX,properties)[0]
+
+        props = {
+            'btmac': btmac,
+            'wifimac': wifimac,
+            'serialno': serialno,
+            'manufacturer': manufacturer,
+            'model': model,
+            'sw_version': version}
+        
+        return props
 
     # def app_state(self, app):
     #     """ Informs if application is running """
