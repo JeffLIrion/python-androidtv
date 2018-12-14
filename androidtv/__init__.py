@@ -213,7 +213,7 @@ class AndroidTV:
             self._adb_shell = self._adb_shell_pure_python_adb
 
         # establish the ADB connection
-        self.connect()
+        _ = self.connect()
 
     def connect(self):
         """ Connect to an Android TV device.
@@ -231,7 +231,10 @@ class AndroidTV:
                     self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer], default_timeout_ms=9000)
                 else:
                     self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, default_timeout_ms=9000)
-                self._available = bool(self._adb)
+
+                # ADB connection successfully established
+                self._available = True
+
             except socket_error as serr:
                 self._adb = None
                 if self._available:
@@ -239,7 +242,9 @@ class AndroidTV:
                     if serr.strerror is None:
                         serr.strerror = "Timed out trying to connect to ADB device."
                     logging.warning("Couldn't connect to host: %s, error: %s", self.host, serr.strerror)
-                self._available = False
+
+            finally:
+                return self._available
 
         else:
             # pure-python-adb
@@ -247,8 +252,12 @@ class AndroidTV:
                 self._adb_client = AdbClient(host=self.adb_server_ip, port=self.adb_server_port)
                 self._adb_device = self._adb_client.device(self.host)
                 self._available = bool(self._adb_device)
+
             except:
                 self._available = False
+
+            finally:
+                return self._available
 
     def update(self):
         """ Update the device status. """
