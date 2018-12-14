@@ -21,10 +21,19 @@ Signer = PythonRSASigner.FromRSAKeyPath
 # Matches window windows output for app & activity name gathering
 WINDOW_REGEX = re.compile("Window\{(?P<id>.+?) (?P<user>.+) (?P<package>.+?)(?:\/(?P<activity>.+?))?\}$", re.MULTILINE)
 
-BLOCK_REGEX = 'STREAM_MUSIC(.*?)- STREAM'
-DEVICE_REGEX = 'Devices: (.*?)\W'
-MUTED_REGEX = 'Muted: (.*?)\W'
-VOLUME_REGEX = '\): (\d{1,})'
+# Regular expression patterns
+BLOCK_REGEX_PATTERN = 'STREAM_MUSIC(.*?)- STREAM'
+DEVICE_REGEX_PATTERN = 'Devices: (.*?)\W'
+MUTED_REGEX_PATTERN = 'Muted: (.*?)\W'
+VOLUME_REGEX_PATTERN = '\): (\d{1,})'
+
+PROP_REGEX_PATTERN ='.*?\[(.*?)]'
+BTMAC_REGEX_PATTERN = 'btmac' + PROP_REGEX_PATTERN
+WIFIMAC_REGEX_PATTERN = 'wifimac' + PROP_REGEX_PATTERN
+SERIALNO_REGEX_PATTERN = 'serialno' + PROP_REGEX_PATTERN
+MANUF_REGEX_PATTERN = 'manufacturer' + PROP_REGEX_PATTERN
+MODEL_REGEX_PATTERN = 'product.model' + PROP_REGEX_PATTERN
+VERSION_REGEX_PATTERN = 'version.release' + PROP_REGEX_PATTERN
 
 # ADB key event codes.
 BACK = 4
@@ -194,6 +203,7 @@ class AndroidTV:
         self.device = None
         self.volume = 0.
         self.app_id = None
+        self.properties = None
         # self.app_name = None
 
         # keep track of whether the ADB connection is intact
@@ -214,6 +224,10 @@ class AndroidTV:
 
         # establish the ADB connection
         _ = self.connect()
+
+        # get device properties
+        if self._available:
+            self.properties = self.device_info()
 
     def connect(self):
         """ Connect to an Android TV device.
@@ -290,14 +304,14 @@ class AndroidTV:
             else:
                 self.state = STATE_IDLE
 
-            stream_block = re.findall(BLOCK_REGEX, audio_output,
+            stream_block = re.findall(BLOCK_REGEX_PATTERN, audio_output,
                                       re.DOTALL | re.MULTILINE)[0]
-            self.device = re.findall(DEVICE_REGEX, stream_block,
+            self.device = re.findall(DEVICE_REGEX_PATTERN, stream_block,
                                      re.DOTALL | re.MULTILINE)[0]
-            self.muted = re.findall(MUTED_REGEX, stream_block,
+            self.muted = re.findall(MUTED_REGEX_PATTERN, stream_block,
                                     re.DOTALL | re.MULTILINE)[0] == 'true'
 
-            volume_level = re.findall(self.device + VOLUME_REGEX, stream_block,
+            volume_level = re.findall(self.device + VOLUME_REGEX_PATTERN, stream_block,
                                       re.DOTALL | re.MULTILINE)[0]
             self.volume = round(1/15 * float(volume_level), 2)
 
@@ -306,6 +320,26 @@ class AndroidTV:
 
         # Update was successful.
         return True
+
+    def device_info(self):
+        properties = self._adb_shell('getprop')
+
+        btmac = re.findall(BTMAC_REGEX_PATTERN, properties)[0]
+        wifimac = re.findall(WIFIMAC_REGEX_PATTERN, properties)[0]
+        serialno = re.findall(SERIALNO_REGEX_PATTERN, properties)[0]
+        manufacturer = re.findall(MANUF_REGEX_PATTERN, properties)[0]
+        model = re.findall(MODEL_REGEX_PATTERN, properties)[0]
+        version = re.findall(VERSION_REGEX_PATTERN, properties)[0]
+
+        props = {
+            'btmac': btmac,
+            'wifimac': wifimac,
+            'serialno': serialno,
+            'manufacturer': manufacturer,
+            'model': model,
+            'sw_version': version}
+
+        return props
 
     # def app_state(self, app):
     #     """ Informs if application is running """
