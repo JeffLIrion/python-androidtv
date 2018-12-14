@@ -270,6 +270,9 @@ class AndroidTV:
             self.app_id = None
             # self.app_name = None
 
+            # Update was not successful.
+            return False
+
         # Check if device is off.
         elif not self.screen_on:
             self.state = STATE_OFF
@@ -300,6 +303,9 @@ class AndroidTV:
 
             self.app_id = self.current_app
             # self.app_name = self.app_id
+
+        # Update was successful.
+        return True
 
     # def app_state(self, app):
     #     """ Informs if application is running """
