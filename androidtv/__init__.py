@@ -28,8 +28,8 @@ MUTED_REGEX_PATTERN = 'Muted: (.*?)\W'
 VOLUME_REGEX_PATTERN = '\): (\d{1,})'
 
 PROP_REGEX_PATTERN ='.*?\[(.*?)]'
-BTMAC_REGEX_PATTERN = 'btmac' + PROP_REGEX_PATTERN
-WIFIMAC_REGEX_PATTERN = 'wifimac' + PROP_REGEX_PATTERN
+WIFIMAC_PROP_REGEX_PATTERN = 'wifimac' + PROP_REGEX_PATTERN
+WIFIMAC_REGEX_PATTERN = 'ether (.*?) brd'
 SERIALNO_REGEX_PATTERN = 'serialno' + PROP_REGEX_PATTERN
 MANUF_REGEX_PATTERN = 'manufacturer' + PROP_REGEX_PATTERN
 MODEL_REGEX_PATTERN = 'product.model' + PROP_REGEX_PATTERN
@@ -324,15 +324,17 @@ class AndroidTV:
     def device_info(self):
         properties = self._adb_shell('getprop')
 
-        btmac = re.findall(BTMAC_REGEX_PATTERN, properties)[0]
-        wifimac = re.findall(WIFIMAC_REGEX_PATTERN, properties)[0]
+        if 'wifimac' in properties:
+            wifimac = re.findall(WIFIMAC_PROP_REGEX_PATTERN, properties)[0]
+        else:
+            wifi_out = self._adb_shell('ip addr show wlan0')
+            wifimac = re.findall(WIFIMAC_REGEX_PATTERN, wifi_out)[0]
         serialno = re.findall(SERIALNO_REGEX_PATTERN, properties)[0]
         manufacturer = re.findall(MANUF_REGEX_PATTERN, properties)[0]
         model = re.findall(MODEL_REGEX_PATTERN, properties)[0]
         version = re.findall(VERSION_REGEX_PATTERN, properties)[0]
 
         props = {
-            'btmac': btmac,
             'wifimac': wifimac,
             'serialno': serialno,
             'manufacturer': manufacturer,
