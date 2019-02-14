@@ -416,7 +416,7 @@ class AndroidTV:
             return False
 
         # The `screen_on`, `awake`, `wake_lock`, `audio_state`, and `current_app` properties.
-        screen_on, awake, wake_lock_size, _current_app = self.get_properties()
+        screen_on, awake, wake_lock_size, _current_app = self.get_properties(lazy=True)
 
         # Check if device is off.
         if not screen_on:
