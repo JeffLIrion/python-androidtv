@@ -43,11 +43,15 @@ MODEL_REGEX_PATTERN = "product.model" + PROP_REGEX_PATTERN
 VERSION_REGEX_PATTERN = "version.release" + PROP_REGEX_PATTERN
 
 # ADB shell commands for getting the `screen_on`, `awake`, `wake_lock`, `audio_state`, and `current_app` properties
-SCREEN_ON_CMD = r"dumpsys power | grep 'Display Power' | grep -q 'state=ON'"
-AWAKE_CMD = r"dumpsys power | grep mWakefulness | grep -q Awake"
-WAKE_LOCK_CMD = r"dumpsys power | grep Locks | grep -q 'size=0'"
+SCREEN_ON_CMD = "dumpsys power | grep 'Display Power' | grep -q 'state=ON'"
+AWAKE_CMD = "dumpsys power | grep mWakefulness | grep -q Awake"
+WAKE_LOCK_CMD = "dumpsys power | grep Locks | grep -q 'size=0'"
+WAKE_LOCK_SIZE_CMD = "dumpsys power | grep Locks | grep 'size='"
 AUDIO_STATE_CMD = r"dumpsys audio | grep -q paused && echo -e '1\c' || (dumpsys audio | grep -q started && echo '2\c' || echo '0\c')"
 CURRENT_APP_CMD = "dumpsys window windows | grep mCurrentFocus"
+
+# echo '1' if the previous shell command was successful
+SUCCESS1 = r" && echo -e '1\c' "
 
 # echo '1' if the previous shell command was successful, echo '0' if it was not
 SUCCESS1_FAILURE0 = r" && echo -e '1\c' || echo -e '0\c' "
@@ -412,7 +416,7 @@ class AndroidTV:
             return False
 
         # The `screen_on`, `awake`, `wake_lock`, `audio_state`, and `current_app` properties.
-        screen_on, awake, wake_lock, audio_state, _current_app = self.get_properties()
+        screen_on, awake, wake_lock_size, _current_app = self.get_properties()
 
         # Check if device is off.
         if not screen_on:
@@ -423,19 +427,6 @@ class AndroidTV:
         else:
             self.app_id = _current_app
             # self.app_name = self.app_id
-
-            # TODO: determine the state differently based on the `current_app`.
-            self.state = audio_state
-
-            # Get information from the audio status.
-            audio_output = self._dump('audio')
-
-            stream_block = re.findall(BLOCK_REGEX_PATTERN, audio_output, re.DOTALL | re.MULTILINE)[0]
-            self.device = re.findall(DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
-            self.muted = re.findall(MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0] == 'true'
-
-            volume_level = re.findall(self.device + VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
-            self.volume = round(1/15 * float(volume_level), 2)
 
         # Update was successful.
         return True
@@ -598,6 +589,14 @@ class AndroidTV:
         return self.adb_shell(WAKE_LOCK_CMD + SUCCESS1_FAILURE0) == '1'
 
     @property
+    def wake_lock_size(self):
+        """Get the size of the current wake lock."""
+        output = self.adb_shell(WAKE_LOCK_SIZE_CMD)
+        if not output:
+            return None
+        return int(output.split("=")[1].strip())
+
+    @property
     def audio_state(self):
         """Check if audio is playing, paused, or idle."""
         output = self.adb_shell(AUDIO_STATE_CMD)
@@ -609,41 +608,73 @@ class AndroidTV:
             return STATE_PLAYING
         return STATE_IDLE
 
-    def get_properties(self):
+    def get_properties(self, lazy=False):
         """Get the ``screen_on``, ``awake``, ``wake_lock``, ``audio_state``, and ``current_app`` properties."""
-        output = self.adb_shell(SCREEN_ON_CMD + SUCCESS1_FAILURE0 + " && " +
-                                AWAKE_CMD + SUCCESS1_FAILURE0 + " && " +
-                                WAKE_LOCK_CMD + SUCCESS1_FAILURE0 + " &&" +
-                                AUDIO_STATE_CMD + " &&" +
-                                CURRENT_APP_CMD)
+        output = self.adb_shell(SCREEN_ON_CMD + (SUCCESS1 if lazy else SUCCESS1_FAILURE0) + " && " +
+                                AWAKE_CMD + (SUCCESS1 if lazy else SUCCESS1_FAILURE0) + " && " +
+                                WAKE_LOCK_SIZE_CMD + " &&" +
+                                CURRENT_APP_CMD + " && " +
+                                "dumpsys audio")
 
+        # ADB command was unsuccessful
+        if output is None:
+            return None, None, None, None
+
+        # `screen_on` property
         if not output:
-            return None, None, None, None, None
-
+            return False, False, -1, None
         screen_on = output[0] == '1'
+
+        # `awake` property
+        if len(output) < 2:
+            return screen_on, False, -1, None
         awake = output[1] == '1'
-        wake_lock = output[2] == '1'
 
-        if output[3] == '1':
-            audio_state = STATE_PAUSED
-        elif output[3] == '2':
-            audio_state = STATE_PLAYING
-        else:
-            audio_state = STATE_IDLE
+        lines = output.strip().splitlines()
 
-        if len(output) < 5:
-            return screen_on, awake, wake_lock, audio_state, None
+        # `wake_lock_size` property
+        if len(lines[0]) < 3:
+            return screen_on, awake, -1, None
+        wake_lock_size = int(lines[0].split("=")[1].strip())
 
-        current_focus = output[4:].replace("\r", "")
-        matches = WINDOW_REGEX.search(current_focus)
+        # `current_app` property
+        if len(lines) < 2:
+            return screen_on, awake, wake_lock_size, None
 
-        # case 1: current app was successfully found
+        matches = WINDOW_REGEX.search(lines[1])
         if matches:
+            # case 1: current app was successfully found
             (pkg, activity) = matches.group("package", "activity")
-            return screen_on, awake, wake_lock, audio_state, {"package": pkg, "activity": activity}
+            current_app = {"package": pkg, "activity": activity}
+        else:
+            # case 2: current app could not be found
+            logging.warning("Couldn't get current app, reply was %s", lines[1])
+            current_app = None
 
-        # case 2: current app was not found
-        return screen_on, awake, wake_lock, audio_state, None
+        # "dumpsys audio" output
+        if len(lines) < 3:
+            return screen_on, awake, wake_lock_size, current_app
+
+        audio_output = "\n".join(lines[2:])
+
+        # `state` property
+        if 'started' in audio_output:
+            self.state = STATE_PLAYING
+        elif 'paused' in audio_output:
+            self.state = STATE_PAUSED
+        else:
+            self.state = STATE_IDLE
+
+        stream_block = re.findall(BLOCK_REGEX_PATTERN, audio_output, re.DOTALL | re.MULTILINE)[0]
+        self.device = re.findall(DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
+        self.muted = re.findall(MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0] == 'true'
+
+        volume_level = re.findall(self.device + VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
+        self.volume = round(1 / 15 * float(volume_level), 2)
+
+        self.app_id = current_app
+
+        return screen_on, awake, wake_lock_size, current_app
 
     # ======================================================================= #
     #                                                                         #
