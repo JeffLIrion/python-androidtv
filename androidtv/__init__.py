@@ -51,10 +51,10 @@ AUDIO_STATE_CMD = r"dumpsys audio | grep -q paused && echo -e '1\c' || (dumpsys 
 CURRENT_APP_CMD = "dumpsys window windows | grep mCurrentFocus"
 
 # echo '1' if the previous shell command was successful
-SUCCESS1 = r" && echo -e '1\c' "
+SUCCESS1 = r" && echo -e '1\c'"
 
 # echo '1' if the previous shell command was successful, echo '0' if it was not
-SUCCESS1_FAILURE0 = r" && echo -e '1\c' || echo -e '0\c' "
+SUCCESS1_FAILURE0 = r" && echo -e '1\c' || echo -e '0\c'"
 
 # https://developer.android.com/reference/android/view/KeyEvent
 # ADB key event codes.
