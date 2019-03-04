@@ -345,7 +345,7 @@ class AndroidTV:
     #
     #     return {"retcode": retcode, "output": output}
 
-    def connect(self):
+    def connect(self, always_log_errors=True):
         """Connect to an Android TV device.
 
         Will attempt to establish ADB connection to the given host.
@@ -370,12 +370,14 @@ class AndroidTV:
                     self._available = True
 
                 except socket_error as serr:
-                    self._adb = None
-                    if self._available:
-                        self._available = False
+                    if self._available or always_log_errors:
                         if serr.strerror is None:
                             serr.strerror = "Timed out trying to connect to ADB device."
                         logging.warning("Couldn't connect to host: %s, error: %s", self.host, serr.strerror)
+
+                    # ADB connection attempt failed
+                    self._adb = None
+                    self._available = False
 
                 finally:
                     return self._available
@@ -612,7 +614,7 @@ class AndroidTV:
         """Get the ``screen_on``, ``awake``, ``wake_lock``, ``audio_state``, and ``current_app`` properties."""
         output = self.adb_shell(SCREEN_ON_CMD + (SUCCESS1 if lazy else SUCCESS1_FAILURE0) + " && " +
                                 AWAKE_CMD + (SUCCESS1 if lazy else SUCCESS1_FAILURE0) + " && " +
-                                WAKE_LOCK_SIZE_CMD + " &&" +
+                                WAKE_LOCK_SIZE_CMD + " && " +
                                 CURRENT_APP_CMD + " && " +
                                 "dumpsys audio")
 
