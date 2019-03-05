@@ -146,46 +146,46 @@ KEY_Z = 54
 
 # Android TV actions
 ACTIONS = {
-    "back": BACK,
-    "blue": BLUE,
-    "component1": COMPONENT1,
-    "component2": COMPONENT2,
-    "composite1": COMPOSITE1,
-    "composite2": COMPOSITE2,
-    "down": DOWN,
-    "end": END,
-    "enter": ENTER,
-    "green": GREEN,
-    "hdmi1": HDMI1,
-    "hdmi2": HDMI2,
-    "hdmi3": HDMI3,
-    "hdmi4": HDMI4,
-    "home": HOME,
-    "input": INPUT,
-    "left": LEFT,
-    "menu": MENU,
-    "move_home": MOVE_HOME,
-    "mute": MUTE,
-    "pairing": PAIRING,
-    "power": POWER,
-    "resume": RESUME,
-    "right": RIGHT,
-    "sat": SAT,
-    "search": SEARCH,
-    "settings": SETTINGS,
-    "sleep": SLEEP,
-    "suspend": SUSPEND,
-    "sysdown": SYSDOWN,
-    "sysleft": SYSLEFT,
-    "sysright": SYSRIGHT,
-    "sysup": SYSUP,
-    "text": TEXT,
-    "top": TOP,
-    "up": UP,
-    "vga": VGA,
-    "voldown": VOLUME_DOWN,
-    "volup": VOLUME_UP,
-    "yellow": YELLOW
+    "BACK": BACK,
+    "BLUE": BLUE,
+    "COMPONENT1": COMPONENT1,
+    "COMPONENT2": COMPONENT2,
+    "COMPOSITE1": COMPOSITE1,
+    "COMPOSITE2": COMPOSITE2,
+    "DOWN": DOWN,
+    "END": END,
+    "ENTER": ENTER,
+    "GREEN": GREEN,
+    "HDMI1": HDMI1,
+    "HDMI2": HDMI2,
+    "HDMI3": HDMI3,
+    "HDMI4": HDMI4,
+    "HOME": HOME,
+    "INPUT": INPUT,
+    "LEFT": LEFT,
+    "MENU": MENU,
+    "MOVE_HOME": MOVE_HOME,
+    "MUTE": MUTE,
+    "PAIRING": PAIRING,
+    "POWER": POWER,
+    "RESUME": RESUME,
+    "RIGHT": RIGHT,
+    "SAT": SAT,
+    "SEARCH": SEARCH,
+    "SETTINGS": SETTINGS,
+    "SLEEP": SLEEP,
+    "SUSPEND": SUSPEND,
+    "SYSDOWN": SYSDOWN,
+    "SYSLEFT": SYSLEFT,
+    "SYSRIGHT": SYSRIGHT,
+    "SYSUP": SYSUP,
+    "TEXT": TEXT,
+    "TOP": TOP,
+    "UP": UP,
+    "VGA": VGA,
+    "VOLUME_DOWN": VOLUME_DOWN,
+    "VOLUME_UP": VOLUME_UP,
+    "YELLOW": YELLOW
 }
 
 # Android TV states.
@@ -214,13 +214,7 @@ class AndroidTV:
         self.adb_server_ip = adb_server_ip
         self.adb_server_port = adb_server_port
 
-        self.state = STATE_UNKNOWN
-        self.muted = False
-        self.device = None
-        self.volume = 0.
-        self.app_id = None
         self.properties = None
-        # self.app_name = None
 
         # keep track of whether the ADB connection is intact
         self._available = False
@@ -307,44 +301,6 @@ class AndroidTV:
         """
         self.adb_shell('input keyevent {0}'.format(key))
 
-    # def _ps(self, search=''):
-    #     """Perform a ps command with optional filtering.
-    #
-    #     :param search: Check for this substring.
-    #     :returns: List of matching fields
-    #     """
-    #     if not self.available:
-    #         return
-    #     result = []
-    #     ps = self._adb.StreamingShell('ps')
-    #     try:
-    #         for bad_line in ps:
-    #             # The splitting of the StreamingShell doesn't always work
-    #             # this is to ensure that we get only one line
-    #             for line in bad_line.splitlines():
-    #                 if search in line:
-    #                     result.append(line.strip().rsplit(' ',1)[-1])
-    #         return result
-    #     except InvalidChecksumError as e:
-    #         print(e)
-    #         self.connect()
-    #         raise IOError
-
-    # def _send_intent(self, pkg, intent, count=1):
-    #     if not self.available:
-    #         return None
-    #
-    #     cmd = 'monkey -p {} -c {} {}; echo $?'.format(pkg, intent, count)
-    #     logging.debug("Sending an intent %s to %s (count: %s)", intent, pkg, count)
-    #
-    #     # adb shell outputs in weird format, so we cut it into lines,
-    #     # separate the retcode and return info to the user
-    #     res = self.adb_shell(cmd).strip().split("\r\n")
-    #     retcode = res[-1]
-    #     output = "\n".join(res[:-1])
-    #
-    #     return {"retcode": retcode, "output": output}
-
     def connect(self, always_log_errors=True):
         """Connect to an Android TV device.
 
@@ -398,6 +354,10 @@ class AndroidTV:
         finally:
             self._adb_lock.release()
 
+    def start_intent(self, uri):
+        """Start an intent on the device."""
+        self.adb_shell("am start -a android.intent.action.VIEW -d {}".format(uri))
+
     # ======================================================================= #
     #                                                                         #
     #                          Home Assistant Update                          #
@@ -405,33 +365,14 @@ class AndroidTV:
     # ======================================================================= #
     def update(self):
         """Update the device status."""
-        # Check if device is disconnected.
-        if not self.available:
-            self.state = STATE_UNKNOWN
-            # self.muted = False
-            # self.device = None
-            # self.volume = 0.
-            self.app_id = None
-            # self.app_name = None
-
-            # Update was not successful.
-            return False
-
-        # The `screen_on`, `awake`, `wake_lock`, `audio_state`, and `current_app` properties.
-        screen_on, awake, wake_lock_size, _current_app = self.get_properties(lazy=True)
+        # Get the properties needed for the update.
+        screen_on, awake, wake_lock_size, current_app, audio_state, device, muted, volume = self.get_properties(lazy=True)
 
         # Check if device is off.
         if not screen_on:
-            self.state = STATE_OFF
-            self.app_id = None
-            # self.app_name = None
+            return STATE_OFF, current_app, device, muted, volume
 
-        else:
-            self.app_id = _current_app
-            # self.app_name = self.app_id
-
-        # Update was successful.
-        return True
+        return audio_state, current_app, device, muted, volume
 
     # ======================================================================= #
     #                                                                         #
@@ -460,25 +401,6 @@ class AndroidTV:
                  'sw_version': version}
 
         return props
-
-    # ======================================================================= #
-    #                                                                         #
-    #                         Home Assistant services                         #
-    #                                                                         #
-    # ======================================================================= #
-    def input_key(self, key):
-        """Input the key to the device."""
-        self.adb_shell("input keyevent {}".format(key))
-
-    def start_intent(self, uri):
-        """Start an intent on the device."""
-        self.adb_shell(
-            "am start -a android.intent.action.VIEW -d {}".format(uri))
-
-    def do_action(self, action):
-        """Input the key corresponding to the action."""
-        self.adb_shell(
-            "input keyevent {}".format(ACTIONS[action]))
 
     # ======================================================================= #
     #                                                                         #
@@ -610,8 +532,42 @@ class AndroidTV:
             return STATE_PLAYING
         return STATE_IDLE
 
+    @property
+    def device(self):
+        """The current playback device."""
+        output = self.adb_shell("dumpsys audio")
+        if not output:
+            return None
+
+        stream_block = re.findall(BLOCK_REGEX_PATTERN, output, re.DOTALL | re.MULTILINE)[0]
+        return re.findall(DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
+
+    @property
+    def muted(self):
+        """Whether or not the volume is muted."""
+        output = self.adb_shell("dumpsys audio")
+        if not output:
+            return None
+
+        stream_block = re.findall(BLOCK_REGEX_PATTERN, output, re.DOTALL | re.MULTILINE)[0]
+        return re.findall(MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0] == 'true'
+
+    @property
+    def volume(self):
+        """The volume level."""
+        output = self.adb_shell("dumpsys audio")
+        if not output:
+            return None
+
+        stream_block = re.findall(BLOCK_REGEX_PATTERN, output, re.DOTALL | re.MULTILINE)[0]
+        device = re.findall(DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
+        volume_level = re.findall(device + VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
+
+        return round(1 / 15 * float(volume_level), 2)
+
     def get_properties(self, lazy=False):
-        """Get the ``screen_on``, ``awake``, ``wake_lock``, ``audio_state``, and ``current_app`` properties."""
+        """Get the ``screen_on``, ``awake``, ``wake_lock_size``, ``current_app``, ``audio_state``, ``device``,
+        ``muted``, and ``volume`` properties."""
         output = self.adb_shell(SCREEN_ON_CMD + (SUCCESS1 if lazy else SUCCESS1_FAILURE0) + " && " +
                                 AWAKE_CMD + (SUCCESS1 if lazy else SUCCESS1_FAILURE0) + " && " +
                                 WAKE_LOCK_SIZE_CMD + " && " +
@@ -620,28 +576,28 @@ class AndroidTV:
 
         # ADB command was unsuccessful
         if output is None:
-            return None, None, None, None
+            return None, None, None, None, None, None, None, None
 
         # `screen_on` property
         if not output:
-            return False, False, -1, None
+            return False, False, -1, None, None, None, None, None
         screen_on = output[0] == '1'
 
         # `awake` property
         if len(output) < 2:
-            return screen_on, False, -1, None
+            return screen_on, False, -1, None, None, None, None, None
         awake = output[1] == '1'
 
         lines = output.strip().splitlines()
 
         # `wake_lock_size` property
         if len(lines[0]) < 3:
-            return screen_on, awake, -1, None
+            return screen_on, awake, -1, None, None, None, None, None
         wake_lock_size = int(lines[0].split("=")[1].strip())
 
         # `current_app` property
         if len(lines) < 2:
-            return screen_on, awake, wake_lock_size, None
+            return screen_on, awake, wake_lock_size, None, None, None, None, None
 
         matches = WINDOW_REGEX.search(lines[1])
         if matches:
@@ -655,28 +611,31 @@ class AndroidTV:
 
         # "dumpsys audio" output
         if len(lines) < 3:
-            return screen_on, awake, wake_lock_size, current_app
+            return screen_on, awake, wake_lock_size, current_app, None, None, None, None
 
         audio_output = "\n".join(lines[2:])
 
-        # `state` property
+        # `audio_state` property
         if 'started' in audio_output:
-            self.state = STATE_PLAYING
+            audio_state = STATE_PLAYING
         elif 'paused' in audio_output:
-            self.state = STATE_PAUSED
+            audio_state = STATE_PAUSED
         else:
-            self.state = STATE_IDLE
+            audio_state = STATE_IDLE
 
         stream_block = re.findall(BLOCK_REGEX_PATTERN, audio_output, re.DOTALL | re.MULTILINE)[0]
-        self.device = re.findall(DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
-        self.muted = re.findall(MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0] == 'true'
 
-        volume_level = re.findall(self.device + VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
-        self.volume = round(1 / 15 * float(volume_level), 2)
+        # `device` property
+        device = re.findall(DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
 
-        self.app_id = current_app
+        # `muted` property
+        muted = re.findall(MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0] == 'true'
 
-        return screen_on, awake, wake_lock_size, current_app
+        # `volume` property
+        volume_level = re.findall(device + VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
+        volume = round(1 / 15 * float(volume_level), 2)
+
+        return screen_on, awake, wake_lock_size, current_app, audio_state, device, muted, volume
 
     # ======================================================================= #
     #                                                                         #
