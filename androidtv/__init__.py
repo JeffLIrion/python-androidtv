@@ -366,13 +366,31 @@ class AndroidTV:
     def update(self):
         """Update the device status."""
         # Get the properties needed for the update.
-        screen_on, awake, wake_lock_size, current_app, audio_state, device, muted, volume = self.get_properties(lazy=True)
+        screen_on, awake, wake_lock_size, _current_app, audio_state, device, muted, volume = self.get_properties(lazy=True)
+
+        # Get the current app.
+        if isinstance(_current_app, dict) and 'package' in _current_app:
+            current_app = _current_app['package']
+        else:
+            current_app = None
 
         # Check if device is off.
         if not screen_on:
             return STATE_OFF, current_app, device, muted, volume
 
-        return audio_state, current_app, device, muted, volume
+        # TODO: determine the state differently based on the current app
+        if audio_state:
+            state = audio_state
+
+        else:
+            if not awake:
+                state = STATE_IDLE
+            elif wake_lock_size == 1:
+                state = STATE_PLAYING
+            else:
+                state = STATE_PAUSED
+
+        return state, current_app, device, muted, volume
 
     # ======================================================================= #
     #                                                                         #
@@ -534,7 +552,7 @@ class AndroidTV:
 
     @property
     def device(self):
-        """The current playback device."""
+        """Get the current playback device."""
         output = self.adb_shell("dumpsys audio")
         if not output:
             return None
@@ -554,7 +572,7 @@ class AndroidTV:
 
     @property
     def volume(self):
-        """The volume level."""
+        """Get the volume level."""
         output = self.adb_shell("dumpsys audio")
         if not output:
             return None
@@ -566,8 +584,7 @@ class AndroidTV:
         return round(1 / 15 * float(volume_level), 2)
 
     def get_properties(self, lazy=False):
-        """Get the ``screen_on``, ``awake``, ``wake_lock_size``, ``current_app``, ``audio_state``, ``device``,
-        ``muted``, and ``volume`` properties."""
+        """Get the properties needed for Home Assistant updates."""
         output = self.adb_shell(SCREEN_ON_CMD + (SUCCESS1 if lazy else SUCCESS1_FAILURE0) + " && " +
                                 AWAKE_CMD + (SUCCESS1 if lazy else SUCCESS1_FAILURE0) + " && " +
                                 WAKE_LOCK_SIZE_CMD + " && " +
@@ -623,17 +640,33 @@ class AndroidTV:
         else:
             audio_state = STATE_IDLE
 
-        stream_block = re.findall(BLOCK_REGEX_PATTERN, audio_output, re.DOTALL | re.MULTILINE)[0]
+        matches = re.findall(BLOCK_REGEX_PATTERN, audio_output, re.DOTALL | re.MULTILINE)
+        if not matches:
+            return screen_on, awake, wake_lock_size, current_app, audio_state, None, None, None
+        stream_block = matches[0]
 
         # `device` property
-        device = re.findall(DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
+        matches = re.findall(DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
+        if matches:
+            device = matches[0]
+
+            # `volume` property
+            matches = re.findall(device + VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
+            if matches:
+                volume = round(1 / 15 * float(matches[0]), 2)
+            else:
+                volume = None
+
+        else:
+            device = None
+            volume = None
 
         # `muted` property
-        muted = re.findall(MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0] == 'true'
-
-        # `volume` property
-        volume_level = re.findall(device + VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
-        volume = round(1 / 15 * float(volume_level), 2)
+        matches = re.findall(MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
+        if matches:
+            muted = matches[0] == 'true'
+        else:
+            muted = None
 
         return screen_on, awake, wake_lock_size, current_app, audio_state, device, muted, volume
 
