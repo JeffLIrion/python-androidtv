@@ -40,6 +40,9 @@ class BaseTV:
         self.adb_server_ip = adb_server_ip
         self.adb_server_port = adb_server_port
 
+        # info about the device
+        self.device_properties = {}
+
         # keep track of whether the ADB connection is intact
         self._available = False
 

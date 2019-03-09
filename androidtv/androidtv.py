@@ -31,8 +31,9 @@ CMD_AUDIO_STATE = r"dumpsys audio | grep -q paused && echo -e '1\c' || (dumpsys 
 
 class AndroidTV(BaseTV):
     """Represents an Android TV device."""
+    DEVICE_CLASS = 'androidtv'
 
-    def __init__(self, host='', adbkey='', adb_server_ip='', adb_server_port=5037, basetv=None):
+    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037):
         """Initialize AndroidTV object.
 
         :param host: Host in format <address>:port.
@@ -40,40 +41,11 @@ class AndroidTV(BaseTV):
         :param adb_server_ip: the IP address for the ADB server
         :param adb_server_port: the port for the ADB server
         """
-        if basetv:
-            self.host = basetv.host
-            self.adbkey = basetv.adbkey
-            self.adb_server_ip = basetv.adb_server_ip
-            self.adb_server_port = basetv.adb_server_port
-
-            # keep track of whether the ADB connection is intact
-            self._available = basetv._available
-
-            # use a lock to make sure that ADB commands don't overlap
-            self._adb_lock = basetv._adb_lock
-
-            # the attributes used for sending ADB commands; filled in in `self.connect()`
-            self._adb = basetv._adb  # python-adb
-            self._adb_client = basetv._adb_client  # pure-python-adb
-            self._adb_device = basetv._adb_device  # pure-python-adb
-
-            # the methods used for sending ADB commands
-            self.adb_shell = basetv.adb_shell
-            if not self.adb_server_ip:
-                # python-adb
-                self.adb_shell = BaseTV._adb_shell_python_adb
-            else:
-                # pure-python-adb
-                self.adb_shell = BaseTV._adb_shell_pure_python_adb
-
-        else:
-            BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port)
+        BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port)
 
         # get device properties
         if self._available:
             self.device_properties = self.get_device_properties()
-        else:
-            self.device_properties = {}
 
     # ======================================================================= #
     #                                                                         #

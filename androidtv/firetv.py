@@ -10,7 +10,7 @@ from .basetv import BaseTV
 from . import constants
 
 
-# ADB shell commands for getting the `media_session_state` and `running_apps` properties
+# ADB shell command for getting the `running_apps` properties
 CMD_RUNNING_APPS = "ps | grep u0_a"
 
 # Apps
@@ -24,8 +24,9 @@ INTENT_HOME = "android.intent.category.HOME"
 
 class FireTV(BaseTV):
     """Represents an Amazon Fire TV device."""
+    DEVICE_CLASS = 'firetv'
 
-    def __init__(self, host='', adbkey='', adb_server_ip='', adb_server_port=5037, basetv=None):
+    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037):
         """Initialize Fire TV object.
 
         :param host: Host in format <address>:port.
@@ -33,34 +34,7 @@ class FireTV(BaseTV):
         :param adb_server_ip: the IP address for the ADB server
         :param adb_server_port: the port for the ADB server
         """
-        if basetv:
-            self.host = basetv.host
-            self.adbkey = basetv.adbkey
-            self.adb_server_ip = basetv.adb_server_ip
-            self.adb_server_port = basetv.adb_server_port
-
-            # keep track of whether the ADB connection is intact
-            self._available = basetv._available
-
-            # use a lock to make sure that ADB commands don't overlap
-            self._adb_lock = basetv._adb_lock
-
-            # the attributes used for sending ADB commands; filled in in `self.connect()`
-            self._adb = basetv._adb  # python-adb
-            self._adb_client = basetv._adb_client  # pure-python-adb
-            self._adb_device = basetv._adb_device  # pure-python-adb
-
-            # the methods used for sending ADB commands
-            self.adb_shell = basetv.adb_shell
-            if not self.adb_server_ip:
-                # python-adb
-                self.adb_shell = BaseTV._adb_shell_python_adb
-            else:
-                # pure-python-adb
-                self.adb_shell = BaseTV._adb_shell_pure_python_adb
-
-        else:
-            BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port)
+        BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port)
 
     # ======================================================================= #
     #                                                                         #
@@ -158,6 +132,7 @@ class FireTV(BaseTV):
             else:
                 state = constants.STATE_PAUSED
 
+        logging.error("%s, %s, %s", state, current_app, ", ".join(running_apps))
         return state, current_app, running_apps
 
     # ======================================================================= #
@@ -188,7 +163,7 @@ class FireTV(BaseTV):
         return []
 
     def get_properties(self, get_running_apps=True, lazy=False):
-        """Get the ``screen_on``, ``awake``, ``wake_lock_size``, ``media_session_state``, ``current_app``, and ``running_apps`` properties."""
+        """Get the properties needed for Home Assistant updates."""
         if get_running_apps:
             output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +

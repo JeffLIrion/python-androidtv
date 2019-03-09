@@ -21,9 +21,16 @@ def setup(host, adbkey='', adb_server_ip='', adb_server_port=5037, device_class=
     if device_class != 'auto':
         raise ValueError("`device_class` must be 'androidtv', 'firetv', or 'auto'.")
 
-    device = BaseTV(host, adbkey, adb_server_ip, adb_server_port)
+    aftv = BaseTV(host, adbkey, adb_server_ip, adb_server_port)
 
-    if device.manufacturer == 'Amazon':
-        return FireTV(basetv=device)
+    # Fire TV
+    if aftv.manufacturer == 'Amazon':
+        aftv.__class__ = FireTV
 
-    return AndroidTV(basetv=device)
+    # Android TV
+    else:
+        aftv.__class__ = AndroidTV
+        if aftv._available:
+            aftv.device_properties = aftv.get_device_properties()
+
+    return aftv
