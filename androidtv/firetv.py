@@ -132,7 +132,6 @@ class FireTV(BaseTV):
             else:
                 state = constants.STATE_PAUSED
 
-        logging.error("%s, %s, %s", state, current_app, ", ".join(running_apps))
         return state, current_app, running_apps
 
     # ======================================================================= #
