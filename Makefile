@@ -2,7 +2,7 @@
 release:
 	rm -rf dist
 	python setup.py sdist bdist_wheel
-	twine upload dist/*.tar.gz
+	twine upload dist/*
 	
 .PHONY: docs
 docs:
