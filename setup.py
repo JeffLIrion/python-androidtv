@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
     name='androidtv',
-    version='0.0.9',
-    description='Communicate with an Android TV device via ADB over a network.',
+    version='0.0.10',
+    description='Communicate with an Android TV or Fire TV device via ADB over a network.',
     url='https://github.com/JeffLIrion/python-androidtv/',
     license='MIT',
     author='Jeff Irion',

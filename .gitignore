@@ -1,3 +1,15 @@
+# Python files
+*.idea
 *.pyc
-.idea/
+**/__pycache__/
 androidtv.egg-info
+
+# Build files
+build/
+dist/
+
+# Documentation
+docs/build/
+docs/source/*
+!docs/source/conf.py
+!docs/source/index.rst
