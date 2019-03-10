@@ -1,6 +1,4 @@
-"""Docstring
-
-"""
+"""Constants used in the ``BaseTV``, ``AndroidTV``, and ``FireTV`` classes."""
 
 
 import re

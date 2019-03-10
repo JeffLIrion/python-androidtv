@@ -25,15 +25,22 @@ Signer = PythonRSASigner.FromRSAKeyPath
 
 
 class BaseTV:
-    """Represents an Android TV device."""
+    """Base class for representing an Android TV / Fire TV device."""
 
     def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037):
-        """Initialize AndroidTV object.
+        """Initialize a ``BaseTV`` object.
 
-        :param host: Host in format <address>:port.
-        :param adbkey: The path to the "adbkey" file
-        :param adb_server_ip: the IP address for the ADB server
-        :param adb_server_port: the port for the ADB server
+        Parameters
+        ----------
+        host : str
+            The address of the device in the format ``<ip address>:<host>``
+        adbkey : str
+            The path to the ``adbkey`` file for ADB authentication; the file ``adbkey.pub`` must be in the same directory
+        adb_server_ip : str
+            The IP address of the ADB server
+        adb_server_port : int
+            The port for the ADB server
+
         """
         self.host = host
         self.adbkey = adbkey
@@ -71,6 +78,19 @@ class BaseTV:
     #                                                                         #
     # ======================================================================= #
     def _adb_shell_python_adb(self, cmd):
+        """Send an ADB command using the Python ADB implementation.
+
+        Parameters
+        ----------
+        cmd : str
+            The ADB command to be sent
+
+        Returns
+        -------
+        str, None
+            The response from the device, if there is a response
+
+        """
         if not self.available:
             return None
 
@@ -81,6 +101,19 @@ class BaseTV:
                 self._adb_lock.release()
 
     def _adb_shell_pure_python_adb(self, cmd):
+        """Send an ADB command using an ADB server.
+
+        Parameters
+        ----------
+        cmd : str
+            The ADB command to be sent
+
+        Returns
+        -------
+        str, None
+            The response from the device, if there is a response
+
+        """
         if not self._available:
             return None
 
@@ -93,17 +126,27 @@ class BaseTV:
     def _key(self, key):
         """Send a key event to device.
 
-        :param key: Key constant.
+        Parameters
+        ----------
+        key : str, int
+            The Key constant
+
         """
         self.adb_shell('input keyevent {0}'.format(key))
 
     def connect(self, always_log_errors=True):
-        """Connect to an Android TV device.
+        """Connect to an Android TV / Fire TV device.
 
-        Will attempt to establish ADB connection to the given host.
-        Failure sets state to UNKNOWN and disables sending actions.
+        Parameters
+        ----------
+        always_log_errors : bool
+            If True, errors will always be logged; otherwise, errors will only be logged on the first failed reconnect attempt
 
-        :returns: True if successful, False otherwise
+        Returns
+        -------
+        bool
+            Whether or not the connection was successfully established and the device is available
+
         """
         self._adb_lock.acquire(**LOCK_KWARGS)
         try:
@@ -157,7 +200,14 @@ class BaseTV:
     # ======================================================================= #
     @property
     def available(self):
-        """Check whether the ADB connection is intact."""
+        """Check whether the ADB connection is intact.
+
+        Returns
+        -------
+        bool
+            Whether or not the ADB connection is intact
+
+        """
         if not self.adb_server_ip:
             # python-adb
             return bool(self._adb)
@@ -195,12 +245,26 @@ class BaseTV:
 
     @property
     def awake(self):
-        """Check if the device is awake (screensaver is not running)."""
+        """Check if the device is awake (screensaver is not running).
+
+        Returns
+        -------
+        bool
+            Whether or not the device is awake (screensaver is not running)
+
+        """
         return self.adb_shell(constants.CMD_AWAKE + constants.CMD_SUCCESS1_FAILURE0) == '1'
 
     @property
     def current_app(self):
-        """Return the current app."""
+        """Return the current app.
+
+        Returns
+        -------
+        dict
+            A dictionary with keys ``'package'`` and ``'activity'`` if the current app was found; otherwise, ``None``
+
+        """
         current_focus = self.adb_shell(constants.CMD_CURRENT_APP)
         if current_focus is None:
             return None
@@ -219,7 +283,14 @@ class BaseTV:
 
     @property
     def manufacturer(self):
-        """Get the 'manufacturer' property from the device."""
+        """Get the 'manufacturer' property from the device.
+
+        Returns
+        -------
+        str, None
+            The manufacturer of the device
+
+        """
         output = self.adb_shell(constants.CMD_MANUFACTURER)
         if not output:
             return None
@@ -227,7 +298,14 @@ class BaseTV:
 
     @property
     def media_session_state(self):
-        """Get the state the output of ``dumpsys media_session``."""
+        """Get the state from the output of ``dumpsys media_session``.
+
+        Returns
+        -------
+        str, None
+            The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
+
+        """
         output = self.adb_shell(constants.CMD_MEDIA_SESSION_STATE)
         if not output:
             return None
@@ -239,17 +317,38 @@ class BaseTV:
 
     @property
     def screen_on(self):
-        """Check if the screen is on."""
+        """Check if the screen is on.
+
+        Returns
+        -------
+        bool
+            Whether or not the device is on
+
+        """
         return self.adb_shell(constants.CMD_SCREEN_ON + constants.CMD_SUCCESS1_FAILURE0) == '1'
 
     @property
     def wake_lock(self):
-        """Check for wake locks (device is playing)."""
+        """Check for wake locks (device is playing).
+
+        Returns
+        -------
+        bool
+            Whether or not the ``wake_lock_size`` property is equal to 1.
+
+        """
         return self.adb_shell(constants.CMD_WAKE_LOCK + constants.CMD_SUCCESS1_FAILURE0) == '1'
 
     @property
     def wake_lock_size(self):
-        """Get the size of the current wake lock."""
+        """Get the size of the current wake lock.
+
+        Returns
+        -------
+        int, None
+            The size of the current wake lock, or ``None`` if it could not be determined
+
+        """
         output = self.adb_shell(constants.CMD_WAKE_LOCK_SIZE)
         if not output:
             return None

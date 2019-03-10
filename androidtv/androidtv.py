@@ -4,7 +4,6 @@ ADB Debugging must be enabled.
 """
 
 
-import logging
 import re
 
 from .basetv import BaseTV
@@ -30,16 +29,24 @@ CMD_AUDIO_STATE = r"dumpsys audio | grep -q paused && echo -e '1\c' || (dumpsys 
 
 
 class AndroidTV(BaseTV):
-    """Represents an Android TV device."""
+    """Representation of an Android TV device."""
+
     DEVICE_CLASS = 'androidtv'
 
     def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037):
-        """Initialize AndroidTV object.
+        """Initialize an ``AndroidTV`` object.
 
-        :param host: Host in format <address>:port.
-        :param adbkey: The path to the "adbkey" file
-        :param adb_server_ip: the IP address for the ADB server
-        :param adb_server_port: the port for the ADB server
+        Parameters
+        ----------
+        host : str
+            The address of the device in the format ``<ip address>:<host>``
+        adbkey : str
+            The path to the ``adbkey`` file for ADB authentication; the file ``adbkey.pub`` must be in the same directory
+        adb_server_ip : str
+            The IP address of the ADB server
+        adb_server_port : int
+            The port for the ADB server
+
         """
         BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port)
 
@@ -53,7 +60,14 @@ class AndroidTV(BaseTV):
     #                                                                         #
     # ======================================================================= #
     def start_intent(self, uri):
-        """Start an intent on the device."""
+        """Start an intent on the device.
+
+        Parameters
+        ----------
+        uri : str
+            The intent that will be sent is ``am start -a android.intent.action.VIEW -d <uri>``
+
+        """
         self.adb_shell("am start -a android.intent.action.VIEW -d {}".format(uri))
 
     # ======================================================================= #
@@ -62,17 +76,32 @@ class AndroidTV(BaseTV):
     #                                                                         #
     # ======================================================================= #
     def update(self):
-        """Update the device status."""
-        # Get the properties needed for the update.
+        """Get the info needed for a Home Assistant update.
+
+        Returns
+        -------
+        state : str
+            The state of the device
+        current_app : str
+            The current running app
+        device : str
+            The current playback device
+        muted : bool
+            Whether or not the volume is muted
+        volume : float
+            The volume level (between 0 and 1)
+
+        """
+        # Get the properties needed for the update
         screen_on, awake, wake_lock_size, _current_app, audio_state, device, muted, volume = self.get_properties(lazy=True)
 
-        # Get the current app.
+        # Get the current app
         if isinstance(_current_app, dict) and 'package' in _current_app:
             current_app = _current_app['package']
         else:
             current_app = None
 
-        # Check if device is off.
+        # Check if device is off
         if not screen_on:
             return constants.STATE_OFF, current_app, device, muted, volume
 
@@ -96,7 +125,14 @@ class AndroidTV(BaseTV):
     #                                                                         #
     # ======================================================================= #
     def get_device_properties(self):
-        """Return a dictionary of device properties."""
+        """Return a dictionary of device properties.
+
+        Returns
+        -------
+        props : dict
+            A dictionary with keys ``'wifimac'``, ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
+
+        """
         properties = self.adb_shell('getprop')
 
         if 'wifimac' in properties:
@@ -125,7 +161,14 @@ class AndroidTV(BaseTV):
     # ======================================================================= #
     @property
     def audio_state(self):
-        """Check if audio is playing, paused, or idle."""
+        """Check if audio is playing, paused, or idle.
+
+        Returns
+        -------
+        str, None
+            The audio state, as determined from the ADB shell command ``dumpsys audio``, or ``None`` if it could not be determined
+
+        """
         output = self.adb_shell(CMD_AUDIO_STATE)
         if output is None:
             return None
@@ -137,7 +180,14 @@ class AndroidTV(BaseTV):
 
     @property
     def device(self):
-        """Get the current playback device."""
+        """Get the current playback device.
+
+        Returns
+        -------
+        str, None
+            The current playback device, or ``None`` if it could not be determined
+
+        """
         output = self.adb_shell("dumpsys audio")
         if not output:
             return None
@@ -147,7 +197,14 @@ class AndroidTV(BaseTV):
 
     @property
     def muted(self):
-        """Whether or not the volume is muted."""
+        """Whether or not the volume is muted.
+
+        Returns
+        -------
+        bool, None
+            Whether or not the volume is muted, or ``None`` if it could not be determined
+
+        """
         output = self.adb_shell("dumpsys audio")
         if not output:
             return None
@@ -157,7 +214,14 @@ class AndroidTV(BaseTV):
 
     @property
     def volume(self):
-        """Get the volume level."""
+        """Get the volume level.
+
+        Returns
+        -------
+        float, None
+            The volume level (between 0 and 1), or ``None`` if it could not be determined
+
+        """
         output = self.adb_shell("dumpsys audio")
         if not output:
             return None
@@ -169,7 +233,33 @@ class AndroidTV(BaseTV):
         return round(1 / 15 * float(volume_level), 2)
 
     def get_properties(self, lazy=False):
-        """Get the properties needed for Home Assistant updates."""
+        """Get the properties needed for Home Assistant updates.
+
+        Parameters
+        ----------
+        lazy : bool
+            Whether or not to continue retrieving properties if the device is off or the screensaver is running
+
+        Returns
+        -------
+        screen_on : bool, None
+            Whether or not the device is on, or ``None`` if it was not determined
+        awake : bool, None
+            Whether or not the device is awake (screensaver is not running), or ``None`` if it was not determined
+        wake_lock_size : int, None
+            The size of the current wake lock, or ``None`` if it was not determined
+        current_app : dict, None
+            The current app property, or ``None`` if it was not determined
+        audio_state : str, None
+            The audio state, as determined from "dumpsys audio", or ``None`` if it was not determined
+        device : str, None
+            The current playback device, or ``None`` if it was not determined
+        muted : bool, None
+            Whether or not the volume is muted, or ``None`` if it was not determined
+        volume : float, None
+            The volume level (between 0 and 1), or ``None`` if it was not determined
+
+        """
         output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                 constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                 constants.CMD_WAKE_LOCK_SIZE + " && " +
@@ -255,7 +345,20 @@ class AndroidTV(BaseTV):
         return screen_on, awake, wake_lock_size, current_app, audio_state, device, muted, volume
 
     def get_properties_dict(self, lazy=True):
-        """Get the properties needed for Home Assistant updates and return them as a dictionary."""
+        """Get the properties needed for Home Assistant updates and return them as a dictionary.
+
+        Parameters
+        ----------
+        lazy : bool
+            Whether or not to continue retrieving properties if the device is off or the screensaver is running
+
+        Returns
+        -------
+        dict
+            A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'current_app'``,
+            ``'audio_state'``, ``'device'``, ``'muted'``, and ``'volume'``
+
+        """
         screen_on, awake, wake_lock_size, _current_app, audio_state, device, muted, volume = self.get_properties(lazy=lazy)
 
         return {'screen_on': screen_on,
@@ -273,9 +376,9 @@ class AndroidTV(BaseTV):
     #                                                                         #
     # ======================================================================= #
     def turn_on(self):
-        """Send power action if device is off."""
+        """Send ``POWER`` action if the device is off."""
         self.adb_shell(constants.CMD_SCREEN_ON + " || input keyevent {0}".format(constants.KEY_POWER))
 
     def turn_off(self):
-        """Send power action if device is not off."""
+        """Send ``POWER`` action if the device is not off."""
         self.adb_shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))

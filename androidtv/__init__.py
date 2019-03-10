@@ -9,7 +9,25 @@ from .firetv import FireTV
 
 
 def setup(host, adbkey='', adb_server_ip='', adb_server_port=5037, device_class='auto'):
-    """Docstring
+    """Connect to a device and determine whether it's an Android TV or an Amazon Fire TV.
+
+    Parameters
+    ----------
+    host : str
+        The address of the device in the format ``<ip address>:<host>``
+    adbkey : str
+        The path to the ``adbkey`` file for ADB authentication; the file ``adbkey.pub`` must be in the same directory
+    adb_server_ip : str
+        The IP address of the ADB server
+    adb_server_port : int
+        The port for the ADB server
+    device_class : str
+        The type of device: ``'auto'`` (detect whether it is an Android TV or Fire TV device), ``'androidtv'``, or ``'firetv'```
+
+    Returns
+    -------
+    aftv : AndroidTV, FireTV
+        The representation of the device
 
     """
     if device_class == 'androidtv':
