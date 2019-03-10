@@ -229,15 +229,26 @@ class FireTV(BaseTV):
 
         return screen_on, awake, wake_lock_size, media_session_state, current_app, running_apps
 
+    def get_properties_dict(self, get_running_apps=True, lazy=True):
+        """Get the properties needed for Home Assistant updates and return them as a dictionary."""
+        screen_on, awake, wake_lock_size, media_session_state, _current_app, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+
+        return {'screen_on': screen_on,
+                'awake': awake,
+                'wake_lock_size': wake_lock_size,
+                'media_session_state': media_session_state,
+                'current_app': _current_app,
+                'running_apps': running_apps}
+
     # ======================================================================= #
     #                                                                         #
     #                           turn on/off methods                           #
     #                                                                         #
     # ======================================================================= #
     def turn_on(self):
-        """Send power action if device is off."""
+        """Send ``POWER`` and ``HOME`` actions if the device is off."""
         self.adb_shell(constants.CMD_SCREEN_ON + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME))
 
     def turn_off(self):
-        """Send power action if device is not off."""
+        """Send ``SLEEP`` action if the device is not off."""
         self.adb_shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_SLEEP))

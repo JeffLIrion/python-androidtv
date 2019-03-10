@@ -254,6 +254,19 @@ class AndroidTV(BaseTV):
 
         return screen_on, awake, wake_lock_size, current_app, audio_state, device, muted, volume
 
+    def get_properties_dict(self, lazy=True):
+        """Get the properties needed for Home Assistant updates and return them as a dictionary."""
+        screen_on, awake, wake_lock_size, _current_app, audio_state, device, muted, volume = self.get_properties(lazy=lazy)
+
+        return {'screen_on': screen_on,
+                'awake': awake,
+                'wake_lock_size': wake_lock_size,
+                'current_app': _current_app,
+                'audio_state': audio_state,
+                'device': device,
+                'muted': muted,
+                'volume': volume}
+
     # ======================================================================= #
     #                                                                         #
     #                           turn on/off methods                           #
