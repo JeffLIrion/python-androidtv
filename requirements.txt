@@ -1,0 +1,4 @@
+adb-homeassistant
+pure-python-adb-homeassistant
+pycryptodome
+rsa
