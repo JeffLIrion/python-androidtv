@@ -75,6 +75,7 @@ exclude_patterns = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+autodoc_mock_imports = ['adb', 'adb_messenger']
 
 # -- Options for HTML output -------------------------------------------------
 
