@@ -97,13 +97,19 @@ class AndroidTV(BaseTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, wake_lock_size, _current_app, audio_state, device, muted, volume = self.get_properties(lazy=True)
+        screen_on, awake, wake_lock_size, _current_app, audio_state, device, muted, volume_level = self.get_properties(lazy=True)
 
         # Get the current app
         if isinstance(_current_app, dict) and 'package' in _current_app:
             current_app = _current_app['package']
         else:
             current_app = None
+
+        # Get the volume (between 0 and 1)
+        if volume_level is not None:
+            volume = volume_level / self.max_volume_level
+        else:
+            volume = None
 
         # Check if device is off
         if not screen_on:
@@ -218,12 +224,27 @@ class AndroidTV(BaseTV):
 
     @property
     def volume(self):
-        """Get the volume level.
+        """Get the relative volume level.
 
         Returns
         -------
         float, None
             The volume level (between 0 and 1), or ``None`` if it could not be determined
+
+        """
+        volume_level = self.volume_level
+
+        if volume_level is not None:
+            return volume_level / self.max_volume_level
+
+    @property
+    def volume_level(self):
+        """Get the absolute volume level.
+
+        Returns
+        -------
+        int, None
+            The absolute volume level, or ``None`` if it could not be determined
 
         """
         output = self.adb_shell("dumpsys audio")
@@ -241,7 +262,7 @@ class AndroidTV(BaseTV):
             else:
                 self.max_volume_level = 15.
 
-        return round(float(volume_level) / self.max_volume_level, 2)
+        return int(volume_level)
 
     def get_properties(self, lazy=False):
         """Get the properties needed for Home Assistant updates.
@@ -267,8 +288,8 @@ class AndroidTV(BaseTV):
             The current playback device, or ``None`` if it was not determined
         muted : bool, None
             Whether or not the volume is muted, or ``None`` if it was not determined
-        volume : float, None
-            The volume level (between 0 and 1), or ``None`` if it was not determined
+        volume_level : int, None
+            The absolute volume level, or ``None`` if it was not determined
 
         """
         output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
@@ -335,16 +356,24 @@ class AndroidTV(BaseTV):
         if matches:
             device = matches[0]
 
-            # `volume` property
-            matches = re.findall(device + VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
-            if matches:
-                volume = round(1 / 15 * float(matches[0]), 2)
+            # `self.max_volume_level` attribute
+            if not self.max_volume_level:
+                matches_max_volume_level = re.findall(MAX_VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
+                if matches_max_volume_level:
+                    self.max_volume_level = float(matches_max_volume_level[0])
+                else:
+                    self.max_volume_level = 15.
+
+            # `volume_level` property
+            matches_volume_level = re.findall(device + VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
+            if matches_volume_level:
+                volume_level = int(matches_volume_level[0])
             else:
-                volume = None
+                volume_level = None
 
         else:
             device = None
-            volume = None
+            volume_level = None
 
         # `muted` property
         matches = re.findall(MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
@@ -353,7 +382,7 @@ class AndroidTV(BaseTV):
         else:
             muted = None
 
-        return screen_on, awake, wake_lock_size, current_app, audio_state, device, muted, volume
+        return screen_on, awake, wake_lock_size, current_app, audio_state, device, muted, volume_level
 
     def get_properties_dict(self, lazy=True):
         """Get the properties needed for Home Assistant updates and return them as a dictionary.
@@ -367,10 +396,10 @@ class AndroidTV(BaseTV):
         -------
         dict
             A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'current_app'``,
-            ``'audio_state'``, ``'device'``, ``'muted'``, and ``'volume'``
+            ``'audio_state'``, ``'device'``, ``'muted'``, and ``'volume_level'``
 
         """
-        screen_on, awake, wake_lock_size, _current_app, audio_state, device, muted, volume = self.get_properties(lazy=lazy)
+        screen_on, awake, wake_lock_size, _current_app, audio_state, device, muted, volume_level = self.get_properties(lazy=lazy)
 
         return {'screen_on': screen_on,
                 'awake': awake,
@@ -379,7 +408,7 @@ class AndroidTV(BaseTV):
                 'audio_state': audio_state,
                 'device': device,
                 'muted': muted,
-                'volume': volume}
+                'volume_level': volume_level}
 
     # ======================================================================= #
     #                                                                         #
