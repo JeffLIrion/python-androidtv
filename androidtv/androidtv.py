@@ -15,6 +15,7 @@ BLOCK_REGEX_PATTERN = "STREAM_MUSIC(.*?)- STREAM"
 DEVICE_REGEX_PATTERN = r"Devices: (.*?)\W"
 MUTED_REGEX_PATTERN = r"Muted: (.*?)\W"
 VOLUME_REGEX_PATTERN = r"\): (\d{1,})"
+MAX_VOLUME_REGEX_PATTERN = r"Max: (\d{1,})"
 
 PROP_REGEX_PATTERN = r".*?\[(.*?)]"
 WIFIMAC_PROP_REGEX_PATTERN = "wifimac" + PROP_REGEX_PATTERN
@@ -49,6 +50,9 @@ class AndroidTV(BaseTV):
 
         """
         BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port)
+
+        # the max volume level (determined when first getting the volume level)
+        self.max_volume_level = None
 
         # get device properties
         if self._available:
@@ -230,7 +234,14 @@ class AndroidTV(BaseTV):
         device = re.findall(DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
         volume_level = re.findall(device + VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
 
-        return round(1 / 15 * float(volume_level), 2)
+        if not self.max_volume_level:
+            matches = re.findall(MAX_VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
+            if matches:
+                self.max_volume_level = float(matches[0])
+            else:
+                self.max_volume_level = 15.
+
+        return round(float(volume_level) / self.max_volume_level, 2)
 
     def get_properties(self, lazy=False):
         """Get the properties needed for Home Assistant updates.
