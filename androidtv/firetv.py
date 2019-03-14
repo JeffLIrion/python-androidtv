@@ -244,7 +244,7 @@ class FireTV(BaseTV):
             Whether or not the device is awake (screensaver is not running), or ``None`` if it was not determined
         wake_lock_size : int, None
             The size of the current wake lock, or ``None`` if it was not determined
-        media_session_state : str, None
+        media_session_state : int, None
             The state from the output of ``dumpsys media_session``, or ``None`` if it was not determined
         current_app : dict, None
             The current app property, or ``None`` if it was not determined
@@ -335,13 +335,13 @@ class FireTV(BaseTV):
              ``'current_app'``, and ``'running_apps'``
 
         """
-        screen_on, awake, wake_lock_size, media_session_state, _current_app, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        screen_on, awake, wake_lock_size, media_session_state, current_app, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
         return {'screen_on': screen_on,
                 'awake': awake,
                 'wake_lock_size': wake_lock_size,
                 'media_session_state': media_session_state,
-                'current_app': _current_app,
+                'current_app': current_app,
                 'running_apps': running_apps}
 
     # ======================================================================= #
