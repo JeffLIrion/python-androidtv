@@ -302,7 +302,7 @@ class BaseTV:
 
         Returns
         -------
-        str, None
+        int, None
             The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
 
         """

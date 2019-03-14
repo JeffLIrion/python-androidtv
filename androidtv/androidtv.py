@@ -97,7 +97,7 @@ class AndroidTV(BaseTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, wake_lock_size, _current_app, audio_state, device, muted, volume_level = self.get_properties(lazy=True)
+        screen_on, awake, wake_lock_size, media_session_state, _current_app, audio_state, device, muted, volume_level = self.get_properties(lazy=True)
 
         # Get the current app
         if isinstance(_current_app, dict) and 'package' in _current_app:
@@ -236,6 +236,7 @@ class AndroidTV(BaseTV):
 
         if volume_level is not None:
             return volume_level / self.max_volume_level
+        return None
 
     @property
     def volume_level(self):
@@ -280,6 +281,8 @@ class AndroidTV(BaseTV):
             Whether or not the device is awake (screensaver is not running), or ``None`` if it was not determined
         wake_lock_size : int, None
             The size of the current wake lock, or ``None`` if it was not determined
+        media_session_state : int, None
+            The state from the output of ``dumpsys media_session``, or ``None`` if it was not determined
         current_app : dict, None
             The current app property, or ``None`` if it was not determined
         audio_state : str, None
@@ -294,36 +297,47 @@ class AndroidTV(BaseTV):
         """
         output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                 constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                constants.CMD_WAKE_LOCK_SIZE + " && " +
+                                constants.CMD_WAKE_LOCK_SIZE + " && (" +
+                                constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
                                 constants.CMD_CURRENT_APP + " && " +
                                 "dumpsys audio")
 
         # ADB command was unsuccessful
         if output is None:
-            return None, None, None, None, None, None, None, None
+            return None, None, None, None, None, None, None, None, None
 
         # `screen_on` property
         if not output:
-            return False, False, -1, None, None, None, None, None
+            return False, False, -1, None, None, None, None, None, None
         screen_on = output[0] == '1'
 
         # `awake` property
         if len(output) < 2:
-            return screen_on, False, -1, None, None, None, None, None
+            return screen_on, False, -1, None, None, None, None, None, None
         awake = output[1] == '1'
 
         lines = output.strip().splitlines()
 
         # `wake_lock_size` property
         if len(lines[0]) < 3:
-            return screen_on, awake, -1, None, None, None, None, None
+            return screen_on, awake, -1, None, None, None, None, None, None
         wake_lock_size = int(lines[0].split("=")[1].strip())
 
-        # `current_app` property
+        # `media_session_state` property
         if len(lines) < 2:
-            return screen_on, awake, wake_lock_size, None, None, None, None, None
+            return screen_on, awake, -1, None, None, None, None, None, None
 
-        matches = constants.REGEX_WINDOW.search(lines[1])
+        matches = constants.REGEX_MEDIA_SESSION_STATE.search(lines[1])
+        if matches:
+            media_session_state = int(matches.group('state'))
+        else:
+            media_session_state = None
+
+        # `current_app` property
+        if len(lines) < 3:
+            return screen_on, awake, wake_lock_size, media_session_state, None, None, None, None, None
+
+        matches = constants.REGEX_WINDOW.search(lines[2])
         if matches:
             # case 1: current app was successfully found
             (pkg, activity) = matches.group("package", "activity")
@@ -333,10 +347,10 @@ class AndroidTV(BaseTV):
             current_app = None
 
         # "dumpsys audio" output
-        if len(lines) < 3:
-            return screen_on, awake, wake_lock_size, current_app, None, None, None, None
+        if len(lines) < 4:
+            return screen_on, awake, wake_lock_size, media_session_state, current_app, None, None, None, None
 
-        audio_output = "\n".join(lines[2:])
+        audio_output = "\n".join(lines[3:])
 
         # `audio_state` property
         if 'started' in audio_output:
@@ -348,7 +362,7 @@ class AndroidTV(BaseTV):
 
         matches = re.findall(BLOCK_REGEX_PATTERN, audio_output, re.DOTALL | re.MULTILINE)
         if not matches:
-            return screen_on, awake, wake_lock_size, current_app, audio_state, None, None, None
+            return screen_on, awake, wake_lock_size, media_session_state, current_app, audio_state, None, None, None
         stream_block = matches[0]
 
         # `device` property
@@ -382,7 +396,7 @@ class AndroidTV(BaseTV):
         else:
             muted = None
 
-        return screen_on, awake, wake_lock_size, current_app, audio_state, device, muted, volume_level
+        return screen_on, awake, wake_lock_size, media_session_state, current_app, audio_state, device, muted, volume_level
 
     def get_properties_dict(self, lazy=True):
         """Get the properties needed for Home Assistant updates and return them as a dictionary.
@@ -395,16 +409,17 @@ class AndroidTV(BaseTV):
         Returns
         -------
         dict
-            A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'current_app'``,
-            ``'audio_state'``, ``'device'``, ``'muted'``, and ``'volume_level'``
+            A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'media_session_state'``,
+            ``'current_app'``, ``'audio_state'``, ``'device'``, ``'muted'``, and ``'volume_level'``
 
         """
-        screen_on, awake, wake_lock_size, _current_app, audio_state, device, muted, volume_level = self.get_properties(lazy=lazy)
+        screen_on, awake, wake_lock_size, media_session_state, current_app, audio_state, device, muted, volume_level = self.get_properties(lazy=lazy)
 
         return {'screen_on': screen_on,
                 'awake': awake,
                 'wake_lock_size': wake_lock_size,
-                'current_app': _current_app,
+                'media_session_state': media_session_state,
+                'current_app': current_app,
                 'audio_state': audio_state,
                 'device': device,
                 'muted': muted,
