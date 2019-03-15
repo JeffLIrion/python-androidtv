@@ -48,6 +48,7 @@ def setup(host, adbkey='', adb_server_ip='', adb_server_port=5037, device_class=
     # Android TV
     else:
         aftv.__class__ = AndroidTV
+        aftv.max_volume_level = None
         if aftv._available:
             aftv.device_properties = aftv.get_device_properties()
 
