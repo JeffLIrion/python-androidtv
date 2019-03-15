@@ -125,7 +125,7 @@ class AndroidTV(BaseTV):
             state = audio_state
 
         # VLC
-        elif current_app = constants.APP_VLC:
+        elif current_app == constants.APP_VLC:
             if media_session_state == 2: 
                 state = constants.STATE_PAUSED 
             elif media_session_state == 3: 
