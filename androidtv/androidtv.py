@@ -120,12 +120,12 @@ class AndroidTV(BaseTV):
             state = audio_state
 
         else:
-            if not awake:
-                state = constants.STATE_IDLE
-            elif wake_lock_size == 1:
-                state = constants.STATE_PLAYING
-            else:
-                state = constants.STATE_PAUSED
+            if wake_lock_size == 1: 
+                state = constants.STATE_PAUSED 
+            elif wake_lock_size == 2: 
+                state = constants.STATE_PLAYING 
+            else: 
+                state = constants.STATE_STANDBY
 
         return state, current_app, device, muted, volume
 
