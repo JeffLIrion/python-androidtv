@@ -5,6 +5,7 @@ ADB Debugging must be enabled.
 
 
 import logging
+import re
 from socket import error as socket_error
 import sys
 import threading
@@ -71,6 +72,10 @@ class BaseTV:
 
         # establish the ADB connection
         self.connect()
+
+        # get device properties
+        if self._available:
+            self.device_properties = self.get_device_properties()
 
     # ======================================================================= #
     #                                                                         #
@@ -192,6 +197,57 @@ class BaseTV:
 
         finally:
             self._adb_lock.release()
+
+    # ======================================================================= #
+    #                                                                         #
+    #                        Home Assistant device info                       #
+    #                                                                         #
+    # ======================================================================= #
+    def get_device_properties(self):
+        """Return a dictionary of device properties.
+
+        Returns
+        -------
+        props : dict
+            A dictionary with keys ``'wifimac'``, ``'ethmac'``, ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
+
+        """
+        properties = self.adb_shell(constants.CMD_MANUFACTURER + " && " +
+                                    constants.CMD_MODEL + " && " +
+                                    constants.CMD_SERIALNO + " && " +
+                                    constants.CMD_VERSION + " && " +
+                                    constants.CMD_MAC_WLAN0 + " && " +
+                                    constants.CMD_MAC_ETH0)
+
+        if not properties:
+            return {}
+
+        lines = properties.strip().splitlines()
+        if len(lines) != 6:
+            return {}
+
+        manufacturer, model, serialno, version, mac_wlan0_output, mac_eth0_output = lines
+
+        mac_wlan0_matches = re.findall(constants.MAC_REGEX_PATTERN, mac_wlan0_output)
+        if mac_wlan0_matches:
+            wifimac = mac_wlan0_matches[0]
+        else:
+            wifimac = None
+
+        mac_eth0_matches = re.findall(constants.MAC_REGEX_PATTERN, mac_eth0_output)
+        if mac_eth0_matches:
+            ethmac = mac_eth0_matches[0]
+        else:
+            ethmac = None
+
+        props = {'manufacturer': manufacturer,
+                 'model': model,
+                 'serialno': serialno,
+                 'sw_version': version,
+                 'wifimac': wifimac,
+                 'ethmac': ethmac}
+
+        return props
 
     # ======================================================================= #
     #                                                                         #
