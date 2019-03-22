@@ -42,14 +42,12 @@ def setup(host, adbkey='', adb_server_ip='', adb_server_port=5037, device_class=
     aftv = BaseTV(host, adbkey, adb_server_ip, adb_server_port)
 
     # Fire TV
-    if aftv.manufacturer == 'Amazon':
+    if aftv.device_properties.get('manufacturer') == 'Amazon':
         aftv.__class__ = FireTV
 
     # Android TV
     else:
         aftv.__class__ = AndroidTV
         aftv.max_volume_level = None
-        if aftv._available:
-            aftv.device_properties = aftv.get_device_properties()
 
     return aftv

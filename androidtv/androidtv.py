@@ -17,14 +17,6 @@ MUTED_REGEX_PATTERN = r"Muted: (.*?)\W"
 VOLUME_REGEX_PATTERN = r"\): (\d{1,})"
 MAX_VOLUME_REGEX_PATTERN = r"Max: (\d{1,})"
 
-PROP_REGEX_PATTERN = r".*?\[(.*?)]"
-WIFIMAC_PROP_REGEX_PATTERN = "wifimac" + PROP_REGEX_PATTERN
-WIFIMAC_REGEX_PATTERN = "ether (.*?) brd"
-SERIALNO_REGEX_PATTERN = "serialno" + PROP_REGEX_PATTERN
-MANUF_REGEX_PATTERN = "manufacturer" + PROP_REGEX_PATTERN
-MODEL_REGEX_PATTERN = "product.model" + PROP_REGEX_PATTERN
-VERSION_REGEX_PATTERN = "version.release" + PROP_REGEX_PATTERN
-
 # ADB shell commands for getting the `screen_on`, `awake`, `wake_lock`, `audio_state`, and `current_app` properties
 CMD_AUDIO_STATE = r"dumpsys audio | grep -q paused && echo -e '1\c' || (dumpsys audio | grep -q started && echo '2\c' || echo '0\c')"
 
@@ -53,10 +45,6 @@ class AndroidTV(BaseTV):
 
         # the max volume level (determined when first getting the volume level)
         self.max_volume_level = None
-
-        # get device properties
-        if self._available:
-            self.device_properties = self.get_device_properties()
 
     # ======================================================================= #
     #                                                                         #
@@ -142,41 +130,6 @@ class AndroidTV(BaseTV):
                 state = constants.STATE_STANDBY
 
         return state, current_app, device, muted, volume
-
-    # ======================================================================= #
-    #                                                                         #
-    #                        Home Assistant device info                       #
-    #                                                                         #
-    # ======================================================================= #
-    def get_device_properties(self):
-        """Return a dictionary of device properties.
-
-        Returns
-        -------
-        props : dict
-            A dictionary with keys ``'wifimac'``, ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
-
-        """
-        properties = self.adb_shell('getprop')
-
-        if 'wifimac' in properties:
-            wifimac = re.findall(WIFIMAC_PROP_REGEX_PATTERN, properties)[0]
-        else:
-            wifi_out = self.adb_shell('ip addr show wlan0')
-            wifimac = re.findall(WIFIMAC_REGEX_PATTERN, wifi_out)[0]
-
-        serialno = re.findall(SERIALNO_REGEX_PATTERN, properties)[0]
-        manufacturer = re.findall(MANUF_REGEX_PATTERN, properties)[0]
-        model = re.findall(MODEL_REGEX_PATTERN, properties)[0]
-        version = re.findall(VERSION_REGEX_PATTERN, properties)[0]
-
-        props = {'wifimac': wifimac,
-                 'serialno': serialno,
-                 'manufacturer': manufacturer,
-                 'model': model,
-                 'sw_version': version}
-
-        return props
 
     # ======================================================================= #
     #                                                                         #

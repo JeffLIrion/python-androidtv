@@ -13,11 +13,20 @@ CMD_SUCCESS1_FAILURE0 = r" && echo -e '1\c' || echo -e '0\c'"
 # ADB shell commands for getting various properties
 CMD_AWAKE = "dumpsys power | grep mWakefulness | grep -q Awake"
 CMD_CURRENT_APP = "dumpsys window windows | grep mCurrentFocus"
-CMD_MANUFACTURER = "getprop ro.product.manufacturer"
 CMD_MEDIA_SESSION_STATE = "dumpsys media_session | grep -m 1 'state=PlaybackState {'"
 CMD_SCREEN_ON = "dumpsys power | grep 'Display Power' | grep -q 'state=ON'"
 CMD_WAKE_LOCK = "dumpsys power | grep Locks | grep -q 'size=0'"
 CMD_WAKE_LOCK_SIZE = "dumpsys power | grep Locks | grep 'size='"
+
+# `getprop` commands
+CMD_MANUFACTURER = "getprop ro.product.manufacturer"
+CMD_MODEL = "getprop ro.product.model"
+CMD_SERIALNO = "getprop ro.serialno"
+CMD_VERSION = "getprop ro.build.version.release"
+
+# Commands for getting the MAC address
+CMD_MAC_WLAN0 = "ip addr show wlan0 | grep -m 1 ether"
+CMD_MAC_ETH0 = "ip addr show eth0 | grep -m 1 ether"
 
 
 # ADB key event codes
@@ -193,3 +202,4 @@ BLOCK_REGEX_PATTERN = "STREAM_MUSIC(.*?)- STREAM"
 DEVICE_REGEX_PATTERN = r"Devices: (.*?)\W"
 MUTED_REGEX_PATTERN = r"Muted: (.*?)\W"
 VOLUME_REGEX_PATTERN = r"\): (\d{1,})"
+MAC_REGEX_PATTERN = "ether (.*?) brd"
