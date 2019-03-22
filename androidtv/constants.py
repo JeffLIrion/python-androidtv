@@ -21,8 +21,8 @@ CMD_WAKE_LOCK_SIZE = "dumpsys power | grep Locks | grep 'size='"
 # `getprop` commands
 CMD_MANUFACTURER = "getprop ro.product.manufacturer"
 CMD_MODEL = "getprop ro.product.model"
-CMD_SERIALNO = "getprop ro.product.manufacturer"
-CMD_VERSION = "getprop ro.product.manufacturer"
+CMD_SERIALNO = "getprop ro.serialno"
+CMD_VERSION = "getprop ro.build.version.release"
 
 # Commands for getting the MAC address
 CMD_MAC_WLAN0 = "ip addr show wlan0 | grep -m 1 ether"
@@ -200,3 +200,4 @@ BLOCK_REGEX_PATTERN = "STREAM_MUSIC(.*?)- STREAM"
 DEVICE_REGEX_PATTERN = r"Devices: (.*?)\W"
 MUTED_REGEX_PATTERN = r"Muted: (.*?)\W"
 VOLUME_REGEX_PATTERN = r"\): (\d{1,})"
+MAC_REGEX_PATTERN = "ether (.*?) brd"

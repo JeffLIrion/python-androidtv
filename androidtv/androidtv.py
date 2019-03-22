@@ -17,14 +17,6 @@ MUTED_REGEX_PATTERN = r"Muted: (.*?)\W"
 VOLUME_REGEX_PATTERN = r"\): (\d{1,})"
 MAX_VOLUME_REGEX_PATTERN = r"Max: (\d{1,})"
 
-PROP_REGEX_PATTERN = r".*?\[(.*?)]"
-WIFIMAC_PROP_REGEX_PATTERN = "wifimac" + PROP_REGEX_PATTERN
-WIFIMAC_REGEX_PATTERN = "ether (.*?) brd"
-SERIALNO_REGEX_PATTERN = "serialno" + PROP_REGEX_PATTERN
-MANUF_REGEX_PATTERN = "manufacturer" + PROP_REGEX_PATTERN
-MODEL_REGEX_PATTERN = "product.model" + PROP_REGEX_PATTERN
-VERSION_REGEX_PATTERN = "version.release" + PROP_REGEX_PATTERN
-
 # ADB shell commands for getting the `screen_on`, `awake`, `wake_lock`, `audio_state`, and `current_app` properties
 CMD_AUDIO_STATE = r"dumpsys audio | grep -q paused && echo -e '1\c' || (dumpsys audio | grep -q started && echo '2\c' || echo '0\c')"
 
@@ -140,27 +132,43 @@ class AndroidTV(BaseTV):
         Returns
         -------
         props : dict
-            A dictionary with keys ``'wifimac'``, ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
+            A dictionary with keys ``'wifimac'``, ``'ethmac'``, ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
 
         """
-        properties = self.adb_shell('getprop')
+        properties = self.adb_shell(constants.CMD_MANUFACTURER + " && " +
+                                    constants.CMD_MODEL + " && " +
+                                    constants.CMD_SERIALNO + " && " +
+                                    constants.CMD_VERSION + " && " +
+                                    constants.CMD_MAC_WLAN0 + " && " +
+                                    constants.CMD_MAC_ETH0)
 
-        if 'wifimac' in properties:
-            wifimac = re.findall(WIFIMAC_PROP_REGEX_PATTERN, properties)[0]
+        if not properties:
+            return {}
+
+        lines = properties.strip().splitlines()
+        if len(lines) != 6:
+            return {}
+
+        manufacturer, model, serialno, version, mac_wlan0_output, mac_eth0_output = lines
+
+        mac_wlan0_matches = re.findall(constants.MAC_REGEX_PATTERN, mac_wlan0_output)
+        if mac_wlan0_matches:
+            wifimac = mac_wlan0_matches[0]
         else:
-            wifi_out = self.adb_shell('ip addr show wlan0')
-            wifimac = re.findall(WIFIMAC_REGEX_PATTERN, wifi_out)[0]
+            wifimac = None
 
-        serialno = re.findall(SERIALNO_REGEX_PATTERN, properties)[0]
-        manufacturer = re.findall(MANUF_REGEX_PATTERN, properties)[0]
-        model = re.findall(MODEL_REGEX_PATTERN, properties)[0]
-        version = re.findall(VERSION_REGEX_PATTERN, properties)[0]
+        mac_eth0_matches = re.findall(constants.MAC_REGEX_PATTERN, mac_eth0_output)
+        if mac_eth0_matches:
+            ethmac = mac_eth0_matches[0]
+        else:
+            ethmac = None
 
-        props = {'wifimac': wifimac,
-                 'serialno': serialno,
-                 'manufacturer': manufacturer,
+        props = {'manufacturer': manufacturer,
                  'model': model,
-                 'sw_version': version}
+                 'serialno': serialno,
+                 'sw_version': version,
+                 'wifimac': wifimac,
+                 'ethmac': ethmac}
 
         return props
 
