@@ -112,20 +112,34 @@ class AndroidTV(BaseTV):
             volume = None
 
         # Check if device is off
-        if not screen_on:
-            return constants.STATE_OFF, current_app, device, muted, volume
+        if not screen_on or current_app == 'off':
+            state = constants.STATE_OFF
 
+        # Check if screen saver is on
+        elif not awake:
+            state = constants.STATE_IDLE
+
+        # Get the state
         # TODO: determine the state differently based on the current app
-        if audio_state:
+        elif audio_state != constants.STATE_IDLE:
             state = audio_state
 
-        else:
-            if not awake:
-                state = constants.STATE_IDLE
-            elif wake_lock_size == 1:
+        # VLC
+        elif current_app == constants.APP_VLC:
+            if media_session_state == 2:
+                state = constants.STATE_PAUSED
+            elif media_session_state == 3:
                 state = constants.STATE_PLAYING
             else:
+                state = constants.STATE_STANDBY
+
+        else:
+            if wake_lock_size == 1:
                 state = constants.STATE_PAUSED
+            elif wake_lock_size == 2:
+                state = constants.STATE_PLAYING
+            else:
+                state = constants.STATE_STANDBY
 
         return state, current_app, device, muted, volume
 

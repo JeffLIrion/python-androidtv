@@ -146,17 +146,12 @@ class FireTV(BaseTV):
 
             # Netflix
             elif current_app == constants.APP_NETFLIX:
-                # https://developer.android.com/reference/android/media/session/PlaybackState.html
                 if media_session_state == 2:
                     state = constants.STATE_PAUSED
                 elif media_session_state == 3:
                     state = constants.STATE_PLAYING
                 else:
                     state = constants.STATE_STANDBY
-                # if wake_lock_size > 3:
-                #     state = STATE_PLAYING
-                # else:
-                #    state = STATE_PAUSED
 
             # Check if `wake_lock_size` is 1 (device is playing)
             elif wake_lock_size == 1:
