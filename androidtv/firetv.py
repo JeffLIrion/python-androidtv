@@ -153,6 +153,7 @@ class FireTV(BaseTV):
                 else:
                     state = constants.STATE_STANDBY
 
+            # Jellyfin
             elif current_app == constants.APP_JELLYFIN_TV:
                 if wake_lock_size == 2:
                     state = constants.STATE_PLAYING
