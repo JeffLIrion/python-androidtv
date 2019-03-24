@@ -10,12 +10,11 @@ androidtv Documentation
    :hidden:
 
    self
+   modules.rst
 
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents
-
+.. include:: ../../README.rst
+   :start-line: 5
 
 
 Indices and tables
