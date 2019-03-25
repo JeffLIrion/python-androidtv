@@ -160,6 +160,17 @@ class FireTV(BaseTV):
                 else:
                     state == constants.STATE_PAUSED
 
+            # Twitch
+            elif current_app == constants.APP_TWITCH:
+                if wake_lock_size == 2:
+                    state = constants.STATE_PAUSED
+                elif media_session_state == 3:
+                    state = constants.STATE_PLAYING
+                elif media_session_state == 4:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
+
             # Check if `wake_lock_size` is 1 (device is playing)
             elif wake_lock_size == 1:
                 state = constants.STATE_PLAYING
