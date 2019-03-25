@@ -80,6 +80,11 @@ KEY_VOLUME_DOWN = 25
 KEY_VOLUME_UP = 24
 KEY_YELLOW = 185
 
+# Fire TV specific keys
+# https://developer.amazon.com/docs/fire-tv/supporting-controllers-in-web-apps.html#usinginput
+KEY_FIRETV_FAST_FORWARD = 228
+KEY_FIRETV_PLAY_PAUSE = 179
+KEY_FIRETV_REWIND = 227
 
 # Alphanumeric key event codes
 KEY_0 = 7
@@ -163,6 +168,13 @@ KEYS = {"BACK": KEY_BACK,
         "VOLUME_UP": KEY_VOLUME_UP,
         "YELLOW": KEY_YELLOW}
 
+# Fire TV keys
+FIRETV_KEYS = KEYS
+FIRETV_KEYS.update({
+        "FAST_FORWARD": KEY_FIRETV_FAST_FORWARD,
+        "PLAY_PAUSE": KEY_FIRETV_PLAY_PAUSE,
+        "REWIND": KEY_FIRETV_REWIND
+})
 
 # Android TV / Fire TV states
 STATE_ON = 'on'
