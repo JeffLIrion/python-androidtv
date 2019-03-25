@@ -187,11 +187,13 @@ APP_AMAZON_VIDEO = 'com.amazon.avod'
 APP_JELLYFIN_TV = 'org.jellyfin.androidtv'
 APP_KODI = 'org.xbmc.kodi'
 APP_NETFLIX = 'com.netflix.ninja'
+APP_SPORT1 = 'de.sport1.firetv.video'
 APP_VLC = 'org.videolan.vlc'
 APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_JELLYFIN_TV: 'Jellyfin',
         APP_KODI: 'Kodi',
         APP_NETFLIX: 'Netflix',
+        APP_SPORT1: 'Sport 1'
         APP_VLC: 'VLC'}
 
 
