@@ -160,6 +160,15 @@ class FireTV(BaseTV):
                 else:
                     state == constants.STATE_PAUSED
 
+            # Waipu TV
+            elif current_app == constants.APP_WAIPU_TV:
+                if wake_lock_size == 2:
+                    state = constants.STATE_PAUSED
+                elif wake_lock_size == 3:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
+
             # Check if `wake_lock_size` is 1 (device is playing)
             elif wake_lock_size == 1:
                 state = constants.STATE_PLAYING
