@@ -184,11 +184,13 @@ MEDIA_SESSION_STATES = {0: None,
 
 # Apps
 APP_AMAZON_VIDEO = 'com.amazon.avod'
+APP_FIREFOX = 'org.mozilla.tv.firefox'
 APP_JELLYFIN_TV = 'org.jellyfin.androidtv'
 APP_KODI = 'org.xbmc.kodi'
 APP_NETFLIX = 'com.netflix.ninja'
 APP_VLC = 'org.videolan.vlc'
 APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
+        APP_FIREFOX: 'Firefox'
         APP_JELLYFIN_TV: 'Jellyfin',
         APP_KODI: 'Kodi',
         APP_NETFLIX: 'Netflix',
