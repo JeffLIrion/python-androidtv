@@ -122,9 +122,9 @@ class AndroidTV(BaseTV):
                 state = constants.STATE_STANDBY
 
         else:
-            if wake_lock_size == 1:
+            if wake_lock_size == 2:
                 state = constants.STATE_PAUSED
-            elif wake_lock_size == 2:
+            elif wake_lock_size == 3:
                 state = constants.STATE_PLAYING
             else:
                 state = constants.STATE_STANDBY
