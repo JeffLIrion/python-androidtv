@@ -22,9 +22,6 @@ else:
     LOCK_KWARGS = {}
 
 
-Signer = PythonRSASigner.FromRSAKeyPath
-
-
 class BaseTV(object):
     """Base class for representing an Android TV / Fire TV device."""
 
@@ -155,7 +152,18 @@ class BaseTV(object):
                 # python-adb
                 try:
                     if self.adbkey:
-                        signer = Signer(self.adbkey)
+                        # private key
+                        with open(self.adbkey) as f:
+                            priv = f.read()
+
+                        # public key
+                        try:
+                            with open(self.adbkey + '.pub') as f:
+                                pub = f.read()
+                            except FileNotFound:
+                                pub = ''
+
+                        signer = PythonRSASigner(priv, pub)
 
                         # Connect to the device
                         self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer], default_timeout_ms=9000)
