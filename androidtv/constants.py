@@ -189,12 +189,14 @@ APP_KODI = 'org.xbmc.kodi'
 APP_NETFLIX = 'com.netflix.ninja'
 APP_SPOTIFY = 'com.spotify.tv.android'
 APP_VLC = 'org.videolan.vlc'
+APP_WAIPU_TV = 'de.exaring.waipu.firetv.live'
 APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_JELLYFIN_TV: 'Jellyfin',
         APP_KODI: 'Kodi',
         APP_NETFLIX: 'Netflix',
-        APP_SPOTIFY: 'Spotify'
-        APP_VLC: 'VLC'}
+        APP_SPOTIFY: 'Spotify',
+        APP_VLC: 'VLC',
+        APP_WAIPU_TV = 'Waipu TV'}
 
 
 # Regular expressions
