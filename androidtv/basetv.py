@@ -20,6 +20,7 @@ if sys.version_info[0] > 2 and sys.version_info[1] > 1:
     LOCK_KWARGS = {'timeout': 3}
 else:
     LOCK_KWARGS = {}
+    FileNotFoundError = IOError
 
 
 class BaseTV(object):
@@ -160,7 +161,7 @@ class BaseTV(object):
                         try:
                             with open(self.adbkey + '.pub') as f:
                                 pub = f.read()
-                            except FileNotFound:
+                            except FileNotFoundError:
                                 pub = ''
 
                         signer = PythonRSASigner(priv, pub)
