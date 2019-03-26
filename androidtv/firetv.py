@@ -185,6 +185,15 @@ class FireTV(BaseTV):
                 else:
                     state = constants.STATE_STANDBY
 
+            # Sport 1
+            elif current_app == constants.APP_SPORT1:
+                if wake_lock_size == 2:
+                    state = constants.STATE_PAUSED
+                elif wake_lock_size == 3:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
+
             # Check if `wake_lock_size` is 1 (device is playing)
             elif wake_lock_size == 1:
                 state = constants.STATE_PLAYING
