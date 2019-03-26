@@ -178,6 +178,13 @@ class FireTV(BaseTV):
                 else:
                     state = constants.STATE_STANDBY
 
+            # Firefox
+            elif current_app == constants.APP_FIREFOX:
+                if wake_lock_size == 3:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
+
             # Check if `wake_lock_size` is 1 (device is playing)
             elif wake_lock_size == 1:
                 state = constants.STATE_PLAYING
