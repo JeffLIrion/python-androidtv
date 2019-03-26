@@ -25,7 +25,7 @@ else:
 Signer = PythonRSASigner.FromRSAKeyPath
 
 
-class BaseTV:
+class BaseTV(object):
     """Base class for representing an Android TV / Fire TV device."""
 
     def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037):
