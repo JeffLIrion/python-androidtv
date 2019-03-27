@@ -44,8 +44,8 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-	'sphinx.ext.autodoc',
-	'sphinx.ext.napoleon'
+    'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -76,6 +76,8 @@ exclude_patterns = []
 pygments_style = 'sphinx'
 
 autodoc_mock_imports = ['adb', 'adb_messenger']
+
+autodoc_default_flags = ['members', 'undoc-members', 'private-members', 'show-inheritance']
 
 # -- Options for HTML output -------------------------------------------------
 
