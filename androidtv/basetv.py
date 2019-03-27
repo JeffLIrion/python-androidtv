@@ -164,7 +164,7 @@ class BaseTV(object):
                         except FileNotFoundError:
                             pub = ''
 
-                        signer = PythonRSASigner(priv, pub)
+                        signer = PythonRSASigner(pub, priv)
 
                         # Connect to the device
                         self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer], default_timeout_ms=9000)
