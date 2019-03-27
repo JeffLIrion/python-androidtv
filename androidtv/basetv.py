@@ -161,8 +161,8 @@ class BaseTV(object):
                         try:
                             with open(self.adbkey + '.pub') as f:
                                 pub = f.read()
-                            except FileNotFoundError:
-                                pub = ''
+                        except FileNotFoundError:
+                            pub = ''
 
                         signer = PythonRSASigner(priv, pub)
 
