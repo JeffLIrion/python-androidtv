@@ -20,9 +20,7 @@ if sys.version_info[0] > 2 and sys.version_info[1] > 1:
     LOCK_KWARGS = {'timeout': 3}
 else:
     LOCK_KWARGS = {}
-
-
-Signer = PythonRSASigner.FromRSAKeyPath
+    FileNotFoundError = IOError
 
 
 class BaseTV(object):
@@ -155,7 +153,18 @@ class BaseTV(object):
                 # python-adb
                 try:
                     if self.adbkey:
-                        signer = Signer(self.adbkey)
+                        # private key
+                        with open(self.adbkey) as f:
+                            priv = f.read()
+
+                        # public key
+                        try:
+                            with open(self.adbkey + '.pub') as f:
+                                pub = f.read()
+                        except FileNotFoundError:
+                            pub = ''
+
+                        signer = PythonRSASigner(pub, priv)
 
                         # Connect to the device
                         self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer], default_timeout_ms=9000)
