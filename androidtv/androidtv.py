@@ -404,3 +404,35 @@ class AndroidTV(BaseTV):
     def turn_off(self):
         """Send ``POWER`` action if the device is not off."""
         self.adb_shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))
+
+    def volume_up(self, current_volume=None):
+        """Send volume up action."""
+        if current_volume is None or not self.max_volume_level:
+            current_volume_level = self.volume_level
+        else:
+            current_volume_level = round(self.max_volume_level * current_volume)
+
+        if current_volume_level == self.max_volume_level:
+            return 1.0
+
+        # send the volume up command
+        self._key(constants.KEY_VOLUME_UP)
+
+        # return the new volume level
+        return (current_volume_level + 1) / self.max_volume_level
+
+    def volume_down(self, current_volume=None:
+        """Send volume down action."""
+        if current_volume is None or not self.max_volume_level:
+            current_volume_level = self.volume_level
+        else:
+            current_volume_level = round(self.max_volume_level * current_volume)
+
+        if current_volume_level == 0:
+            return 0.0
+
+        # send the volume down command
+        self._key(constants.KEY_VOLUME_DOWN)
+
+        # return the new volume level
+        return (current_volume_level - 1) / self.max_volume_level
