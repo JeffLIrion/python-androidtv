@@ -99,6 +99,8 @@ class BaseTV(object):
             finally:
                 self._adb_lock.release()
 
+        return None
+
     def _adb_shell_pure_python_adb(self, cmd):
         """Send an ADB command using an ADB server.
 
@@ -121,6 +123,8 @@ class BaseTV(object):
                 return self._adb_device.shell(cmd)
             finally:
                 self._adb_lock.release()
+
+        return None
 
     def _key(self, key):
         """Send a key event to device.
@@ -461,14 +465,6 @@ class BaseTV(object):
         """Send menu action."""
         self._key(constants.KEY_MENU)
 
-    def volume_up(self):
-        """Send volume up action."""
-        self._key(constants.KEY_VOLUME_UP)
-
-    def volume_down(self):
-        """Send volume down action."""
-        self._key(constants.KEY_VOLUME_DOWN)
-
     def mute_volume(self):
         """Mute the volume."""
         self._key(constants.KEY_MUTE)
@@ -478,10 +474,6 @@ class BaseTV(object):
     #                      "key" methods: media commands                      #
     #                                                                         #
     # ======================================================================= #
-    def media_play_pause(self):
-        """Send media play/pause action."""
-        self._key(constants.KEY_PLAY_PAUSE)
-
     def media_play(self):
         """Send media play action."""
         self._key(constants.KEY_PLAY)
@@ -490,15 +482,19 @@ class BaseTV(object):
         """Send media pause action."""
         self._key(constants.KEY_PAUSE)
 
+    def media_play_pause(self):
+        """Send media play/pause action."""
+        self._key(constants.KEY_PLAY_PAUSE)
+
     def media_stop(self):
         """Send media stop action."""
         self._key(constants.KEY_STOP)
 
-    def media_next(self):
+    def media_next_track(self):
         """Send media next action (results in fast-forward)."""
         self._key(constants.KEY_NEXT)
 
-    def media_previous(self):
+    def media_previous_track(self):
         """Send media previous action (results in rewind)."""
         self._key(constants.KEY_PREVIOUS)
 
