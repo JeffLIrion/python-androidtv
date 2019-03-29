@@ -58,7 +58,8 @@ A modified script provided by [jaaem](https://community.home-assistant.io/t/nati
 
    #!/bin/sh
 
-   DEVICES="192.168.0.111"
+   # for a single device, use: DEVICES=("192.168.0.111")
+   DEVICES=("192.168.0.111" "192.168.0.222")
 
    echo "Starting up ADB..."
 
