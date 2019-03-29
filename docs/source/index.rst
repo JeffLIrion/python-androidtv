@@ -10,6 +10,7 @@ androidtv Documentation
    :hidden:
 
    self
+   adb_setup.rst
    modules.rst
 
 
