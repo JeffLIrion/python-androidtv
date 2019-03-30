@@ -50,10 +50,42 @@ Your Home Assistant configuration will look like:
 1b) Docker Container
 ********************
 
-Info...
+Since Home Assistant isn't able to start the connection with the Android device directly, the ADB Server must do it instead. The ADB Server **must already be connected** to the Android device when Home Assistant attempts to access the ADB Server, or else Home Assistant will be unable to set up the Android device.
+
+A modified script provided by [jaaem](https://community.home-assistant.io/t/native-support-for-fire-tv/64448/300) on the Home Assistant forums demonstrates an example startup script for a Docker container that will automatically attempt, and continue to connect to a device when run:
+
+.. code-block:: sh
+
+   #!/bin/sh
+
+   # for a single device, use: DEVICES=("192.168.0.111")
+   DEVICES=("192.168.0.111" "192.168.0.222")
+
+   echo "Starting up ADB..."
+
+   while true; do
+     adb -a server nodaemon > /dev/null 2>&1
+     sleep 10
+   done &
+
+   echo "Server started. Waiting for 30 seconds..."
+   sleep 30
+
+   echo "Connecting to devices."
+   for device in $DEVICES; do
+      adb connect $device
+   done
+   echo "Done."
+
+   while true; do
+     for device in ${DEVICES[@]}; do
+       adb connect $device > /dev/null 2>&1
+     done
+     sleep 60
+   done
 
 
-Your Home Assistant configuration will look like:
+Assuming the address of the ADB server is 192.168.0.101, your Home Assistant configuration will look like:
 
 .. code-block:: yaml
 
@@ -61,20 +93,17 @@ Your Home Assistant configuration will look like:
    - platform: androidtv
      name: Android TV 1
      host: 192.168.0.111
-     adb_server_ip: 127.0.0.1
+     adb_server_ip: 192.168.0.101
 
    media_player:
    - platform: androidtv
      name: Android TV 2
      host: 192.168.0.222
-     adb_server_ip: 127.0.0.1
+     adb_server_ip: 192.168.0.101
 
 
 1c) Linux Service
 *****************
-
-Info...
-
 
 Your Home Assistant configuration will look like:
 
