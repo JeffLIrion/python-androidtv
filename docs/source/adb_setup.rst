@@ -78,7 +78,7 @@ A modified script provided by [jaaem](https://community.home-assistant.io/t/nati
    echo "Done."
 
    while true; do
-     for device in $DEVICES; do
+     for device in ${DEVICES[@]}; do
        adb connect $device > /dev/null 2>&1
      done
      sleep 60
