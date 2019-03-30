@@ -85,9 +85,7 @@ A modified script provided by [jaaem](https://community.home-assistant.io/t/nati
    done
 
 
-Your Home Assistant configuration will look like:
-
-Where the address of the ADB Server is `192.168.0.101`
+Assuming the address of the ADB server is 192.168.0.101, your Home Assistant configuration will look like:
 
 .. code-block:: yaml
 
