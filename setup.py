@@ -9,7 +9,7 @@ setup(
     author='Jeff Irion',
     author_email='jefflirion@users.noreply.github.com',
     packages=['androidtv'],
-    install_requires=['pycryptodome', 'rsa', 'adb-homeassistant', 'pure-python-adb-homeassistant'],
+    install_requires=['rsa', 'adb-homeassistant', 'pure-python-adb-homeassistant'],
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
