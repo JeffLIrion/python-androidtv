@@ -11,9 +11,11 @@ CMD_SUCCESS1 = r" && echo -e '1\c'"
 CMD_SUCCESS1_FAILURE0 = r" && echo -e '1\c' || echo -e '0\c'"
 
 # ADB shell commands for getting various properties
+CMD_AUDIO_STATE = r"dumpsys audio | grep -q paused && echo -e '1\c' || (dumpsys audio | grep -q started && echo '2\c' || echo '0\c')"
 CMD_AWAKE = "dumpsys power | grep mWakefulness | grep -q Awake"
 CMD_CURRENT_APP = "dumpsys window windows | grep mCurrentFocus"
 CMD_MEDIA_SESSION_STATE = "dumpsys media_session | grep -m 1 'state=PlaybackState {'"
+CMD_RUNNING_APPS = "ps | grep u0_a"
 CMD_SCREEN_ON = "dumpsys power | grep 'Display Power' | grep -q 'state=ON'"
 CMD_WAKE_LOCK = "dumpsys power | grep Locks | grep -q 'size=0'"
 CMD_WAKE_LOCK_SIZE = "dumpsys power | grep Locks | grep 'size='"
@@ -216,6 +218,7 @@ REGEX_WINDOW = re.compile(r"Window\{(?P<id>.+?) (?P<user>.+) (?P<package>.+?)(?:
 # Regular expression patterns
 BLOCK_REGEX_PATTERN = "STREAM_MUSIC(.*?)- STREAM"
 DEVICE_REGEX_PATTERN = r"Devices: (.*?)\W"
+MAX_VOLUME_REGEX_PATTERN = r"Max: (\d{1,})"
 MUTED_REGEX_PATTERN = r"Muted: (.*?)\W"
 VOLUME_REGEX_PATTERN = r"\): (\d{1,})"
 MAC_REGEX_PATTERN = "ether (.*?) brd"

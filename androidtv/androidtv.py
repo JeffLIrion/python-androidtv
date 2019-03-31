@@ -10,17 +10,6 @@ from .basetv import BaseTV
 from . import constants
 
 
-# Regular expression patterns
-BLOCK_REGEX_PATTERN = "STREAM_MUSIC(.*?)- STREAM"
-DEVICE_REGEX_PATTERN = r"Devices: (.*?)\W"
-MUTED_REGEX_PATTERN = r"Muted: (.*?)\W"
-VOLUME_REGEX_PATTERN = r"\): (\d{1,})"
-MAX_VOLUME_REGEX_PATTERN = r"Max: (\d{1,})"
-
-# ADB shell commands for getting the `screen_on`, `awake`, `wake_lock`, `audio_state`, and `current_app` properties
-CMD_AUDIO_STATE = r"dumpsys audio | grep -q paused && echo -e '1\c' || (dumpsys audio | grep -q started && echo '2\c' || echo '0\c')"
-
-
 class AndroidTV(BaseTV):
     """Representation of an Android TV device."""
 
@@ -42,9 +31,6 @@ class AndroidTV(BaseTV):
 
         """
         BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port)
-
-        # the max volume level (determined when first getting the volume level)
-        self.max_volume = None
 
     # ======================================================================= #
     #                                                                         #
@@ -158,7 +144,7 @@ class AndroidTV(BaseTV):
             The audio state, as determined from the ADB shell command ``dumpsys audio``, or ``None`` if it could not be determined
 
         """
-        output = self.adb_shell(CMD_AUDIO_STATE)
+        output = self.adb_shell(constants.CMD_AUDIO_STATE)
         if output is None:
             return None
         if output == '1':
@@ -181,8 +167,8 @@ class AndroidTV(BaseTV):
         if not output:
             return None
 
-        stream_block = re.findall(BLOCK_REGEX_PATTERN, output, re.DOTALL | re.MULTILINE)[0]
-        return re.findall(DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
+        stream_block = re.findall(constants.BLOCK_REGEX_PATTERN, output, re.DOTALL | re.MULTILINE)[0]
+        return re.findall(constants.DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
 
     @property
     def is_volume_muted(self):
@@ -198,8 +184,8 @@ class AndroidTV(BaseTV):
         if not output:
             return None
 
-        stream_block = re.findall(BLOCK_REGEX_PATTERN, output, re.DOTALL | re.MULTILINE)[0]
-        return re.findall(MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0] == 'true'
+        stream_block = re.findall(constants.BLOCK_REGEX_PATTERN, output, re.DOTALL | re.MULTILINE)[0]
+        return re.findall(constants.MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0] == 'true'
 
     @property
     def volume(self):
@@ -215,12 +201,12 @@ class AndroidTV(BaseTV):
         if not output:
             return None
 
-        stream_block = re.findall(BLOCK_REGEX_PATTERN, output, re.DOTALL | re.MULTILINE)[0]
-        device = re.findall(DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
-        volume = re.findall(device + VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
+        stream_block = re.findall(constants.BLOCK_REGEX_PATTERN, output, re.DOTALL | re.MULTILINE)[0]
+        device = re.findall(constants.DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
+        volume = re.findall(device + constants.VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
 
         if not self.max_volume:
-            matches = re.findall(MAX_VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
+            matches = re.findall(constants.MAX_VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
             if matches:
                 self.max_volume = float(matches[0])
             else:
@@ -339,26 +325,26 @@ class AndroidTV(BaseTV):
         else:
             audio_state = constants.STATE_IDLE
 
-        matches = re.findall(BLOCK_REGEX_PATTERN, audio_output, re.DOTALL | re.MULTILINE)
+        matches = re.findall(constants.BLOCK_REGEX_PATTERN, audio_output, re.DOTALL | re.MULTILINE)
         if not matches:
             return screen_on, awake, wake_lock_size, media_session_state, current_app, audio_state, None, None, None
         stream_block = matches[0]
 
         # `device` property
-        matches = re.findall(DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
+        matches = re.findall(constants.DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
         if matches:
             device = matches[0]
 
             # `self.max_volume` attribute
             if not self.max_volume:
-                matches_max_volume = re.findall(MAX_VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
+                matches_max_volume = re.findall(constants.MAX_VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
                 if matches_max_volume:
                     self.max_volume = float(matches_max_volume[0])
                 else:
                     self.max_volume = 15.
 
             # `volume` property
-            matches_volume = re.findall(device + VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
+            matches_volume = re.findall(device + constants.VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
             if matches_volume:
                 volume = int(matches_volume[0])
             else:
@@ -369,7 +355,7 @@ class AndroidTV(BaseTV):
             volume = None
 
         # `is_volume_muted` property
-        matches = re.findall(MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
+        matches = re.findall(constants.MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
         if matches:
             is_volume_muted = matches[0] == 'true'
         else:

@@ -10,9 +10,6 @@ from .basetv import BaseTV
 from . import constants
 
 
-# ADB shell command for getting the `running_apps` properties
-CMD_RUNNING_APPS = "ps | grep u0_a"
-
 # Apps
 APP_PACKAGE_LAUNCHER = "com.amazon.tv.launcher"
 APP_PACKAGE_SETTINGS = "com.amazon.tv.settings"
@@ -276,7 +273,7 @@ class FireTV(BaseTV):
             A list of the running apps
 
         """
-        ps = self.adb_shell(CMD_RUNNING_APPS)
+        ps = self.adb_shell(constants.CMD_RUNNING_APPS)
         if ps:
             return [line.strip().rsplit(' ', 1)[-1] for line in ps.splitlines() if line.strip()]
         return []
@@ -313,7 +310,7 @@ class FireTV(BaseTV):
                                     constants.CMD_WAKE_LOCK_SIZE + " && (" +
                                     constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
                                     constants.CMD_CURRENT_APP + " && " +
-                                    CMD_RUNNING_APPS)
+                                    constants.CMD_RUNNING_APPS)
         else:
             output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
