@@ -109,8 +109,6 @@ class AndroidTV(BaseTV):
 
         # Get the state
         # TODO: determine the state differently based on the current app
-        elif audio_state != constants.STATE_IDLE:
-            state = audio_state
 
         # VLC
         elif current_app == constants.APP_VLC:
@@ -121,6 +119,20 @@ class AndroidTV(BaseTV):
             else:
                 state = constants.STATE_STANDBY
 
+        # Get the state from `media_session_state`
+        elif media_session_state:
+            if media_session_state == 2:
+                state = constants.STATE_PAUSED
+            elif media_session_state == 3:
+                state = constants.STATE_PLAYING
+            else:
+                state = constants.STATE_STANDBY
+
+        # Get the state from `audio_state`
+        elif audio_state != constants.STATE_IDLE:
+            state = audio_state
+
+        # Get the state from `wake_lock_size`
         else:
             if wake_lock_size == 1:
                 state = constants.STATE_PAUSED
