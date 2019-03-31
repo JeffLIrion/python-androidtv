@@ -434,31 +434,23 @@ class AndroidTV(BaseTV):
 
         Returns
         -------
-        float
-            The new volume level (between 0 and 1)
+        float, None
+            The new volume level (between 0 and 1), or ``None`` if ``self.max_volume`` could not be determined
 
         """
-        if current_volume_level is None or not self.max_volume:
-            current_volume = self.volume
-        else:
-            current_volume = min(max(round(self.max_volume * current_volume_level), 0.), self.max_volume)
+        # determine `self.max_volume`
+        if not self.max_volume:
+            _ = self.volume
 
+        # if `self.max_volume` could not be determined, do not proceed
+        if not self.max_volume:
+            return None
+
+        # compute the new volume
         new_volume = min(max(round(self.max_volume * volume_level), 0.), self.max_volume)
 
-        # Case 1: the new volume is the same as the current volume
-        if new_volume == current_volume:
-            return new_volume / self.max_volume
-
-        # Case 2: the new volume is less than the current volume
-        if new_volume < current_volume:
-            cmd = " && ".join(["input keyevent {0}".format(constants.KEY_VOLUME_DOWN)] * int(current_volume - new_volume))
-
-        # Case 3: the new volume is greater than the current volume
-        else:
-            cmd = " && ".join(["input keyevent {0}".format(constants.KEY_VOLUME_UP)] * int(new_volume - current_volume))
-
-        # send the volume down/up commands
-        self.adb_shell(cmd)
+        # set the volume (https://stackoverflow.com/a/52949888)
+        self.adb_shell("media volume --set {0}".format(int(new_volume)))
 
         # return the new volume level
         return new_volume / self.max_volume
@@ -473,8 +465,8 @@ class AndroidTV(BaseTV):
 
         Returns
         -------
-        float
-            The new volume level (between 0 and 1)
+        float, None
+            The new volume level (between 0 and 1), or ``None`` if ``self.max_volume`` could not be determined
 
         """
         if current_volume_level is None or not self.max_volume:
@@ -482,14 +474,15 @@ class AndroidTV(BaseTV):
         else:
             current_volume = round(self.max_volume * current_volume_level)
 
-        if current_volume == self.max_volume:
-            return 1.0
-
         # send the volume up command
         self._key(constants.KEY_VOLUME_UP)
 
+        # if `self.max_volume` could not be determined, return `None` as the new `volume_level`
+        if not self.max_volume:
+            return None
+
         # return the new volume level
-        return (current_volume + 1) / self.max_volume
+        return min(current_volume + 1, self.max_volume) / self.max_volume
 
     def volume_down(self, current_volume_level=None):
         """Send volume down action.
@@ -501,8 +494,8 @@ class AndroidTV(BaseTV):
 
         Returns
         -------
-        float
-            The new volume level (between 0 and 1)
+        float, None
+            The new volume level (between 0 and 1), or ``None`` if ``self.max_volume`` could not be determined
 
         """
         if current_volume_level is None or not self.max_volume:
@@ -510,11 +503,12 @@ class AndroidTV(BaseTV):
         else:
             current_volume = round(self.max_volume * current_volume_level)
 
-        if current_volume == 0:
-            return 0.0
-
         # send the volume down command
         self._key(constants.KEY_VOLUME_DOWN)
 
+        # if `self.max_volume` could not be determined, return `None` as the new `volume_level`
+        if not self.max_volume:
+            return None
+
         # return the new volume level
-        return (current_volume - 1) / self.max_volume
+        return max(current_volume - 1, 0.) / self.max_volume
