@@ -422,7 +422,7 @@ class AndroidTV(BaseTV):
     #                              volume methods                             #
     #                                                                         #
     # ======================================================================= #
-    def volume_set(self, volume_level, current_volume_level=None):
+    def set_volume_level(self, volume_level, current_volume_level=None):
         """Set the volume to the desired level.
 
         Parameters
