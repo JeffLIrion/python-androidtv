@@ -410,6 +410,47 @@ class AndroidTV(BaseTV):
     #                              volume methods                             #
     #                                                                         #
     # ======================================================================= #
+    def volume_set(self, volume_level, current_volume_level=None):
+        """Set the volume to the desired level.
+
+        Parameters
+        ----------
+        volume_level : float
+            The new volume level (between 0 and 1)
+        current_volume_level : float, None
+            The current volume level (between 0 and 1); if it is not provided, it will be determined
+
+        Returns
+        -------
+        float
+            The new volume level (between 0 and 1)
+
+        """
+        if current_volume_level is None or not self.max_volume:
+            current_volume = self.volume
+        else:
+            current_volume = min(max(round(self.max_volume * current_volume_level), 0.), self.max_volume)
+
+        new_volume = min(max(round(self.max_volume * volume_level), 0.), self.max_volume)
+
+        # Case 1: the new volume is the same as the current volume
+        if new_volume == current_volume:
+            return new_volume / self.max_volume
+
+        # Case 2: the new volume is less than the current volume
+        if new_volume < current_volume:
+            cmd = " && ".join(["input keyevent {0}".format(constants.KEY_VOLUME_DOWN)] * int(current_volume - new_volume))
+
+        # Case 3: the new volume is greater than the current volume
+        else:
+            cmd = " && ".join(["input keyevent {0}".format(constants.KEY_VOLUME_UP)] * int(new_volume - current_volume))
+
+        # send the volume down/up commands
+        self.adb_shell(cmd)
+
+        # return the new volume level
+        return new_volume / self.max_volume
+
     def volume_up(self, current_volume_level=None):
         """Send volume up action.
 
@@ -465,44 +506,3 @@ class AndroidTV(BaseTV):
 
         # return the new volume level
         return (current_volume - 1) / self.max_volume
-
-    def volume_set(self, volume_level, current_volume_level=None):
-        """Set the volume to the desired level.
-
-        Parameters
-        ----------
-        volume_level : float
-            The new volume level (between 0 and 1)
-        current_volume_level : float, None
-            The current volume level (between 0 and 1); if it is not provided, it will be determined
-
-        Returns
-        -------
-        float
-            The new volume level (between 0 and 1)
-
-        """
-        if current_volume_level is None or not self.max_volume:
-            current_volume = self.volume
-        else:
-            current_volume = min(max(round(self.max_volume * current_volume_level), 0.), self.max_volume)
-
-        new_volume = min(max(round(self.max_volume * volume_level), 0.), self.max_volume)
-
-        # Case 1: the new volume is the same as the current volume
-        if new_volume == current_volume:
-            return new_volume / self.max_volume
-
-        # Case 2: the new volume is less than the current volume
-        if new_volume < current_volume:
-            cmd = " && ".join(["input keyevent {0}".format(constants.KEY_VOLUME_DOWN)] * int(current_volume - new_volume))
-
-        # Case 3: the new volume is greater than the current volume
-        else:
-            cmd = " && ".join(["input keyevent {0}".format(constants.KEY_VOLUME_UP)] * int(new_volume - current_volume))
-
-        # send the volume down/up commands
-        self.adb_shell(cmd)
-
-        # return the new volume level
-        return new_volume / self.max_volume
