@@ -46,6 +46,9 @@ class BaseTV(object):
         self.adb_server_ip = adb_server_ip
         self.adb_server_port = adb_server_port
 
+        # the max volume level (determined when first getting the volume level)
+        self.max_volume = None
+
         # keep track of whether the ADB connection is intact
         self._available = False
 
