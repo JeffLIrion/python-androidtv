@@ -52,9 +52,10 @@ Your Home Assistant configuration will look like:
 
 Since Home Assistant isn't able to start the connection with the Android device directly, the ADB Server must do it instead. The ADB Server **must already be connected** to the Android device when Home Assistant attempts to access the ADB Server, or else Home Assistant will be unable to set up the Android device.
 
-A modified script provided by [jaaem](https://community.home-assistant.io/t/native-support-for-fire-tv/64448/300) on the Home Assistant forums demonstrates an example startup script for a Docker container that will automatically attempt, and continue to connect to a device when run:
+A modified script provided on the Home Assistant forums (`source <https://community.home-assistant.io/t/native-support-for-fire-tv/64448/300>`_) demonstrates an example startup script for a Docker container that will automatically attempt, and continue to connect to a device when run:
 
 .. code-block:: sh
+   :caption: **startup.sh**
 
    #!/bin/sh
 
@@ -104,6 +105,8 @@ Assuming the address of the ADB server is 192.168.0.101, your Home Assistant con
 
 1c) Linux Service
 *****************
+
+TODO
 
 Your Home Assistant configuration will look like:
 
