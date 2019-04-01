@@ -73,7 +73,7 @@ A modified script provided on the Home Assistant forums (`source <https://commun
    sleep 30
 
    echo "Connecting to devices."
-   for device in $DEVICES; do
+   for device in ${DEVICES[@]}; do
       adb connect $device
    done
    echo "Done."
