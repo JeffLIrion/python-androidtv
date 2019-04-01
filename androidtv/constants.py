@@ -17,7 +17,6 @@ CMD_CURRENT_APP = "dumpsys window windows | grep mCurrentFocus"
 CMD_MEDIA_SESSION_STATE = "dumpsys media_session | grep -m 1 'state=PlaybackState {'"
 CMD_RUNNING_APPS = "ps | grep u0_a"
 CMD_SCREEN_ON = "dumpsys power | grep 'Display Power' | grep -q 'state=ON'"
-CMD_WAKE_LOCK = "dumpsys power | grep Locks | grep -q 'size=0'"
 CMD_WAKE_LOCK_SIZE = "dumpsys power | grep Locks | grep 'size='"
 
 # `getprop` commands
@@ -216,9 +215,9 @@ REGEX_MEDIA_SESSION_STATE = re.compile(r"state=(?P<state>[0-9]+)", re.MULTILINE)
 REGEX_WINDOW = re.compile(r"Window\{(?P<id>.+?) (?P<user>.+) (?P<package>.+?)(?:\/(?P<activity>.+?))?\}$", re.MULTILINE)
 
 # Regular expression patterns
-BLOCK_REGEX_PATTERN = "STREAM_MUSIC(.*?)- STREAM"
 DEVICE_REGEX_PATTERN = r"Devices: (.*?)\W"
+MAC_REGEX_PATTERN = "ether (.*?) brd"
 MAX_VOLUME_REGEX_PATTERN = r"Max: (\d{1,})"
 MUTED_REGEX_PATTERN = r"Muted: (.*?)\W"
+STREAM_MUSIC_REGEX_PATTERN = "STREAM_MUSIC(.*?)- STREAM"
 VOLUME_REGEX_PATTERN = r"\): (\d{1,})"
-MAC_REGEX_PATTERN = "ether (.*?) brd"

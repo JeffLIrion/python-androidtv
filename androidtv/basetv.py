@@ -267,6 +267,25 @@ class BaseTV(object):
     #                                                                         #
     # ======================================================================= #
     @property
+    def audio_state(self):
+        """Check if audio is playing, paused, or idle.
+
+        Returns
+        -------
+        str, None
+            The audio state, as determined from the ADB shell command ``dumpsys audio``, or ``None`` if it could not be determined
+
+        """
+        output = self.adb_shell(constants.CMD_AUDIO_STATE)
+        if output is None:
+            return None
+        if output == '1':
+            return constants.STATE_PAUSED
+        if output == '2':
+            return constants.STATE_PLAYING
+        return constants.STATE_IDLE
+
+    @property
     def available(self):
         """Check whether the ADB connection is intact.
 
@@ -329,40 +348,41 @@ class BaseTV(object):
 
         Returns
         -------
-        dict
-            A dictionary with keys ``'package'`` and ``'activity'`` if the current app was found; otherwise, ``None``
+        str, None
+            The ID of the current app, or ``None`` if it could not be determined
 
         """
-        current_focus = self.adb_shell(constants.CMD_CURRENT_APP)
-        if current_focus is None:
-            return None
+        current_window = self.adb_shell(constants.CMD_CURRENT_APP)
 
-        current_focus = current_focus.replace("\r", "")
-        matches = constants.REGEX_WINDOW.search(current_focus)
-
-        # case 1: current app was successfully found
-        if matches:
-            (pkg, activity) = matches.group("package", "activity")
-            return {"package": pkg, "activity": activity}
-
-        # case 2: current app could not be found
-        logging.warning("Couldn't get current app, reply was %s", current_focus)
-        return None
+        return self._current_app(current_window)
 
     @property
-    def manufacturer(self):
-        """Get the 'manufacturer' property from the device.
+    def device(self):
+        """Get the current playback device.
 
         Returns
         -------
         str, None
-            The manufacturer of the device
+            The current playback device, or ``None`` if it could not be determined
 
         """
-        output = self.adb_shell(constants.CMD_MANUFACTURER)
-        if not output:
-            return None
-        return output.strip()
+        stream_music = self._get_stream_music()
+
+        return self._device(stream_music)
+
+    @property
+    def is_volume_muted(self):
+        """Whether or not the volume is muted.
+
+        Returns
+        -------
+        bool, None
+            Whether or not the volume is muted, or ``None`` if it could not be determined
+
+        """
+        stream_music = self._get_stream_music()
+
+        return self._is_volume_muted(stream_music)
 
     @property
     def media_session_state(self):
@@ -374,14 +394,23 @@ class BaseTV(object):
             The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
 
         """
-        output = self.adb_shell(constants.CMD_MEDIA_SESSION_STATE)
-        if not output:
-            return None
+        media_session = self.adb_shell(constants.CMD_MEDIA_SESSION_STATE)
 
-        matches = constants.REGEX_MEDIA_SESSION_STATE.search(output)
-        if matches:
-            return int(matches.group('state'))
-        return None
+        return self._media_session_state(media_session)
+
+    @property
+    def running_apps(self):
+        """Return a list of running user applications.
+
+        Returns
+        -------
+        list
+            A list of the running apps
+
+        """
+        ps = self.adb_shell(constants.CMD_RUNNING_APPS)
+
+        return self._running_apps(ps)
 
     @property
     def screen_on(self):
@@ -396,16 +425,33 @@ class BaseTV(object):
         return self.adb_shell(constants.CMD_SCREEN_ON + constants.CMD_SUCCESS1_FAILURE0) == '1'
 
     @property
-    def wake_lock(self):
-        """Check for wake locks (device is playing).
+    def volume(self):
+        """Get the absolute volume level.
 
         Returns
         -------
-        bool
-            Whether or not the ``wake_lock_size`` property is equal to 1.
+        int, None
+            The absolute volume level, or ``None`` if it could not be determined
 
         """
-        return self.adb_shell(constants.CMD_WAKE_LOCK + constants.CMD_SUCCESS1_FAILURE0) == '1'
+        stream_music = self._get_stream_music()
+        device = self._device(stream_music)
+
+        return self._volume(stream_music, device)
+
+    @property
+    def volume_level(self):
+        """Get the relative volume level.
+
+        Returns
+        -------
+        float, None
+            The volume level (between 0 and 1), or ``None`` if it could not be determined
+
+        """
+        volume = self.volume
+
+        return self._volume_level(volume)
 
     @property
     def wake_lock_size(self):
@@ -417,17 +463,268 @@ class BaseTV(object):
             The size of the current wake lock, or ``None`` if it could not be determined
 
         """
-        output = self.adb_shell(constants.CMD_WAKE_LOCK_SIZE)
-        if not output:
+        locks_size = self.adb_shell(constants.CMD_WAKE_LOCK_SIZE)
+
+        return self._wake_lock_size(locks_size)
+
+    # ======================================================================= #
+    #                                                                         #
+    #                            Parse properties                             #
+    #                                                                         #
+    # ======================================================================= #
+    @staticmethod
+    def _audio_state(dumpsys_audio):
+        """Parse the ``audio_state`` property from the output of ``adb shell dumpsys audio``.
+
+        Parameters
+        ----------
+        dumpsys_audio : str, None
+            The output of ``adb shell dumpsys audio``
+
+        Returns
+        -------
+        str, None
+            The audio state, or ``None`` if it could not be determined
+
+        """
+        if not dumpsys_audio:
             return None
-        return int(output.split("=")[1].strip())
+
+        if 'started' in dumpsys_audio:
+            return constants.STATE_PLAYING
+
+        if 'paused' in dumpsys_audio:
+            return constants.STATE_PAUSED
+
+        return constants.STATE_IDLE
+
+    @staticmethod
+    def _current_app(current_window):
+        """Return the current app from the output of ``adb shell dumpsys window windows | grep mCurrentFocus``.
+
+        Parameters
+        ----------
+        current_window : str, None
+            The output of ``adb shell dumpsys window windows | grep mCurrentFocus``
+
+        Returns
+        -------
+        str, None
+            The ID of the current app, or ``None`` if it could not be determined
+
+        """
+        if current_window is None:
+            return None
+
+        current_window = current_window.replace("\r", "")
+        matches = constants.REGEX_WINDOW.search(current_window)
+
+        # case 1: current app was successfully found
+        if matches:
+            return matches.group('package')
+
+        # case 2: current app could not be found
+        return None
+
+    @staticmethod
+    def _device(stream_music):
+        """Get the current playback device from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
+
+        Parameters
+        ----------
+        stream_music : str, None
+            The ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``
+
+        Returns
+        -------
+        str, None
+            The current playback device, or ``None`` if it could not be determined
+
+        """
+        if not stream_music:
+            return None
+
+        matches = re.findall(constants.DEVICE_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
+        if matches:
+            return matches[0]
+
+        return None
+
+    def _get_stream_music(self, dumpsys_audio=None):
+        """Get the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
+
+        Parameters
+        ----------
+        dumpsys_audio : str, None
+            The output of ``adb shell dumpsys audio``
+
+        Returns
+        -------
+        str, None
+            The ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``, or ``None`` if it could not be determined
+
+        """
+        if not dumpsys_audio:
+            dumpsys_audio = self.adb_shell("dumpsys audio")
+
+        if not dumpsys_audio:
+            return None
+
+        matches = re.findall(constants.STREAM_MUSIC_REGEX_PATTERN, dumpsys_audio, re.DOTALL | re.MULTILINE)
+        if matches:
+            return matches[0]
+
+        return None
+
+    @staticmethod
+    def _is_volume_muted(stream_music):
+        """Determine whether or not the volume is muted from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
+
+        Parameters
+        ----------
+        stream_music : str, None
+            The ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``
+
+        Returns
+        -------
+        bool, None
+            Whether or not the volume is muted, or ``None`` if it could not be determined
+
+        """
+        if not stream_music:
+            return None
+
+        matches = re.findall(constants.MUTED_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
+        if matches:
+            return matches[0] == 'true'
+
+        return None
+
+    @staticmethod
+    def _media_session_state(media_session):
+        """Get the state from the output of ``adb shell dumpsys media_session | grep -m 1 'state=PlaybackState {'``.
+
+        Parameters
+        ----------
+        media_session : str, None
+            The output of ``adb shell dumpsys media_session | grep -m 1 'state=PlaybackState {'``
+
+        Returns
+        -------
+        int, None
+            The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
+
+        """
+        if not media_session:
+            return None
+
+        matches = constants.REGEX_MEDIA_SESSION_STATE.search(media_session)
+        if matches:
+            return int(matches.group('state'))
+
+        return None
+
+    @staticmethod
+    def _running_apps(ps):
+        """Get the running apps from the output of ``ps | grep u0_a``.
+
+        Parameters
+        ----------
+        ps : str, None
+            The output of ``adb shell ps | grep u0_a``
+
+        Returns
+        -------
+        list, None
+            A list of the running apps, or ``None`` if it could not be determined
+
+        """
+        if ps:
+            if isinstance(ps, list):
+                return [line.strip().rsplit(' ', 1)[-1] for line in ps if line.strip()]
+            return [line.strip().rsplit(' ', 1)[-1] for line in ps.splitlines() if line.strip()]
+
+        return None
+
+    def _volume(self, stream_music, device):
+        """Get the absolute volume level from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
+
+        Parameters
+        ----------
+        stream_music : str, None
+            The ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``
+        device : str, None
+            The current playback device
+
+        Returns
+        -------
+        int, None
+            The absolute volume level, or ``None`` if it could not be determined
+
+        """
+        if not stream_music:
+            return None
+
+        if not self.max_volume:
+            max_volume_matches = re.findall(constants.MAX_VOLUME_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
+            if max_volume_matches:
+                self.max_volume = float(max_volume_matches[0])
+            else:
+                self.max_volume = 15.
+
+        if not device:
+            return None
+
+        volume_matches = re.findall(device + constants.VOLUME_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
+        if volume_matches:
+            return int(volume_matches[0])
+
+        return None
+
+    def _volume_level(self, volume):
+        """Get the relative volume level from the absolute volume level.
+
+        Parameters
+        -------
+        volume: int, None
+            The absolute volume level
+
+        Returns
+        -------
+        float, None
+            The volume level (between 0 and 1), or ``None`` if it could not be determined
+
+        """
+        if volume is not None and self.max_volume:
+            return volume / self.max_volume
+
+        return None
+
+    @staticmethod
+    def _wake_lock_size(locks_size):
+        """Get the size of the current wake lock from the output of ``adb shell dumpsys power | grep Locks | grep 'size='``.
+
+        Parameters
+        ----------
+        locks_size : str, None
+            The output of ``adb shell dumpsys power | grep Locks | grep 'size='``.
+
+        Returns
+        -------
+        int, None
+            The size of the current wake lock, or ``None`` if it could not be determined
+
+        """
+        if locks_size:
+            return int(locks_size.split("=")[1].strip())
+
+        return None
 
     # ======================================================================= #
     #                                                                         #
     #                      "key" methods: basic commands                      #
     #                                                                         #
     # ======================================================================= #
-
     def power(self):
         """Send power action."""
         self._key(constants.KEY_POWER)
@@ -653,3 +950,97 @@ class BaseTV(object):
     def key_z(self):
         """Send z keypress."""
         self._key(constants.KEY_Z)
+
+    # ======================================================================= #
+    #                                                                         #
+    #                              volume methods                             #
+    #                                                                         #
+    # ======================================================================= #
+    def set_volume_level(self, volume_level):
+        """Set the volume to the desired level.
+
+        Parameters
+        ----------
+        volume_level : float
+            The new volume level (between 0 and 1)
+
+        Returns
+        -------
+        float, None
+            The new volume level (between 0 and 1), or ``None`` if ``self.max_volume`` could not be determined
+
+        """
+        # determine `self.max_volume`
+        if not self.max_volume:
+            _ = self.volume
+
+        # if `self.max_volume` could not be determined, do not proceed
+        if not self.max_volume:
+            return None
+
+        # compute the new volume
+        new_volume = min(max(round(self.max_volume * volume_level), 0.), self.max_volume)
+
+        # set the volume (https://stackoverflow.com/a/52949888)
+        self.adb_shell("media volume --set {0}".format(int(new_volume)))
+
+        # return the new volume level
+        return new_volume / self.max_volume
+
+    def volume_up(self, current_volume_level=None):
+        """Send volume up action.
+
+        Parameters
+        ----------
+        current_volume_level : float, None
+            The current volume level (between 0 and 1); if it is not provided, it will be determined
+
+        Returns
+        -------
+        float, None
+            The new volume level (between 0 and 1), or ``None`` if ``self.max_volume`` could not be determined
+
+        """
+        if current_volume_level is None or not self.max_volume:
+            current_volume = self.volume
+        else:
+            current_volume = round(self.max_volume * current_volume_level)
+
+        # send the volume up command
+        self._key(constants.KEY_VOLUME_UP)
+
+        # if `self.max_volume` could not be determined, return `None` as the new `volume_level`
+        if not self.max_volume:
+            return None
+
+        # return the new volume level
+        return min(current_volume + 1, self.max_volume) / self.max_volume
+
+    def volume_down(self, current_volume_level=None):
+        """Send volume down action.
+
+        Parameters
+        ----------
+        current_volume_level : float, None
+            The current volume level (between 0 and 1); if it is not provided, it will be determined
+
+        Returns
+        -------
+        float, None
+            The new volume level (between 0 and 1), or ``None`` if ``self.max_volume`` could not be determined
+
+        """
+        if current_volume_level is None or not self.max_volume:
+            current_volume = self.volume
+        else:
+            current_volume = round(self.max_volume * current_volume_level)
+
+        # send the volume down command
+        self._key(constants.KEY_VOLUME_DOWN)
+
+        # if `self.max_volume` could not be determined, return `None` as the new `volume_level`
+        if not self.max_volume:
+            return None
+
+        # return the new volume level
+        return max(current_volume - 1, 0.) / self.max_volume

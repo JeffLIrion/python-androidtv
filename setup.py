@@ -14,5 +14,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-    ]
+    ],
+    test_suite='tests'
 )

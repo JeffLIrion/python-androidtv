@@ -4,8 +4,6 @@ ADB Debugging must be enabled.
 """
 
 
-import logging
-
 from .basetv import BaseTV
 from . import constants
 
@@ -65,7 +63,6 @@ class FireTV(BaseTV):
 
         """
         cmd = 'monkey -p {} -c {} {}; echo $?'.format(pkg, intent, count)
-        logging.debug("Sending an intent %s to %s (count: %s)", intent, pkg, count)
 
         # adb shell outputs in weird format, so we cut it into lines,
         # separate the retcode and return info to the user
@@ -103,7 +100,7 @@ class FireTV(BaseTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, wake_lock_size, media_session_state, _current_app, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
+        screen_on, awake, wake_lock_size, media_session_state, current_app, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
 
         # Check if device is off
         if not screen_on:
@@ -118,12 +115,6 @@ class FireTV(BaseTV):
             running_apps = None
 
         else:
-            # Get the current app
-            if isinstance(_current_app, dict) and 'package' in _current_app:
-                current_app = _current_app['package']
-            else:
-                current_app = None
-
             # Get the running apps
             if running_apps is None and current_app:
                 running_apps = [current_app]
@@ -262,22 +253,6 @@ class FireTV(BaseTV):
     #                               properties                                #
     #                                                                         #
     # ======================================================================= #
-
-    @property
-    def running_apps(self):
-        """Return a list of running user applications.
-
-        Returns
-        -------
-        list
-            A list of the running apps
-
-        """
-        ps = self.adb_shell(constants.CMD_RUNNING_APPS)
-        if ps:
-            return [line.strip().rsplit(' ', 1)[-1] for line in ps.splitlines() if line.strip()]
-        return []
-
     def get_properties(self, get_running_apps=True, lazy=False):
         """Get the properties needed for Home Assistant updates.
 
@@ -337,36 +312,22 @@ class FireTV(BaseTV):
         # `wake_lock_size` property
         if len(lines[0]) < 3:
             return screen_on, awake, -1, None, None, None
-        wake_lock_size = int(lines[0].split("=")[1].strip())
+        wake_lock_size = self._wake_lock_size(lines[0])
 
         # `media_session_state` property
         if len(lines) < 2:
             return screen_on, awake, wake_lock_size, None, None, None
-
-        matches = constants.REGEX_MEDIA_SESSION_STATE.search(lines[1])
-        if matches:
-            media_session_state = int(matches.group('state'))
-        else:
-            media_session_state = None
+        media_session_state = self._media_session_state(lines[1])
 
         # `current_app` property
         if len(lines) < 3:
             return screen_on, awake, wake_lock_size, media_session_state, None, None
-
-        matches = constants.REGEX_WINDOW.search(lines[2])
-        if matches:
-            # case 1: current app was successfully found
-            (pkg, activity) = matches.group("package", "activity")
-            current_app = {"package": pkg, "activity": activity}
-        else:
-            # case 2: current app could not be found
-            current_app = None
+        current_app = self._current_app(lines[2])
 
         # `running_apps` property
         if not get_running_apps or len(lines) < 4:
             return screen_on, awake, wake_lock_size, media_session_state, current_app, None
-
-        running_apps = [line.strip().rsplit(' ', 1)[-1] for line in lines[3:] if line.strip()]
+        running_apps = self._running_apps(lines[3:])
 
         return screen_on, awake, wake_lock_size, media_session_state, current_app, running_apps
 

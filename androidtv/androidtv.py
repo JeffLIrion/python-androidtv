@@ -4,8 +4,6 @@ ADB Debugging must be enabled.
 """
 
 
-import re
-
 from .basetv import BaseTV
 from . import constants
 
@@ -71,19 +69,10 @@ class AndroidTV(BaseTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, wake_lock_size, media_session_state, _current_app, audio_state, device, is_volume_muted, volume = self.get_properties(lazy=True)
-
-        # Get the current app
-        if isinstance(_current_app, dict) and 'package' in _current_app:
-            current_app = _current_app['package']
-        else:
-            current_app = None
+        screen_on, awake, wake_lock_size, media_session_state, current_app, audio_state, device, is_volume_muted, volume = self.get_properties(lazy=True)
 
         # Get the volume (between 0 and 1)
-        if volume is not None:
-            volume_level = volume / self.max_volume
-        else:
-            volume_level = None
+        volume_level = self._volume_level(volume)
 
         # Check if device is off
         if not screen_on or current_app == 'off':
@@ -134,102 +123,6 @@ class AndroidTV(BaseTV):
     #                               properties                                #
     #                                                                         #
     # ======================================================================= #
-    @property
-    def audio_state(self):
-        """Check if audio is playing, paused, or idle.
-
-        Returns
-        -------
-        str, None
-            The audio state, as determined from the ADB shell command ``dumpsys audio``, or ``None`` if it could not be determined
-
-        """
-        output = self.adb_shell(constants.CMD_AUDIO_STATE)
-        if output is None:
-            return None
-        if output == '1':
-            return constants.STATE_PAUSED
-        if output == '2':
-            return constants.STATE_PLAYING
-        return constants.STATE_IDLE
-
-    @property
-    def device(self):
-        """Get the current playback device.
-
-        Returns
-        -------
-        str, None
-            The current playback device, or ``None`` if it could not be determined
-
-        """
-        output = self.adb_shell("dumpsys audio")
-        if not output:
-            return None
-
-        stream_block = re.findall(constants.BLOCK_REGEX_PATTERN, output, re.DOTALL | re.MULTILINE)[0]
-        return re.findall(constants.DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
-
-    @property
-    def is_volume_muted(self):
-        """Whether or not the volume is muted.
-
-        Returns
-        -------
-        bool, None
-            Whether or not the volume is muted, or ``None`` if it could not be determined
-
-        """
-        output = self.adb_shell("dumpsys audio")
-        if not output:
-            return None
-
-        stream_block = re.findall(constants.BLOCK_REGEX_PATTERN, output, re.DOTALL | re.MULTILINE)[0]
-        return re.findall(constants.MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0] == 'true'
-
-    @property
-    def volume(self):
-        """Get the absolute volume level.
-
-        Returns
-        -------
-        int, None
-            The absolute volume level, or ``None`` if it could not be determined
-
-        """
-        output = self.adb_shell("dumpsys audio")
-        if not output:
-            return None
-
-        stream_block = re.findall(constants.BLOCK_REGEX_PATTERN, output, re.DOTALL | re.MULTILINE)[0]
-        device = re.findall(constants.DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
-        volume = re.findall(device + constants.VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)[0]
-
-        if not self.max_volume:
-            matches = re.findall(constants.MAX_VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
-            if matches:
-                self.max_volume = float(matches[0])
-            else:
-                self.max_volume = 15.
-
-        return int(volume)
-
-    @property
-    def volume_level(self):
-        """Get the relative volume level.
-
-        Returns
-        -------
-        float, None
-            The volume level (between 0 and 1), or ``None`` if it could not be determined
-
-        """
-        volume = self.volume
-
-        if volume is not None:
-            return volume / self.max_volume
-        return None
-
     def get_properties(self, lazy=False):
         """Get the properties needed for Home Assistant updates.
 
@@ -286,80 +179,39 @@ class AndroidTV(BaseTV):
         # `wake_lock_size` property
         if len(lines[0]) < 3:
             return screen_on, awake, -1, None, None, None, None, None, None
-        wake_lock_size = int(lines[0].split("=")[1].strip())
+        wake_lock_size = self._wake_lock_size(lines[0])
 
         # `media_session_state` property
         if len(lines) < 2:
             return screen_on, awake, -1, None, None, None, None, None, None
-
-        matches = constants.REGEX_MEDIA_SESSION_STATE.search(lines[1])
-        if matches:
-            media_session_state = int(matches.group('state'))
-        else:
-            media_session_state = None
+        media_session_state = self._media_session_state(lines[1])
 
         # `current_app` property
         if len(lines) < 3:
             return screen_on, awake, wake_lock_size, media_session_state, None, None, None, None, None
-
-        matches = constants.REGEX_WINDOW.search(lines[2])
-        if matches:
-            # case 1: current app was successfully found
-            (pkg, activity) = matches.group("package", "activity")
-            current_app = {"package": pkg, "activity": activity}
-        else:
-            # case 2: current app could not be found
-            current_app = None
+        current_app = self._current_app(lines[2])
 
         # "dumpsys audio" output
         if len(lines) < 4:
             return screen_on, awake, wake_lock_size, media_session_state, current_app, None, None, None, None
 
-        audio_output = "\n".join(lines[3:])
+        # reconstruct the output of `adb shell dumpsys audio`
+        dumpsys_audio = "\n".join(lines[3:])
 
         # `audio_state` property
-        if 'started' in audio_output:
-            audio_state = constants.STATE_PLAYING
-        elif 'paused' in audio_output:
-            audio_state = constants.STATE_PAUSED
-        else:
-            audio_state = constants.STATE_IDLE
+        audio_state = self._audio_state(dumpsys_audio)
 
-        matches = re.findall(constants.BLOCK_REGEX_PATTERN, audio_output, re.DOTALL | re.MULTILINE)
-        if not matches:
-            return screen_on, awake, wake_lock_size, media_session_state, current_app, audio_state, None, None, None
-        stream_block = matches[0]
+        # the "STREAM_MUSIC" block from `adb shell dumpsys audio`
+        stream_music = self._get_stream_music(dumpsys_audio)
 
         # `device` property
-        matches = re.findall(constants.DEVICE_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
-        if matches:
-            device = matches[0]
+        device = self._device(stream_music)
 
-            # `self.max_volume` attribute
-            if not self.max_volume:
-                matches_max_volume = re.findall(constants.MAX_VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
-                if matches_max_volume:
-                    self.max_volume = float(matches_max_volume[0])
-                else:
-                    self.max_volume = 15.
-
-            # `volume` property
-            matches_volume = re.findall(device + constants.VOLUME_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
-            if matches_volume:
-                volume = int(matches_volume[0])
-            else:
-                volume = None
-
-        else:
-            device = None
-            volume = None
+        # `volume` property
+        volume = self._volume(stream_music, device)
 
         # `is_volume_muted` property
-        matches = re.findall(constants.MUTED_REGEX_PATTERN, stream_block, re.DOTALL | re.MULTILINE)
-        if matches:
-            is_volume_muted = matches[0] == 'true'
-        else:
-            is_volume_muted = None
+        is_volume_muted = self._is_volume_muted(stream_music)
 
         return screen_on, awake, wake_lock_size, media_session_state, current_app, audio_state, device, is_volume_muted, volume
 
@@ -402,99 +254,3 @@ class AndroidTV(BaseTV):
     def turn_off(self):
         """Send ``POWER`` action if the device is not off."""
         self.adb_shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))
-
-    # ======================================================================= #
-    #                                                                         #
-    #                              volume methods                             #
-    #                                                                         #
-    # ======================================================================= #
-    def set_volume_level(self, volume_level, current_volume_level=None):
-        """Set the volume to the desired level.
-
-        Parameters
-        ----------
-        volume_level : float
-            The new volume level (between 0 and 1)
-        current_volume_level : float, None
-            The current volume level (between 0 and 1); if it is not provided, it will be determined
-
-        Returns
-        -------
-        float, None
-            The new volume level (between 0 and 1), or ``None`` if ``self.max_volume`` could not be determined
-
-        """
-        # determine `self.max_volume`
-        if not self.max_volume:
-            _ = self.volume
-
-        # if `self.max_volume` could not be determined, do not proceed
-        if not self.max_volume:
-            return None
-
-        # compute the new volume
-        new_volume = min(max(round(self.max_volume * volume_level), 0.), self.max_volume)
-
-        # set the volume (https://stackoverflow.com/a/52949888)
-        self.adb_shell("media volume --set {0}".format(int(new_volume)))
-
-        # return the new volume level
-        return new_volume / self.max_volume
-
-    def volume_up(self, current_volume_level=None):
-        """Send volume up action.
-
-        Parameters
-        ----------
-        current_volume_level : float, None
-            The current volume level (between 0 and 1); if it is not provided, it will be determined
-
-        Returns
-        -------
-        float, None
-            The new volume level (between 0 and 1), or ``None`` if ``self.max_volume`` could not be determined
-
-        """
-        if current_volume_level is None or not self.max_volume:
-            current_volume = self.volume
-        else:
-            current_volume = round(self.max_volume * current_volume_level)
-
-        # send the volume up command
-        self._key(constants.KEY_VOLUME_UP)
-
-        # if `self.max_volume` could not be determined, return `None` as the new `volume_level`
-        if not self.max_volume:
-            return None
-
-        # return the new volume level
-        return min(current_volume + 1, self.max_volume) / self.max_volume
-
-    def volume_down(self, current_volume_level=None):
-        """Send volume down action.
-
-        Parameters
-        ----------
-        current_volume_level : float, None
-            The current volume level (between 0 and 1); if it is not provided, it will be determined
-
-        Returns
-        -------
-        float, None
-            The new volume level (between 0 and 1), or ``None`` if ``self.max_volume`` could not be determined
-
-        """
-        if current_volume_level is None or not self.max_volume:
-            current_volume = self.volume
-        else:
-            current_volume = round(self.max_volume * current_volume_level)
-
-        # send the volume down command
-        self._key(constants.KEY_VOLUME_DOWN)
-
-        # if `self.max_volume` could not be determined, return `None` as the new `volume_level`
-        if not self.max_volume:
-            return None
-
-        # return the new volume level
-        return max(current_volume - 1, 0.) / self.max_volume
