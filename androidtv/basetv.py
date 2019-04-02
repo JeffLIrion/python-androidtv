@@ -956,13 +956,21 @@ class BaseTV(object):
     #                              volume methods                             #
     #                                                                         #
     # ======================================================================= #
-    def set_volume_level(self, volume_level):
+    def set_volume_level(self, volume_level, current_volume_level=None):
         """Set the volume to the desired level.
+
+        .. note::
+
+           This method works by sending volume up/down commands with a 1 second pause in between.  Without this pause,
+           the device will do a quick power cycle.  This is the most robust solution I've found so far.
+
 
         Parameters
         ----------
         volume_level : float
             The new volume level (between 0 and 1)
+        current_volume_level : float, None
+            The current volume level (between 0 and 1); if it is not provided, it will be determined
 
         Returns
         -------
@@ -970,19 +978,32 @@ class BaseTV(object):
             The new volume level (between 0 and 1), or ``None`` if ``self.max_volume`` could not be determined
 
         """
-        # determine `self.max_volume`
-        if not self.max_volume:
-            _ = self.volume
+        # if necessary, determine the current volume and/or the max volume
+        if current_volume_level is None or not self.max_volume:
+            current_volume = self.volume
+        else:
+            current_volume = min(max(round(self.max_volume * current_volume_level), 0.), self.max_volume)
 
         # if `self.max_volume` could not be determined, do not proceed
         if not self.max_volume:
             return None
 
-        # compute the new volume
         new_volume = min(max(round(self.max_volume * volume_level), 0.), self.max_volume)
 
-        # set the volume (https://stackoverflow.com/a/52949888)
-        self.adb_shell("media volume --set {0}".format(int(new_volume)))
+        # Case 1: the new volume is the same as the current volume
+        if new_volume == current_volume:
+            return new_volume / self.max_volume
+
+        # Case 2: the new volume is less than the current volume
+        if new_volume < current_volume:
+            cmd = "(" + " && sleep 1 && ".join(["input keyevent {0}".format(constants.KEY_VOLUME_DOWN)] * int(current_volume - new_volume)) + ") &"
+
+        # Case 3: the new volume is greater than the current volume
+        else:
+            cmd = "(" + " && sleep 1 && ".join(["input keyevent {0}".format(constants.KEY_VOLUME_UP)] * int(new_volume - current_volume)) + ") &"
+
+        # send the volume down/up commands
+        self.adb_shell(cmd)
 
         # return the new volume level
         return new_volume / self.max_volume
