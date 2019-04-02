@@ -317,7 +317,7 @@ class TestAndroidTV(unittest.TestCase):
         """
         self.atv.adb_shell_output = None
         device = self.atv.device
-        self.assertEqual(None, device)
+        self.assertIsNone(device)
 
         self.atv.adb_shell_output = DUMPSYS_AUDIO_OFF
         device = self.atv.device
@@ -333,7 +333,7 @@ class TestAndroidTV(unittest.TestCase):
         """
         self.atv.adb_shell_output = None
         volume = self.atv.volume
-        self.assertEqual(volume, None)
+        self.assertIsNone(volume)
 
         self.atv.adb_shell_output = DUMPSYS_AUDIO_OFF
         volume = self.atv.volume
@@ -351,7 +351,7 @@ class TestAndroidTV(unittest.TestCase):
         """
         self.atv.adb_shell_output = None
         is_volume_muted = self.atv.is_volume_muted
-        self.assertEqual(is_volume_muted, None)
+        self.assertIsNone(is_volume_muted)
 
         self.atv.adb_shell_output = DUMPSYS_AUDIO_OFF
         is_volume_muted = self.atv.is_volume_muted
@@ -384,6 +384,18 @@ class TestAndroidTV(unittest.TestCase):
         self.atv.adb_shell_output = GET_PROPERTIES_OUTPUT2
         state = self.atv.update()
         self.assertTupleEqual(state, STATE2)
+
+    def test_set_volume_level(self):
+        """Check that the ``set_volume_level`` method works correctly.
+
+        """
+        self.atv.adb_shell_output = None
+        new_volume_level = self.atv.set_volume_level(0.5)
+        self.assertIsNone(new_volume_level)
+
+        self.atv.adb_shell_output = DUMPSYS_AUDIO_ON
+        new_volume_level = self.atv.set_volume_level(0.5)
+        self.assertEqual(new_volume_level, 0.5)
 
 
 if __name__ == "__main__":
