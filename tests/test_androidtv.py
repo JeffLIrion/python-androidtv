@@ -296,6 +296,7 @@ GET_PROPERTIES_DICT_NONE = {'screen_on': None,
 
 def _adb_shell_patched(self):
     def _adb_shell_method(cmd):
+        self.adb_shell_cmd = cmd
         return self.adb_shell_output
 
     return _adb_shell_method
@@ -395,6 +396,7 @@ class TestAndroidTV(unittest.TestCase):
 
         self.atv.adb_shell_output = DUMPSYS_AUDIO_ON
         new_volume_level = self.atv.set_volume_level(0.5)
+        self.assertEqual(self.atv.adb_shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
         self.assertEqual(new_volume_level, 0.5)
 
 
