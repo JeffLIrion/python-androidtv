@@ -85,6 +85,10 @@ class AndroidTV(BaseTV):
         # Get the state
         # TODO: determine the state differently based on the current app
 
+        # BELL Fibe
+        elif current_app == constants.APP_BELL_FIBE:
+            state = audio_state
+
         # VLC
         elif current_app == constants.APP_VLC:
             if media_session_state == 2:
