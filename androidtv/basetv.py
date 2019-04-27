@@ -984,8 +984,8 @@ class BaseTV(object):
         else:
             current_volume = min(max(round(self.max_volume * current_volume_level), 0.), self.max_volume)
 
-        # if `self.max_volume` could not be determined, do not proceed
-        if not self.max_volume:
+        # if `self.max_volume` or `current_volume` could not be determined, do not proceed
+        if not self.max_volume or current_volume is None:
             return None
 
         new_volume = min(max(round(self.max_volume * volume_level), 0.), self.max_volume)
@@ -1030,8 +1030,8 @@ class BaseTV(object):
         # send the volume up command
         self._key(constants.KEY_VOLUME_UP)
 
-        # if `self.max_volume` could not be determined, return `None` as the new `volume_level`
-        if not self.max_volume:
+        # if `self.max_volume` or `current_volume` could not be determined, return `None` as the new `volume_level`
+        if not self.max_volume or current_volume is None:
             return None
 
         # return the new volume level
@@ -1059,8 +1059,8 @@ class BaseTV(object):
         # send the volume down command
         self._key(constants.KEY_VOLUME_DOWN)
 
-        # if `self.max_volume` could not be determined, return `None` as the new `volume_level`
-        if not self.max_volume:
+        # if `self.max_volume` or `current_volume` could not be determined, return `None` as the new `volume_level`
+        if not self.max_volume or current_volume is None:
             return None
 
         # return the new volume level
