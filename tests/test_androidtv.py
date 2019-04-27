@@ -217,7 +217,7 @@ Stream volumes (device: index)
 
 - mute affected streams = 0x2e
 
-Ringer mode: 
+Ringer mode:
 - mode (internal) = NORMAL
 - mode (external) = NORMAL
 - ringer mode affected streams = 0x80 (STREAM_SYSTEM_ENFORCED)
@@ -255,8 +255,8 @@ PlaybackActivityMonitor dump time: 9:03:06 AM
   muted player piids:"""
 
 # `dumpsys power | grep 'Display Power' | grep -q 'state=ON' && echo -e '1\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' && dumpsys power | grep Locks | grep 'size=' && (dumpsys media_session | grep -m 1 'state=PlaybackState {' || echo) && dumpsys window windows | grep mCurrentFocus && dumpsys audio`
-GET_PROPERTIES_OUTPUT1 = "1"
-GET_PROPERTIES_DICT1 = {'screen_on': True,
+GET_PROPERTIES_OUTPUT1 = ""
+GET_PROPERTIES_DICT1 = {'screen_on': False,
                         'awake': False,
                         'wake_lock_size': -1,
                         'media_session_state': None,
@@ -265,14 +265,27 @@ GET_PROPERTIES_DICT1 = {'screen_on': True,
                         'device': None,
                         'is_volume_muted': None,
                         'volume': None}
-STATE1 = (constants.STATE_IDLE, None, None, None, None)
+STATE1 = (constants.STATE_OFF, None, None, None, None)
 
 # `dumpsys power | grep 'Display Power' | grep -q 'state=ON' && echo -e '1\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' && dumpsys power | grep Locks | grep 'size=' && (dumpsys media_session | grep -m 1 'state=PlaybackState {' || echo) && dumpsys window windows | grep mCurrentFocus && dumpsys audio`
-GET_PROPERTIES_OUTPUT2 = """11Wake Locks: size=2
+GET_PROPERTIES_OUTPUT2 = "1"
+GET_PROPERTIES_DICT2 = {'screen_on': True,
+                        'awake': False,
+                        'wake_lock_size': -1,
+                        'media_session_state': None,
+                        'current_app': None,
+                        'audio_state': None,
+                        'device': None,
+                        'is_volume_muted': None,
+                        'volume': None}
+STATE2 = (constants.STATE_IDLE, None, None, None, None)
+
+# `dumpsys power | grep 'Display Power' | grep -q 'state=ON' && echo -e '1\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' && dumpsys power | grep Locks | grep 'size=' && (dumpsys media_session | grep -m 1 'state=PlaybackState {' || echo) && dumpsys window windows | grep mCurrentFocus && dumpsys audio`
+GET_PROPERTIES_OUTPUT3 = """11Wake Locks: size=2
 
   mCurrentFocus=Window{c82ee5e u0 com.amazon.tv.launcher/com.amazon.tv.launcher.ui.HomeActivity_vNext}
 """ + DUMPSYS_AUDIO_ON
-GET_PROPERTIES_DICT2 = {'screen_on': True,
+GET_PROPERTIES_DICT3 = {'screen_on': True,
                         'awake': True,
                         'wake_lock_size': 2,
                         'media_session_state': None,
@@ -281,7 +294,7 @@ GET_PROPERTIES_DICT2 = {'screen_on': True,
                         'device': 'hmdi_arc',
                         'is_volume_muted': False,
                         'volume': 22}
-STATE2 = (constants.STATE_PLAYING, 'com.amazon.tv.launcher', 'hmdi_arc', False, 22/60.)
+STATE3 = (constants.STATE_PLAYING, 'com.amazon.tv.launcher', 'hmdi_arc', False, 22/60.)
 
 GET_PROPERTIES_DICT_NONE = {'screen_on': None,
                             'awake': None,
@@ -320,6 +333,10 @@ class TestAndroidTV(unittest.TestCase):
         device = self.atv.device
         self.assertIsNone(device)
 
+        self.atv.adb_shell_output = ''
+        device = self.atv.device
+        self.assertIsNone(device)
+
         self.atv.adb_shell_output = DUMPSYS_AUDIO_OFF
         device = self.atv.device
         self.assertEqual('speaker', device)
@@ -333,6 +350,10 @@ class TestAndroidTV(unittest.TestCase):
 
         """
         self.atv.adb_shell_output = None
+        volume = self.atv.volume
+        self.assertIsNone(volume)
+
+        self.atv.adb_shell_output = ''
         volume = self.atv.volume
         self.assertIsNone(volume)
 
@@ -351,6 +372,10 @@ class TestAndroidTV(unittest.TestCase):
 
         """
         self.atv.adb_shell_output = None
+        is_volume_muted = self.atv.is_volume_muted
+        self.assertIsNone(is_volume_muted)
+
+        self.atv.adb_shell_output = ''
         is_volume_muted = self.atv.is_volume_muted
         self.assertIsNone(is_volume_muted)
 
@@ -374,6 +399,10 @@ class TestAndroidTV(unittest.TestCase):
         properties = self.atv.get_properties_dict(lazy=True)
         self.assertEqual(properties, GET_PROPERTIES_DICT2)
 
+        self.atv.adb_shell_output = GET_PROPERTIES_OUTPUT3
+        properties = self.atv.get_properties_dict(lazy=True)
+        self.assertEqual(properties, GET_PROPERTIES_DICT3)
+
     def test_update(self):
         """Check that the ``update`` method works correctly.
 
@@ -386,6 +415,10 @@ class TestAndroidTV(unittest.TestCase):
         state = self.atv.update()
         self.assertTupleEqual(state, STATE2)
 
+        self.atv.adb_shell_output = GET_PROPERTIES_OUTPUT3
+        state = self.atv.update()
+        self.assertTupleEqual(state, STATE3)
+
     def test_set_volume_level(self):
         """Check that the ``set_volume_level`` method works correctly.
 
@@ -394,10 +427,79 @@ class TestAndroidTV(unittest.TestCase):
         new_volume_level = self.atv.set_volume_level(0.5)
         self.assertIsNone(new_volume_level)
 
+        self.atv.adb_shell_output = ''
+        new_volume_level = self.atv.set_volume_level(0.5)
+        self.assertIsNone(new_volume_level)
+
         self.atv.adb_shell_output = DUMPSYS_AUDIO_ON
         new_volume_level = self.atv.set_volume_level(0.5)
-        self.assertEqual(self.atv.adb_shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
         self.assertEqual(new_volume_level, 0.5)
+        self.assertEqual(self.atv.adb_shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
+
+        self.atv.adb_shell_output = ''
+        new_volume_level = self.atv.set_volume_level(0.5, 22./60)
+        self.assertEqual(new_volume_level, 0.5)
+        self.assertEqual(self.atv.adb_shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
+
+    def test_volume_up(self):
+        """Check that the ``volume_up`` method works correctly.
+
+        """
+        self.atv.adb_shell_output = None
+        new_volume_level = self.atv.volume_up()
+        self.assertIsNone(new_volume_level)
+        self.assertEqual(self.atv.adb_shell_cmd, "input keyevent 24")
+
+        self.atv.adb_shell_output = ''
+        new_volume_level = self.atv.volume_up()
+        self.assertIsNone(new_volume_level)
+        self.assertEqual(self.atv.adb_shell_cmd, "input keyevent 24")
+
+        self.atv.adb_shell_output = DUMPSYS_AUDIO_ON
+        new_volume_level = self.atv.volume_up()
+        self.assertEqual(new_volume_level, 23./60)
+        self.assertEqual(self.atv.adb_shell_cmd, "input keyevent 24")
+        new_volume_level = self.atv.volume_up(23./60)
+        self.assertEqual(new_volume_level, 24./60)
+        self.assertEqual(self.atv.adb_shell_cmd, "input keyevent 24")
+
+        self.atv.adb_shell_output = DUMPSYS_AUDIO_OFF
+        new_volume_level = self.atv.volume_up()
+        self.assertEqual(new_volume_level, 21./60)
+        self.assertEqual(self.atv.adb_shell_cmd, "input keyevent 24")
+        new_volume_level = self.atv.volume_up(21./60)
+        self.assertEqual(new_volume_level, 22./60)
+        self.assertEqual(self.atv.adb_shell_cmd, "input keyevent 24")
+
+    def test_volume_down(self):
+        """Check that the ``volume_down`` method works correctly.
+
+        """
+        self.atv.adb_shell_output = None
+        new_volume_level = self.atv.volume_down()
+        self.assertIsNone(new_volume_level)
+        self.assertEqual(self.atv.adb_shell_cmd, "input keyevent 25")
+
+        self.atv.adb_shell_output = ''
+        new_volume_level = self.atv.volume_down()
+        self.assertIsNone(new_volume_level)
+        self.assertEqual(self.atv.adb_shell_cmd, "input keyevent 25")
+
+        self.atv.adb_shell_output = DUMPSYS_AUDIO_ON
+        new_volume_level = self.atv.volume_down()
+        self.assertEqual(new_volume_level, 21./60)
+        self.assertEqual(self.atv.adb_shell_cmd, "input keyevent 25")
+        new_volume_level = self.atv.volume_down(21./60)
+        self.assertEqual(new_volume_level, 20./60)
+        self.assertEqual(self.atv.adb_shell_cmd, "input keyevent 25")
+
+        self.atv.adb_shell_output = DUMPSYS_AUDIO_OFF
+        new_volume_level = self.atv.volume_down()
+        self.assertEqual(new_volume_level, 19./60)
+        self.assertEqual(self.atv.adb_shell_cmd, "input keyevent 25")
+        new_volume_level = self.atv.volume_down(19./60)
+        self.assertEqual(new_volume_level, 18./60)
+        self.assertEqual(self.atv.adb_shell_cmd, "input keyevent 25")
 
 
 if __name__ == "__main__":

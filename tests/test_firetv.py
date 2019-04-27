@@ -37,28 +37,38 @@ u0_a2     15121 197   998628 24628 ffffffff 00000000 S com.amazon.device.control
 RUNNING_APPS_LIST = ['com.netflix.ninja', 'com.amazon.device.controllermanager']
 
 # `adb shell dumpsys power | grep 'Display Power' | grep -q 'state=ON' && echo -e '1\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' && dumpsys power | grep Locks | grep 'size=' && (dumpsys media_session | grep -m 1 'state=PlaybackState {' || echo) && dumpsys window windows | grep mCurrentFocus && ps | grep u0_a`
-GET_PROPERTIES_OUTPUT1 = "1"
-GET_PROPERTIES_DICT1 = {'screen_on': True,
+GET_PROPERTIES_OUTPUT1 = ""
+GET_PROPERTIES_DICT1 = {'screen_on': False,
                         'awake': False,
                         'wake_lock_size': -1,
                         'media_session_state': None,
                         'current_app': None,
                         'running_apps': None}
-STATE1 = (constants.STATE_IDLE, None, None)
+STATE1 = (constants.STATE_OFF, None, None)
+
+# `adb shell dumpsys power | grep 'Display Power' | grep -q 'state=ON' && echo -e '1\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' && dumpsys power | grep Locks | grep 'size=' && (dumpsys media_session | grep -m 1 'state=PlaybackState {' || echo) && dumpsys window windows | grep mCurrentFocus && ps | grep u0_a`
+GET_PROPERTIES_OUTPUT2 = "1"
+GET_PROPERTIES_DICT2 = {'screen_on': True,
+                        'awake': False,
+                        'wake_lock_size': -1,
+                        'media_session_state': None,
+                        'current_app': None,
+                        'running_apps': None}
+STATE2 = (constants.STATE_IDLE, None, None)
 
 # `adb shell dumpsys power | grep 'Display Power' | grep -q 'state=ON' && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep Locks | grep 'size=' && (dumpsys media_session | grep -m 1 'state=PlaybackState {' || echo) && dumpsys window windows | grep mCurrentFocus && ps | grep u0_a`
-GET_PROPERTIES_OUTPUT2 = """11Wake Locks: size=2
+GET_PROPERTIES_OUTPUT3 = """11Wake Locks: size=2
 
   mCurrentFocus=Window{c82ee5e u0 com.amazon.tv.launcher/com.amazon.tv.launcher.ui.HomeActivity_vNext}
 u0_a2     17243 197   998628 24932 ffffffff 00000000 S com.amazon.device.controllermanager
 u0_a2     17374 197   995368 20764 ffffffff 00000000 S com.amazon.device.controllermanager:BluetoothReceiver"""
-GET_PROPERTIES_DICT2 = {'screen_on': True,
+GET_PROPERTIES_DICT3 = {'screen_on': True,
                         'awake': True,
                         'wake_lock_size': 2,
                         'media_session_state': None,
                         'current_app': 'com.amazon.tv.launcher',
                         'running_apps': ['com.amazon.device.controllermanager', 'com.amazon.device.controllermanager:BluetoothReceiver']}
-STATE2 = (constants.STATE_STANDBY, 'com.amazon.tv.launcher', ['com.amazon.device.controllermanager', 'com.amazon.device.controllermanager:BluetoothReceiver'])
+STATE3 = (constants.STATE_STANDBY, 'com.amazon.tv.launcher', ['com.amazon.device.controllermanager', 'com.amazon.device.controllermanager:BluetoothReceiver'])
 
 GET_PROPERTIES_DICT_NONE = {'screen_on': None,
                             'awake': None,
@@ -122,6 +132,10 @@ class TestFireTV(unittest.TestCase):
         current_app = self.ftv.current_app
         self.assertEqual(current_app, None)
 
+        self.ftv.adb_shell_output = ''
+        current_app = self.ftv.current_app
+        self.assertEqual(current_app, None)
+
         self.ftv.adb_shell_output = CURRENT_APP_OUTPUT
         current_app = self.ftv.current_app
         self.assertEqual(current_app, "com.amazon.tv.launcher")
@@ -134,6 +148,10 @@ class TestFireTV(unittest.TestCase):
         media_session_state = self.ftv.media_session_state
         self.assertEqual(media_session_state, None)
 
+        self.ftv.adb_shell_output = ''
+        media_session_state = self.ftv.media_session_state
+        self.assertEqual(media_session_state, None)
+
         self.ftv.adb_shell_output = MEDIA_SESSION_STATE_OUTPUT
         media_session_state = self.ftv.media_session_state
         self.assertEqual(media_session_state, 2)
@@ -143,6 +161,10 @@ class TestFireTV(unittest.TestCase):
 
         """
         self.ftv.adb_shell_output = None
+        running_apps = self.ftv.running_apps
+        self.assertEqual(running_apps, None)
+
+        self.ftv.adb_shell_output = ''
         running_apps = self.ftv.running_apps
         self.assertEqual(running_apps, None)
 
@@ -166,6 +188,10 @@ class TestFireTV(unittest.TestCase):
         properties = self.ftv.get_properties_dict(lazy=True)
         self.assertDictEqual(properties, GET_PROPERTIES_DICT2)
 
+        self.ftv.adb_shell_output = GET_PROPERTIES_OUTPUT3
+        properties = self.ftv.get_properties_dict(lazy=True)
+        self.assertDictEqual(properties, GET_PROPERTIES_DICT3)
+
     def test_update(self):
         """Check that the ``update`` method works correctly.
 
@@ -177,6 +203,10 @@ class TestFireTV(unittest.TestCase):
         self.ftv.adb_shell_output = GET_PROPERTIES_OUTPUT2
         state = self.ftv.update()
         self.assertTupleEqual(state, STATE2)
+
+        self.ftv.adb_shell_output = GET_PROPERTIES_OUTPUT3
+        state = self.ftv.update()
+        self.assertTupleEqual(state, STATE3)
 
 
 if __name__ == "__main__":
