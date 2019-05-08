@@ -16,6 +16,11 @@ Be sure you install into a Python 3.x environment.
    pip install androidtv
 
 
+ADB Intents and Commands
+------------------------
+
+A collection of useful intents and commands can be found `here <https://gist.github.com/mcfrojd/9e6875e1db5c089b1e3ddeb7dba0f304>`_ (credit: mcfrojd).
+
 Acknowledgments
 ---------------
 
