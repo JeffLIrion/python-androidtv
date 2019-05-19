@@ -193,6 +193,7 @@ MEDIA_SESSION_STATES = {0: None,
 APP_AMAZON_VIDEO = 'com.amazon.avod'
 APP_BELL_FIBE = 'com.quickplay.android.bellmediaplayer'
 APP_FIREFOX = 'org.mozilla.tv.firefox'
+APP_HULU = 'com.hulu.plus'
 APP_JELLYFIN_TV = 'org.jellyfin.androidtv'
 APP_KODI = 'org.xbmc.kodi'
 APP_NETFLIX = 'com.netflix.ninja'
@@ -204,6 +205,7 @@ APP_WAIPU_TV = 'de.exaring.waipu.firetv.live'
 APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_BELL_FIBE: 'Bell Fibe',
         APP_FIREFOX: 'Firefox',
+        APP_HULU: 'Hulu',
         APP_JELLYFIN_TV: 'Jellyfin',
         APP_KODI: 'Kodi',
         APP_NETFLIX: 'Netflix',
