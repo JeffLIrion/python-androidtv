@@ -4,7 +4,6 @@ ADB Debugging must be enabled.
 """
 
 
-
 from .basetv import BaseTV
 from . import constants
 
@@ -98,6 +97,10 @@ class AndroidTV(BaseTV):
                 state = constants.STATE_PLAYING
             else:
                 state = constants.STATE_STANDBY
+
+        # Plex
+        elif current_app == constants.APP_PLEX:
+            state = audio_state
 
         # Get the state from `media_session_state`
         elif media_session_state:
