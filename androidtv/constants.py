@@ -197,6 +197,7 @@ APP_HULU = 'com.hulu.plus'
 APP_JELLYFIN_TV = 'org.jellyfin.androidtv'
 APP_KODI = 'org.xbmc.kodi'
 APP_NETFLIX = 'com.netflix.ninja'
+APP_PLEX = 'com.plexapp.android'
 APP_SPORT1 = 'de.sport1.firetv.video'
 APP_SPOTIFY = 'com.spotify.tv.android'
 APP_TWITCH = 'tv.twitch.android.viewer'
@@ -209,6 +210,7 @@ APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_JELLYFIN_TV: 'Jellyfin',
         APP_KODI: 'Kodi',
         APP_NETFLIX: 'Netflix',
+        APP_PLEX: 'Plex',
         APP_SPORT1: 'Sport 1',
         APP_SPOTIFY: 'Spotify',
         APP_TWITCH: 'Twitch',
