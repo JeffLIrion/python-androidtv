@@ -143,7 +143,7 @@ class AndroidTV(BaseTV):
             Whether or not the device is awake (screensaver is not running), or ``None`` if it was not determined
         wake_lock_size : int, None
             The size of the current wake lock, or ``None`` if it was not determined
-        current_app : dict, None
+        current_app : str, None
             The current app property, or ``None`` if it was not determined
         media_session_state : int, None
             The state from the output of ``dumpsys media_session``, or ``None`` if it was not determined
@@ -192,7 +192,7 @@ class AndroidTV(BaseTV):
 
         # `media_session_state` property
         if len(lines) < 3:
-            return screen_on, awake, -1, current_app, None, None, None, None, None
+            return screen_on, awake, wake_lock_size, current_app, None, None, None, None, None
         media_session_state = self._media_session_state(lines[2])
 
         # "dumpsys audio" output
