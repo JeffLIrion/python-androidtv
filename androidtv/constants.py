@@ -13,8 +13,10 @@ CMD_SUCCESS1_FAILURE0 = r" && echo -e '1\c' || echo -e '0\c'"
 # ADB shell commands for getting various properties
 CMD_AUDIO_STATE = r"dumpsys audio | grep -q paused && echo -e '1\c' || (dumpsys audio | grep -q started && echo '2\c' || echo '0\c')"
 CMD_AWAKE = "dumpsys power | grep mWakefulness | grep -q Awake"
-CMD_CURRENT_APP = "dumpsys window windows | grep mCurrentFocus"
-CMD_MEDIA_SESSION_STATE = "dumpsys media_session | grep -m 1 'state=PlaybackState {'"
+CMD_CURRENT_APP = "CURRENT_APP=$(dumpsys window windows | grep mCurrentFocus) && CURRENT_APP=${CURRENT_APP#* * } && CURRENT_APP=${CURRENT_APP%%/*}"
+CMD_CURRENT_APP_FULL = CMD_CURRENT_APP + " && echo $CURRENT_APP"
+CMD_MEDIA_SESSION_STATE = "dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'"
+CMD_MEDIA_SESSION_STATE_FULL = CMD_CURRENT_APP + " && " + CMD_MEDIA_SESSION_STATE
 CMD_RUNNING_APPS = "ps | grep u0_a"
 CMD_SCREEN_ON = "dumpsys power | grep 'Display Power' | grep -q 'state=ON'"
 CMD_WAKE_LOCK_SIZE = "dumpsys power | grep Locks | grep 'size='"
@@ -197,6 +199,7 @@ APP_HULU = 'com.hulu.plus'
 APP_JELLYFIN_TV = 'org.jellyfin.androidtv'
 APP_KODI = 'org.xbmc.kodi'
 APP_NETFLIX = 'com.netflix.ninja'
+APP_PLEX = 'com.plexapp.android'
 APP_SPORT1 = 'de.sport1.firetv.video'
 APP_SPOTIFY = 'com.spotify.tv.android'
 APP_TWITCH = 'tv.twitch.android.viewer'
@@ -209,6 +212,7 @@ APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_JELLYFIN_TV: 'Jellyfin',
         APP_KODI: 'Kodi',
         APP_NETFLIX: 'Netflix',
+        APP_PLEX: 'Plex',
         APP_SPORT1: 'Sport 1',
         APP_SPOTIFY: 'Spotify',
         APP_TWITCH: 'Twitch',
@@ -218,7 +222,6 @@ APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
 
 # Regular expressions
 REGEX_MEDIA_SESSION_STATE = re.compile(r"state=(?P<state>[0-9]+)", re.MULTILINE)
-REGEX_WINDOW = re.compile(r"Window\{(?P<id>.+?) (?P<user>.+) (?P<package>.+?)(?:\/(?P<activity>.+?))?\}$", re.MULTILINE)
 
 # Regular expression patterns
 DEVICE_REGEX_PATTERN = r"Devices: (.*?)\W"

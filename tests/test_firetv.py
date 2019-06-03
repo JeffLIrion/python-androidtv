@@ -25,7 +25,7 @@ DEVICE_PROPERTIES_DICT = {'manufacturer': 'Amazon',
                           'ethmac': None}
 
 # `adb shell dumpsys window windows | grep mCurrentFocus`
-CURRENT_APP_OUTPUT = "mCurrentFocus=Window{c82ee5e u0 com.amazon.tv.launcher/com.amazon.tv.launcher.ui.HomeActivity_vNext}"
+CURRENT_APP_OUTPUT = "com.amazon.tv.launcher"
 
 # `adb shell dumpsys media_session | grep -m 1 'state=PlaybackState {'`
 MEDIA_SESSION_STATE_OUTPUT = "state=PlaybackState {state=2, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}"
@@ -58,8 +58,8 @@ STATE2 = (constants.STATE_IDLE, None, None)
 
 # `adb shell dumpsys power | grep 'Display Power' | grep -q 'state=ON' && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep Locks | grep 'size=' && (dumpsys media_session | grep -m 1 'state=PlaybackState {' || echo) && dumpsys window windows | grep mCurrentFocus && ps | grep u0_a`
 GET_PROPERTIES_OUTPUT3 = """11Wake Locks: size=2
+com.amazon.tv.launcher
 
-  mCurrentFocus=Window{c82ee5e u0 com.amazon.tv.launcher/com.amazon.tv.launcher.ui.HomeActivity_vNext}
 u0_a2     17243 197   998628 24932 ffffffff 00000000 S com.amazon.device.controllermanager
 u0_a2     17374 197   995368 20764 ffffffff 00000000 S com.amazon.device.controllermanager:BluetoothReceiver"""
 GET_PROPERTIES_DICT3 = {'screen_on': True,
