@@ -136,9 +136,9 @@ class TestFireTV(unittest.TestCase):
         current_app = self.ftv.current_app
         self.assertEqual(current_app, None)
 
-        #self.ftv.adb_shell_output = CURRENT_APP_OUTPUT
-        #current_app = self.ftv.current_app
-        #elf.assertEqual(current_app, "com.amazon.tv.launcher")
+        self.ftv.adb_shell_output = CURRENT_APP_OUTPUT
+        current_app = self.ftv.current_app
+        self.assertEqual(current_app, "com.amazon.tv.launcher")
 
     def test_media_session_state(self):
         """Check that the ``media_session_state`` property works correctly.
