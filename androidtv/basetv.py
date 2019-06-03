@@ -352,9 +352,11 @@ class BaseTV(object):
             The ID of the current app, or ``None`` if it could not be determined
 
         """
-        current_window = self.adb_shell(constants.CMD_CURRENT_APP)
+        current_app = self.adb_shell(constants.CMD_CURRENT_APP_FULL)
 
-        return self._current_app(current_window)
+        if current_app:
+            return current_app
+        return None
 
     @property
     def device(self):
@@ -394,7 +396,7 @@ class BaseTV(object):
             The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
 
         """
-        media_session = self.adb_shell(constants.CMD_MEDIA_SESSION_STATE)
+        media_session = self.adb_shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
 
         return self._media_session_state(media_session)
 
@@ -497,34 +499,6 @@ class BaseTV(object):
             return constants.STATE_PAUSED
 
         return constants.STATE_IDLE
-
-    @staticmethod
-    def _current_app(current_window):
-        """Return the current app from the output of ``adb shell dumpsys window windows | grep mCurrentFocus``.
-
-        Parameters
-        ----------
-        current_window : str, None
-            The output of ``adb shell dumpsys window windows | grep mCurrentFocus``
-
-        Returns
-        -------
-        str, None
-            The ID of the current app, or ``None`` if it could not be determined
-
-        """
-        if current_window is None:
-            return None
-
-        current_window = current_window.replace("\r", "")
-        matches = constants.REGEX_WINDOW.search(current_window)
-
-        # case 1: current app was successfully found
-        if matches:
-            return matches.group('package')
-
-        # case 2: current app could not be found
-        return None
 
     @staticmethod
     def _device(stream_music):

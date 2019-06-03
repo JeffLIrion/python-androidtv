@@ -100,7 +100,7 @@ class FireTV(BaseTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, wake_lock_size, media_session_state, current_app, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
+        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
 
         # Check if device is off
         if not screen_on:
@@ -271,10 +271,10 @@ class FireTV(BaseTV):
             Whether or not the device is awake (screensaver is not running), or ``None`` if it was not determined
         wake_lock_size : int, None
             The size of the current wake lock, or ``None`` if it was not determined
+        current_app : str, None
+            The current app property, or ``None`` if it was not determined
         media_session_state : int, None
             The state from the output of ``dumpsys media_session``, or ``None`` if it was not determined
-        current_app : dict, None
-            The current app property, or ``None`` if it was not determined
         running_apps : list, None
             A list of the running apps, or ``None`` if it was not determined
 
@@ -284,14 +284,14 @@ class FireTV(BaseTV):
                                     constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_WAKE_LOCK_SIZE + " && (" +
                                     constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
-                                    constants.CMD_CURRENT_APP + " && " +
+                                    constants.CMD_CURRENT_APP_FULL + " && " +
                                     constants.CMD_RUNNING_APPS)
         else:
             output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_WAKE_LOCK_SIZE + " && (" +
-                                    constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
-                                    constants.CMD_CURRENT_APP)
+                                    constants.CMD_CURRENT_APP_FULL +
+                                    constants.CMD_MEDIA_SESSION_STATE + " || echo) && ")
 
         # ADB command was unsuccessful
         if output is None:
@@ -314,22 +314,22 @@ class FireTV(BaseTV):
             return screen_on, awake, -1, None, None, None
         wake_lock_size = self._wake_lock_size(lines[0])
 
-        # `media_session_state` property
+        # `current_app` property
         if len(lines) < 2:
             return screen_on, awake, wake_lock_size, None, None, None
-        media_session_state = self._media_session_state(lines[1])
+        current_app = lines[1]
 
-        # `current_app` property
+        # `media_session_state` property
         if len(lines) < 3:
-            return screen_on, awake, wake_lock_size, media_session_state, None, None
-        current_app = self._current_app(lines[2])
+            return screen_on, awake, wake_lock_size, current_app, None, None
+        media_session_state = self._media_session_state(lines[2])
 
         # `running_apps` property
         if not get_running_apps or len(lines) < 4:
-            return screen_on, awake, wake_lock_size, media_session_state, current_app, None
+            return screen_on, awake, wake_lock_size, current_app, media_session_state, None
         running_apps = self._running_apps(lines[3:])
 
-        return screen_on, awake, wake_lock_size, media_session_state, current_app, running_apps
+        return screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps
 
     def get_properties_dict(self, get_running_apps=True, lazy=True):
         """Get the properties needed for Home Assistant updates and return them as a dictionary.
@@ -344,17 +344,17 @@ class FireTV(BaseTV):
         Returns
         -------
         dict
-             A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'media_session_state'``,
-             ``'current_app'``, and ``'running_apps'``
+             A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'current_app'``,
+             ``'media_session_state'``, and ``'running_apps'``
 
         """
-        screen_on, awake, wake_lock_size, media_session_state, current_app, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
         return {'screen_on': screen_on,
                 'awake': awake,
                 'wake_lock_size': wake_lock_size,
-                'media_session_state': media_session_state,
                 'current_app': current_app,
+                'media_session_state': media_session_state,
                 'running_apps': running_apps}
 
     # ======================================================================= #
