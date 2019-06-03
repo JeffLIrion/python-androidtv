@@ -282,16 +282,16 @@ class FireTV(BaseTV):
         if get_running_apps:
             output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                    constants.CMD_WAKE_LOCK_SIZE + " && (" +
+                                    constants.CMD_WAKE_LOCK_SIZE + " && " +
+                                    constants.CMD_CURRENT_APP_FULL + " && (" +
                                     constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
-                                    constants.CMD_CURRENT_APP_FULL + " && " +
                                     constants.CMD_RUNNING_APPS)
         else:
             output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                    constants.CMD_WAKE_LOCK_SIZE + " && (" +
-                                    constants.CMD_CURRENT_APP_FULL +
-                                    constants.CMD_MEDIA_SESSION_STATE + " || echo) && ")
+                                    constants.CMD_WAKE_LOCK_SIZE + " && " +
+                                    constants.CMD_CURRENT_APP_FULL + " && (" +
+                                    constants.CMD_MEDIA_SESSION_STATE + " || echo)")
 
         # ADB command was unsuccessful
         if output is None:

@@ -163,8 +163,8 @@ class AndroidTV(BaseTV):
         """
         output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                 constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                constants.CMD_WAKE_LOCK_SIZE + " && (" +
-                                constants.CMD_CURRENT_APP_FULL + " && " +
+                                constants.CMD_WAKE_LOCK_SIZE + " && " +
+                                constants.CMD_CURRENT_APP_FULL + " && (" +
                                 constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
                                 "dumpsys audio")
 
