@@ -4,6 +4,7 @@ ADB Debugging must be enabled.
 """
 
 
+
 from .basetv import BaseTV
 from . import constants
 
@@ -69,7 +70,7 @@ class AndroidTV(BaseTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, wake_lock_size, media_session_state, current_app, audio_state, device, is_volume_muted, volume = self.get_properties(lazy=True)
+        screen_on, awake, wake_lock_size, current_app, media_session_state, audio_state, device, is_volume_muted, volume = self.get_properties(lazy=True)
 
         # Get the volume (between 0 and 1)
         volume_level = self._volume_level(volume)
@@ -143,10 +144,10 @@ class AndroidTV(BaseTV):
             Whether or not the device is awake (screensaver is not running), or ``None`` if it was not determined
         wake_lock_size : int, None
             The size of the current wake lock, or ``None`` if it was not determined
+        current_app : str, None
+            The current app property, or ``None`` if it was not determined
         media_session_state : int, None
             The state from the output of ``dumpsys media_session``, or ``None`` if it was not determined
-        current_app : dict, None
-            The current app property, or ``None`` if it was not determined
         audio_state : str, None
             The audio state, as determined from "dumpsys audio", or ``None`` if it was not determined
         device : str, None
@@ -160,8 +161,8 @@ class AndroidTV(BaseTV):
         output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                 constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                 constants.CMD_WAKE_LOCK_SIZE + " && (" +
+                                constants.CMD_CURRENT_APP_FULL + " && " +
                                 constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
-                                constants.CMD_CURRENT_APP + " && " +
                                 "dumpsys audio")
 
         # ADB command was unsuccessful
@@ -185,19 +186,19 @@ class AndroidTV(BaseTV):
             return screen_on, awake, -1, None, None, None, None, None, None
         wake_lock_size = self._wake_lock_size(lines[0])
 
-        # `media_session_state` property
-        if len(lines) < 2:
-            return screen_on, awake, -1, None, None, None, None, None, None
-        media_session_state = self._media_session_state(lines[1])
-
         # `current_app` property
+        if len(lines) < 2:
+            return screen_on, awake, wake_lock_size, None, None, None, None, None, None
+        current_app = lines[1]
+
+        # `media_session_state` property
         if len(lines) < 3:
-            return screen_on, awake, wake_lock_size, media_session_state, None, None, None, None, None
-        current_app = self._current_app(lines[2])
+            return screen_on, awake, wake_lock_size, current_app, None, None, None, None, None
+        media_session_state = self._media_session_state(lines[2])
 
         # "dumpsys audio" output
         if len(lines) < 4:
-            return screen_on, awake, wake_lock_size, media_session_state, current_app, None, None, None, None
+            return screen_on, awake, wake_lock_size, current_app, media_session_state, None, None, None, None
 
         # reconstruct the output of `adb shell dumpsys audio`
         dumpsys_audio = "\n".join(lines[3:])
@@ -217,7 +218,7 @@ class AndroidTV(BaseTV):
         # `is_volume_muted` property
         is_volume_muted = self._is_volume_muted(stream_music)
 
-        return screen_on, awake, wake_lock_size, media_session_state, current_app, audio_state, device, is_volume_muted, volume
+        return screen_on, awake, wake_lock_size, current_app, media_session_state, audio_state, device, is_volume_muted, volume
 
     def get_properties_dict(self, lazy=True):
         """Get the properties needed for Home Assistant updates and return them as a dictionary.
@@ -230,17 +231,17 @@ class AndroidTV(BaseTV):
         Returns
         -------
         dict
-            A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'media_session_state'``,
-            ``'current_app'``, ``'audio_state'``, ``'device'``, ``'is_volume_muted'``, and ``'volume'``
+            A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'current_app'``,
+            ``'media_session_state'``, ``'audio_state'``, ``'device'``, ``'is_volume_muted'``, and ``'volume'``
 
         """
-        screen_on, awake, wake_lock_size, media_session_state, current_app, audio_state, device, is_volume_muted, volume = self.get_properties(lazy=lazy)
+        screen_on, awake, wake_lock_size, current_app, media_session_state, audio_state, device, is_volume_muted, volume = self.get_properties(lazy=lazy)
 
         return {'screen_on': screen_on,
                 'awake': awake,
                 'wake_lock_size': wake_lock_size,
-                'media_session_state': media_session_state,
                 'current_app': current_app,
+                'media_session_state': media_session_state,
                 'audio_state': audio_state,
                 'device': device,
                 'is_volume_muted': is_volume_muted,

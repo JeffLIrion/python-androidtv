@@ -282,8 +282,8 @@ STATE2 = (constants.STATE_IDLE, None, None, None, None)
 
 # `dumpsys power | grep 'Display Power' | grep -q 'state=ON' && echo -e '1\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' && dumpsys power | grep Locks | grep 'size=' && (dumpsys media_session | grep -m 1 'state=PlaybackState {' || echo) && dumpsys window windows | grep mCurrentFocus && dumpsys audio`
 GET_PROPERTIES_OUTPUT3 = """11Wake Locks: size=2
+com.amazon.tv.launcher
 
-  mCurrentFocus=Window{c82ee5e u0 com.amazon.tv.launcher/com.amazon.tv.launcher.ui.HomeActivity_vNext}
 """ + DUMPSYS_AUDIO_ON
 GET_PROPERTIES_DICT3 = {'screen_on': True,
                         'awake': True,
