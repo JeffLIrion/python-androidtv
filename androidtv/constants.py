@@ -193,22 +193,23 @@ MEDIA_SESSION_STATES = {0: None,
 
 # Apps
 APP_AMAZON_VIDEO = 'com.amazon.avod'
+APP_ATV_LAUNCHER = 'com.google.android.tvlauncher'
 APP_BELL_FIBE = 'com.quickplay.android.bellmediaplayer'
 APP_FIREFOX = 'org.mozilla.tv.firefox'
 APP_HULU = 'com.hulu.plus'
 APP_JELLYFIN_TV = 'org.jellyfin.androidtv'
 APP_KODI = 'org.xbmc.kodi'
 APP_NETFLIX = 'com.netflix.ninja'
-APP_YOUTUBE= 'com.google.android.youtube.tv'
 APP_PLEX = 'com.plexapp.android'
 APP_SPORT1 = 'de.sport1.firetv.video'
 APP_SPOTIFY = 'com.spotify.tv.android'
+APP_TVHEADEND = 'de.cyberdream.dreamepg.tvh.tv.player'
 APP_TWITCH = 'tv.twitch.android.viewer'
 APP_VLC = 'org.videolan.vlc'
+APP_YOUTUBE= 'com.google.android.youtube.tv'
 APP_WAIPU_TV = 'de.exaring.waipu.firetv.live'
-APP_TVHEADEND = 'de.cyberdream.dreamepg.tvh.tv.player'
-APP_ATV_LAUNCHER = 'com.google.android.tvlauncher'
 APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
+        APP_ATV_LAUNCHER 'Android TV Launcher',
         APP_BELL_FIBE: 'Bell Fibe',
         APP_FIREFOX: 'Firefox',
         APP_HULU: 'Hulu',
@@ -219,11 +220,10 @@ APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_SPORT1: 'Sport 1',
         APP_SPOTIFY: 'Spotify',
         APP_TWITCH: 'Twitch',
+        APP_TVHEADEND: 'DreamPLayer TVHeadend',
         APP_VLC: 'VLC',
         APP_WAIPU_TV: 'Waipu TV',
-        APP_YOUTUBE: 'Youtube',
-        APP_TVHEADEND: 'DreamPLayer TVHeadend',
-        APP_ATV_LAUNCHER 'Android TV Launcher'
+        APP_YOUTUBE: 'Youtube'
         }
 
 
