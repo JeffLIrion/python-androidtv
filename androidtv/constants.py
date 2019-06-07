@@ -199,12 +199,15 @@ APP_HULU = 'com.hulu.plus'
 APP_JELLYFIN_TV = 'org.jellyfin.androidtv'
 APP_KODI = 'org.xbmc.kodi'
 APP_NETFLIX = 'com.netflix.ninja'
+APP_YOUTUBE= 'com.google.android.youtube.tv'
 APP_PLEX = 'com.plexapp.android'
 APP_SPORT1 = 'de.sport1.firetv.video'
 APP_SPOTIFY = 'com.spotify.tv.android'
 APP_TWITCH = 'tv.twitch.android.viewer'
 APP_VLC = 'org.videolan.vlc'
 APP_WAIPU_TV = 'de.exaring.waipu.firetv.live'
+APP_TVHEADEND = 'de.cyberdream.dreamepg.tvh.tv.player'
+APP_ATV_LAUNCHER = 'com.google.android.tvlauncher'
 APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_BELL_FIBE: 'Bell Fibe',
         APP_FIREFOX: 'Firefox',
@@ -217,7 +220,11 @@ APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_SPOTIFY: 'Spotify',
         APP_TWITCH: 'Twitch',
         APP_VLC: 'VLC',
-        APP_WAIPU_TV: 'Waipu TV'}
+        APP_WAIPU_TV: 'Waipu TV',
+        APP_YOUTUBE: 'Youtube',
+        APP_TVHEADEND: 'DreamPLayer TVHeadend',
+        APP_ATV_LAUNCHER 'Android TV Launcher'
+        }
 
 
 # Regular expressions
