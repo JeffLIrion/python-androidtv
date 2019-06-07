@@ -101,7 +101,39 @@ class AndroidTV(BaseTV):
         # Plex
         elif current_app == constants.APP_PLEX:
             state = audio_state
-
+        
+        # Youtube
+        elif current_app == constants.APP_YOUTUBE:
+            if media_session_state == 2:
+                state = constants.STATE_PAUSED
+            elif media_session_state == 3:
+                state = constants.STATE_PLAYING
+            else:
+                state = constants.STATE_STANDBY
+          
+        # Netflix
+        elif current_app == constants.APP_NETFLIX:
+            if media_session_state == 2:
+                state = constants.STATE_PAUSED
+            elif media_session_state == 3:
+                state = constants.STATE_PLAYING
+            else:
+                state = constants.STATE_STANDBY
+                
+        # Launcher
+        elif current_app == constants.APP_ATV_LAUNCHER:
+                state = constants.STATE_STANDBY        
+        
+        # TVheadend
+        elif current_app == constants.APP_TVHEADEND:
+            if wake_lock_size == 5:
+                state = constants.STATE_PAUSED
+            elif wake_lock_size == 6:
+                state = constants.STATE_PLAYING
+            else:
+                state = constants.STATE_STANDBY    
+                
+        
         # Get the state from `media_session_state`
         elif media_session_state:
             if media_session_state == 2:
