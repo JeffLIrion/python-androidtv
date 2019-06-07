@@ -84,13 +84,17 @@ class AndroidTV(BaseTV):
 
         # Get the state
         # TODO: determine the state differently based on the current app
-
+        
+        # ATV Launcher
+        elif current_app == constants.APP_ATV_LAUNCHER:
+                state = constants.STATE_STANDBY  
+        
         # BELL Fibe
         elif current_app == constants.APP_BELL_FIBE:
             state = audio_state
-
-        # VLC
-        elif current_app == constants.APP_VLC:
+            
+        # Netflix
+        elif current_app == constants.APP_NETFLIX:
             if media_session_state == 2:
                 state = constants.STATE_PAUSED
             elif media_session_state == 3:
@@ -102,6 +106,15 @@ class AndroidTV(BaseTV):
         elif current_app == constants.APP_PLEX:
             state = audio_state
         
+        # TVheadend
+        elif current_app == constants.APP_TVHEADEND:
+            if wake_lock_size == 5:
+                state = constants.STATE_PAUSED
+            elif wake_lock_size == 6:
+                state = constants.STATE_PLAYING
+            else:
+                state = constants.STATE_STANDBY         
+        
         # Youtube
         elif current_app == constants.APP_YOUTUBE:
             if media_session_state == 2:
@@ -110,30 +123,16 @@ class AndroidTV(BaseTV):
                 state = constants.STATE_PLAYING
             else:
                 state = constants.STATE_STANDBY
-          
-        # Netflix
-        elif current_app == constants.APP_NETFLIX:
+                
+        # VLC
+        elif current_app == constants.APP_VLC:
             if media_session_state == 2:
                 state = constants.STATE_PAUSED
             elif media_session_state == 3:
                 state = constants.STATE_PLAYING
             else:
                 state = constants.STATE_STANDBY
-                
-        # Launcher
-        elif current_app == constants.APP_ATV_LAUNCHER:
-                state = constants.STATE_STANDBY        
-        
-        # TVheadend
-        elif current_app == constants.APP_TVHEADEND:
-            if wake_lock_size == 5:
-                state = constants.STATE_PAUSED
-            elif wake_lock_size == 6:
-                state = constants.STATE_PLAYING
-            else:
-                state = constants.STATE_STANDBY    
-                
-        
+                                     
         # Get the state from `media_session_state`
         elif media_session_state:
             if media_session_state == 2:
