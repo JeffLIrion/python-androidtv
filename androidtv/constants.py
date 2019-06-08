@@ -207,9 +207,9 @@ APP_TVHEADEND = 'de.cyberdream.dreamepg.tvh.tv.player'
 APP_TWITCH = 'tv.twitch.android.viewer'
 APP_VLC = 'org.videolan.vlc'
 APP_WAIPU_TV = 'de.exaring.waipu.firetv.live'
-APP_YOUTUBE= 'com.google.android.youtube.tv'
+APP_YOUTUBE = 'com.google.android.youtube.tv'
 APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
-        APP_ATV_LAUNCHER 'Android TV Launcher',
+        APP_ATV_LAUNCHER: 'Android TV Launcher',
         APP_BELL_FIBE: 'Bell Fibe',
         APP_FIREFOX: 'Firefox',
         APP_HULU: 'Hulu',
