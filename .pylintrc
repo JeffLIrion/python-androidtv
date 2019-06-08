@@ -146,12 +146,15 @@ disable=print-statement,
         too-many-branches,
         too-many-instance-attributes,
         too-many-lines,
+        too-many-locals,
         too-many-nested-blocks,
         too-many-public-methods,
         too-many-return-statements,
         too-many-statements,
         import-error,
-        invalid-name
+        invalid-name,
+        unexpected-keyword-arg,
+        useless-object-inheritance
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
