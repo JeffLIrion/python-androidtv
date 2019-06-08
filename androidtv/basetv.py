@@ -20,7 +20,7 @@ if sys.version_info[0] > 2 and sys.version_info[1] > 1:
     LOCK_KWARGS = {'timeout': 3}
 else:
     LOCK_KWARGS = {}
-    FileNotFoundError = IOError
+    FileNotFoundError = IOError  # pylint: disable=redefined-builtin
 
 
 class BaseTV(object):
@@ -96,7 +96,7 @@ class BaseTV(object):
         if not self.available:
             return None
 
-        if self._adb_lock.acquire(**LOCK_KWARGS):
+        if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
             try:
                 return self._adb.Shell(cmd)
             finally:
@@ -121,7 +121,7 @@ class BaseTV(object):
         if not self._available:
             return None
 
-        if self._adb_lock.acquire(**LOCK_KWARGS):
+        if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
             try:
                 return self._adb_device.shell(cmd)
             finally:
@@ -154,7 +154,7 @@ class BaseTV(object):
             Whether or not the connection was successfully established and the device is available
 
         """
-        self._adb_lock.acquire(**LOCK_KWARGS)
+        self._adb_lock.acquire(**LOCK_KWARGS)  # pylint: disable=unexpected-keyword-arg
         try:
             if not self.adb_server_ip:
                 # python-adb
@@ -201,7 +201,7 @@ class BaseTV(object):
                     self._adb_device = self._adb_client.device(self.host)
                     self._available = bool(self._adb_device)
 
-                except:
+                except:  # noqa pylint: disable=bare-except
                     self._available = False
 
                 finally:
