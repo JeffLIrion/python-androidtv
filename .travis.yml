@@ -1,0 +1,9 @@
+language: python
+python:
+  - "2.7"
+  - "3.6"
+install:
+  - pip install .
+  - pip install flake8 pylint
+# command to run tests
+script: flake8 androidtv/ && pylint androidtv/ && python setup.py test

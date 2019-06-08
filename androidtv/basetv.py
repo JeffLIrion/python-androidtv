@@ -201,7 +201,7 @@ class BaseTV(object):
                     self._adb_device = self._adb_client.device(self.host)
                     self._available = bool(self._adb_device)
 
-                except:
+                except:  # noqa pylint: disable=bare-except
                     self._available = False
 
                 finally:
