@@ -206,8 +206,8 @@ APP_SPOTIFY = 'com.spotify.tv.android'
 APP_TVHEADEND = 'de.cyberdream.dreamepg.tvh.tv.player'
 APP_TWITCH = 'tv.twitch.android.viewer'
 APP_VLC = 'org.videolan.vlc'
-APP_YOUTUBE= 'com.google.android.youtube.tv'
 APP_WAIPU_TV = 'de.exaring.waipu.firetv.live'
+APP_YOUTUBE= 'com.google.android.youtube.tv'
 APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_ATV_LAUNCHER 'Android TV Launcher',
         APP_BELL_FIBE: 'Bell Fibe',
@@ -219,12 +219,11 @@ APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_PLEX: 'Plex',
         APP_SPORT1: 'Sport 1',
         APP_SPOTIFY: 'Spotify',
-        APP_TWITCH: 'Twitch',
         APP_TVHEADEND: 'DreamPLayer TVHeadend',
+        APP_TWITCH: 'Twitch',
         APP_VLC: 'VLC',
         APP_WAIPU_TV: 'Waipu TV',
-        APP_YOUTUBE: 'Youtube'
-        }
+        APP_YOUTUBE: 'Youtube'}
 
 
 # Regular expressions
