@@ -84,12 +84,12 @@ class AndroidTV(BaseTV):
 
         # ATV Launcher
         elif current_app == constants.APP_ATV_LAUNCHER:
-                state = constants.STATE_STANDBY  
-        
+            state = constants.STATE_STANDBY
+
         # BELL Fibe
         elif current_app == constants.APP_BELL_FIBE:
             state = audio_state
-            
+
         # Netflix
         elif current_app == constants.APP_NETFLIX:
             if media_session_state == 2:
@@ -102,7 +102,7 @@ class AndroidTV(BaseTV):
         # Plex
         elif current_app == constants.APP_PLEX:
             state = audio_state
-        
+
         # TVheadend
         elif current_app == constants.APP_TVHEADEND:
             if wake_lock_size == 5:
@@ -129,7 +129,7 @@ class AndroidTV(BaseTV):
                 state = constants.STATE_PLAYING
             else:
                 state = constants.STATE_STANDBY
-                                     
+
         # Get the state from `media_session_state`
         elif media_session_state:
             if media_session_state == 2:
