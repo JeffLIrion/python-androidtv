@@ -82,9 +82,6 @@ class AndroidTV(BaseTV):
         elif not awake:
             state = constants.STATE_IDLE
 
-        # Get the state
-        # TODO: determine the state differently based on the current app
-        
         # ATV Launcher
         elif current_app == constants.APP_ATV_LAUNCHER:
                 state = constants.STATE_STANDBY  
@@ -113,19 +110,19 @@ class AndroidTV(BaseTV):
             elif wake_lock_size == 6:
                 state = constants.STATE_PLAYING
             else:
-                state = constants.STATE_STANDBY         
-        
-        # Youtube
-        elif current_app == constants.APP_YOUTUBE:
+                state = constants.STATE_STANDBY
+
+        # VLC
+        elif current_app == constants.APP_VLC:
             if media_session_state == 2:
                 state = constants.STATE_PAUSED
             elif media_session_state == 3:
                 state = constants.STATE_PLAYING
             else:
                 state = constants.STATE_STANDBY
-                
-        # VLC
-        elif current_app == constants.APP_VLC:
+
+        # YouTube
+        elif current_app == constants.APP_YOUTUBE:
             if media_session_state == 2:
                 state = constants.STATE_PAUSED
             elif media_session_state == 3:
