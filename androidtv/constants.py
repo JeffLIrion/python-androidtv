@@ -11,7 +11,7 @@ CMD_SUCCESS1 = r" && echo -e '1\c'"
 CMD_SUCCESS1_FAILURE0 = r" && echo -e '1\c' || echo -e '0\c'"
 
 # ADB shell commands for getting various properties
-CMD_AUDIO_STATE = r"dumpsys audio | grep -q paused && echo -e '1\c' || (dumpsys audio | grep -q started && echo '2\c' || echo '0\c')"
+CMD_AUDIO_STATE = r"dumpsys audio | grep -v 'Buffer Queue' | grep -q paused && echo -e '1\c' || (dumpsys audio | grep -v 'Buffer Queue' | grep -q started && echo '2\c' || echo '0\c')"
 CMD_AWAKE = "dumpsys power | grep mWakefulness | grep -q Awake"
 CMD_CURRENT_APP = "CURRENT_APP=$(dumpsys window windows | grep mCurrentFocus) && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*}"
 CMD_CURRENT_APP_FULL = CMD_CURRENT_APP + " && echo $CURRENT_APP"
@@ -206,6 +206,7 @@ APP_SPOTIFY = 'com.spotify.tv.android'
 APP_TVHEADEND = 'de.cyberdream.dreamepg.tvh.tv.player'
 APP_TWITCH = 'tv.twitch.android.viewer'
 APP_VLC = 'org.videolan.vlc'
+APP_VRV = 'com.ellation.vrv'
 APP_WAIPU_TV = 'de.exaring.waipu.firetv.live'
 APP_YOUTUBE = 'com.google.android.youtube.tv'
 APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
@@ -222,6 +223,7 @@ APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_TVHEADEND: 'DreamPLayer TVHeadend',
         APP_TWITCH: 'Twitch',
         APP_VLC: 'VLC',
+        APP_VRV: 'VRV',
         APP_WAIPU_TV: 'Waipu TV',
         APP_YOUTUBE: 'Youtube'}
 

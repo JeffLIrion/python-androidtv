@@ -103,6 +103,10 @@ class AndroidTV(BaseTV):
         elif current_app == constants.APP_PLEX:
             state = audio_state
 
+        # VRV
+        elif current_app == constants.APP_VRV:
+            state = audio_state
+
         # TVheadend
         elif current_app == constants.APP_TVHEADEND:
             if wake_lock_size == 5:
