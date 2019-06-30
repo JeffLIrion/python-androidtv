@@ -498,7 +498,7 @@ class BaseTV(object):
                 continue
             if 'started' in line:
                 return constants.STATE_PLAYING
-            elif 'paused' in line:
+            if 'paused' in line:
                 return constants.STATE_PAUSED
 
         return constants.STATE_IDLE
