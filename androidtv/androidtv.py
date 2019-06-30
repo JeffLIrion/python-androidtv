@@ -121,6 +121,10 @@ class AndroidTV(BaseTV):
             else:
                 state = constants.STATE_STANDBY
 
+        # VRV
+        elif current_app == constants.APP_VRV:
+            state = audio_state
+
         # YouTube
         elif current_app == constants.APP_YOUTUBE:
             if media_session_state == 2:

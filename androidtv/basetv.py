@@ -492,11 +492,14 @@ class BaseTV(object):
         if not dumpsys_audio:
             return None
 
-        if 'started' in dumpsys_audio:
-            return constants.STATE_PLAYING
-
-        if 'paused' in dumpsys_audio:
-            return constants.STATE_PAUSED
+        for line in dumpsys_audio.splitlines():
+            if 'OpenSL ES AudioPlayer (Buffer Queue)' in line:
+                # ignore this line which can cause false positives for some apps (e.g. VRV)
+                continue
+            if 'started' in line:
+                return constants.STATE_PLAYING
+            if 'paused' in line:
+                return constants.STATE_PAUSED
 
         return constants.STATE_IDLE
 
