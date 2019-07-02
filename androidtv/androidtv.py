@@ -196,7 +196,7 @@ class AndroidTV(BaseTV):
         output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                 constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                 constants.CMD_WAKE_LOCK_SIZE + " && " +
-                                constants.CMD_CURRENT_APP_FULL + " && (" +
+                                constants.CMD_CURRENT_APP + " && (" +
                                 constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
                                 "dumpsys audio")
 
@@ -229,7 +229,7 @@ class AndroidTV(BaseTV):
         # `media_session_state` property
         if len(lines) < 3:
             return screen_on, awake, wake_lock_size, current_app, None, None, None, None, None
-        media_session_state = self._media_session_state(lines[2])
+        media_session_state = self._media_session_state(lines[2], current_app)
 
         # "dumpsys audio" output
         if len(lines) < 4:

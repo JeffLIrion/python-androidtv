@@ -282,14 +282,14 @@ class FireTV(BaseTV):
             output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_WAKE_LOCK_SIZE + " && " +
-                                    constants.CMD_CURRENT_APP_FULL + " && (" +
+                                    constants.CMD_CURRENT_APP + " && (" +
                                     constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
                                     constants.CMD_RUNNING_APPS)
         else:
             output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_WAKE_LOCK_SIZE + " && " +
-                                    constants.CMD_CURRENT_APP_FULL + " && (" +
+                                    constants.CMD_CURRENT_APP + " && (" +
                                     constants.CMD_MEDIA_SESSION_STATE + " || echo)")
 
         # ADB command was unsuccessful
@@ -316,12 +316,12 @@ class FireTV(BaseTV):
         # `current_app` property
         if len(lines) < 2:
             return screen_on, awake, wake_lock_size, None, None, None
-        current_app = lines[1]
+        current_app = self._current_app(lines[1])
 
         # `media_session_state` property
         if len(lines) < 3:
             return screen_on, awake, wake_lock_size, current_app, None, None
-        media_session_state = self._media_session_state(lines[2])
+        media_session_state = self._media_session_state(lines[2], current_app)
 
         # `running_apps` property
         if not get_running_apps or len(lines) < 4:
