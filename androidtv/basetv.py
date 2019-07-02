@@ -352,11 +352,9 @@ class BaseTV(object):
             The ID of the current app, or ``None`` if it could not be determined
 
         """
-        current_app = self.adb_shell(constants.CMD_CURRENT_APP_FULL)
+        current_app = self.adb_shell(constants.CMD_CURRENT_APP)
 
-        if current_app:
-            return current_app
-        return None
+        return self._current_app(current_app)
 
     @property
     def device(self):
@@ -396,9 +394,11 @@ class BaseTV(object):
             The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
 
         """
-        media_session = self.adb_shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
+        media_session_output = self.adb_shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
 
-        return self._media_session_state(media_session)
+        _, media_session_state = self._current_app_media_session_state(media_session_output)
+
+        return media_session_state
 
     @property
     def running_apps(self):
@@ -504,6 +504,56 @@ class BaseTV(object):
         return constants.STATE_IDLE
 
     @staticmethod
+    def _current_app(current_app_output):
+        """Get the current app from the output of the ``constants.CMD_CURRENT_APP`` command.
+
+        Parameters
+        ----------
+        current_app_output : str, None
+            The output from the ADB command ``constants.CMD_CURRENT_APP``
+
+        Returns
+        -------
+        str, None
+            The current app, or ``None`` if it could not be determined
+
+        """
+        if not current_app_output or '=' in current_app_output or '{' in current_app_output:
+            return None
+
+        return current_app_output
+
+    def _current_app_media_session_state(self, media_session_output):
+        """Get the current app and the media session state properties from the output of ``constants.CMD_MEDIA_SESSION_STATE_FULL``.
+
+        Parameters
+        ----------
+        media_session_output : str, None
+            The output of ``constants.CMD_MEDIA_SESSION_STATE_FULL``
+
+        Returns
+        -------
+        current_app : str, None
+            The current app, or ``None`` if it could not be determined
+        media_session_state : int, None
+            The state from the output of the ADB shell command, or ``None`` if it could not be determined
+
+        """
+        if not media_session_output:
+            return None, None
+
+        lines = media_session_output.splitlines()
+
+        current_app = self._current_app(lines[0].strip())
+
+        if len(lines) > 1:
+            media_session_state = self._media_session_state(lines[1], current_app)
+        else:
+            media_session_state = None
+
+        return current_app, media_session_state
+
+    @staticmethod
     def _device(stream_music):
         """Get the current playback device from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
 
@@ -578,24 +628,26 @@ class BaseTV(object):
         return None
 
     @staticmethod
-    def _media_session_state(media_session):
-        """Get the state from the output of ``adb shell dumpsys media_session | grep -m 1 'state=PlaybackState {'``.
+    def _media_session_state(media_session_output, current_app):
+        """Get the state from the output of ``constants.CMD_MEDIA_SESSION_STATE``.
 
         Parameters
         ----------
-        media_session : str, None
-            The output of ``adb shell dumpsys media_session | grep -m 1 'state=PlaybackState {'``
+        media_session_output : str, None
+            The output of ``constants.CMD_MEDIA_SESSION_STATE``
+        current_app : str, None
+            The current app, or ``None`` if it could not be determined
 
         Returns
         -------
         int, None
-            The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
+            The state from the output of the ADB shell command, or ``None`` if it could not be determined
 
         """
-        if not media_session:
+        if not media_session_output or not current_app:
             return None
 
-        matches = constants.REGEX_MEDIA_SESSION_STATE.search(media_session)
+        matches = constants.REGEX_MEDIA_SESSION_STATE.search(media_session_output)
         if matches:
             return int(matches.group('state'))
 
