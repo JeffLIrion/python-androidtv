@@ -15,6 +15,6 @@ Module contents
 ---------------
 
 .. automodule:: androidtv
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

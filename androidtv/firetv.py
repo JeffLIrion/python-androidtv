@@ -30,7 +30,7 @@ class FireTV(BaseTV):
         host : str
             The address of the device in the format ``<ip address>:<host>``
         adbkey : str
-            The path to the ``adbkey`` file for ADB authentication; the file ``adbkey.pub`` must be in the same directory
+            The path to the ``adbkey`` file for ADB authentication
         adb_server_ip : str
             The IP address of the ADB server
         adb_server_port : int
@@ -120,7 +120,7 @@ class FireTV(BaseTV):
                 running_apps = [current_app]
 
             # Determine the state based on the `current_app`
-            if current_app in [APP_PACKAGE_LAUNCHER, APP_PACKAGE_SETTINGS]:
+            if current_app in [APP_PACKAGE_LAUNCHER, APP_PACKAGE_SETTINGS, None]:
                 state = constants.STATE_STANDBY
 
             # Amazon Video

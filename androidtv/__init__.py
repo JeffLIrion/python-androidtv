@@ -16,7 +16,7 @@ def setup(host, adbkey='', adb_server_ip='', adb_server_port=5037, device_class=
     host : str
         The address of the device in the format ``<ip address>:<host>``
     adbkey : str
-        The path to the ``adbkey`` file for ADB authentication; the file ``adbkey.pub`` must be in the same directory
+        The path to the ``adbkey`` file for ADB authentication
     adb_server_ip : str
         The IP address of the ADB server
     adb_server_port : int
