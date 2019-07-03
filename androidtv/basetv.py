@@ -34,7 +34,7 @@ class BaseTV(object):
         host : str
             The address of the device in the format ``<ip address>:<host>``
         adbkey : str
-            The path to the ``adbkey`` file for ADB authentication; the file ``adbkey.pub`` must be in the same directory
+            The path to the ``adbkey`` file for ADB authentication
         adb_server_ip : str
             The IP address of the ADB server
         adb_server_port : int
@@ -276,12 +276,12 @@ class BaseTV(object):
             The audio state, as determined from the ADB shell command ``dumpsys audio``, or ``None`` if it could not be determined
 
         """
-        output = self.adb_shell(constants.CMD_AUDIO_STATE)
-        if output is None:
+        audio_state_response = self.adb_shell(constants.CMD_AUDIO_STATE)
+        if audio_state_response is None:
             return None
-        if output == '1':
+        if audio_state_response == '1':
             return constants.STATE_PAUSED
-        if output == '2':
+        if audio_state_response == '2':
             return constants.STATE_PLAYING
         return constants.STATE_IDLE
 
@@ -352,9 +352,9 @@ class BaseTV(object):
             The ID of the current app, or ``None`` if it could not be determined
 
         """
-        current_app = self.adb_shell(constants.CMD_CURRENT_APP)
+        current_app_response = self.adb_shell(constants.CMD_CURRENT_APP)
 
-        return self._current_app(current_app)
+        return self._current_app(current_app_response)
 
     @property
     def device(self):
@@ -394,9 +394,9 @@ class BaseTV(object):
             The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
 
         """
-        media_session_output = self.adb_shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
+        media_session_state_response = self.adb_shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
 
-        _, media_session_state = self._current_app_media_session_state(media_session_output)
+        _, media_session_state = self._current_app_media_session_state(media_session_state_response)
 
         return media_session_state
 
@@ -410,9 +410,9 @@ class BaseTV(object):
             A list of the running apps
 
         """
-        ps = self.adb_shell(constants.CMD_RUNNING_APPS)
+        running_apps_response = self.adb_shell(constants.CMD_RUNNING_APPS)
 
-        return self._running_apps(ps)
+        return self._running_apps(running_apps_response)
 
     @property
     def screen_on(self):
@@ -465,9 +465,9 @@ class BaseTV(object):
             The size of the current wake lock, or ``None`` if it could not be determined
 
         """
-        locks_size = self.adb_shell(constants.CMD_WAKE_LOCK_SIZE)
+        wake_lock_size_response = self.adb_shell(constants.CMD_WAKE_LOCK_SIZE)
 
-        return self._wake_lock_size(locks_size)
+        return self._wake_lock_size(wake_lock_size_response)
 
     # ======================================================================= #
     #                                                                         #
@@ -475,12 +475,12 @@ class BaseTV(object):
     #                                                                         #
     # ======================================================================= #
     @staticmethod
-    def _audio_state(dumpsys_audio):
+    def _audio_state(dumpsys_audio_response):
         """Parse the ``audio_state`` property from the output of ``adb shell dumpsys audio``.
 
         Parameters
         ----------
-        dumpsys_audio : str, None
+        dumpsys_audio_response : str, None
             The output of ``adb shell dumpsys audio``
 
         Returns
@@ -489,10 +489,10 @@ class BaseTV(object):
             The audio state, or ``None`` if it could not be determined
 
         """
-        if not dumpsys_audio:
+        if not dumpsys_audio_response:
             return None
 
-        for line in dumpsys_audio.splitlines():
+        for line in dumpsys_audio_response.splitlines():
             if 'OpenSL ES AudioPlayer (Buffer Queue)' in line:
                 # ignore this line which can cause false positives for some apps (e.g. VRV)
                 continue
@@ -504,13 +504,13 @@ class BaseTV(object):
         return constants.STATE_IDLE
 
     @staticmethod
-    def _current_app(current_app_output):
-        """Get the current app from the output of the ``constants.CMD_CURRENT_APP`` command.
+    def _current_app(current_app_response):
+        """Get the current app from the output of the command :py:const:`androidtv.constants.CMD_CURRENT_APP`.
 
         Parameters
         ----------
-        current_app_output : str, None
-            The output from the ADB command ``constants.CMD_CURRENT_APP``
+        current_app_response : str, None
+            The output from the ADB command :py:const:`androidtv.constants.CMD_CURRENT_APP`
 
         Returns
         -------
@@ -518,18 +518,18 @@ class BaseTV(object):
             The current app, or ``None`` if it could not be determined
 
         """
-        if not current_app_output or '=' in current_app_output or '{' in current_app_output:
+        if not current_app_response or '=' in current_app_response or '{' in current_app_response:
             return None
 
-        return current_app_output
+        return current_app_response
 
-    def _current_app_media_session_state(self, media_session_output):
-        """Get the current app and the media session state properties from the output of ``constants.CMD_MEDIA_SESSION_STATE_FULL``.
+    def _current_app_media_session_state(self, media_session_state_response):
+        """Get the current app and the media session state properties from the output of :py:const:`androidtv.constants.CMD_MEDIA_SESSION_STATE_FULL`.
 
         Parameters
         ----------
-        media_session_output : str, None
-            The output of ``constants.CMD_MEDIA_SESSION_STATE_FULL``
+        media_session_state_response : str, None
+            The output of :py:const:`androidtv.constants.CMD_MEDIA_SESSION_STATE_FULL`
 
         Returns
         -------
@@ -539,10 +539,10 @@ class BaseTV(object):
             The state from the output of the ADB shell command, or ``None`` if it could not be determined
 
         """
-        if not media_session_output:
+        if not media_session_state_response:
             return None, None
 
-        lines = media_session_output.splitlines()
+        lines = media_session_state_response.splitlines()
 
         current_app = self._current_app(lines[0].strip())
 
@@ -577,12 +577,12 @@ class BaseTV(object):
 
         return None
 
-    def _get_stream_music(self, dumpsys_audio=None):
+    def _get_stream_music(self, dumpsys_audio_response=None):
         """Get the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
 
         Parameters
         ----------
-        dumpsys_audio : str, None
+        dumpsys_audio_response : str, None
             The output of ``adb shell dumpsys audio``
 
         Returns
@@ -591,13 +591,13 @@ class BaseTV(object):
             The ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``, or ``None`` if it could not be determined
 
         """
-        if not dumpsys_audio:
-            dumpsys_audio = self.adb_shell("dumpsys audio")
+        if not dumpsys_audio_response:
+            dumpsys_audio_response = self.adb_shell("dumpsys audio")
 
-        if not dumpsys_audio:
+        if not dumpsys_audio_response:
             return None
 
-        matches = re.findall(constants.STREAM_MUSIC_REGEX_PATTERN, dumpsys_audio, re.DOTALL | re.MULTILINE)
+        matches = re.findall(constants.STREAM_MUSIC_REGEX_PATTERN, dumpsys_audio_response, re.DOTALL | re.MULTILINE)
         if matches:
             return matches[0]
 
@@ -628,13 +628,13 @@ class BaseTV(object):
         return None
 
     @staticmethod
-    def _media_session_state(media_session_output, current_app):
-        """Get the state from the output of ``constants.CMD_MEDIA_SESSION_STATE``.
+    def _media_session_state(media_session_state_response, current_app):
+        """Get the state from the output of :py:const:`androidtv.constants.CMD_MEDIA_SESSION_STATE`.
 
         Parameters
         ----------
-        media_session_output : str, None
-            The output of ``constants.CMD_MEDIA_SESSION_STATE``
+        media_session_state_response : str, None
+            The output of :py:const:`androidtv.constants.CMD_MEDIA_SESSION_STATE`
         current_app : str, None
             The current app, or ``None`` if it could not be determined
 
@@ -644,23 +644,23 @@ class BaseTV(object):
             The state from the output of the ADB shell command, or ``None`` if it could not be determined
 
         """
-        if not media_session_output or not current_app:
+        if not media_session_state_response or not current_app:
             return None
 
-        matches = constants.REGEX_MEDIA_SESSION_STATE.search(media_session_output)
+        matches = constants.REGEX_MEDIA_SESSION_STATE.search(media_session_state_response)
         if matches:
             return int(matches.group('state'))
 
         return None
 
     @staticmethod
-    def _running_apps(ps):
-        """Get the running apps from the output of ``ps | grep u0_a``.
+    def _running_apps(running_apps_response):
+        """Get the running apps from the output of :py:const:`androidtv.constants.CMD_RUNNING_APPS`.
 
         Parameters
         ----------
-        ps : str, None
-            The output of ``adb shell ps | grep u0_a``
+        running_apps_response : str, None
+            The output of :py:const:`androidtv.constants.CMD_RUNNING_APPS`
 
         Returns
         -------
@@ -668,10 +668,10 @@ class BaseTV(object):
             A list of the running apps, or ``None`` if it could not be determined
 
         """
-        if ps:
-            if isinstance(ps, list):
-                return [line.strip().rsplit(' ', 1)[-1] for line in ps if line.strip()]
-            return [line.strip().rsplit(' ', 1)[-1] for line in ps.splitlines() if line.strip()]
+        if running_apps_response:
+            if isinstance(running_apps_response, list):
+                return [line.strip().rsplit(' ', 1)[-1] for line in running_apps_response if line.strip()]
+            return [line.strip().rsplit(' ', 1)[-1] for line in running_apps_response.splitlines() if line.strip()]
 
         return None
 
@@ -730,13 +730,13 @@ class BaseTV(object):
         return None
 
     @staticmethod
-    def _wake_lock_size(locks_size):
-        """Get the size of the current wake lock from the output of ``adb shell dumpsys power | grep Locks | grep 'size='``.
+    def _wake_lock_size(wake_lock_size_response):
+        """Get the size of the current wake lock from the output of :py:const:`androidtv.constants.CMD_WAKE_LOCK_SIZE`.
 
         Parameters
         ----------
-        locks_size : str, None
-            The output of ``adb shell dumpsys power | grep Locks | grep 'size='``.
+        wake_lock_size_response : str, None
+            The output of :py:const:`androidtv.constants.CMD_WAKE_LOCK_SIZE`
 
         Returns
         -------
@@ -744,8 +744,8 @@ class BaseTV(object):
             The size of the current wake lock, or ``None`` if it could not be determined
 
         """
-        if locks_size:
-            return int(locks_size.split("=")[1].strip())
+        if wake_lock_size_response:
+            return int(wake_lock_size_response.split("=")[1].strip())
 
         return None
 

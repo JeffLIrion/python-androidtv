@@ -10,14 +10,28 @@ CMD_SUCCESS1 = r" && echo -e '1\c'"
 # echo '1' if the previous shell command was successful, echo '0' if it was not
 CMD_SUCCESS1_FAILURE0 = r" && echo -e '1\c' || echo -e '0\c'"
 
-# ADB shell commands for getting various properties
+#: Get the audio state
 CMD_AUDIO_STATE = r"dumpsys audio | grep -v 'Buffer Queue' | grep -q paused && echo -e '1\c' || (dumpsys audio | grep -v 'Buffer Queue' | grep -q started && echo '2\c' || echo '0\c')"
+
+#: Determine whether the device is awake
 CMD_AWAKE = "dumpsys power | grep mWakefulness | grep -q Awake"
+
+#: Get the current app
 CMD_CURRENT_APP = "CURRENT_APP=$(dumpsys window windows | grep mCurrentFocus) && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && echo $CURRENT_APP"
+
+#: Get the state from ``dumpsys media_session``; this assumes that the variable ``CURRENT_APP`` has been defined
 CMD_MEDIA_SESSION_STATE = "dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'"
+
+#: Determine the current app and get the state from ``dumpsys media_session``
 CMD_MEDIA_SESSION_STATE_FULL = CMD_CURRENT_APP + " && " + CMD_MEDIA_SESSION_STATE
+
+#: Get the running apps
 CMD_RUNNING_APPS = "ps | grep u0_a"
+
+#: Determine if the device is on
 CMD_SCREEN_ON = "dumpsys power | grep 'Display Power' | grep -q 'state=ON'"
+
+#: Get the wake lock size
 CMD_WAKE_LOCK_SIZE = "dumpsys power | grep Locks | grep 'size='"
 
 # `getprop` commands

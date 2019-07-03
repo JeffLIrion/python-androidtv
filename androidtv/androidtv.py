@@ -21,7 +21,7 @@ class AndroidTV(BaseTV):
         host : str
             The address of the device in the format ``<ip address>:<host>``
         adbkey : str
-            The path to the ``adbkey`` file for ADB authentication; the file ``adbkey.pub`` must be in the same directory
+            The path to the ``adbkey`` file for ADB authentication
         adb_server_ip : str
             The IP address of the ADB server
         adb_server_port : int
@@ -83,7 +83,7 @@ class AndroidTV(BaseTV):
             state = constants.STATE_IDLE
 
         # ATV Launcher
-        elif current_app == constants.APP_ATV_LAUNCHER:
+        elif current_app in [constants.APP_ATV_LAUNCHER, None]:
             state = constants.STATE_STANDBY
 
         # BELL Fibe
@@ -224,7 +224,7 @@ class AndroidTV(BaseTV):
         # `current_app` property
         if len(lines) < 2:
             return screen_on, awake, wake_lock_size, None, None, None, None, None, None
-        current_app = lines[1]
+        current_app = self._current_app(lines[1])
 
         # `media_session_state` property
         if len(lines) < 3:
