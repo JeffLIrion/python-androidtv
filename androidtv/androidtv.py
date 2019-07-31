@@ -11,26 +11,27 @@ from . import constants
 
 
 class AndroidTV(BaseTV):
-    """Representation of an Android TV device."""
+    """Representation of an Android TV device.
+
+    Parameters
+    ----------
+    host : str
+        The address of the device in the format ``<ip address>:<host>``
+    adbkey : str
+        The path to the ``adbkey`` file for ADB authentication
+    adb_server_ip : str
+        The IP address of the ADB server
+    adb_server_port : int
+        The port for the ADB server
+    state_detection_rules : dict, None
+        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
+
+    """
 
     DEVICE_CLASS = 'androidtv'
 
-    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037):
-        """Initialize an ``AndroidTV`` object.
-
-        Parameters
-        ----------
-        host : str
-            The address of the device in the format ``<ip address>:<host>``
-        adbkey : str
-            The path to the ``adbkey`` file for ADB authentication
-        adb_server_ip : str
-            The IP address of the ADB server
-        adb_server_port : int
-            The port for the ADB server
-
-        """
-        BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port)
+    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
+        BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
 
     # ======================================================================= #
     #                                                                         #
@@ -84,79 +85,85 @@ class AndroidTV(BaseTV):
         elif not awake:
             state = constants.STATE_IDLE
 
-        # ATV Launcher
-        elif current_app in [constants.APP_ATV_LAUNCHER, None]:
-            state = constants.STATE_STANDBY
-
-        # BELL Fibe
-        elif current_app == constants.APP_BELL_FIBE:
-            state = audio_state
-
-        # Netflix
-        elif current_app == constants.APP_NETFLIX:
-            if media_session_state == 2:
-                state = constants.STATE_PAUSED
-            elif media_session_state == 3:
-                state = constants.STATE_PLAYING
-            else:
-                state = constants.STATE_STANDBY
-
-        # Plex
-        elif current_app == constants.APP_PLEX:
-            state = audio_state
-
-        # TVheadend
-        elif current_app == constants.APP_TVHEADEND:
-            if wake_lock_size == 5:
-                state = constants.STATE_PAUSED
-            elif wake_lock_size == 6:
-                state = constants.STATE_PLAYING
-            else:
-                state = constants.STATE_STANDBY
-
-        # VLC
-        elif current_app == constants.APP_VLC:
-            if media_session_state == 2:
-                state = constants.STATE_PAUSED
-            elif media_session_state == 3:
-                state = constants.STATE_PLAYING
-            else:
-                state = constants.STATE_STANDBY
-
-        # VRV
-        elif current_app == constants.APP_VRV:
-            state = audio_state
-
-        # YouTube
-        elif current_app == constants.APP_YOUTUBE:
-            if media_session_state == 2:
-                state = constants.STATE_PAUSED
-            elif media_session_state == 3:
-                state = constants.STATE_PLAYING
-            else:
-                state = constants.STATE_STANDBY
-
-        # Get the state from `media_session_state`
-        elif media_session_state:
-            if media_session_state == 2:
-                state = constants.STATE_PAUSED
-            elif media_session_state == 3:
-                state = constants.STATE_PLAYING
-            else:
-                state = constants.STATE_STANDBY
-
-        # Get the state from `audio_state`
-        elif audio_state != constants.STATE_IDLE:
-            state = audio_state
-
-        # Get the state from `wake_lock_size`
         else:
-            if wake_lock_size == 1:
-                state = constants.STATE_PAUSED
-            elif wake_lock_size == 2:
-                state = constants.STATE_PLAYING
-            else:
+            # Determine the state using custom rules
+            state = self._custom_state_detection(current_app=current_app, media_session_state=media_session_state, wake_lock_size=wake_lock_size, audio_state=audio_state)
+            if state:
+                return state, current_app, device, is_volume_muted, volume_level
+
+            # ATV Launcher
+            if current_app in [constants.APP_ATV_LAUNCHER, None]:
                 state = constants.STATE_STANDBY
+
+            # BELL Fibe
+            elif current_app == constants.APP_BELL_FIBE:
+                state = audio_state
+
+            # Netflix
+            elif current_app == constants.APP_NETFLIX:
+                if media_session_state == 2:
+                    state = constants.STATE_PAUSED
+                elif media_session_state == 3:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
+
+            # Plex
+            elif current_app == constants.APP_PLEX:
+                state = audio_state
+
+            # TVheadend
+            elif current_app == constants.APP_TVHEADEND:
+                if wake_lock_size == 5:
+                    state = constants.STATE_PAUSED
+                elif wake_lock_size == 6:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
+
+            # VLC
+            elif current_app == constants.APP_VLC:
+                if media_session_state == 2:
+                    state = constants.STATE_PAUSED
+                elif media_session_state == 3:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
+
+            # VRV
+            elif current_app == constants.APP_VRV:
+                state = audio_state
+
+            # YouTube
+            elif current_app == constants.APP_YOUTUBE:
+                if media_session_state == 2:
+                    state = constants.STATE_PAUSED
+                elif media_session_state == 3:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
+
+            # Get the state from `media_session_state`
+            elif media_session_state:
+                if media_session_state == 2:
+                    state = constants.STATE_PAUSED
+                elif media_session_state == 3:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
+
+            # Get the state from `audio_state`
+            elif audio_state != constants.STATE_IDLE:
+                state = audio_state
+
+            # Get the state from `wake_lock_size`
+            else:
+                if wake_lock_size == 1:
+                    state = constants.STATE_PAUSED
+                elif wake_lock_size == 2:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
 
         return state, current_app, device, is_volume_muted, volume_level
 

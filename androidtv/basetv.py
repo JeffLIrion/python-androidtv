@@ -24,27 +24,47 @@ else:
 
 
 class BaseTV(object):
-    """Base class for representing an Android TV / Fire TV device."""
+    """Base class for representing an Android TV / Fire TV device.
 
-    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037):
-        """Initialize a ``BaseTV`` object.
+    The ``state_detection_rules`` parameter is of the format:
 
-        Parameters
-        ----------
-        host : str
-            The address of the device in the format ``<ip address>:<host>``
-        adbkey : str
-            The path to the ``adbkey`` file for ADB authentication
-        adb_server_ip : str
-            The IP address of the ADB server
-        adb_server_port : int
-            The port for the ADB server
+    .. code-block:: python
 
-        """
+       state_detection_rules = {'com.amazon.tv.launcher': ['standby'],
+                                'com.netflix.ninja': ['media_session_state'],
+                                'com.hulu.plus': [{'wake_lock_size' : {1: 'playing', 2: 'paused'}}],
+                                'another.app': ['audio_state'],
+                                'yet.another.app': ['media_session_state', {'wake_lock_size' : {1: 'playing', 2: 'paused'}}, 'audio_state']}
+
+    The keys are app IDs, and the values are lists of rules that are evaluated in order by the ``_custom_state_detection`` method. Valid rules are:
+
+    * ``'standby'``, ``'playing'``, ``'paused'``, ``'idle'``, ``'stopped'``, or ``'off'`` = always use the specified state for the state when this app is open
+    * ``'media_session_state'`` = try to use the ``media_session_state`` property to determine the state
+    * ``'audio_state'`` = try to use the ``audio_state`` property to determine the state
+    * ``{'wake_lock_size': {VAL1: STATE1, VAL2: STATE:2, ...}}`` = try to look up the state using the ``wake_lock_size`` property
+
+
+    Parameters
+    ----------
+    host : str
+        The address of the device in the format ``<ip address>:<host>``
+    adbkey : str
+        The path to the ``adbkey`` file for ADB authentication
+    adb_server_ip : str
+        The IP address of the ADB server
+    adb_server_port : int
+        The port for the ADB server
+    state_detection_rules : dict, None
+        A dictionary of rules for determining the state (see above)
+
+    """
+
+    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
         self.host = host
         self.adbkey = adbkey
         self.adb_server_ip = adb_server_ip
         self.adb_server_port = adb_server_port
+        self._state_detection_rules = state_detection_rules
 
         # the max volume level (determined when first getting the volume level)
         self.max_volume = None
@@ -283,6 +303,36 @@ class BaseTV(object):
                  'ethmac': ethmac}
 
         return props
+
+    # ======================================================================= #
+    #                                                                         #
+    #                         Custom state detection                          #
+    #                                                                         #
+    # ======================================================================= #
+    def _custom_state_detection(self, current_app=None, media_session_state=None, wake_lock_size=None, audio_state=None):
+        """Use the rules in ``self._state_detection_rules`` to determine the state.
+
+        Parameters
+        ----------
+        current_app : str, None
+            The ``current_app`` property
+        media_session_state : int, None
+            The ``media_session_state`` property
+        wake_lock_size : int, None
+            The ``wake_lock_size`` property
+        audio_state : str, None
+            The ``audio_state`` property
+
+        Returns
+        -------
+        str, None
+            The state, if it could be determined using the rules in ``self._state_detection_rules``; otherwise, ``None``
+
+        """
+        if not self._state_detection_rules:
+            return None
+
+        return None
 
     # ======================================================================= #
     #                                                                         #
