@@ -4,6 +4,8 @@ ADB Debugging must be enabled.
 """
 
 
+import logging
+
 from .basetv import BaseTV
 from . import constants
 
@@ -291,6 +293,7 @@ class FireTV(BaseTV):
                                     constants.CMD_WAKE_LOCK_SIZE + " && " +
                                     constants.CMD_CURRENT_APP + " && (" +
                                     constants.CMD_MEDIA_SESSION_STATE + " || echo)")
+        logging.debug("Fire TV %s update response: %s", self.host, output)
 
         # ADB command was unsuccessful
         if output is None:
