@@ -345,7 +345,8 @@ class BaseTV(object):
                     return constants.STATE_PAUSED
                 if media_session_state == 3:
                     return constants.STATE_PLAYING
-                return constants.STATE_STANDBY
+                if media_session_state is not None:
+                    return constants.STATE_STANDBY
 
             # Use the `wake_lock_size` property
             if isinstance(rule, dict) and 'wake_lock_size' in rule:
