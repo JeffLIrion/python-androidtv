@@ -196,6 +196,9 @@ STATE_STANDBY = 'standby'
 STATE_STOPPED = 'stopped'
 STATE_UNKNOWN = 'unknown'
 
+# States that are valid (used by the `_custom_state_detection` method)
+VALID_STATES = (STATE_IDLE, STATE_OFF, STATE_PLAYING, STATE_PAUSED, STATE_STANDBY, STATE_STOPPED)
+
 # States for the `media_session_state` property
 # https://developer.android.com/reference/android/media/session/PlaybackState.html
 MEDIA_SESSION_STATES = {0: None,
