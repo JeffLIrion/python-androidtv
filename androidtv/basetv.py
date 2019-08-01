@@ -329,8 +329,34 @@ class BaseTV(object):
             The state, if it could be determined using the rules in ``self._state_detection_rules``; otherwise, ``None``
 
         """
-        if not self._state_detection_rules:
+        if not self._state_detection_rules or current_app is None or current_app not in self._state_detection_rules:
             return None
+
+        rules = self._state_detection_rules[current_app]
+
+        for rule in rules:
+            # The state is always the same for this app
+            if rule in constants.VALID_STATES:
+                return rule
+
+            # Use the `media_session_state` property
+            if rule == 'media_session_state':
+                if media_session_state == 2:
+                    return constants.STATE_PAUSED
+                if media_session_state == 3:
+                    return constants.STATE_PLAYING
+                else:
+                    return constants.STATE_STANDBY
+
+            # Use the `wake_lock_size` property
+            if isinstance(rule, dict) and 'wake_lock_size' in rule:
+                state = rule['wake_lock_size'].get(wake_lock_size)
+                if state in constants.VALID_STATES:
+                    return state
+
+            # Use the `audio_state` property
+            if rule == 'audio_state':
+                return audio_state
 
         return None
 
