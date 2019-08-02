@@ -77,7 +77,7 @@ pygments_style = 'sphinx'
 
 autodoc_mock_imports = ['adb', 'adb_messenger']
 
-autodoc_default_flags = ['members', 'undoc-members', 'private-members', 'show-inheritance']
+autodoc_default_options = {'members': True, 'undoc-members': True, 'private-members': True, 'show-inheritance': True}
 
 # -- Options for HTML output -------------------------------------------------
 

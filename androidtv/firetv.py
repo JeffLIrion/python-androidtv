@@ -20,12 +20,7 @@ INTENT_HOME = "android.intent.category.HOME"
 
 
 class FireTV(BaseTV):
-    """Representation of an Amazon Fire TV device."""
-
-    DEVICE_CLASS = 'firetv'
-
-    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037):
-        """Initialize a ``FireTV`` object.
+    """Representation of an Amazon Fire TV device.
 
         Parameters
         ----------
@@ -37,9 +32,15 @@ class FireTV(BaseTV):
             The IP address of the ADB server
         adb_server_port : int
             The port for the ADB server
+        state_detection_rules : dict, None
+            A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
 
         """
-        BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port)
+
+    DEVICE_CLASS = 'firetv'
+
+    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
+        BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
 
     # ======================================================================= #
     #                                                                         #
@@ -120,6 +121,11 @@ class FireTV(BaseTV):
             # Get the running apps
             if running_apps is None and current_app:
                 running_apps = [current_app]
+
+            # Determine the state using custom rules
+            state = self._custom_state_detection(current_app=current_app, media_session_state=media_session_state, wake_lock_size=wake_lock_size)
+            if state:
+                return state, current_app, running_apps
 
             # Determine the state based on the `current_app`
             if current_app in [APP_PACKAGE_LAUNCHER, APP_PACKAGE_SETTINGS, None]:
