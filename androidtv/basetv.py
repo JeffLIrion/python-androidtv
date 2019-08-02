@@ -32,9 +32,8 @@ class BaseTV(object):
 
        state_detection_rules = {'com.amazon.tv.launcher': ['standby'],
                                 'com.netflix.ninja': ['media_session_state'],
-                                'com.hulu.plus': [{'wake_lock_size' : {1: 'playing', 2: 'paused'}}],
-                                'another.app': ['audio_state'],
-                                'yet.another.app': ['media_session_state', {'wake_lock_size' : {1: 'playing', 2: 'paused'}}, 'audio_state']}
+                                'com.hulu.plus': [{'wake_lock_size' : {4: 'playing', 2: 'paused'}}],
+                                'com.another.app': ['media_session_state', {'wake_lock_size' : {1: 'playing', 2: 'paused'}}, 'audio_state']}
 
     The keys are app IDs, and the values are lists of rules that are evaluated in order by the ``_custom_state_detection`` method. Valid rules are:
 
