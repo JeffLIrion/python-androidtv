@@ -306,6 +306,12 @@ GET_PROPERTIES_DICT_NONE = {'screen_on': None,
                             'is_volume_muted': None,
                             'volume': None}
 
+STATE_DETECTION_RULES1 = {'com.amazon.tv.launcher': ['off']}
+STATE_DETECTION_RULES2 = {'com.amazon.tv.launcher': ['media_session_state', 'off']}
+STATE_DETECTION_RULES3 = {'com.amazon.tv.launcher': [{'wake_lock_size': {2: 'standby'}}]}
+STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'wake_lock_size': {1: 'standby'}}, 'paused']}
+STATE_DETECTION_RULES5 = {'com.amazon.tv.launcher': ['audio_state']}
+
 
 def _adb_shell_patched(self):
     def _adb_shell_method(cmd):
@@ -418,6 +424,26 @@ class TestAndroidTV(unittest.TestCase):
         self.atv.adb_shell_output = GET_PROPERTIES_OUTPUT3
         state = self.atv.update()
         self.assertTupleEqual(state, STATE3)
+
+        self.atv._state_detection_rules = STATE_DETECTION_RULES1
+        state = self.atv.update()
+        self.assertEqual(state[0], constants.STATE_OFF)
+
+        self.atv._state_detection_rules = STATE_DETECTION_RULES2
+        state = self.atv.update()
+        self.assertEqual(state[0], constants.STATE_OFF)
+
+        self.atv._state_detection_rules = STATE_DETECTION_RULES3
+        state = self.atv.update()
+        self.assertEqual(state[0], constants.STATE_STANDBY)
+
+        self.atv._state_detection_rules = STATE_DETECTION_RULES4
+        state = self.atv.update()
+        self.assertEqual(state[0], constants.STATE_PAUSED)
+
+        self.atv._state_detection_rules = STATE_DETECTION_RULES5
+        state = self.atv.update()
+        self.assertEqual(state[0], constants.STATE_IDLE)
 
     def test_set_volume_level(self):
         """Check that the ``set_volume_level`` method works correctly.
