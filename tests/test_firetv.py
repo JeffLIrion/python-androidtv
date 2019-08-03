@@ -77,6 +77,12 @@ GET_PROPERTIES_DICT_NONE = {'screen_on': None,
                             'current_app': None,
                             'running_apps': None}
 
+STATE_DETECTION_RULES1 = {'com.amazon.tv.launcher': ['off']}
+STATE_DETECTION_RULES2 = {'com.amazon.tv.launcher': ['media_session_state', 'off']}
+STATE_DETECTION_RULES3 = {'com.amazon.tv.launcher': [{'wake_lock_size': {2: 'standby'}}]}
+STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'wake_lock_size': {1: 'standby'}}, 'paused']}
+STATE_DETECTION_RULES5 = {'com.amazon.tv.launcher': ['audio_state']}
+
 
 def _adb_shell_patched(self):
     def _adb_shell_method(cmd):
@@ -191,6 +197,26 @@ class TestFireTV(unittest.TestCase):
         self.ftv.adb_shell_output = GET_PROPERTIES_OUTPUT3
         properties = self.ftv.get_properties_dict(lazy=True)
         self.assertDictEqual(properties, GET_PROPERTIES_DICT3)
+
+        self.ftv._state_detection_rules = STATE_DETECTION_RULES1
+        state = self.ftv.update()
+        self.assertEqual(state[0], constants.STATE_OFF)
+
+        self.ftv._state_detection_rules = STATE_DETECTION_RULES2
+        state = self.ftv.update()
+        self.assertEqual(state[0], constants.STATE_OFF)
+
+        self.ftv._state_detection_rules = STATE_DETECTION_RULES3
+        state = self.ftv.update()
+        self.assertEqual(state[0], constants.STATE_STANDBY)
+
+        self.ftv._state_detection_rules = STATE_DETECTION_RULES4
+        state = self.ftv.update()
+        self.assertEqual(state[0], constants.STATE_PAUSED)
+
+        self.ftv._state_detection_rules = STATE_DETECTION_RULES5
+        state = self.ftv.update()
+        self.assertEqual(state[0], constants.STATE_STANDBY)
 
     def test_update(self):
         """Check that the ``update`` method works correctly.
