@@ -29,10 +29,6 @@ echo "Bumping the version from $VERSION to $1"
 # __init__.py
 sed -i "s|__version__ = '$VERSION'|__version__ = '$1'|g" $DIR/../androidtv/__init__.py
 
-# conf.py
-sed -i "s|version = '$VERSION'|version = '$1'|g" $DIR/../docs/source/conf.py
-sed -i "s|release = '$VERSION'|release = '$1'|g" $DIR/../docs/source/conf.py
-
 # setup.py
 sed -i "s|version='$VERSION',|version='$1',|g" $DIR/../setup.py
 
