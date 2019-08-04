@@ -32,15 +32,24 @@ class BaseTV(object):
 
        state_detection_rules = {'com.amazon.tv.launcher': ['standby'],
                                 'com.netflix.ninja': ['media_session_state'],
-                                'com.hulu.plus': [{'wake_lock_size' : {4: 'playing', 2: 'paused'}}],
-                                'com.another.app': ['media_session_state', {'wake_lock_size' : {1: 'playing', 2: 'paused'}}, 'audio_state']}
+                                'com.ellation.vrv': ['audio_state'],
+                                'com.hulu.plus': [{'playing': {'wake_lock_size' : 4}},
+                                                  {'paused': {'wake_lock_size': 2}}],
+                                'com.plexapp.android': [{'playing': {'media_session_state': 3, 'wake_lock_size': 3}},
+                                                        {'paused': {'media_session_state': 3, 'wake_lock_size': 1}},
+                                                        'standby']}
 
-    The keys are app IDs, and the values are lists of rules that are evaluated in order by the ``_custom_state_detection`` method. Valid rules are:
+    The keys are app IDs, and the values are lists of rules that are evaluated in order by the ``_custom_state_detection`` method.  For reference, the valid states are:
+
+    :py:const:`androidtv.constants.VALID_STATES` ``= ('idle', 'off', 'playing', 'paused', 'standby', 'stopped')``
+
+    Valid rules are:
 
     * ``'standby'``, ``'playing'``, ``'paused'``, ``'idle'``, ``'stopped'``, or ``'off'`` = always use the specified state for the state when this app is open
     * ``'media_session_state'`` = try to use the ``media_session_state`` property to determine the state
     * ``'audio_state'`` = try to use the ``audio_state`` property to determine the state
-    * ``{'wake_lock_size': {VAL1: STATE1, VAL2: STATE:2, ...}}`` = try to look up the state using the ``wake_lock_size`` property
+    * ``{'<VALID_STATE>': {'<PROPERTY1>': VALUE1, '<PROPERTY2>': VALUE2, ...}}`` = check if each of the properties is equal to the specified value, and if so return the state
+      * The valid properties are ``'media_session_state'``, ``'audio_state'``, and ``'wake_lock_size'``
 
 
     Parameters
@@ -347,17 +356,57 @@ class BaseTV(object):
                 if media_session_state is not None:
                     return constants.STATE_STANDBY
 
-            # Use the `wake_lock_size` property
-            if isinstance(rule, dict) and 'wake_lock_size' in rule:
-                state = rule['wake_lock_size'].get(wake_lock_size)
-                if state in constants.VALID_STATES:
-                    return state
-
             # Use the `audio_state` property
             if rule == 'audio_state':
                 return audio_state
 
+            # Check conditions and if they are true, return the specified state
+            if isinstance(rule, dict):
+                for state, conditions in rule.items():
+                    if state in constants.VALID_STATES and self._conditions_are_true(conditions, media_session_state, wake_lock_size, audio_state):
+                        return state
+
         return None
+
+    @staticmethod
+    def _conditions_are_true(conditions, media_session_state=None, wake_lock_size=None, audio_state=None):
+        """Check whether the conditions in ``conditions`` are true.
+
+        Parameters
+        ----------
+        conditions : dict
+            A dictionary of conditions to be checked (see the ``state_detection_rules`` parameter in :class:`~androidtv.basetv.BaseTV`)
+        media_session_state : int, None
+            The ``media_session_state`` property
+        wake_lock_size : int, None
+            The ``wake_lock_size`` property
+        audio_state : str, None
+            The ``audio_state`` property
+
+        Returns
+        -------
+        bool
+            Whether or not all the conditions in ``conditions`` are true
+
+        """
+        for key, val in conditions.items():
+            if key == 'media_session_state':
+                if media_session_state is None or media_session_state != val:
+                    return False
+
+            elif key == 'wake_lock_size':
+                if wake_lock_size is None or wake_lock_size != val:
+                    return False
+
+            elif key == 'audio_state':
+                if audio_state is None or audio_state != val:
+                    return False
+
+            # key is invalid
+            else:
+                return False
+
+        return True
 
     # ======================================================================= #
     #                                                                         #
