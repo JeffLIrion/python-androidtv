@@ -275,7 +275,7 @@ class FireTV(BaseTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the ``running_apps`` property
+            Whether or not to get the :attr:`~androidtv.basetv.BaseTV.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
@@ -354,7 +354,7 @@ class FireTV(BaseTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the ``running_apps`` property
+            Whether or not to get the :attr:`~androidtv.basetv.BaseTV.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 

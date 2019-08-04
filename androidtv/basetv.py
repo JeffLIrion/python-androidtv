@@ -39,16 +39,18 @@ class BaseTV(object):
                                                         {'paused': {'media_session_state': 3, 'wake_lock_size': 1}},
                                                         'standby']}
 
-    The keys are app IDs, and the values are lists of rules that are evaluated in order by the :meth:`_custom_state_detection` method.  For reference, the valid states (:py:const:`androidtv.constants.VALID_STATES`) are:
+    The keys are app IDs, and the values are lists of rules that are evaluated in order by the :meth:`_custom_state_detection` method.
+
+    :py:const:`~androidtv.constants.VALID_STATES`
 
     .. code-block:: python
 
        VALID_STATES = ('idle', 'off', 'playing', 'paused', 'standby', 'stopped')
 
 
-    Valid rules are:
+    **Valid rules:**
 
-    * ``'standby'``, ``'playing'``, ``'paused'``, ``'idle'``, ``'stopped'``, or ``'off'`` = always use the specified state for the state when this app is open
+    * ``'standby'``, ``'playing'``, ``'paused'``, ``'idle'``, ``'stopped'``, or ``'off'`` = always report the specified state when this app is open
     * ``'media_session_state'`` = try to use the :attr:`media_session_state` property to determine the state
     * ``'audio_state'`` = try to use the :attr:`audio_state` property to determine the state
     * ``{'<VALID_STATE>': {'<PROPERTY1>': VALUE1, '<PROPERTY2>': VALUE2, ...}}`` = check if each of the properties is equal to the specified value, and if so return the state
@@ -627,7 +629,7 @@ class BaseTV(object):
     # ======================================================================= #
     @staticmethod
     def _audio_state(dumpsys_audio_response):
-        """Parse the ``audio_state`` property from the output of ``adb shell dumpsys audio``.
+        """Parse the :attr:`audio_state` property from the output of ``adb shell dumpsys audio``.
 
         Parameters
         ----------
