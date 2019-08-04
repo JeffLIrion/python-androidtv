@@ -334,7 +334,7 @@ STATE_PLEX_STANDBY = (constants.STATE_PLAYING, 'com.plexapp.android', 'hmdi_arc'
 # Plex: playing
 GET_PROPERTIES_OUTPUT_PLEX_PLAYING = """11Wake Locks: size=3
 com.plexapp.android
-3
+state=3
 """ + DUMPSYS_AUDIO_ON
 
 GET_PROPERTIES_DICT_PLEX_PLAYING = {'screen_on': True,
@@ -352,7 +352,7 @@ STATE_PLEX_PLAYING = (constants.STATE_PLAYING, 'com.plexapp.android', 'hmdi_arc'
 # Plex: paused
 GET_PROPERTIES_OUTPUT_PLEX_PAUSED = """11Wake Locks: size=1
 com.plexapp.android
-3
+state=3
 """ + DUMPSYS_AUDIO_ON
 
 GET_PROPERTIES_DICT_PLEX_PAUSED = {'screen_on': True,
