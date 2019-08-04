@@ -8,6 +8,9 @@ from .basetv import BaseTV
 from .firetv import FireTV
 
 
+__version__ = '0.0.19'
+
+
 def setup(host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, device_class='auto'):
     """Connect to a device and determine whether it's an Android TV or an Amazon Fire TV.
 
