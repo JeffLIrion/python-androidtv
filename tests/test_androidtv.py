@@ -306,10 +306,71 @@ GET_PROPERTIES_DICT_NONE = {'screen_on': None,
                             'is_volume_muted': None,
                             'volume': None}
 
+# https://community.home-assistant.io/t/testers-needed-custom-state-detection-rules-for-android-tv-fire-tv/129493/6?u=jefflirion
+STATE_DETECTION_RULES_PLEX = {'com.plexapp.android': [{'playing': {'media_session_state': 3,
+                                                                   'wake_lock_size': 3}},
+                                                      {'paused': {'media_session_state': 3,
+                                                                  'wake_lock_size': 1}},
+                                                      'standby']}
+
+# Plex: standby
+GET_PROPERTIES_OUTPUT_PLEX_STANDBY = """11Wake Locks: size=1
+com.plexapp.android
+
+""" + DUMPSYS_AUDIO_ON
+
+GET_PROPERTIES_DICT_PLEX_STANDBY = {'screen_on': True,
+                                    'awake': True,
+                                    'wake_lock_size': 1,
+                                    'media_session_state': None,
+                                    'current_app': 'com.plexapp.android',
+                                    'audio_state': constants.STATE_IDLE,
+                                    'device': 'hmdi_arc',
+                                    'is_volume_muted': False,
+                                    'volume': 22}
+
+STATE_PLEX_STANDBY = (constants.STATE_PLAYING, 'com.plexapp.android', 'hmdi_arc', False, 22/60.)
+
+# Plex: playing
+GET_PROPERTIES_OUTPUT_PLEX_PLAYING = """11Wake Locks: size=3
+com.plexapp.android
+state=3
+""" + DUMPSYS_AUDIO_ON
+
+GET_PROPERTIES_DICT_PLEX_PLAYING = {'screen_on': True,
+                                    'awake': True,
+                                    'wake_lock_size': 3,
+                                    'media_session_state': 3,
+                                    'current_app': 'com.plexapp.android',
+                                    'audio_state': constants.STATE_IDLE,
+                                    'device': 'hmdi_arc',
+                                    'is_volume_muted': False,
+                                    'volume': 22}
+
+STATE_PLEX_PLAYING = (constants.STATE_PLAYING, 'com.plexapp.android', 'hmdi_arc', False, 22/60.)
+
+# Plex: paused
+GET_PROPERTIES_OUTPUT_PLEX_PAUSED = """11Wake Locks: size=1
+com.plexapp.android
+state=3
+""" + DUMPSYS_AUDIO_ON
+
+GET_PROPERTIES_DICT_PLEX_PAUSED = {'screen_on': True,
+                                    'awake': True,
+                                    'wake_lock_size': 1,
+                                    'media_session_state': 3,
+                                    'current_app': 'com.plexapp.android',
+                                    'audio_state': constants.STATE_IDLE,
+                                    'device': 'hmdi_arc',
+                                    'is_volume_muted': False,
+                                    'volume': 22}
+
+STATE_PLEX_PAUSED = (constants.STATE_PAUSED, 'com.plexapp.android', 'hmdi_arc', False, 22/60.)
+
 STATE_DETECTION_RULES1 = {'com.amazon.tv.launcher': ['off']}
 STATE_DETECTION_RULES2 = {'com.amazon.tv.launcher': ['media_session_state', 'off']}
-STATE_DETECTION_RULES3 = {'com.amazon.tv.launcher': [{'wake_lock_size': {2: 'standby'}}]}
-STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'wake_lock_size': {1: 'standby'}}, 'paused']}
+STATE_DETECTION_RULES3 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_size': 2}}]}
+STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_size': 1}}, 'paused']}
 STATE_DETECTION_RULES5 = {'com.amazon.tv.launcher': ['audio_state']}
 
 
@@ -408,6 +469,18 @@ class TestAndroidTV(unittest.TestCase):
         self.atv.adb_shell_output = GET_PROPERTIES_OUTPUT3
         properties = self.atv.get_properties_dict(lazy=True)
         self.assertEqual(properties, GET_PROPERTIES_DICT3)
+
+        self.atv.adb_shell_output = GET_PROPERTIES_OUTPUT_PLEX_STANDBY
+        properties = self.atv.get_properties_dict(lazy=True)
+        self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_STANDBY)
+
+        self.atv.adb_shell_output = GET_PROPERTIES_OUTPUT_PLEX_PLAYING
+        properties = self.atv.get_properties_dict(lazy=True)
+        self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PLAYING)
+
+        self.atv.adb_shell_output = GET_PROPERTIES_OUTPUT_PLEX_PAUSED
+        properties = self.atv.get_properties_dict(lazy=True)
+        self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PAUSED)
 
     def test_update(self):
         """Check that the ``update`` method works correctly.
