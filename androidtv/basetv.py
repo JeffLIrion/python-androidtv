@@ -39,16 +39,20 @@ class BaseTV(object):
                                                         {'paused': {'media_session_state': 3, 'wake_lock_size': 1}},
                                                         'standby']}
 
-    The keys are app IDs, and the values are lists of rules that are evaluated in order by the ``_custom_state_detection`` method.  For reference, the valid states are:
+    The keys are app IDs, and the values are lists of rules that are evaluated in order by the :meth:`_custom_state_detection` method.  For reference, the valid states (:py:const:`androidtv.constants.VALID_STATES`) are:
 
-    :py:const:`androidtv.constants.VALID_STATES` ``= ('idle', 'off', 'playing', 'paused', 'standby', 'stopped')``
+    .. code-block:: python
+
+       VALID_STATES = ('idle', 'off', 'playing', 'paused', 'standby', 'stopped')
+
 
     Valid rules are:
 
     * ``'standby'``, ``'playing'``, ``'paused'``, ``'idle'``, ``'stopped'``, or ``'off'`` = always use the specified state for the state when this app is open
-    * ``'media_session_state'`` = try to use the ``media_session_state`` property to determine the state
-    * ``'audio_state'`` = try to use the ``audio_state`` property to determine the state
+    * ``'media_session_state'`` = try to use the :attr:`media_session_state` property to determine the state
+    * ``'audio_state'`` = try to use the :attr:`audio_state` property to determine the state
     * ``{'<VALID_STATE>': {'<PROPERTY1>': VALUE1, '<PROPERTY2>': VALUE2, ...}}`` = check if each of the properties is equal to the specified value, and if so return the state
+
       * The valid properties are ``'media_session_state'``, ``'audio_state'``, and ``'wake_lock_size'``
 
 
@@ -323,13 +327,13 @@ class BaseTV(object):
         Parameters
         ----------
         current_app : str, None
-            The ``current_app`` property
+            The :attr:`current_app` property
         media_session_state : int, None
-            The ``media_session_state`` property
+            The :attr:`media_session_state` property
         wake_lock_size : int, None
-            The ``wake_lock_size`` property
+            The :attr:`wake_lock_size` property
         audio_state : str, None
-            The ``audio_state`` property
+            The :attr:`audio_state` property
 
         Returns
         -------
@@ -377,11 +381,11 @@ class BaseTV(object):
         conditions : dict
             A dictionary of conditions to be checked (see the ``state_detection_rules`` parameter in :class:`~androidtv.basetv.BaseTV`)
         media_session_state : int, None
-            The ``media_session_state`` property
+            The :attr:`media_session_state` property
         wake_lock_size : int, None
-            The ``wake_lock_size`` property
+            The :attr:`wake_lock_size` property
         audio_state : str, None
-            The ``audio_state`` property
+            The :attr:`audio_state` property
 
         Returns
         -------

@@ -90,7 +90,7 @@ class FireTV(BaseTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the ``running_apps`` property
+            Whether or not to get the :attr:`~androidtv.basetv.BaseTV.running_apps` property
 
         Returns
         -------

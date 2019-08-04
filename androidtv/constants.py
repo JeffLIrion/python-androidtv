@@ -1,4 +1,11 @@
-"""Constants used in the ``BaseTV``, ``AndroidTV``, and ``FireTV`` classes."""
+"""Constants used in the :class:`~androidtv.basetv.BaseTV`, :class:`~androidtv.androidtv.AndroidTV`, and :class:`~androidtv.firetv.FireTV` classes.
+
+**Links**
+
+* `ADB key event codes <https://developer.android.com/reference/android/view/KeyEvent>`_
+* `MediaSession PlaybackState property <https://developer.android.com/reference/android/media/session/PlaybackState.html>`_
+
+"""
 
 
 import re
@@ -196,11 +203,11 @@ STATE_STANDBY = 'standby'
 STATE_STOPPED = 'stopped'
 STATE_UNKNOWN = 'unknown'
 
-# States that are valid (used by the `_custom_state_detection` method)
+#: States that are valid (used by the :meth:`~androidtv.basetv.BaseTV._custom_state_detection` method)
 VALID_STATES = (STATE_IDLE, STATE_OFF, STATE_PLAYING, STATE_PAUSED, STATE_STANDBY, STATE_STOPPED)
 
-# States for the `media_session_state` property
 # https://developer.android.com/reference/android/media/session/PlaybackState.html
+#: States for the :attr:`~androidtv.basetv.BaseTV.media_session_state` property
 MEDIA_SESSION_STATES = {0: None,
                         1: STATE_STOPPED,
                         2: STATE_PAUSED,
