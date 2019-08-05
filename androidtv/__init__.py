@@ -4,7 +4,7 @@ ADB Debugging must be enabled.
 """
 
 from .androidtv import AndroidTV
-from .basetv import BaseTV
+from .basetv import BaseTV, state_detection_rules_validator
 from .firetv import FireTV
 
 
@@ -55,3 +55,26 @@ def setup(host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detecti
         aftv.__class__ = AndroidTV
 
     return aftv
+
+
+def ha_state_detection_rules_validator(exc):
+    """Validate the rules (i.e., the ``state_detection_rules`` value) for a given app ID (i.e., a key in ``state_detection_rules``).
+
+    See :class:`~androidtv.basetv.BaseTV` for more info about the ``state_detection_rules`` parameter.
+
+    Parameters
+    ----------
+    exc : Exception
+        The exception that will be raised if a rule is invalid
+
+    Returns
+    -------
+    wrapped_state_detection_rules_validator : function
+        A function that is the same as :func:`~androidtv.basetv.state_detection_rules_validator`, but with the ``exc`` argument provided
+
+    """
+    def wrapped_state_detection_rules_validator(rules):
+        """Run :func:`~androidtv.basetv.state_detection_rules_validator` using the ``exc`` parameter from the parent function."""
+        state_detection_rules_validator(rules, exc)
+
+    return wrapped_state_detection_rules_validator

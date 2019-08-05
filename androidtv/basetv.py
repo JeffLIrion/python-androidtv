@@ -80,6 +80,13 @@ class BaseTV(object):
         self.adb_server_port = adb_server_port
         self._state_detection_rules = state_detection_rules
 
+        # make sure the rules are valid
+        if self._state_detection_rules:
+            for app_id, rules in self._state_detection_rules.items():
+                if not isinstance(app_id, str):
+                    raise TypeError("{0} is of type {1}, not str".format(app_id, type(app_id).__name__))
+                state_detection_rules_validator(rules)
+
         # the max volume level (determined when first getting the volume level)
         self.max_volume = None
 
@@ -363,7 +370,7 @@ class BaseTV(object):
                     return constants.STATE_STANDBY
 
             # Use the `audio_state` property
-            if rule == 'audio_state':
+            if rule == 'audio_state' and audio_state in constants.VALID_STATES:
                 return audio_state
 
             # Check conditions and if they are true, return the specified state
@@ -1247,3 +1254,56 @@ class BaseTV(object):
 
         # return the new volume level
         return max(current_volume - 1, 0.) / self.max_volume
+
+
+# ======================================================================= #
+#                                                                         #
+#                    Validate the state detection rules                   #
+#                                                                         #
+# ======================================================================= #
+def state_detection_rules_validator(rules, exc=KeyError):
+    """Validate the rules (i.e., the ``state_detection_rules`` value) for a given app ID (i.e., a key in ``state_detection_rules``).
+
+    See :class:`~androidtv.basetv.BaseTV` for more info about the ``state_detection_rules`` parameter.
+
+    Parameters
+    ----------
+    rules : list
+        A list of the rules that will be used to determine the state
+    exc : Exception
+        The exception that will be raised if a rule is invalid
+
+    """
+    for rule in rules:
+        # A rule must be either a string or a dictionary
+        if not isinstance(rule, (str, dict)):
+            raise exc("Expected a string or a map, got {}".format(type(rule).__name__))
+
+        # If a rule is a string, check that it is valid
+        if isinstance(rule, str):
+            if rule not in constants.VALID_PROPERTIES + constants.VALID_STATES:
+                raise exc("Invalid rule '{0}' is not in {1}".format(rule, constants.VALID_PROPERTIES + constants.VALID_STATES))
+
+        # If a rule is a dictionary, check that it is valid
+        else:
+            for state, conditions in rule.items():
+                # The keys of the dictionary must be valid states
+                if state not in constants.VALID_STATES:
+                    raise exc("'{0}' is not a valid state for the 'state_detection_rules' parameter".format(state))
+
+                # The values of the dictionary must be dictionaries
+                if not isinstance(conditions, dict):
+                    raise exc("Expected a map for entry '{0}' in 'state_detection_rules', got {1}".format(state, type(conditions).__name__))
+
+                for condition, value in conditions.items():
+                    # The keys of the dictionary must be valid conditions that can be checked
+                    if condition not in constants.VALID_CONDITIONS:
+                        raise exc("Invalid property '{0}' is not in {1}".format(condition, constants.VALID_CONDITIONS))
+
+                    # The value for the `audio_state` property must be a string
+                    if condition == "audio_state" and not isinstance(value, str):
+                        raise exc("Conditional value for property 'audio_state' must be a string, not {}".format(type(value).__name__))
+
+                    # The value for the `media_session_state` and `wake_lock_size` properties must be an int
+                    if condition != "audio_state" and not isinstance(value, int):
+                        raise exc("Conditional value for property '{0}' must be an int, not {1}".format(condition, type(value).__name__))
