@@ -74,6 +74,7 @@ def ha_state_detection_rules_validator(exc):
 
     """
     def wrapped_state_detection_rules_validator(rules):
+        """Run :func:`~androidtv.basetv.state_detection_rules_validator` using the ``exc`` parameter from the parent function."""
         state_detection_rules_validator(rules, exc)
 
     return wrapped_state_detection_rules_validator
