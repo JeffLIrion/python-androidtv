@@ -254,7 +254,7 @@ APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_VLC: 'VLC',
         APP_VRV: 'VRV',
         APP_WAIPU_TV: 'Waipu TV',
-        APP_YOUTUBE: 'Youtube'}
+        APP_YOUTUBE: 'YouTube'}
 
 
 # Regular expressions
