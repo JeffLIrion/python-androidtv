@@ -1273,6 +1273,11 @@ def state_detection_rules_validator(rules, exc=KeyError):
     exc : Exception
         The exception that will be raised if a rule is invalid
 
+    Returns
+    -------
+    rules : list
+        The provided list of rules
+
     """
     for rule in rules:
         # A rule must be either a string or a dictionary
@@ -1307,3 +1312,5 @@ def state_detection_rules_validator(rules, exc=KeyError):
                     # The value for the `media_session_state` and `wake_lock_size` properties must be an int
                     if condition != "audio_state" and not isinstance(value, int):
                         raise exc("Conditional value for property '{0}' must be an int, not {1}".format(condition, type(value).__name__))
+
+    return rules
