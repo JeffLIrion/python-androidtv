@@ -16,6 +16,8 @@ from adb_messenger.client import Client as AdbClient
 
 from . import constants
 
+_LOGGER = logging.getLogger(__name__)
+
 if sys.version_info[0] > 2 and sys.version_info[1] > 1:
     LOCK_KWARGS = {'timeout': 3}
 else:
@@ -135,17 +137,17 @@ class BaseTV(object):
 
         """
         if not self.available:
-            logging.debug("ADB command not sent to %s because python-adb connection is not established: %s", self.host, cmd)
+            _LOGGER.debug("ADB command not sent to %s because python-adb connection is not established: %s", self.host, cmd)
             return None
 
         if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
-            logging.debug("Sending command to %s via python-adb: %s", self.host, cmd)
+            _LOGGER.debug("Sending command to %s via python-adb: %s", self.host, cmd)
             try:
                 return self._adb.Shell(cmd)
             finally:
                 self._adb_lock.release()
         else:
-            logging.debug("ADB command not sent to %s because python-adb lock not acquired: %s", self.host, cmd)
+            _LOGGER.debug("ADB command not sent to %s because python-adb lock not acquired: %s", self.host, cmd)
 
         return None
 
@@ -164,17 +166,17 @@ class BaseTV(object):
 
         """
         if not self._available:
-            logging.debug("ADB command not sent to %s via ADB server %s:%s because pure-python-adb connection is not established: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
+            _LOGGER.debug("ADB command not sent to %s via ADB server %s:%s because pure-python-adb connection is not established: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
             return None
 
         if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
-            logging.debug("Sending command to %s via ADB server %s:%s: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
+            _LOGGER.debug("Sending command to %s via ADB server %s:%s: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
             try:
                 return self._adb_device.shell(cmd)
             finally:
                 self._adb_lock.release()
         else:
-            logging.debug("ADB command not sent to %s via ADB server %s:%s because pure-python-adb lock not acquired: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
+            _LOGGER.debug("ADB command not sent to %s via ADB server %s:%s because pure-python-adb lock not acquired: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
 
         return None
 
@@ -229,13 +231,13 @@ class BaseTV(object):
 
                     # ADB connection successfully established
                     self._available = True
-                    logging.debug("ADB connection to %s successfully established", self.host)
+                    _LOGGER.debug("ADB connection to %s successfully established", self.host)
 
                 except socket_error as serr:
                     if self._available or always_log_errors:
                         if serr.strerror is None:
                             serr.strerror = "Timed out trying to connect to ADB device."
-                        logging.warning("Couldn't connect to host %s, error: %s", self.host, serr.strerror)
+                        _LOGGER.warning("Couldn't connect to host %s, error: %s", self.host, serr.strerror)
 
                     # ADB connection attempt failed
                     self._adb = None
@@ -252,18 +254,18 @@ class BaseTV(object):
 
                     # ADB connection successfully established
                     if self._adb_device:
-                        logging.debug("ADB connection to %s via ADB server %s:%s successfully established", self.host, self.adb_server_ip, self.adb_server_port)
+                        _LOGGER.debug("ADB connection to %s via ADB server %s:%s successfully established", self.host, self.adb_server_ip, self.adb_server_port)
                         self._available = True
 
                     # ADB connection attempt failed (without an exception)
                     else:
                         if self._available or always_log_errors:
-                            logging.warning("Couldn't connect to host %s via ADB server %s:%s", self.host, self.adb_server_ip, self.adb_server_port)
+                            _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s", self.host, self.adb_server_ip, self.adb_server_port)
                         self._available = False
 
                 except Exception as exc:  # noqa pylint: disable=broad-except
                     if self._available or always_log_errors:
-                        logging.warning("Couldn't connect to host %s via ADB server %s:%s, error: %s", self.host, self.adb_server_ip, self.adb_server_port, exc)
+                        _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s, error: %s", self.host, self.adb_server_ip, self.adb_server_port, exc)
 
                     # ADB connection attempt failed
                     self._available = False
@@ -474,19 +476,19 @@ class BaseTV(object):
 
                 # case 2: the device is not currently available
                 if self._available:
-                    logging.error('ADB server is not connected to the device.')
+                    _LOGGER.error('ADB server is not connected to the device.')
                     self._available = False
                 return False
 
             except RuntimeError:
                 if self._available:
-                    logging.error('ADB device is unavailable; encountered an error when searching for device.')
+                    _LOGGER.error('ADB device is unavailable; encountered an error when searching for device.')
                     self._available = False
                 return False
 
         except RuntimeError:
             if self._available:
-                logging.error('ADB server is unavailable.')
+                _LOGGER.error('ADB server is unavailable.')
                 self._available = False
             return False
 
