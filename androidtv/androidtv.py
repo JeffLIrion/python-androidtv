@@ -9,6 +9,8 @@ import logging
 from .basetv import BaseTV
 from . import constants
 
+_LOGGER = logging.getLogger(__name__)
+
 
 class AndroidTV(BaseTV):
     """Representation of an Android TV device.
@@ -208,7 +210,7 @@ class AndroidTV(BaseTV):
                                 constants.CMD_CURRENT_APP + " && (" +
                                 constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
                                 "dumpsys audio")
-        logging.debug("Android TV %s update response: %s", self.host, output)
+        _LOGGER.debug("Android TV %s update response: %s", self.host, output)
 
         # ADB command was unsuccessful
         if output is None:
