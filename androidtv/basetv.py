@@ -306,6 +306,10 @@ class BaseTV(object):
 
         manufacturer, model, serialno, version, mac_wlan0_output, mac_eth0_output = lines
 
+        if not serialno.strip():
+            _LOGGER.warning("Could not obtain serialno for %s, got: '%s'", self.host, serialno)
+            serialno = None
+
         mac_wlan0_matches = re.findall(constants.MAC_REGEX_PATTERN, mac_wlan0_output)
         if mac_wlan0_matches:
             wifimac = mac_wlan0_matches[0]

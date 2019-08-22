@@ -9,7 +9,7 @@ from androidtv.firetv import FireTV
 
 
 # `adb shell getprop ro.product.manufacturer && getprop ro.product.model && getprop ro.serialno && getprop ro.build.version.release && ip addr show wlan0 | grep -m 1 ether && ip addr show eth0 | grep -m 1 ether`
-DEVICE_PROPERTIES_OUTPUT = """Amazon
+DEVICE_PROPERTIES_OUTPUT1 = """Amazon
 AFTT
 SERIALNO
 5.1.1
@@ -17,9 +17,24 @@ SERIALNO
 Device "eth0" does not exist.
 """
 
-DEVICE_PROPERTIES_DICT = {'manufacturer': 'Amazon',
+DEVICE_PROPERTIES_DICT1 = {'manufacturer': 'Amazon',
                           'model': 'AFTT',
                           'serialno': 'SERIALNO',
+                          'sw_version': '5.1.1',
+                          'wifimac': 'ab:cd:ef:gh:ij:kl',
+                          'ethmac': None}
+
+DEVICE_PROPERTIES_OUTPUT2 = """Amazon
+AFTT
+ 
+5.1.1
+    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
+Device "eth0" does not exist.
+"""
+
+DEVICE_PROPERTIES_DICT2 = {'manufacturer': 'Amazon',
+                          'model': 'AFTT',
+                          'serialno': None,
                           'sw_version': '5.1.1',
                           'wifimac': 'ab:cd:ef:gh:ij:kl',
                           'ethmac': None}
@@ -105,10 +120,13 @@ class TestFireTV(unittest.TestCase):
         """Check that ``get_device_properties`` works correctly.
 
         """
-        self.ftv.adb_shell_output = DEVICE_PROPERTIES_OUTPUT
+        self.ftv.adb_shell_output = DEVICE_PROPERTIES_OUTPUT1
         device_properties = self.ftv.get_device_properties()
+        self.assertDictEqual(DEVICE_PROPERTIES_DICT1, device_properties)
 
-        self.assertDictEqual(DEVICE_PROPERTIES_DICT, device_properties)
+        self.ftv.adb_shell_output = DEVICE_PROPERTIES_OUTPUT2
+        device_properties = self.ftv.get_device_properties()
+        self.assertDictEqual(DEVICE_PROPERTIES_DICT2, device_properties)
 
     def test_audio_state(self):
         """Check that the ``audio_state`` property works correctly.
