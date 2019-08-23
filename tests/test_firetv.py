@@ -98,6 +98,10 @@ STATE_DETECTION_RULES3 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_siz
 STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_size': 1}}, 'paused']}
 STATE_DETECTION_RULES5 = {'com.amazon.tv.launcher': ['audio_state']}
 
+STATE_DETECTION_RULES_INVALID1 = {'com.amazon.tv.launcher': 'off'}
+STATE_DETECTION_RULES_INVALID2 = {'com.amazon.tv.launcher': ['stopped']}
+STATE_DETECTION_RULES_INVALID3 = {'com.amazon.tv.launcher': [{'off': {'invalid': 1}}]}
+
 
 def _adb_shell_patched(self):
     def _adb_shell_method(cmd):
@@ -251,6 +255,21 @@ class TestFireTV(unittest.TestCase):
         self.ftv.adb_shell_output = GET_PROPERTIES_OUTPUT3
         state = self.ftv.update()
         self.assertTupleEqual(state, STATE3)
+
+
+class TestFireTVStateDetectionRules(unittest.TestCase):
+    def test_state_detection_rules_validator(self):
+        """Check that ``state_detection_rules_validator()`` works correctly.
+
+        """
+        with self.assertRaises(KeyError):
+            ftv = FireTV('127.0.0.1:5555', state_detection_rules=STATE_DETECTION_RULES_INVALID1)
+
+        with self.assertRaises(KeyError):
+            ftv = FireTV('127.0.0.1:5555', state_detection_rules=STATE_DETECTION_RULES_INVALID2)
+
+        with self.assertRaises(KeyError):
+            ftv = FireTV('127.0.0.1:5555', state_detection_rules=STATE_DETECTION_RULES_INVALID3)
 
 
 if __name__ == "__main__":
