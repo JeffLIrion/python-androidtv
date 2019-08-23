@@ -204,7 +204,7 @@ STATE_STOPPED = 'stopped'
 STATE_UNKNOWN = 'unknown'
 
 #: States that are valid (used by the :meth:`~androidtv.basetv.BaseTV._custom_state_detection` method)
-VALID_STATES = (STATE_IDLE, STATE_OFF, STATE_PLAYING, STATE_PAUSED, STATE_STANDBY, STATE_STOPPED)
+VALID_STATES = (STATE_IDLE, STATE_OFF, STATE_PLAYING, STATE_PAUSED, STATE_STANDBY)
 
 #: Properties that can be used to determine the current state
 VALID_PROPERTIES = ("audio_state", "media_session_state")

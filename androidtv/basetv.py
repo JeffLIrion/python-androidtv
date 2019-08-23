@@ -47,12 +47,12 @@ class BaseTV(object):
 
     .. code-block:: python
 
-       VALID_STATES = ('idle', 'off', 'playing', 'paused', 'standby', 'stopped')
+       VALID_STATES = ('idle', 'off', 'playing', 'paused', 'standby')
 
 
     **Valid rules:**
 
-    * ``'standby'``, ``'playing'``, ``'paused'``, ``'idle'``, ``'stopped'``, or ``'off'`` = always report the specified state when this app is open
+    * ``'standby'``, ``'playing'``, ``'paused'``, ``'idle'``, or ``'off'`` = always report the specified state when this app is open
     * ``'media_session_state'`` = try to use the :attr:`media_session_state` property to determine the state
     * ``'audio_state'`` = try to use the :attr:`audio_state` property to determine the state
     * ``{'<VALID_STATE>': {'<PROPERTY1>': VALUE1, '<PROPERTY2>': VALUE2, ...}}`` = check if each of the properties is equal to the specified value, and if so return the state
