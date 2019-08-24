@@ -1,6 +1,13 @@
 import sys
 import unittest
 
+try:
+    # Python3
+    from unittest.mock import patch
+except ImportError:
+    # Python2
+    from mock import patch
+
 
 sys.path.insert(0, '..')
 
@@ -356,14 +363,14 @@ state=3
 """ + DUMPSYS_AUDIO_ON
 
 GET_PROPERTIES_DICT_PLEX_PAUSED = {'screen_on': True,
-                                    'awake': True,
-                                    'wake_lock_size': 1,
-                                    'media_session_state': 3,
-                                    'current_app': 'com.plexapp.android',
-                                    'audio_state': constants.STATE_IDLE,
-                                    'device': 'hmdi_arc',
-                                    'is_volume_muted': False,
-                                    'volume': 22}
+                                   'awake': True,
+                                   'wake_lock_size': 1,
+                                   'media_session_state': 3,
+                                   'current_app': 'com.plexapp.android',
+                                   'audio_state': constants.STATE_IDLE,
+                                   'device': 'hmdi_arc',
+                                   'is_volume_muted': False,
+                                   'volume': 22}
 
 STATE_PLEX_PAUSED = (constants.STATE_PAUSED, 'com.plexapp.android', 'hmdi_arc', False, 22/60.)
 
@@ -383,23 +390,23 @@ STATE_DETECTION_RULES_INVALID7 = {'com.amazon.tv.launcher': [{'standby': {'media
 STATE_DETECTION_RULES_INVALID8 = {'com.amazon.tv.launcher': [{'standby': {'audio_state': 123}}]}
 
 
-def _adb_shell_patched(self):
-    def _adb_shell_method(cmd):
-        self.adb_shell_cmd = cmd
-        return self.adb_shell_output
+def adb_shell_patched(self, cmd):
+    self.adb_shell_cmd = cmd
+    if not hasattr(self, 'adb_shell_output') or not self._available:
+        self.adb_shell_output = None
+    return self.adb_shell_output
 
-    return _adb_shell_method
+
+def connect_patched(self, always_log_errors=True):
+    self._adb = True
+    self._available = True
+    return self._available
 
 
 class TestAndroidTV(unittest.TestCase):
     def setUp(self):
-        self.atv = AndroidTV('127.0.0.1:5555')
-
-        # patch ADB-related methods
-        self.atv.adb_shell = _adb_shell_patched(self.atv)
-        self.atv._adb = True
-        self.atv._available = True
-        self.atv.adb_shell_output = None
+        with patch('androidtv.basetv.BaseTV.connect', connect_patched), patch('androidtv.basetv.BaseTV._adb_shell_python_adb', adb_shell_patched):
+            self.atv = AndroidTV('127.0.0.1:5555')
 
     def test_device(self):
         """Check that the ``device`` property works correctly.
@@ -610,6 +617,8 @@ class TestAndroidTV(unittest.TestCase):
         self.assertEqual(self.atv.adb_shell_cmd, "input keyevent 25")
 
 
+@patch('androidtv.basetv.BaseTV.connect', connect_patched)
+@patch('androidtv.basetv.BaseTV._adb_shell_python_adb', adb_shell_patched)
 class TestStateDetectionRulesValidator(unittest.TestCase):
     def test_state_detection_rules_validator(self):
         """Check that the ``state_detection_rules_validator`` function works correctly.
