@@ -312,6 +312,7 @@ GET_PROPERTIES_DICT_NONE = {'screen_on': None,
                             'device': None,
                             'is_volume_muted': None,
                             'volume': None}
+STATE_NONE = (None, None, None, None, None)
 
 # https://community.home-assistant.io/t/testers-needed-custom-state-detection-rules-for-android-tv-fire-tv/129493/6?u=jefflirion
 STATE_DETECTION_RULES_PLEX = {'com.plexapp.android': [{'playing': {'media_session_state': 3,
@@ -392,7 +393,7 @@ STATE_DETECTION_RULES_INVALID8 = {'com.amazon.tv.launcher': [{'standby': {'audio
 
 def adb_shell_patched(self, cmd):
     self.adb_shell_cmd = cmd
-    if not hasattr(self, 'adb_shell_output') or not self._available:
+    if not hasattr(self, 'adb_shell_output') or not self.available:
         self.adb_shell_output = None
     return self.adb_shell_output
 
@@ -403,6 +404,8 @@ def connect_patched(self, always_log_errors=True):
     return self._available
 
 
+@patch('androidtv.basetv.BaseTV.connect', connect_patched)
+@patch('androidtv.basetv.BaseTV._adb_shell_python_adb', adb_shell_patched)
 class TestAndroidTV(unittest.TestCase):
     def setUp(self):
         with patch('androidtv.basetv.BaseTV.connect', connect_patched), patch('androidtv.basetv.BaseTV._adb_shell_python_adb', adb_shell_patched):
@@ -502,6 +505,15 @@ class TestAndroidTV(unittest.TestCase):
         """Check that the ``update`` method works correctly.
 
         """
+        self.atv._adb = False
+        state = self.atv.update()
+        self.assertTupleEqual(state, STATE_NONE)
+
+        self.atv.connect()
+        self.atv.adb_shell_output = None
+        state = self.atv.update()
+        self.assertTupleEqual(state, STATE_NONE)
+
         self.atv.adb_shell_output = GET_PROPERTIES_OUTPUT1
         state = self.atv.update()
         self.assertTupleEqual(state, STATE1)

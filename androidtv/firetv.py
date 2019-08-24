@@ -107,8 +107,14 @@ class FireTV(BaseTV):
         # Get the properties needed for the update
         screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
 
+        # Check if device is unavailable
+        if screen_on is None:
+            state = None
+            current_app = None
+            running_apps = None
+
         # Check if device is off
-        if not screen_on:
+        elif not screen_on:
             state = constants.STATE_OFF
             current_app = None
             running_apps = None

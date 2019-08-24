@@ -79,8 +79,12 @@ class AndroidTV(BaseTV):
         # Get the volume (between 0 and 1)
         volume_level = self._volume_level(volume)
 
+        # Check if device is unavailable
+        if screen_on is None:
+            state = None
+
         # Check if device is off
-        if not screen_on or current_app == 'off':
+        elif not screen_on or current_app == 'off':
             state = constants.STATE_OFF
 
         # Check if screen saver is on
