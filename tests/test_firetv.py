@@ -19,11 +19,11 @@ Device "eth0" does not exist.
 """
 
 DEVICE_PROPERTIES_DICT1 = {'manufacturer': 'Amazon',
-                          'model': 'AFTT',
-                          'serialno': 'SERIALNO',
-                          'sw_version': '5.1.1',
-                          'wifimac': 'ab:cd:ef:gh:ij:kl',
-                          'ethmac': None}
+                           'model': 'AFTT',
+                           'serialno': 'SERIALNO',
+                           'sw_version': '5.1.1',
+                           'wifimac': 'ab:cd:ef:gh:ij:kl',
+                           'ethmac': None}
 
 DEVICE_PROPERTIES_OUTPUT2 = """Amazon
 AFTT
@@ -34,11 +34,11 @@ Device "eth0" does not exist.
 """
 
 DEVICE_PROPERTIES_DICT2 = {'manufacturer': 'Amazon',
-                          'model': 'AFTT',
-                          'serialno': None,
-                          'sw_version': '5.1.1',
-                          'wifimac': 'ab:cd:ef:gh:ij:kl',
-                          'ethmac': None}
+                           'model': 'AFTT',
+                           'serialno': None,
+                           'sw_version': '5.1.1',
+                           'wifimac': 'ab:cd:ef:gh:ij:kl',
+                           'ethmac': None}
 
 # `adb shell CURRENT_APP=$(dumpsys window windows | grep mCurrentFocus) && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && echo $CURRENT_APP`
 CURRENT_APP_OUTPUT = "com.amazon.tv.launcher"

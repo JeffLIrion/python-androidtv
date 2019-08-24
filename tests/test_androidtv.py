@@ -357,14 +357,14 @@ state=3
 """ + DUMPSYS_AUDIO_ON
 
 GET_PROPERTIES_DICT_PLEX_PAUSED = {'screen_on': True,
-                                    'awake': True,
-                                    'wake_lock_size': 1,
-                                    'media_session_state': 3,
-                                    'current_app': 'com.plexapp.android',
-                                    'audio_state': constants.STATE_IDLE,
-                                    'device': 'hmdi_arc',
-                                    'is_volume_muted': False,
-                                    'volume': 22}
+                                   'awake': True,
+                                   'wake_lock_size': 1,
+                                   'media_session_state': 3,
+                                   'current_app': 'com.plexapp.android',
+                                   'audio_state': constants.STATE_IDLE,
+                                   'device': 'hmdi_arc',
+                                   'is_volume_muted': False,
+                                   'volume': 22}
 
 STATE_PLEX_PAUSED = (constants.STATE_PAUSED, 'com.plexapp.android', 'hmdi_arc', False, 22/60.)
 
