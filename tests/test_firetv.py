@@ -98,6 +98,7 @@ GET_PROPERTIES_DICT_NONE = {'screen_on': None,
                             'media_session_state': None,
                             'current_app': None,
                             'running_apps': None}
+STATE_NONE = (None, None, None)
 
 STATE_DETECTION_RULES1 = {'com.amazon.tv.launcher': ['off']}
 STATE_DETECTION_RULES2 = {'com.amazon.tv.launcher': ['media_session_state', 'off']}
@@ -112,7 +113,7 @@ STATE_DETECTION_RULES_INVALID3 = {'com.amazon.tv.launcher': [{'off': {'invalid':
 
 def adb_shell_patched(self, cmd):
     self.adb_shell_cmd = cmd
-    if not hasattr(self, 'adb_shell_output') or not self._available:
+    if not hasattr(self, 'adb_shell_output') or not self.available:
         self.adb_shell_output = None
     return self.adb_shell_output
 
@@ -123,6 +124,8 @@ def connect_patched(self, always_log_errors=True):
     return self._available
 
 
+@patch('androidtv.basetv.BaseTV.connect', connect_patched)
+@patch('androidtv.basetv.BaseTV._adb_shell_python_adb', adb_shell_patched)
 class TestFireTV(unittest.TestCase):
     def setUp(self):
         with patch('androidtv.basetv.BaseTV.connect', connect_patched), patch('androidtv.basetv.BaseTV._adb_shell_python_adb', adb_shell_patched):
@@ -252,6 +255,15 @@ class TestFireTV(unittest.TestCase):
         """Check that the ``update`` method works correctly.
 
         """
+        self.ftv._adb = False
+        state = self.ftv.update()
+        self.assertTupleEqual(state, STATE_NONE)
+
+        self.ftv.connect()
+        self.ftv.adb_shell_output = None
+        state = self.ftv.update()
+        self.assertTupleEqual(state, STATE_NONE)
+
         self.ftv.adb_shell_output = GET_PROPERTIES_OUTPUT1
         state = self.ftv.update()
         self.assertTupleEqual(state, STATE1)
