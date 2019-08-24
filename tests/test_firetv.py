@@ -1,5 +1,6 @@
 import sys
 import unittest
+from unittest.mock import patch
 
 
 sys.path.insert(0, '..')
@@ -103,22 +104,23 @@ STATE_DETECTION_RULES_INVALID2 = {'com.amazon.tv.launcher': ['stopped']}
 STATE_DETECTION_RULES_INVALID3 = {'com.amazon.tv.launcher': [{'off': {'invalid': 1}}]}
 
 
-def _adb_shell_patched(self):
-    def _adb_shell_method(cmd):
-        return self.adb_shell_output
+def adb_shell_patched(self, cmd):
+    self.adb_shell_cmd = cmd
+    if not hasattr(self, 'adb_shell_output') or not self._available:
+        self.adb_shell_output = None
+    return self.adb_shell_output
 
-    return _adb_shell_method
+
+def connect_patched(self, always_log_errors=True):
+    self._adb = True
+    self._available = True
+    return self._available
 
 
 class TestFireTV(unittest.TestCase):
     def setUp(self):
-        self.ftv = FireTV('127.0.0.1:5555')
-
-        # patch ADB-related methods
-        self.ftv.adb_shell = _adb_shell_patched(self.ftv)
-        self.ftv._adb = True
-        self.ftv._available = True
-        self.ftv.adb_shell_output = None
+        with patch('androidtv.basetv.BaseTV.connect', connect_patched), patch('androidtv.basetv.BaseTV._adb_shell_python_adb', adb_shell_patched):
+            self.ftv = FireTV('127.0.0.1:5555')
 
     def test_get_device_properties(self):
         """Check that ``get_device_properties`` works correctly.
@@ -257,6 +259,8 @@ class TestFireTV(unittest.TestCase):
         self.assertTupleEqual(state, STATE3)
 
 
+@patch('androidtv.basetv.BaseTV.connect', connect_patched)
+@patch('androidtv.basetv.BaseTV._adb_shell_python_adb', adb_shell_patched)
 class TestFireTVStateDetectionRules(unittest.TestCase):
     def test_state_detection_rules_validator(self):
         """Check that ``state_detection_rules_validator()`` works correctly.
