@@ -205,73 +205,108 @@ class BaseTV(object):
             Whether or not the connection was successfully established and the device is available
 
         """
+        if not self.adb_server_ip:
+            return self._connect_python_adb(always_log_errors)
+        return self._connect_pure_python_adb(always_log_errors)
+
+    def _connect_python_adb(self, always_log_errors=True):
+        """Connect to an Android TV / Fire TV device using the Python ADB implememtation.
+
+        Parameters
+        ----------
+        always_log_errors : bool
+            If True, errors will always be logged; otherwise, errors will only be logged on the first failed reconnect attempt
+
+        Returns
+        -------
+        bool
+            Whether or not the connection was successfully established and the device is available
+
+        """
         self._adb_lock.acquire(**LOCK_KWARGS)  # pylint: disable=unexpected-keyword-arg
         try:
-            if not self.adb_server_ip:
-                # python-adb
-                try:
-                    if self.adbkey:
-                        # private key
-                        with open(self.adbkey) as f:
-                            priv = f.read()
+            # python-adb
+            try:
+                if self.adbkey:
+                    # private key
+                    with open(self.adbkey) as f:
+                        priv = f.read()
 
-                        # public key
-                        try:
-                            with open(self.adbkey + '.pub') as f:
-                                pub = f.read()
-                        except FileNotFoundError:
-                            pub = ''
+                    # public key
+                    try:
+                        with open(self.adbkey + '.pub') as f:
+                            pub = f.read()
+                    except FileNotFoundError:
+                        pub = ''
 
-                        signer = PythonRSASigner(pub, priv)
+                    signer = PythonRSASigner(pub, priv)
 
-                        # Connect to the device
-                        self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer], default_timeout_ms=9000)
-                    else:
-                        self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, default_timeout_ms=9000)
+                    # Connect to the device
+                    self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer], default_timeout_ms=9000)
+                else:
+                    self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, default_timeout_ms=9000)
 
-                    # ADB connection successfully established
+                # ADB connection successfully established
+                self._available = True
+                _LOGGER.debug("ADB connection to %s successfully established", self.host)
+
+            except socket_error as serr:
+                if self._available or always_log_errors:
+                    if serr.strerror is None:
+                        serr.strerror = "Timed out trying to connect to ADB device."
+                    _LOGGER.warning("Couldn't connect to host %s, error: %s", self.host, serr.strerror)
+
+                # ADB connection attempt failed
+                self._adb = None
+                self._available = False
+
+            finally:
+                return self._available
+
+        finally:
+            self._adb_lock.release()
+
+    def _connect_pure_python_adb(self, always_log_errors=True):
+        """Connect to an Android TV / Fire TV device using an ADB server.
+
+        Parameters
+        ----------
+        always_log_errors : bool
+            If True, errors will always be logged; otherwise, errors will only be logged on the first failed reconnect attempt
+
+        Returns
+        -------
+        bool
+            Whether or not the connection was successfully established and the device is available
+
+        """
+        self._adb_lock.acquire(**LOCK_KWARGS)  # pylint: disable=unexpected-keyword-arg
+        try:
+            # pure-python-adb
+            try:
+                self._adb_client = AdbClient(host=self.adb_server_ip, port=self.adb_server_port)
+                self._adb_device = self._adb_client.device(self.host)
+
+                # ADB connection successfully established
+                if self._adb_device:
+                    _LOGGER.debug("ADB connection to %s via ADB server %s:%s successfully established", self.host, self.adb_server_ip, self.adb_server_port)
                     self._available = True
-                    _LOGGER.debug("ADB connection to %s successfully established", self.host)
 
-                except socket_error as serr:
+                # ADB connection attempt failed (without an exception)
+                else:
                     if self._available or always_log_errors:
-                        if serr.strerror is None:
-                            serr.strerror = "Timed out trying to connect to ADB device."
-                        _LOGGER.warning("Couldn't connect to host %s, error: %s", self.host, serr.strerror)
-
-                    # ADB connection attempt failed
-                    self._adb = None
+                        _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s", self.host, self.adb_server_ip, self.adb_server_port)
                     self._available = False
 
-                finally:
-                    return self._available
+            except Exception as exc:  # noqa pylint: disable=broad-except
+                if self._available or always_log_errors:
+                    _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s, error: %s", self.host, self.adb_server_ip, self.adb_server_port, exc)
 
-            else:
-                # pure-python-adb
-                try:
-                    self._adb_client = AdbClient(host=self.adb_server_ip, port=self.adb_server_port)
-                    self._adb_device = self._adb_client.device(self.host)
+                # ADB connection attempt failed
+                self._available = False
 
-                    # ADB connection successfully established
-                    if self._adb_device:
-                        _LOGGER.debug("ADB connection to %s via ADB server %s:%s successfully established", self.host, self.adb_server_ip, self.adb_server_port)
-                        self._available = True
-
-                    # ADB connection attempt failed (without an exception)
-                    else:
-                        if self._available or always_log_errors:
-                            _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s", self.host, self.adb_server_ip, self.adb_server_port)
-                        self._available = False
-
-                except Exception as exc:  # noqa pylint: disable=broad-except
-                    if self._available or always_log_errors:
-                        _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s, error: %s", self.host, self.adb_server_ip, self.adb_server_port, exc)
-
-                    # ADB connection attempt failed
-                    self._available = False
-
-                finally:
-                    return self._available
+            finally:
+                return self._available
 
         finally:
             self._adb_lock.release()
