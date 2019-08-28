@@ -11,14 +11,20 @@ except ImportError:
     # Python2
     from mock import patch
 
+
 sys.path.insert(0, '..')
 
-from androidtv import constants, setup
+from androidtv import setup
 from androidtv.constants import APPS, KEYS, STATE_IDLE, STATE_OFF, STATE_PAUSED, STATE_PLAYING, STATE_STANDBY
-from androidtv.firetv import FireTV
 
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class MediaPlayerDevice(object):
+    @staticmethod
+    def schedule_update_ha_state():
+        raise NotImplementedError
 
 
 # Translate from `AndroidTV` / `FireTV` reported state to HA state.
@@ -59,7 +65,7 @@ def adb_decorator(override_available=False):
     return _adb_decorator
 
 
-class ADBDevice(object):
+class ADBDevice(MediaPlayerDevice):
     """Representation of an Android TV or Fire TV device."""
 
     def __init__(self, aftv, name, apps, turn_on_command, turn_off_command):
@@ -238,7 +244,7 @@ def adb_shell_adb_server_error(self, cmd):
     raise ConnectionResetError
 
 
-class AdbAvailable:
+class AdbAvailable(object):
     """A class that indicates the ADB connection is available."""
 
     def shell(self, cmd):
@@ -246,7 +252,7 @@ class AdbAvailable:
         return ""
 
 
-class AdbUnavailable:
+class AdbUnavailable(object):
     """A class with ADB shell methods that raise errors."""
 
     def __bool__(self):
@@ -291,6 +297,7 @@ PATCH_ADB_SERVER_COMMAND_NONE = patch(
 )
 
 
+@unittest.skipIf(sys.version_info.major == 2, "Test requires Python 3")
 class TestAndroidTVPythonImplementation(unittest.TestCase):
     """Test the androidtv media player for an Android TV device."""
 
@@ -356,6 +363,7 @@ class TestAndroidTVPythonImplementation(unittest.TestCase):
             self.assertIsNotNone(self.aftv.state)
 
 
+@unittest.skipIf(sys.version_info.major == 2, "Test requires Python 3")
 class TestAndroidTVServerImplementation(unittest.TestCase):
     """Test the androidtv media player for an Android TV device."""
 
@@ -417,6 +425,7 @@ class TestAndroidTVServerImplementation(unittest.TestCase):
             self.assertIsNotNone(self.aftv.state)
 
 
+@unittest.skipIf(sys.version_info.major == 2, "Test requires Python 3")
 class TestFireTVPythonImplementation(TestAndroidTVPythonImplementation):
     """Test the androidtv media player for a Fire TV device."""
 
@@ -427,6 +436,7 @@ class TestFireTVPythonImplementation(TestAndroidTVPythonImplementation):
             self.aftv = FireTVDevice(aftv, "Fake Fire TV", {}, True, None, None)
 
 
+@unittest.skipIf(sys.version_info.major == 2, "Test requires Python 3")
 class TestFireTVServerImplementation(TestAndroidTVServerImplementation):
     """Test the androidtv media player for a Fire TV device."""
 
