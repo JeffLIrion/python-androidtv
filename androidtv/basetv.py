@@ -250,13 +250,13 @@ class BaseTV(object):
                 self._available = True
                 _LOGGER.debug("ADB connection to %s successfully established", self.host)
 
+            # ADB connection attempt failed
             except socket_error as serr:
                 if self._available or always_log_errors:
                     if serr.strerror is None:
                         serr.strerror = "Timed out trying to connect to ADB device."
                     _LOGGER.warning("Couldn't connect to host %s, error: %s", self.host, serr.strerror)
 
-                # ADB connection attempt failed
                 self._adb = None
                 self._available = False
 
@@ -298,11 +298,10 @@ class BaseTV(object):
                         _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s", self.host, self.adb_server_ip, self.adb_server_port)
                     self._available = False
 
+            # ADB connection attempt failed (with an exception)
             except Exception as exc:  # noqa pylint: disable=broad-except
                 if self._available or always_log_errors:
                     _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s, error: %s", self.host, self.adb_server_ip, self.adb_server_port, exc)
-
-                # ADB connection attempt failed
                 self._available = False
 
             finally:
