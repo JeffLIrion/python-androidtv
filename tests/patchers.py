@@ -6,6 +6,11 @@ except ImportError:
     from mock import patch
 
 
+def adb_command_success(self, cmd):
+    """Return ``cmd``."""
+    return cmd
+
+
 def connect_device_success(self, *args, **kwargs):
     """Return `self`, which will result in the ADB connection being interpreted as available."""
     return self
@@ -31,7 +36,7 @@ class AdbAvailable(object):
 
     def shell(self, cmd):
         """Send an ADB shell command (ADB server implementation)."""
-        return ""
+        return cmd
 
 
 class AdbUnavailable(object):
@@ -50,7 +55,7 @@ PATCH_PYTHON_ADB_CONNECT_SUCCESS = patch(
     "adb.adb_commands.AdbCommands.ConnectDevice", connect_device_success
 )
 PATCH_PYTHON_ADB_COMMAND_SUCCESS = patch(
-    "adb.adb_commands.AdbCommands.Shell", return_value=""
+    "adb.adb_commands.AdbCommands.Shell", adb_command_success
 )
 PATCH_PYTHON_ADB_CONNECT_FAIL = patch(
     "adb.adb_commands.AdbCommands.ConnectDevice", connect_device_fail
@@ -67,6 +72,12 @@ PATCH_ADB_SERVER_CONNECT_SUCCESS = patch(
 )
 PATCH_ADB_SERVER_AVAILABLE = patch(
     "androidtv.basetv.BaseTV.available", return_value=True
+)
+PATCH_ADB_SERVER_AVAILABLE2 = patch(
+    "androidtv.adb.ADBServer.available", return_value=True
+)
+PATCH_ADB_SERVER_UNAVAILABLE = patch(
+    "androidtv.adb.ADBServer.available", return_value=False
 )
 PATCH_ADB_SERVER_CONNECT_FAIL = patch(
     "adb_messenger.client.Client.device", return_value=AdbUnavailable()

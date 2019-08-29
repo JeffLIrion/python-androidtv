@@ -1,6 +1,8 @@
-"""Communicate with an Android TV or Amazon Fire TV device via ADB over a network.
+"""Classes to manage ADB connections.
 
-ADB Debugging must be enabled.
+* :py:class:`ADBPython` utilizes a Python implementation of the ADB protocol.
+* :py:class:`ADBServer` utilizes an ADB server to communicate with the device.
+
 """
 
 
@@ -23,10 +25,17 @@ else:
 
 
 class ADBPython(object):
-    """TODO."""
+    """A manager for ADB connections that uses a Python implementation of the ADB protocol.
 
+    Parameters
+    ----------
+    host : str
+        The address of the device in the format ``<ip address>:<host>``
+    adbkey : str
+        The path to the ``adbkey`` file for ADB authentication
+
+    """
     def __init__(self, host, adbkey=''):
-        """TODO."""
         self.host = host
         self.adbkey = adbkey
         self._adb = None
@@ -139,10 +148,21 @@ class ADBPython(object):
 
 
 class ADBServer(object):
-    """TODO."""
+    """A manager for ADB connections that uses an ADB server.
 
+    Parameters
+    ----------
+    host : str
+        The address of the device in the format ``<ip address>:<host>``
+    adbkey : str
+        The path to the ``adbkey`` file for ADB authentication
+    adb_server_ip : str
+        The IP address of the ADB server
+    adb_server_port : int
+        The port for the ADB server
+
+    """
     def __init__(self, host, adb_server_ip='', adb_server_port=5037):
-        """TODO."""
         self.host = host
         self.adb_server_ip = adb_server_ip
         self.adb_server_port = adb_server_port
@@ -165,7 +185,35 @@ class ADBServer(object):
             Whether or not the ADB connection is intact
 
         """
-        return bool(self._adb)
+        try:
+            # make sure the server is available
+            adb_devices = self._adb_client.devices()
+
+            # make sure the device is available
+            try:
+                # case 1: the device is currently available
+                if any([self.host in dev.get_serial_no() for dev in adb_devices]):
+                    if not self._available:
+                        self._available = True
+                    return True
+
+                # case 2: the device is not currently available
+                if self._available:
+                    _LOGGER.error('ADB server is not connected to the device.')
+                    self._available = False
+                return False
+
+            except RuntimeError:
+                if self._available:
+                    _LOGGER.error('ADB device is unavailable; encountered an error when searching for device.')
+                    self._available = False
+                return False
+
+        except RuntimeError:
+            if self._available:
+                _LOGGER.error('ADB server is unavailable.')
+                self._available = False
+            return False
 
     def connect(self, always_log_errors=True):
         """Connect to an Android TV / Fire TV device.
@@ -241,4 +289,3 @@ class ADBServer(object):
             _LOGGER.debug("ADB command not sent to %s via ADB server %s:%s because pure-python-adb lock not acquired: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
 
         return None
-
