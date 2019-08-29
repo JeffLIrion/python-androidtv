@@ -392,21 +392,6 @@ STATE_DETECTION_RULES_INVALID7 = {'com.amazon.tv.launcher': [{'standby': {'media
 STATE_DETECTION_RULES_INVALID8 = {'com.amazon.tv.launcher': [{'standby': {'audio_state': 123}}]}
 
 
-def adb_shell_patched(self, cmd):
-    self.adb_shell_cmd = cmd
-    if not hasattr(self, 'adb_shell_output') or not self.available:
-        self.adb_shell_output = None
-    return self.adb_shell_output
-
-
-def connect_patched(self, always_log_errors=True):
-    self._adb = True
-    self._available = True
-    return self._available
-
-
-@patch('androidtv.basetv.BaseTV.connect', connect_patched)
-@patch('androidtv.basetv.BaseTV.adb_shell', adb_shell_patched)
 class TestAndroidTV(unittest.TestCase):
     def setUp(self):
         with patchers.PATCH_PYTHON_ADB_CONNECT_SUCCESS, patchers.patch_shell(''):
@@ -631,8 +616,6 @@ class TestAndroidTV(unittest.TestCase):
             self.assertEqual(self.atv.adb.shell_cmd, "input keyevent 25")
 
 
-@patch('androidtv.basetv.BaseTV.connect', connect_patched)
-@patch('androidtv.basetv.BaseTV.adb_shell', adb_shell_patched)
 class TestStateDetectionRulesValidator(unittest.TestCase):
     def test_state_detection_rules_validator(self):
         """Check that the ``state_detection_rules_validator`` function works correctly.
