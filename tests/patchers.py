@@ -74,10 +74,10 @@ PATCH_ADB_SERVER_AVAILABLE = patch(
     "androidtv.basetv.BaseTV.available", return_value=True
 )
 PATCH_ADB_SERVER_AVAILABLE2 = patch(
-    "androidtv.adb.ADBServer.available", return_value=True
+    "androidtv.adb_helper.ADBServer.available", return_value=True
 )
 PATCH_ADB_SERVER_UNAVAILABLE = patch(
-    "androidtv.adb.ADBServer.available", return_value=False
+    "androidtv.adb_helper.ADBServer.available", return_value=False
 )
 PATCH_ADB_SERVER_CONNECT_FAIL = patch(
     "adb_messenger.client.Client.device", return_value=AdbUnavailable()

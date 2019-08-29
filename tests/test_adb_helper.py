@@ -11,7 +11,7 @@ except:
 
 sys.path.insert(0, '..')
 
-from androidtv.adb import ADBPython, ADBServer
+from androidtv.adb_helper import ADBPython, ADBServer
 from . import patchers
 
 
