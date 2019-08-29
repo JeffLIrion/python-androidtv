@@ -405,10 +405,10 @@ def connect_patched(self, always_log_errors=True):
 
 
 @patch('androidtv.basetv.BaseTV.connect', connect_patched)
-@patch('androidtv.basetv.BaseTV._adb_shell_python_adb', adb_shell_patched)
+@patch('androidtv.basetv.BaseTV.adb_shell', adb_shell_patched)
 class TestAndroidTV(unittest.TestCase):
     def setUp(self):
-        with patch('androidtv.basetv.BaseTV.connect', connect_patched), patch('androidtv.basetv.BaseTV._adb_shell_python_adb', adb_shell_patched):
+        with patch('androidtv.basetv.BaseTV.connect', connect_patched), patch('androidtv.basetv.BaseTV.adb_shell', adb_shell_patched):
             self.atv = AndroidTV('127.0.0.1:5555')
 
     def test_device(self):
@@ -630,7 +630,7 @@ class TestAndroidTV(unittest.TestCase):
 
 
 @patch('androidtv.basetv.BaseTV.connect', connect_patched)
-@patch('androidtv.basetv.BaseTV._adb_shell_python_adb', adb_shell_patched)
+@patch('androidtv.basetv.BaseTV.adb_shell', adb_shell_patched)
 class TestStateDetectionRulesValidator(unittest.TestCase):
     def test_state_detection_rules_validator(self):
         """Check that the ``state_detection_rules_validator`` function works correctly.

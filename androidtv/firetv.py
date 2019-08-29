@@ -71,7 +71,7 @@ class FireTV(BaseTV):
 
         # adb shell outputs in weird format, so we cut it into lines,
         # separate the retcode and return info to the user
-        res = self.adb_shell(cmd)
+        res = self.adb.shell(cmd)
         if res is None:
             return {}
 
@@ -270,7 +270,7 @@ class FireTV(BaseTV):
             The output of the ``am force-stop`` ADB shell command, or ``None`` if the device is unavailable
 
         """
-        return self.adb_shell("am force-stop {0}".format(app))
+        return self.adb.shell("am force-stop {0}".format(app))
 
     # ======================================================================= #
     #                                                                         #
@@ -304,14 +304,14 @@ class FireTV(BaseTV):
 
         """
         if get_running_apps:
-            output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
+            output = self.adb.shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_WAKE_LOCK_SIZE + " && " +
                                     constants.CMD_CURRENT_APP + " && (" +
                                     constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
                                     constants.CMD_RUNNING_APPS)
         else:
-            output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
+            output = self.adb.shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                     constants.CMD_WAKE_LOCK_SIZE + " && " +
                                     constants.CMD_CURRENT_APP + " && (" +
@@ -389,8 +389,8 @@ class FireTV(BaseTV):
     # ======================================================================= #
     def turn_on(self):
         """Send ``POWER`` and ``HOME`` actions if the device is off."""
-        self.adb_shell(constants.CMD_SCREEN_ON + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME))
+        self.adb.shell(constants.CMD_SCREEN_ON + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME))
 
     def turn_off(self):
         """Send ``SLEEP`` action if the device is not off."""
-        self.adb_shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_SLEEP))
+        self.adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_SLEEP))

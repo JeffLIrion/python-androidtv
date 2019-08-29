@@ -6,15 +6,10 @@ ADB Debugging must be enabled.
 
 import logging
 import re
-from socket import error as socket_error
 import sys
-import threading
-
-from adb import adb_commands
-from adb.sign_pythonrsa import PythonRSASigner
-from adb_messenger.client import Client as AdbClient
 
 from . import constants
+from .adb_helper import ADBPython, ADBServer
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -77,9 +72,7 @@ class BaseTV(object):
 
     def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
         self.host = host
-        self.adbkey = adbkey
         self.adb_server_ip = adb_server_ip
-        self.adb_server_port = adb_server_port
         self._state_detection_rules = state_detection_rules
 
         # make sure the rules are valid
@@ -92,27 +85,16 @@ class BaseTV(object):
         # the max volume level (determined when first getting the volume level)
         self.max_volume = None
 
-        # keep track of whether the ADB connection is intact
-        self._available = False
-
-        # use a lock to make sure that ADB commands don't overlap
-        self._adb_lock = threading.Lock()
-
-        # the attributes used for sending ADB commands; filled in in `self.connect()`
-        self._adb = None  # python-adb
-        self._adb_client = None  # pure-python-adb
-        self._adb_device = None  # pure-python-adb
-
-        # the method used for sending ADB commands
-        if not self.adb_server_ip:
+        # the handler for ADB commands
+        if not adb_server_ip:
             # python-adb
-            self.adb_shell = self._adb_shell_python_adb
+            self.adb = ADBPython(host, adbkey)
         else:
             # pure-python-adb
-            self.adb_shell = self._adb_shell_pure_python_adb
+            self.adb = ADBServer(host, adb_server_ip, adb_server_port)
 
         # establish the ADB connection
-        self.connect()
+        self.adb.connect()
 
         # get device properties
         self.device_properties = self.get_device_properties()
@@ -122,8 +104,8 @@ class BaseTV(object):
     #                               ADB methods                               #
     #                                                                         #
     # ======================================================================= #
-    def _adb_shell_python_adb(self, cmd):
-        """Send an ADB command using the Python ADB implementation.
+    def adb_shell(self, cmd):
+        """Send an ADB command.
 
         Parameters
         ----------
@@ -136,60 +118,7 @@ class BaseTV(object):
             The response from the device, if there is a response
 
         """
-        if not self.available:
-            _LOGGER.debug("ADB command not sent to %s because python-adb connection is not established: %s", self.host, cmd)
-            return None
-
-        if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
-            _LOGGER.debug("Sending command to %s via python-adb: %s", self.host, cmd)
-            try:
-                return self._adb.Shell(cmd)
-            finally:
-                self._adb_lock.release()
-        else:
-            _LOGGER.debug("ADB command not sent to %s because python-adb lock not acquired: %s", self.host, cmd)
-
-        return None
-
-    def _adb_shell_pure_python_adb(self, cmd):
-        """Send an ADB command using an ADB server.
-
-        Parameters
-        ----------
-        cmd : str
-            The ADB command to be sent
-
-        Returns
-        -------
-        str, None
-            The response from the device, if there is a response
-
-        """
-        if not self._available:
-            _LOGGER.debug("ADB command not sent to %s via ADB server %s:%s because pure-python-adb connection is not established: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
-            return None
-
-        if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
-            _LOGGER.debug("Sending command to %s via ADB server %s:%s: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
-            try:
-                return self._adb_device.shell(cmd)
-            finally:
-                self._adb_lock.release()
-        else:
-            _LOGGER.debug("ADB command not sent to %s via ADB server %s:%s because pure-python-adb lock not acquired: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
-
-        return None
-
-    def _key(self, key):
-        """Send a key event to device.
-
-        Parameters
-        ----------
-        key : str, int
-            The Key constant
-
-        """
-        self.adb_shell('input keyevent {0}'.format(key))
+        return self.adb.shell(cmd)
 
     def connect(self, always_log_errors=True):
         """Connect to an Android TV / Fire TV device.
@@ -205,76 +134,18 @@ class BaseTV(object):
             Whether or not the connection was successfully established and the device is available
 
         """
-        self._adb_lock.acquire(**LOCK_KWARGS)  # pylint: disable=unexpected-keyword-arg
-        try:
-            if not self.adb_server_ip:
-                # python-adb
-                try:
-                    if self.adbkey:
-                        # private key
-                        with open(self.adbkey) as f:
-                            priv = f.read()
+        return self.adb.connect(always_log_errors)
 
-                        # public key
-                        try:
-                            with open(self.adbkey + '.pub') as f:
-                                pub = f.read()
-                        except FileNotFoundError:
-                            pub = ''
+    def _key(self, key):
+        """Send a key event to device.
 
-                        signer = PythonRSASigner(pub, priv)
+        Parameters
+        ----------
+        key : str, int
+            The Key constant
 
-                        # Connect to the device
-                        self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer], default_timeout_ms=9000)
-                    else:
-                        self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, default_timeout_ms=9000)
-
-                    # ADB connection successfully established
-                    self._available = True
-                    _LOGGER.debug("ADB connection to %s successfully established", self.host)
-
-                except socket_error as serr:
-                    if self._available or always_log_errors:
-                        if serr.strerror is None:
-                            serr.strerror = "Timed out trying to connect to ADB device."
-                        _LOGGER.warning("Couldn't connect to host %s, error: %s", self.host, serr.strerror)
-
-                    # ADB connection attempt failed
-                    self._adb = None
-                    self._available = False
-
-                finally:
-                    return self._available
-
-            else:
-                # pure-python-adb
-                try:
-                    self._adb_client = AdbClient(host=self.adb_server_ip, port=self.adb_server_port)
-                    self._adb_device = self._adb_client.device(self.host)
-
-                    # ADB connection successfully established
-                    if self._adb_device:
-                        _LOGGER.debug("ADB connection to %s via ADB server %s:%s successfully established", self.host, self.adb_server_ip, self.adb_server_port)
-                        self._available = True
-
-                    # ADB connection attempt failed (without an exception)
-                    else:
-                        if self._available or always_log_errors:
-                            _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s", self.host, self.adb_server_ip, self.adb_server_port)
-                        self._available = False
-
-                except Exception as exc:  # noqa pylint: disable=broad-except
-                    if self._available or always_log_errors:
-                        _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s, error: %s", self.host, self.adb_server_ip, self.adb_server_port, exc)
-
-                    # ADB connection attempt failed
-                    self._available = False
-
-                finally:
-                    return self._available
-
-        finally:
-            self._adb_lock.release()
+        """
+        self.adb.shell('input keyevent {0}'.format(key))
 
     # ======================================================================= #
     #                                                                         #
@@ -290,7 +161,7 @@ class BaseTV(object):
             A dictionary with keys ``'wifimac'``, ``'ethmac'``, ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
 
         """
-        properties = self.adb_shell(constants.CMD_MANUFACTURER + " && " +
+        properties = self.adb.shell(constants.CMD_MANUFACTURER + " && " +
                                     constants.CMD_MODEL + " && " +
                                     constants.CMD_SERIALNO + " && " +
                                     constants.CMD_VERSION + " && " +
@@ -442,7 +313,7 @@ class BaseTV(object):
             The audio state, as determined from the ADB shell command ``dumpsys audio``, or ``None`` if it could not be determined
 
         """
-        audio_state_response = self.adb_shell(constants.CMD_AUDIO_STATE)
+        audio_state_response = self.adb.shell(constants.CMD_AUDIO_STATE)
         if audio_state_response is None:
             return None
         if audio_state_response == '1':
@@ -461,40 +332,7 @@ class BaseTV(object):
             Whether or not the ADB connection is intact
 
         """
-        if not self.adb_server_ip:
-            # python-adb
-            return bool(self._adb)
-
-        # pure-python-adb
-        try:
-            # make sure the server is available
-            adb_devices = self._adb_client.devices()
-
-            # make sure the device is available
-            try:
-                # case 1: the device is currently available
-                if any([self.host in dev.get_serial_no() for dev in adb_devices]):
-                    if not self._available:
-                        self._available = True
-                    return True
-
-                # case 2: the device is not currently available
-                if self._available:
-                    _LOGGER.error('ADB server is not connected to the device.')
-                    self._available = False
-                return False
-
-            except RuntimeError:
-                if self._available:
-                    _LOGGER.error('ADB device is unavailable; encountered an error when searching for device.')
-                    self._available = False
-                return False
-
-        except RuntimeError:
-            if self._available:
-                _LOGGER.error('ADB server is unavailable.')
-                self._available = False
-            return False
+        return self.adb.available
 
     @property
     def awake(self):
@@ -506,7 +344,7 @@ class BaseTV(object):
             Whether or not the device is awake (screensaver is not running)
 
         """
-        return self.adb_shell(constants.CMD_AWAKE + constants.CMD_SUCCESS1_FAILURE0) == '1'
+        return self.adb.shell(constants.CMD_AWAKE + constants.CMD_SUCCESS1_FAILURE0) == '1'
 
     @property
     def current_app(self):
@@ -518,7 +356,7 @@ class BaseTV(object):
             The ID of the current app, or ``None`` if it could not be determined
 
         """
-        current_app_response = self.adb_shell(constants.CMD_CURRENT_APP)
+        current_app_response = self.adb.shell(constants.CMD_CURRENT_APP)
 
         return self._current_app(current_app_response)
 
@@ -560,7 +398,7 @@ class BaseTV(object):
             The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
 
         """
-        media_session_state_response = self.adb_shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
+        media_session_state_response = self.adb.shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
 
         _, media_session_state = self._current_app_media_session_state(media_session_state_response)
 
@@ -576,7 +414,7 @@ class BaseTV(object):
             A list of the running apps
 
         """
-        running_apps_response = self.adb_shell(constants.CMD_RUNNING_APPS)
+        running_apps_response = self.adb.shell(constants.CMD_RUNNING_APPS)
 
         return self._running_apps(running_apps_response)
 
@@ -590,7 +428,7 @@ class BaseTV(object):
             Whether or not the device is on
 
         """
-        return self.adb_shell(constants.CMD_SCREEN_ON + constants.CMD_SUCCESS1_FAILURE0) == '1'
+        return self.adb.shell(constants.CMD_SCREEN_ON + constants.CMD_SUCCESS1_FAILURE0) == '1'
 
     @property
     def volume(self):
@@ -631,7 +469,7 @@ class BaseTV(object):
             The size of the current wake lock, or ``None`` if it could not be determined
 
         """
-        wake_lock_size_response = self.adb_shell(constants.CMD_WAKE_LOCK_SIZE)
+        wake_lock_size_response = self.adb.shell(constants.CMD_WAKE_LOCK_SIZE)
 
         return self._wake_lock_size(wake_lock_size_response)
 
@@ -758,7 +596,7 @@ class BaseTV(object):
 
         """
         if not dumpsys_audio_response:
-            dumpsys_audio_response = self.adb_shell("dumpsys audio")
+            dumpsys_audio_response = self.adb.shell("dumpsys audio")
 
         if not dumpsys_audio_response:
             return None
@@ -1198,7 +1036,7 @@ class BaseTV(object):
             cmd = "(" + " && sleep 1 && ".join(["input keyevent {0}".format(constants.KEY_VOLUME_UP)] * int(new_volume - current_volume)) + ") &"
 
         # send the volume down/up commands
-        self.adb_shell(cmd)
+        self.adb.shell(cmd)
 
         # return the new volume level
         return new_volume / self.max_volume
