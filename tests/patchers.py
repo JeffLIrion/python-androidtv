@@ -80,7 +80,7 @@ PATCH_ADB_SERVER_UNAVAILABLE = patch(
     "androidtv.adb_helper.ADBServer.available", return_value=False
 )
 PATCH_ADB_SERVER_CONNECT_FAIL = patch(
-    "adb_messenger.client.Client.device", return_value=AdbUnavailable()
+    "adb_messenger.client.Client.device", return_value=False
 )
 PATCH_ADB_SERVER_COMMAND_FAIL = patch(
     "{}.AdbAvailable.shell".format(__name__), adb_shell_adb_server_error
