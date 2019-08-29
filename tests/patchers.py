@@ -51,6 +51,14 @@ class AdbUnavailable(object):
         raise ConnectionResetError
 
 
+def patch_shell(response):
+    def shell(self, cmd):
+        self.shell_cmd = cmd
+        return response
+
+    return patch('androidtv.adb_helper.ADBPython.shell', shell)
+
+
 PATCH_PYTHON_ADB_CONNECT_SUCCESS = patch(
     "adb.adb_commands.AdbCommands.ConnectDevice", connect_device_success
 )
