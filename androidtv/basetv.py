@@ -73,6 +73,7 @@ class BaseTV(object):
     def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
         self.host = host
         self.adb_server_ip = adb_server_ip
+        self.adb_server_port = adb_server_port
         self._state_detection_rules = state_detection_rules
 
         # make sure the rules are valid
