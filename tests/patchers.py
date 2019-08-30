@@ -8,27 +8,89 @@ except ImportError:
     from mock import patch
 
 
-class AdbCommandsFake(object):
+'''class AdbCommandsFake(object):
     """A fake of the ``adb.adb_commands.AdbCommands`` class."""
 
     def ConnectDevice(self):
+        """Try to connect to a device."""
         raise NotImplementedError
 
     def Shell(self, cmd):
+        """Send an ADB shell command."""
+        raise NotImplementedError'''
+
+
+class AdbCommandsFakeSuccess(object):
+    """A fake of the ``adb.adb_commands.AdbCommands`` class."""
+
+    def ConnectDevice(self, *args, **kwargs):
+        """Successfully connect to a device."""
+        return self
+
+    def Shell(self, cmd):
+        """Send an ADB shell command."""
         raise NotImplementedError
 
 
-class ClientFake(object):
+class AdbCommandsFakeFail(object):
+    """A fake of the ``adb.adb_commands.AdbCommands`` class."""
+
+    def ConnectDevice(self, *args, **kwargs):
+        """Fail to connect to a device."""
+        raise socket_error
+
+    def Shell(self, cmd):
+        """Send an ADB shell command."""
+        raise NotImplementedError
+
+
+'''class ClientFake(object):
     """A fake of the ``adb_messenger.client.Client`` class."""
 
     def __init__(self, host, port):
         self._devices = []
 
     def devices(self):
+        """Get a list of the connected devices."""
         return self._devices
 
     def device(self, host):
-        raise NotImplementedError
+        """Try to connect to a device."""
+        raise NotImplementedError'''
+
+
+class ClientFakeSuccess(object):
+    """A fake of the ``adb_messenger.client.Client`` class."""
+
+    def __init__(self, host, port):
+        print("\n\nI am here!!!\n\n")
+        self._devices = []
+
+    def devices(self):
+        """Get a list of the connected devices."""
+        return self._devices
+
+    def device(self, serial):
+        """Mock the `ClientFake.device` method when it is successful."""
+        device = DeviceFake(host)
+        self._devices.append(device)
+        return device
+
+
+class ClientFakeFail(object):
+    """A fake of the ``adb_messenger.client.Client`` class."""
+
+    def __init__(self, host, port):
+        self._devices = []
+
+    def devices(self):
+        """Get a list of the connected devices."""
+        return self._devices
+
+    def device(self, serial):
+        """Mock the `ClientFake.device` method when it fails."""
+        self._devices = []
+        return None
 
 
 class DeviceFake(object):
@@ -38,56 +100,125 @@ class DeviceFake(object):
         self.host = host
 
     def get_serial_no(self):
+        """Get the serial number for the device (IP:PORT)."""
         return self.host
 
     def shell(self, cmd):
+        """Send an ADB shell command."""
         raise NotImplementedError
 
 
-def ConnectDevice_success(self):
-    return self
+'''def patch_connect(success):
+    """Mock the `AdbCommandsFake.ConnectDevice` and `ClientFake.device` methods."""
 
+    def ConnectDevice_success(self):
+        """Mock the `AdbCommandsFake.ConnectDevice` method when it is successful."""
+        return self
 
-def ConnectDevice_fail(self):
-    raise socket_error
+    def ConnectDevice_fail(self):
+        """Mock the `AdbCommandsFake.ConnectDevice` method when it fails."""
+        raise socket_error
 
+    def device_success(self, host):
+        """Mock the `ClientFake.device` method when it is successful."""
+        device = DeviceFake(host)
+        self._devices.append(device)
+        return device
 
-def device_success(self, host):
-    device = DeviceFake(host)
-    self._devices.append(device)
-    return device
+    def device_fail(self, host):
+        """Mock the `ClientFake.device` method when it fails."""
+        self._devices = []
+        return None
 
-
-def device_fail(self, host):
-    self._devices = []
-    return None
-
-
-def shell_success(self, cmd):
-    self.cmd = cmd
-
-def patch_connect(success):
     if success:
         return patch('{}.AdbCommandsFake.ConnectDevice'.format(__name__), ConnectDevice_success), patch('{}.ClientFake.device'.format(__name__), device_success)
     return patch('{}.AdbCommandsFake.ConnectDevice'.format(__name__), return_value=None), patch('{}.ClientFake.device'.format(__name__), device_fail)
 
 
-def patch_shell(response, error=False):
+def patch_shell(response, cmd_assert=False, error=False):
+    """Mock the `AdbCommandsFake.Shell` and `DeviceFake.shell` methods."""
+
     def shell_success(self, cmd):
-        self.cmd = cmd
+        """Mock the `AdbCommandsFake.Shell` and `DeviceFake.shell` methods when they are successful."""
+        if cmd_assert is not False:
+            if cmd_assert is None:
+                assert cmd is None
+            else:
+                assert cmd == cmd_assert
         return response
 
     def shell_fail_python(self, cmd):
-        self.cmd = cmd
+        """Mock the `AdbCommandsFake.Shell` method when it fails."""
+        if cmd_assert is not False:
+            if cmd_assert is None:
+                assert cmd is None
+            else:
+                assert cmd == cmd_assert
         raise AttributeError
 
     def shell_fail_server(self, cmd):
-        self.cmd = cmd
+        """Mock the `DeviceFake.shell` method when it fails."""
+        if cmd_assert is not False:
+            if cmd_assert is None:
+                assert cmd is None
+            else:
+                assert cmd == cmd_assert
         raise ConnectionResetError
 
     if not error:
         return patch('{}.AdbCommandsFake.Shell'.format(__name__), shell_success), patch('{}.DeviceFake.shell'.format(__name__), shell_success)
-    return patch('{}.AdbCommandsFake.Shell'.format(__name__), shell_fail_python), patch('{}.DeviceFake.shell'.format(__name__), shell_fail_server)
+    return patch('{}.AdbCommandsFake.Shell'.format(__name__), shell_fail_python), patch('{}.DeviceFake.shell'.format(__name__), shell_fail_server)'''
+
+
+def patch_connect(success):
+    """Mock the `adb.adb_commands.AdbCommands` and `adb_messenger.client.Client` classes."""
+
+    if success:
+        return patch('adb.adb_commands.AdbCommands', AdbCommandsFakeSuccess), patch('adb_messenger.client.Client', ClientFakeSuccess)
+    return patch('adb.adb_commands.AdbCommands', AdbCommandsFakeFail), patch('adb_messenger.client.Client', ClientFakeFail)
+
+
+def patch_shelll(response=None, cmd_assert=False, error=False):
+    """Mock the `AdbCommandsFakeSuccess.Shell` / `AdbCommandsFakeFail.Shell` and `DeviceFake.shell` methods."""
+
+    def shell_success(self, cmd):
+        """Mock the `AdbCommandsFake.Shell` and `DeviceFake.shell` methods when they are successful."""
+        if cmd_assert is not False:
+            if cmd_assert is None:
+                assert cmd is None
+            else:
+                assert cmd == cmd_assert
+        return response
+
+    def shell_fail_python(self, cmd):
+        """Mock the `AdbCommandsFake.Shell` method when it fails."""
+        if cmd_assert is not False:
+            if cmd_assert is None:
+                assert cmd is None
+            else:
+                assert cmd == cmd_assert
+        raise AttributeError
+
+    def shell_fail_server(self, cmd):
+        """Mock the `DeviceFake.shell` method when it fails."""
+        if cmd_assert is not False:
+            if cmd_assert is None:
+                assert cmd is None
+            else:
+                assert cmd == cmd_assert
+        raise ConnectionResetError
+
+    if not error:
+        return patch('{}.AdbCommandsFakeSuccess.Shell'.format(__name__), shell_success), patch('{}.DeviceFake.shell'.format(__name__), shell_success)
+    return patch('{}.AdbCommandsFakeFail.Shell'.format(__name__), shell_fail_python), patch('{}.DeviceFake.shell'.format(__name__), shell_fail_server)
+
+
+
+
+
+
+
+
 
 
 def adb_command_success(self, cmd):
