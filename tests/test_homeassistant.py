@@ -27,6 +27,13 @@ class MediaPlayerDevice(object):
         raise NotImplementedError
 
 
+# =========================================================================== #
+#                                                                             #
+#                               media_player.py                               #
+#                                                                             #
+# =========================================================================== #
+
+
 # Translate from `AndroidTV` / `FireTV` reported state to HA state.
 ANDROIDTV_STATES = {
     "off": STATE_OFF,
@@ -222,6 +229,13 @@ class FireTVDevice(ADBDevice):
         self._state = ANDROIDTV_STATES.get(state)
         if self._state is None:
             self._available = False
+
+
+# =========================================================================== #
+#                                                                             #
+#                            test_media_player.py                             #
+#                                                                             #
+# =========================================================================== #
 
 
 def connect_device_success(self, *args, **kwargs):
