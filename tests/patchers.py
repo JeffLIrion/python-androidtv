@@ -88,37 +88,22 @@ def patch_connect(success):
     return patch('adb.adb_commands.AdbCommands', AdbCommandsFakeFail), patch('androidtv.adb_manager.Client', ClientFakeFail)
 
 
-def patch_shell(response=None, cmd_assert=False, error=False):
+def patch_shell(response=None, error=False):
     """Mock the `AdbCommandsFakeSuccess.Shell` / `AdbCommandsFakeFail.Shell` and `DeviceFake.shell` methods."""
 
     def shell_success(self, cmd):
         """Mock the `AdbCommandsFake.Shell` and `DeviceFake.shell` methods when they are successful."""
         self.shell_cmd = cmd
-        if cmd_assert is not False:
-            if cmd_assert is None:
-                assert cmd is None
-            else:
-                assert cmd == cmd_assert
         return response
 
     def shell_fail_python(self, cmd):
         """Mock the `AdbCommandsFake.Shell` method when it fails."""
         self.shell_cmd = cmd
-        if cmd_assert is not False:
-            if cmd_assert is None:
-                assert cmd is None
-            else:
-                assert cmd == cmd_assert
         raise AttributeError
 
     def shell_fail_server(self, cmd):
         """Mock the `DeviceFake.shell` method when it fails."""
         self.shell_cmd = cmd
-        if cmd_assert is not False:
-            if cmd_assert is None:
-                assert cmd is None
-            else:
-                assert cmd == cmd_assert
         raise ConnectionResetError
 
     if not error:
