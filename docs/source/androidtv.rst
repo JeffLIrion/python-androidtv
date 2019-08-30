@@ -6,6 +6,7 @@ Submodules
 
 .. toctree::
 
+   androidtv.adb_manager
    androidtv.androidtv
    androidtv.basetv
    androidtv.constants

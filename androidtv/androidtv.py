@@ -49,7 +49,7 @@ class AndroidTV(BaseTV):
             The intent that will be sent is ``am start -a android.intent.action.VIEW -d <uri>``
 
         """
-        self.adb_shell("am start -a android.intent.action.VIEW -d {}".format(uri))
+        self.adb.shell("am start -a android.intent.action.VIEW -d {}".format(uri))
 
     # ======================================================================= #
     #                                                                         #
@@ -208,7 +208,7 @@ class AndroidTV(BaseTV):
             The absolute volume level, or ``None`` if it was not determined
 
         """
-        output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
+        output = self.adb.shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                 constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
                                 constants.CMD_WAKE_LOCK_SIZE + " && " +
                                 constants.CMD_CURRENT_APP + " && (" +
@@ -305,8 +305,8 @@ class AndroidTV(BaseTV):
     # ======================================================================= #
     def turn_on(self):
         """Send ``POWER`` action if the device is off."""
-        self.adb_shell(constants.CMD_SCREEN_ON + " || input keyevent {0}".format(constants.KEY_POWER))
+        self.adb.shell(constants.CMD_SCREEN_ON + " || input keyevent {0}".format(constants.KEY_POWER))
 
     def turn_off(self):
         """Send ``POWER`` action if the device is not off."""
-        self.adb_shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))
+        self.adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))
