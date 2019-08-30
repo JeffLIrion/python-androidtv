@@ -53,7 +53,6 @@ class ClientFakeFail(object):
     """A fake of the ``adb_messenger.client.Client`` class."""
 
     def __init__(self, host='127.0.0.1', port=5037):
-        print("\n\nI am here!!!!!!!!\n\n")
         self._devices = []
 
     def devices(self):
@@ -86,7 +85,7 @@ def patch_connect(success):
 
     if success:
         return patch('adb.adb_commands.AdbCommands', AdbCommandsFakeSuccess), patch('androidtv.adb_helper.AdbClient', ClientFakeSuccess)
-    return patch('adb.adb_commands.AdbCommands', AdbCommandsFakeFail), patch('adb_messenger.client.Client', ClientFakeFail)
+    return patch('adb.adb_commands.AdbCommands', AdbCommandsFakeFail), patch('androidtv.adb_helper.AdbClient', ClientFakeFail)
 
 
 def patch_shell(response=None, cmd_assert=False, error=False):
