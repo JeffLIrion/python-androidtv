@@ -1,9 +1,93 @@
+from socket import error as socket_error
+
 try:
     # Python3
     from unittest.mock import patch
 except ImportError:
     # Python2
     from mock import patch
+
+
+class AdbCommandsFake(object):
+    """A fake of the ``adb.adb_commands.AdbCommands`` class."""
+
+    def ConnectDevice(self):
+        raise NotImplementedError
+
+    def Shell(self, cmd):
+        raise NotImplementedError
+
+
+class ClientFake(object):
+    """A fake of the ``adb_messenger.client.Client`` class."""
+
+    def __init__(self, host, port):
+        self._devices = []
+
+    def devices(self):
+        return self._devices
+
+    def device(self, host):
+        raise NotImplementedError
+
+
+class DeviceFake(object):
+    """A fake of the ``adb_messenger.device.Device`` class."""
+
+    def __init__(self, host):
+        self.host = host
+
+    def get_serial_no(self):
+        return self.host
+
+    def shell(self, cmd):
+        raise NotImplementedError
+
+
+def ConnectDevice_success(self):
+    return self
+
+
+def ConnectDevice_fail(self):
+    raise socket_error
+
+
+def device_success(self, host):
+    device = DeviceFake(host)
+    self._devices.append(device)
+    return device
+
+
+def device_fail(self, host):
+    self._devices = []
+    return None
+
+
+def shell_success(self, cmd):
+    self.cmd = cmd
+
+def patch_connect(success):
+    if success:
+        return patch('{}.AdbCommandsFake.ConnectDevice'.format(__name__), ConnectDevice_success), patch('{}.ClientFake.device'.format(__name__), device_success)
+    return patch('{}.AdbCommandsFake.ConnectDevice'.format(__name__), return_value=None), patch('{}.ClientFake.device'.format(__name__), device_fail)
+
+
+def patch_shell(response, error=False):
+    def shell_success(self, cmd):
+        self.cmd = cmd
+        return response
+
+    def shell_fail_python(self, cmd):
+        self.cmd = cmd
+        raise AttributeError
+
+    def shell_fail_server(self, cmd):
+        self.cmd = cmd
+        raise ConnectionResetError
+
+    if not error:
+        return patch('{}.AdbCommandsFake.Shell'.format(__name__), shell_success), patch('{}.DeviceFake.shell'.format(__name__), shell_success)
+    return patch('{}.AdbCommandsFake.Shell'.format(__name__), shell_fail_python), patch('{}.DeviceFake.shell'.format(__name__), shell_fail_server)
 
 
 def adb_command_success(self, cmd):
