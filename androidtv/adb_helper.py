@@ -185,6 +185,9 @@ class ADBServer(object):
             Whether or not the ADB connection is intact
 
         """
+        if not self._adb_client:
+            return False
+
         try:
             # make sure the server is available
             adb_devices = self._adb_client.devices()

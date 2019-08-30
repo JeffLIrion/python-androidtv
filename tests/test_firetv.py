@@ -114,18 +114,18 @@ STATE_DETECTION_RULES_INVALID3 = {'com.amazon.tv.launcher': [{'off': {'invalid':
 
 class TestFireTV(unittest.TestCase):
     def setUp(self):
-        with patchers.PATCH_PYTHON_ADB_CONNECT_SUCCESS, patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1):
+        with patchers.patch_connect(True)[0], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[0]:
             self.ftv = FireTV('127.0.0.1:5555')
 
     def test_get_device_properties(self):
         """Check that ``get_device_properties`` works correctly.
 
         """
-        with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1):
+        with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[0]:
             device_properties = self.ftv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT1, device_properties)
 
-        with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2):
+        with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[0]:
             device_properties = self.ftv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT2, device_properties)
 
@@ -133,19 +133,19 @@ class TestFireTV(unittest.TestCase):
         """Check that the ``audio_state`` property works correctly.
 
         """
-        with patchers.patch_shell(None):
+        with patchers.patch_shell(None)[0]:
             audio_state = self.ftv.audio_state
             self.assertEqual(audio_state, None)
 
-        with patchers.patch_shell('0'):
+        with patchers.patch_shell('0')[0]:
             audio_state = self.ftv.audio_state
             self.assertEqual(audio_state, constants.STATE_IDLE)
 
-        with patchers.patch_shell('1'):
+        with patchers.patch_shell('1')[0]:
             audio_state = self.ftv.audio_state
             self.assertEqual(audio_state, constants.STATE_PAUSED)
 
-        with patchers.patch_shell('2'):
+        with patchers.patch_shell('2')[0]:
             audio_state = self.ftv.audio_state
             self.assertEqual(audio_state, constants.STATE_PLAYING)
 
@@ -153,15 +153,15 @@ class TestFireTV(unittest.TestCase):
         """Check that the ``current_app`` property works correctly.
 
         """
-        with patchers.patch_shell(None):
+        with patchers.patch_shell(None)[0]:
             current_app = self.ftv.current_app
             self.assertEqual(current_app, None)
 
-        with patchers.patch_shell(''):
+        with patchers.patch_shell('')[0]:
             current_app = self.ftv.current_app
             self.assertEqual(current_app, None)
 
-        with patchers.patch_shell(CURRENT_APP_OUTPUT):
+        with patchers.patch_shell(CURRENT_APP_OUTPUT)[0]:
             current_app = self.ftv.current_app
             self.assertEqual(current_app, "com.amazon.tv.launcher")
 
@@ -169,15 +169,15 @@ class TestFireTV(unittest.TestCase):
         """Check that the ``media_session_state`` property works correctly.
 
         """
-        with patchers.patch_shell(None):
+        with patchers.patch_shell(None)[0]:
             media_session_state = self.ftv.media_session_state
             self.assertEqual(media_session_state, None)
 
-        with patchers.patch_shell(''):
+        with patchers.patch_shell('')[0]:
             media_session_state = self.ftv.media_session_state
             self.assertEqual(media_session_state, None)
 
-        with patchers.patch_shell(MEDIA_SESSION_STATE_OUTPUT):
+        with patchers.patch_shell(MEDIA_SESSION_STATE_OUTPUT)[0]:
             media_session_state = self.ftv.media_session_state
             self.assertEqual(media_session_state, 2)
 
@@ -185,15 +185,15 @@ class TestFireTV(unittest.TestCase):
         """Check that the ``running_apps`` property works correctly.
 
         """
-        with patchers.patch_shell(None):
+        with patchers.patch_shell(None)[0]:
             running_apps = self.ftv.running_apps
             self.assertEqual(running_apps, None)
 
-        with patchers.patch_shell(''):
+        with patchers.patch_shell('')[0]:
             running_apps = self.ftv.running_apps
             self.assertEqual(running_apps, None)
 
-        with patchers.patch_shell(RUNNING_APPS_OUTPUT):
+        with patchers.patch_shell(RUNNING_APPS_OUTPUT)[0]:
             running_apps = self.ftv.running_apps
             self.assertListEqual(running_apps, RUNNING_APPS_LIST)
 
@@ -201,19 +201,19 @@ class TestFireTV(unittest.TestCase):
         """Check that ``get_properties()`` works correctly.
 
         """
-        with patchers.patch_shell(None):
+        with patchers.patch_shell(None)[0]:
             properties = self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT_NONE)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1):
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[0]:
             properties = self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT1)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2):
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[0]:
             properties = self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT2)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3):
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[0]:
             properties = self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3)
 
@@ -241,26 +241,27 @@ class TestFireTV(unittest.TestCase):
         """Check that the ``update`` method works correctly.
 
         """
-        self.ftv.adb._adb = None
+        with patchers.patch_connect(False)[0]:
+            self.ftv.connect()
         state = self.ftv.update()
         self.assertTupleEqual(state, STATE_NONE)
 
-        with patchers.PATCH_PYTHON_ADB_CONNECT_SUCCESS:
+        with patchers.patch_connect(True)[0]:
             self.assertTrue(self.ftv.connect())
 
-        with patchers.patch_shell(None):
+        with patchers.patch_shell(None)[0]:
             state = self.ftv.update()
             self.assertTupleEqual(state, STATE_NONE)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1):
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[0]:
             state = self.ftv.update()
             self.assertTupleEqual(state, STATE1)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2):
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[0]:
             state = self.ftv.update()
             self.assertTupleEqual(state, STATE2)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3):
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[0]:
             state = self.ftv.update()
             self.assertTupleEqual(state, STATE3)
 
