@@ -72,6 +72,7 @@ class BaseTV(object):
 
     def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
         self.host = host
+        self.adbkey = adbkey
         self.adb_server_ip = adb_server_ip
         self.adb_server_port = adb_server_port
         self._state_detection_rules = state_detection_rules
@@ -107,6 +108,9 @@ class BaseTV(object):
     # ======================================================================= #
     def adb_shell(self, cmd):
         """Send an ADB command.
+
+        This calls :py:meth:`androidtv.adb_manager.ADBPython.shell` or :py:meth:`androidtv.adb_manager.ADBServer.shell`,
+        depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
 
         Parameters
         ----------
