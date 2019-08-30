@@ -9,7 +9,7 @@ import re
 import sys
 
 from . import constants
-from .adb_helper import ADBPython, ADBServer
+from .adb_manager import ADBPython, ADBServer
 
 _LOGGER = logging.getLogger(__name__)
 

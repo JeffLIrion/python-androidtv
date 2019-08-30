@@ -13,7 +13,7 @@ import threading
 
 from adb import adb_commands
 from adb.sign_pythonrsa import PythonRSASigner
-from adb_messenger.client import Client as AdbClient
+from adb_messenger.client import Client
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -237,7 +237,7 @@ class ADBServer(object):
         # Make sure that we release the lock
         try:
             try:
-                self._adb_client = AdbClient(host=self.adb_server_ip, port=self.adb_server_port)
+                self._adb_client = Client(host=self.adb_server_ip, port=self.adb_server_port)
                 self._adb_device = self._adb_client.device(self.host)
 
                 # ADB connection successfully established

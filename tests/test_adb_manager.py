@@ -1,20 +1,11 @@
 import sys
 import unittest
 
-try:
-    # Python3
-    from unittest.mock import patch
-except:
-    # Python2
-    from mock import patch
-
 
 sys.path.insert(0, '..')
 
-from androidtv.adb_helper import ADBPython, ADBServer
+from androidtv.adb_manager import ADBPython, ADBServer
 from . import patchers
-from .patchers import AdbCommandsFakeSuccess
-from adb import adb_commands
 
 
 class TestADBPython(unittest.TestCase):

@@ -1,13 +1,6 @@
 import sys
 import unittest
 
-try:
-    # Python3
-    from unittest.mock import patch
-except ImportError:
-    # Python2
-    from mock import patch
-
 
 sys.path.insert(0, '..')
 
@@ -115,7 +108,7 @@ STATE_DETECTION_RULES_INVALID3 = {'com.amazon.tv.launcher': [{'off': {'invalid':
 class TestFireTV(unittest.TestCase):
     def setUp(self):
         with patchers.patch_connect(True)[0], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[0]:
-            self.ftv = FireTV('127.0.0.1:5555')
+            self.ftv = FireTV('IP:PORT')
 
     def test_get_device_properties(self):
         """Check that ``get_device_properties`` works correctly.
@@ -272,13 +265,13 @@ class TestFireTVStateDetectionRules(unittest.TestCase):
 
         """
         with self.assertRaises(KeyError):
-            ftv = FireTV('127.0.0.1:5555', state_detection_rules=STATE_DETECTION_RULES_INVALID1)
+            ftv = FireTV('IP:PORT', state_detection_rules=STATE_DETECTION_RULES_INVALID1)
 
         with self.assertRaises(KeyError):
-            ftv = FireTV('127.0.0.1:5555', state_detection_rules=STATE_DETECTION_RULES_INVALID2)
+            ftv = FireTV('IP:PORT', state_detection_rules=STATE_DETECTION_RULES_INVALID2)
 
         with self.assertRaises(KeyError):
-            ftv = FireTV('127.0.0.1:5555', state_detection_rules=STATE_DETECTION_RULES_INVALID3)
+            ftv = FireTV('IP:PORT', state_detection_rules=STATE_DETECTION_RULES_INVALID3)
 
 
 if __name__ == "__main__":

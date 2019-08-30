@@ -1,13 +1,6 @@
 import sys
 import unittest
 
-try:
-    # Python3
-    from unittest.mock import patch
-except ImportError:
-    # Python2
-    from mock import patch
-
 
 sys.path.insert(0, '..')
 
@@ -395,7 +388,7 @@ STATE_DETECTION_RULES_INVALID8 = {'com.amazon.tv.launcher': [{'standby': {'audio
 class TestAndroidTV(unittest.TestCase):
     def setUp(self):
         with patchers.patch_connect(True)[0], patchers.patch_shell('')[0]:
-            self.atv = AndroidTV('127.0.0.1:5555')
+            self.atv = AndroidTV('IP:PORT')
 
     def test_device(self):
         """Check that the ``device`` property works correctly.
@@ -550,12 +543,12 @@ class TestAndroidTV(unittest.TestCase):
         with patchers.patch_shell(DUMPSYS_AUDIO_ON)[0]:
             new_volume_level = self.atv.set_volume_level(0.5)
             self.assertEqual(new_volume_level, 0.5)
-            #self.assertEqual(self.atv.adb.shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
 
         with patchers.patch_shell('')[0]:
             new_volume_level = self.atv.set_volume_level(0.5, 22./60)
             self.assertEqual(new_volume_level, 0.5)
-            #self.assertEqual(self.atv.adb.shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
 
     def test_volume_up(self):
         """Check that the ``volume_up`` method works correctly.
@@ -564,28 +557,28 @@ class TestAndroidTV(unittest.TestCase):
         with patchers.patch_shell(None)[0]:
             new_volume_level = self.atv.volume_up()
             self.assertIsNone(new_volume_level)
-            #self.assertEqual(self.atv.adb.shell_cmd, "input keyevent 24")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 24")
 
         with patchers.patch_shell('')[0]:
             new_volume_level = self.atv.volume_up()
             self.assertIsNone(new_volume_level)
-            #self.assertEqual(self.atv.adb.shell_cmd, "input keyevent 24")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 24")
 
         with patchers.patch_shell(DUMPSYS_AUDIO_ON)[0]:
             new_volume_level = self.atv.volume_up()
             self.assertEqual(new_volume_level, 23./60)
-            #self.assertEqual(self.atv.adb.shell_cmd, "input keyevent 24")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 24")
             new_volume_level = self.atv.volume_up(23./60)
             self.assertEqual(new_volume_level, 24./60)
-            #self.assertEqual(self.atv.adb.shell_cmd, "input keyevent 24")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 24")
 
         with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[0]:
             new_volume_level = self.atv.volume_up()
             self.assertEqual(new_volume_level, 21./60)
-            #self.assertEqual(self.atv.adb.shell_cmd, "input keyevent 24")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 24")
             new_volume_level = self.atv.volume_up(21./60)
             self.assertEqual(new_volume_level, 22./60)
-            #self.assertEqual(self.atv.adb.shell_cmd, "input keyevent 24")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 24")
 
     def test_volume_down(self):
         """Check that the ``volume_down`` method works correctly.
@@ -594,28 +587,28 @@ class TestAndroidTV(unittest.TestCase):
         with patchers.patch_shell(None)[0]:
             new_volume_level = self.atv.volume_down()
             self.assertIsNone(new_volume_level)
-            #self.assertEqual(self.atv.adb.shell_cmd, "input keyevent 25")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 25")
 
         with patchers.patch_shell('')[0]:
             new_volume_level = self.atv.volume_down()
             self.assertIsNone(new_volume_level)
-            #self.assertEqual(self.atv.adb.shell_cmd, "input keyevent 25")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 25")
 
         with patchers.patch_shell(DUMPSYS_AUDIO_ON)[0]:
             new_volume_level = self.atv.volume_down()
             self.assertEqual(new_volume_level, 21./60)
-            #self.assertEqual(self.atv.adb.shell_cmd, "input keyevent 25")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 25")
             new_volume_level = self.atv.volume_down(21./60)
             self.assertEqual(new_volume_level, 20./60)
-            #self.assertEqual(self.atv.adb.shell_cmd, "input keyevent 25")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 25")
 
         with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[0]:
             new_volume_level = self.atv.volume_down()
             self.assertEqual(new_volume_level, 19./60)
-            #self.assertEqual(self.atv.adb.shell_cmd, "input keyevent 25")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 25")
             new_volume_level = self.atv.volume_down(19./60)
             self.assertEqual(new_volume_level, 18./60)
-            #self.assertEqual(self.atv.adb.shell_cmd, "input keyevent 25")
+            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 25")
 
 
 class TestStateDetectionRulesValidator(unittest.TestCase):
@@ -625,21 +618,21 @@ class TestStateDetectionRulesValidator(unittest.TestCase):
         """
         with patchers.patch_connect(True)[0], patchers.patch_shell('')[0]:
             # Make sure that no error is raised when the state detection rules are valid
-            atv1 = AndroidTV('127.0.0.1:5555', state_detection_rules=STATE_DETECTION_RULES1)
-            atv2 = AndroidTV('127.0.0.1:5555', state_detection_rules=STATE_DETECTION_RULES2)
-            atv3 = AndroidTV('127.0.0.1:5555', state_detection_rules=STATE_DETECTION_RULES3)
-            atv4 = AndroidTV('127.0.0.1:5555', state_detection_rules=STATE_DETECTION_RULES4)
-            atv5 = AndroidTV('127.0.0.1:5555', state_detection_rules=STATE_DETECTION_RULES5)
+            atv1 = AndroidTV('IP:PORT', state_detection_rules=STATE_DETECTION_RULES1)
+            atv2 = AndroidTV('IP:PORT', state_detection_rules=STATE_DETECTION_RULES2)
+            atv3 = AndroidTV('IP:PORT', state_detection_rules=STATE_DETECTION_RULES3)
+            atv4 = AndroidTV('IP:PORT', state_detection_rules=STATE_DETECTION_RULES4)
+            atv5 = AndroidTV('IP:PORT', state_detection_rules=STATE_DETECTION_RULES5)
 
             # Make sure that an error is raised when the state detection rules are invalid
-            self.assertRaises(KeyError, AndroidTV, '127.0.0.1:5555', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID1)
-            self.assertRaises(KeyError, AndroidTV, '127.0.0.1:5555', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID2)
-            self.assertRaises(KeyError, AndroidTV, '127.0.0.1:5555', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID3)
-            self.assertRaises(KeyError, AndroidTV, '127.0.0.1:5555', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID4)
-            self.assertRaises(KeyError, AndroidTV, '127.0.0.1:5555', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID5)
-            self.assertRaises(KeyError, AndroidTV, '127.0.0.1:5555', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID6)
-            self.assertRaises(KeyError, AndroidTV, '127.0.0.1:5555', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID7)
-            self.assertRaises(KeyError, AndroidTV, '127.0.0.1:5555', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID8)
+            self.assertRaises(KeyError, AndroidTV, 'IP:PORT', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID1)
+            self.assertRaises(KeyError, AndroidTV, 'IP:PORT', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID2)
+            self.assertRaises(KeyError, AndroidTV, 'IP:PORT', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID3)
+            self.assertRaises(KeyError, AndroidTV, 'IP:PORT', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID4)
+            self.assertRaises(KeyError, AndroidTV, 'IP:PORT', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID5)
+            self.assertRaises(KeyError, AndroidTV, 'IP:PORT', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID6)
+            self.assertRaises(KeyError, AndroidTV, 'IP:PORT', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID7)
+            self.assertRaises(KeyError, AndroidTV, 'IP:PORT', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID8)
 
 
 if __name__ == "__main__":
