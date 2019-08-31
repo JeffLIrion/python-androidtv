@@ -105,20 +105,22 @@ STATE_DETECTION_RULES_INVALID2 = {'com.amazon.tv.launcher': ['stopped']}
 STATE_DETECTION_RULES_INVALID3 = {'com.amazon.tv.launcher': [{'off': {'invalid': 1}}]}
 
 
-class TestFireTV(unittest.TestCase):
+class TestFireTVPython(unittest.TestCase):
+    PATCH_INDEX = 0
+
     def setUp(self):
-        with patchers.patch_connect(True)[0], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[0]:
+        with patchers.patch_connect(True)[self.PATCH_INDEX], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_INDEX]:
             self.ftv = FireTV('IP:PORT')
 
     def test_get_device_properties(self):
         """Check that ``get_device_properties`` works correctly.
 
         """
-        with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[0]:
+        with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_INDEX]:
             device_properties = self.ftv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT1, device_properties)
 
-        with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[0]:
+        with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_INDEX]:
             device_properties = self.ftv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT2, device_properties)
 
@@ -126,19 +128,19 @@ class TestFireTV(unittest.TestCase):
         """Check that the ``audio_state`` property works correctly.
 
         """
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             audio_state = self.ftv.audio_state
             self.assertEqual(audio_state, None)
 
-        with patchers.patch_shell('0')[0]:
+        with patchers.patch_shell('0')[self.PATCH_INDEX]:
             audio_state = self.ftv.audio_state
             self.assertEqual(audio_state, constants.STATE_IDLE)
 
-        with patchers.patch_shell('1')[0]:
+        with patchers.patch_shell('1')[self.PATCH_INDEX]:
             audio_state = self.ftv.audio_state
             self.assertEqual(audio_state, constants.STATE_PAUSED)
 
-        with patchers.patch_shell('2')[0]:
+        with patchers.patch_shell('2')[self.PATCH_INDEX]:
             audio_state = self.ftv.audio_state
             self.assertEqual(audio_state, constants.STATE_PLAYING)
 
@@ -146,15 +148,15 @@ class TestFireTV(unittest.TestCase):
         """Check that the ``current_app`` property works correctly.
 
         """
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             current_app = self.ftv.current_app
             self.assertEqual(current_app, None)
 
-        with patchers.patch_shell('')[0]:
+        with patchers.patch_shell('')[self.PATCH_INDEX]:
             current_app = self.ftv.current_app
             self.assertEqual(current_app, None)
 
-        with patchers.patch_shell(CURRENT_APP_OUTPUT)[0]:
+        with patchers.patch_shell(CURRENT_APP_OUTPUT)[self.PATCH_INDEX]:
             current_app = self.ftv.current_app
             self.assertEqual(current_app, "com.amazon.tv.launcher")
 
@@ -162,15 +164,15 @@ class TestFireTV(unittest.TestCase):
         """Check that the ``media_session_state`` property works correctly.
 
         """
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             media_session_state = self.ftv.media_session_state
             self.assertEqual(media_session_state, None)
 
-        with patchers.patch_shell('')[0]:
+        with patchers.patch_shell('')[self.PATCH_INDEX]:
             media_session_state = self.ftv.media_session_state
             self.assertEqual(media_session_state, None)
 
-        with patchers.patch_shell(MEDIA_SESSION_STATE_OUTPUT)[0]:
+        with patchers.patch_shell(MEDIA_SESSION_STATE_OUTPUT)[self.PATCH_INDEX]:
             media_session_state = self.ftv.media_session_state
             self.assertEqual(media_session_state, 2)
 
@@ -178,15 +180,15 @@ class TestFireTV(unittest.TestCase):
         """Check that the ``running_apps`` property works correctly.
 
         """
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             running_apps = self.ftv.running_apps
             self.assertEqual(running_apps, None)
 
-        with patchers.patch_shell('')[0]:
+        with patchers.patch_shell('')[self.PATCH_INDEX]:
             running_apps = self.ftv.running_apps
             self.assertEqual(running_apps, None)
 
-        with patchers.patch_shell(RUNNING_APPS_OUTPUT)[0]:
+        with patchers.patch_shell(RUNNING_APPS_OUTPUT)[self.PATCH_INDEX]:
             running_apps = self.ftv.running_apps
             self.assertListEqual(running_apps, RUNNING_APPS_LIST)
 
@@ -194,19 +196,19 @@ class TestFireTV(unittest.TestCase):
         """Check that ``get_properties()`` works correctly.
 
         """
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             properties = self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT_NONE)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[self.PATCH_INDEX]:
             properties = self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT1)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[self.PATCH_INDEX]:
             properties = self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT2)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_INDEX]:
             properties = self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3)
 
@@ -234,29 +236,37 @@ class TestFireTV(unittest.TestCase):
         """Check that the ``update`` method works correctly.
 
         """
-        with patchers.patch_connect(False)[0]:
+        with patchers.patch_connect(False)[self.PATCH_INDEX]:
             self.ftv.connect()
         state = self.ftv.update()
         self.assertTupleEqual(state, STATE_NONE)
 
-        with patchers.patch_connect(True)[0]:
+        with patchers.patch_connect(True)[self.PATCH_INDEX]:
             self.assertTrue(self.ftv.connect())
 
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             state = self.ftv.update()
             self.assertTupleEqual(state, STATE_NONE)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[self.PATCH_INDEX]:
             state = self.ftv.update()
             self.assertTupleEqual(state, STATE1)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[self.PATCH_INDEX]:
             state = self.ftv.update()
             self.assertTupleEqual(state, STATE2)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_INDEX]:
             state = self.ftv.update()
             self.assertTupleEqual(state, STATE3)
+
+
+class TestFireTVServer(TestFireTVPython):
+    PATCH_INDEX = 1
+
+    def setUp(self):
+        with patchers.patch_connect(True)[self.PATCH_INDEX], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_INDEX]:
+            self.ftv = FireTV('IP:PORT', adb_server_ip='ADB_SERVER_PORT')
 
 
 class TestFireTVStateDetectionRules(unittest.TestCase):

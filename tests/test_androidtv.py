@@ -385,28 +385,31 @@ STATE_DETECTION_RULES_INVALID7 = {'com.amazon.tv.launcher': [{'standby': {'media
 STATE_DETECTION_RULES_INVALID8 = {'com.amazon.tv.launcher': [{'standby': {'audio_state': 123}}]}
 
 
-class TestAndroidTV(unittest.TestCase):
+class TestAndroidTVPython(unittest.TestCase):
+    PATCH_INDEX = 0
+    ADB_ATTR = '_adb'
+
     def setUp(self):
-        with patchers.patch_connect(True)[0], patchers.patch_shell('')[0]:
+        with patchers.patch_connect(True)[self.PATCH_INDEX], patchers.patch_shell('')[self.PATCH_INDEX]:
             self.atv = AndroidTV('IP:PORT')
 
     def test_device(self):
         """Check that the ``device`` property works correctly.
 
         """
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             device = self.atv.device
             self.assertIsNone(device)
 
-        with patchers.patch_shell('')[0]:
+        with patchers.patch_shell('')[self.PATCH_INDEX]:
             device = self.atv.device
             self.assertIsNone(device)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[0]:
+        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[self.PATCH_INDEX]:
             device = self.atv.device
             self.assertEqual('speaker', device)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[0]:
+        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[self.PATCH_INDEX]:
             device = self.atv.device
             self.assertEqual('hmdi_arc', device)
 
@@ -414,20 +417,20 @@ class TestAndroidTV(unittest.TestCase):
         """Check that the ``volume`` property works correctly.
 
         """
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             volume = self.atv.volume
             self.assertIsNone(volume)
 
-        with patchers.patch_shell('')[0]:
+        with patchers.patch_shell('')[self.PATCH_INDEX]:
             volume = self.atv.volume
             self.assertIsNone(volume)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[0]:
+        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[self.PATCH_INDEX]:
             volume = self.atv.volume
             self.assertEqual(volume, 20)
             self.assertEqual(self.atv.max_volume, 60.)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[0]:
+        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[self.PATCH_INDEX]:
             volume = self.atv.volume
             self.assertEqual(volume, 22)
             self.assertEqual(self.atv.max_volume, 60.)
@@ -436,15 +439,15 @@ class TestAndroidTV(unittest.TestCase):
         """Check that the ``is_volume_muted`` property works correctly.
 
         """
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             is_volume_muted = self.atv.is_volume_muted
             self.assertIsNone(is_volume_muted)
 
-        with patchers.patch_shell('')[0]:
+        with patchers.patch_shell('')[self.PATCH_INDEX]:
             is_volume_muted = self.atv.is_volume_muted
             self.assertIsNone(is_volume_muted)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[0]:
+        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[self.PATCH_INDEX]:
             is_volume_muted = self.atv.is_volume_muted
             self.assertFalse(is_volume_muted)
 
@@ -452,31 +455,31 @@ class TestAndroidTV(unittest.TestCase):
         """Check that ``get_properties()`` works correctly.
 
         """
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             properties = self.atv.get_properties_dict(lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT_NONE)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[self.PATCH_INDEX]:
             properties = self.atv.get_properties_dict(lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT1)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[self.PATCH_INDEX]:
             properties = self.atv.get_properties_dict(lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT2)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_INDEX]:
             properties = self.atv.get_properties_dict(lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT3)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_STANDBY)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_STANDBY)[self.PATCH_INDEX]:
             properties = self.atv.get_properties_dict(lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_STANDBY)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PLAYING)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PLAYING)[self.PATCH_INDEX]:
             properties = self.atv.get_properties_dict(lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PLAYING)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED)[self.PATCH_INDEX]:
             properties = self.atv.get_properties_dict(lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PAUSED)
 
@@ -484,27 +487,27 @@ class TestAndroidTV(unittest.TestCase):
         """Check that the ``update`` method works correctly.
 
         """
-        with patchers.patch_connect(False)[0]:
+        with patchers.patch_connect(False)[self.PATCH_INDEX]:
             self.atv.connect()
         state = self.atv.update()
         self.assertTupleEqual(state, STATE_NONE)
 
-        with patchers.patch_connect(True)[0]:
+        with patchers.patch_connect(True)[self.PATCH_INDEX]:
             self.atv.connect()
 
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             state = self.atv.update()
             self.assertTupleEqual(state, STATE_NONE)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[self.PATCH_INDEX]:
             state = self.atv.update()
             self.assertTupleEqual(state, STATE1)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[self.PATCH_INDEX]:
             state = self.atv.update()
             self.assertTupleEqual(state, STATE2)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[0]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_INDEX]:
             state = self.atv.update()
             self.assertTupleEqual(state, STATE3)
 
@@ -532,83 +535,92 @@ class TestAndroidTV(unittest.TestCase):
         """Check that the ``set_volume_level`` method works correctly.
 
         """
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             new_volume_level = self.atv.set_volume_level(0.5)
             self.assertIsNone(new_volume_level)
 
-        with patchers.patch_shell('')[0]:
+        with patchers.patch_shell('')[self.PATCH_INDEX]:
             new_volume_level = self.atv.set_volume_level(0.5)
             self.assertIsNone(new_volume_level)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[0]:
+        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[self.PATCH_INDEX]:
             new_volume_level = self.atv.set_volume_level(0.5)
             self.assertEqual(new_volume_level, 0.5)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
 
-        with patchers.patch_shell('')[0]:
+        with patchers.patch_shell('')[self.PATCH_INDEX]:
             new_volume_level = self.atv.set_volume_level(0.5, 22./60)
             self.assertEqual(new_volume_level, 0.5)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
 
     def test_volume_up(self):
         """Check that the ``volume_up`` method works correctly.
 
         """
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             new_volume_level = self.atv.volume_up()
             self.assertIsNone(new_volume_level)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 24")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
 
-        with patchers.patch_shell('')[0]:
+        with patchers.patch_shell('')[self.PATCH_INDEX]:
             new_volume_level = self.atv.volume_up()
             self.assertIsNone(new_volume_level)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 24")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[0]:
+        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[self.PATCH_INDEX]:
             new_volume_level = self.atv.volume_up()
             self.assertEqual(new_volume_level, 23./60)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 24")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
             new_volume_level = self.atv.volume_up(23./60)
             self.assertEqual(new_volume_level, 24./60)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 24")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[0]:
+        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[self.PATCH_INDEX]:
             new_volume_level = self.atv.volume_up()
             self.assertEqual(new_volume_level, 21./60)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 24")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
             new_volume_level = self.atv.volume_up(21./60)
             self.assertEqual(new_volume_level, 22./60)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 24")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
 
     def test_volume_down(self):
         """Check that the ``volume_down`` method works correctly.
 
         """
-        with patchers.patch_shell(None)[0]:
+        with patchers.patch_shell(None)[self.PATCH_INDEX]:
             new_volume_level = self.atv.volume_down()
             self.assertIsNone(new_volume_level)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 25")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
 
-        with patchers.patch_shell('')[0]:
+        with patchers.patch_shell('')[self.PATCH_INDEX]:
             new_volume_level = self.atv.volume_down()
             self.assertIsNone(new_volume_level)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 25")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[0]:
+        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[self.PATCH_INDEX]:
             new_volume_level = self.atv.volume_down()
             self.assertEqual(new_volume_level, 21./60)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 25")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
             new_volume_level = self.atv.volume_down(21./60)
             self.assertEqual(new_volume_level, 20./60)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 25")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[0]:
+        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[self.PATCH_INDEX]:
             new_volume_level = self.atv.volume_down()
             self.assertEqual(new_volume_level, 19./60)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 25")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
             new_volume_level = self.atv.volume_down(19./60)
             self.assertEqual(new_volume_level, 18./60)
-            self.assertEqual(self.atv.adb._adb.shell_cmd, "input keyevent 25")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
+
+
+class TestAndroidTVServer(TestAndroidTVPython):
+    PATCH_INDEX = 1
+    ADB_ATTR = '_adb_device'
+
+    def setUp(self):
+        with patchers.patch_connect(True)[self.PATCH_INDEX], patchers.patch_shell('')[self.PATCH_INDEX]:
+            self.atv = AndroidTV('IP:PORT', adb_server_ip='ADB_SERVER_IP')
 
 
 class TestStateDetectionRulesValidator(unittest.TestCase):
