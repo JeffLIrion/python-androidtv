@@ -43,7 +43,7 @@ class ClientFakeSuccess(object):
         return self._devices
 
     def device(self, serial):
-        """Mock the `Client.device` method when the device is connected via ADB."""
+        """Mock the ``Client.device`` method when the device is connected via ADB."""
         device = DeviceFake(serial)
         self._devices.append(device)
         return device
@@ -60,7 +60,7 @@ class ClientFakeFail(object):
         return self._devices
 
     def device(self, serial):
-        """Mock the `Client.device` method when the device is not connected via ADB."""
+        """Mock the ``Client.device`` method when the device is not connected via ADB."""
         self._devices = []
         return None
 
