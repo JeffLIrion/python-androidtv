@@ -11,7 +11,7 @@ from socket import error as socket_error
 import sys
 import threading
 
-from adb import adb_commands
+from adb.adb_commands import AdbCommands
 from adb.sign_pythonrsa import PythonRSASigner
 from adb_messenger.client import Client
 
@@ -93,9 +93,9 @@ class ADBPython(object):
                     signer = PythonRSASigner(pub, priv)
 
                     # Connect to the device
-                    self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer], default_timeout_ms=9000)
+                    self._adb = AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer], default_timeout_ms=9000)
                 else:
-                    self._adb = adb_commands.AdbCommands().ConnectDevice(serial=self.host, default_timeout_ms=9000)
+                    self._adb = AdbCommands().ConnectDevice(serial=self.host, default_timeout_ms=9000)
 
                 # ADB connection successfully established
                 self._available = True

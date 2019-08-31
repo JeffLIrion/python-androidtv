@@ -84,8 +84,8 @@ def patch_connect(success):
     """Mock the `adb.adb_commands.AdbCommands` and `adb_messenger.client.Client` classes."""
 
     if success:
-        return patch('adb.adb_commands.AdbCommands', AdbCommandsFakeSuccess), patch('androidtv.adb_manager.Client', ClientFakeSuccess)
-    return patch('adb.adb_commands.AdbCommands', AdbCommandsFakeFail), patch('androidtv.adb_manager.Client', ClientFakeFail)
+        return patch('androidtv.adb_manager.AdbCommands', AdbCommandsFakeSuccess), patch('androidtv.adb_manager.Client', ClientFakeSuccess)
+    return patch('androidtv.adb_manager.AdbCommands', AdbCommandsFakeFail), patch('androidtv.adb_manager.Client', ClientFakeFail)
 
 
 def patch_shell(response=None, error=False):
