@@ -8,28 +8,32 @@ except ImportError:
     from mock import patch
 
 
-class AdbCommandsFakeSuccess(object):
-    """A fake of the `adb.adb_commands.AdbCommands` class when the connection and shell commands succeed."""
+class AdbCommandsFake(object):
+    """A fake of the `adb.adb_commands.AdbCommands` class."""
 
     def ConnectDevice(self, *args, **kwargs):
-        """Successfully connect to a device."""
-        return self
+        """Try to connect to a device."""
+        raise NotImplementedError
 
     def Shell(self, cmd):
         """Send an ADB shell command."""
         raise NotImplementedError
 
 
-class AdbCommandsFakeFail(object):
-    """A fake of the `adb.adb_commands.AdbCommands` class when the connection and shell commands fail."""
+class AdbCommandsFakeSuccess(AdbCommandsFake):
+    """A fake of the `adb.adb_commands.AdbCommands` class when the connection attempt succeeds."""
+
+    def ConnectDevice(self, *args, **kwargs):
+        """Successfully connect to a device."""
+        return self
+
+
+class AdbCommandsFakeFail(AdbCommandsFake):
+    """A fake of the `adb.adb_commands.AdbCommands` class when the connection attempt fails."""
 
     def ConnectDevice(self, *args, **kwargs):
         """Fail to connect to a device."""
         raise socket_error
-
-    def Shell(self, cmd):
-        """Fail to send an ADB shell command."""
-        raise NotImplementedError
 
 
 class ClientFakeSuccess(object):
@@ -107,5 +111,5 @@ def patch_shell(response=None, error=False):
         raise ConnectionResetError
 
     if not error:
-        return {'python': patch('{}.AdbCommandsFakeSuccess.Shell'.format(__name__), shell_success), 'server': patch('{}.DeviceFake.shell'.format(__name__), shell_success)}
-    return {'python': patch('{}.AdbCommandsFakeFail.Shell'.format(__name__), shell_fail_python), 'server': patch('{}.DeviceFake.shell'.format(__name__), shell_fail_server)}
+        return {'python': patch('{}.AdbCommandsFake.Shell'.format(__name__), shell_success), 'server': patch('{}.DeviceFake.shell'.format(__name__), shell_success)}
+    return {'python': patch('{}.AdbCommandsFake.Shell'.format(__name__), shell_fail_python), 'server': patch('{}.DeviceFake.shell'.format(__name__), shell_fail_server)}
