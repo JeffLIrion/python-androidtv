@@ -84,8 +84,8 @@ def patch_connect(success):
     """Mock the `adb.adb_commands.AdbCommands` and `adb_messenger.client.Client` classes."""
 
     if success:
-        return patch('androidtv.adb_manager.AdbCommands', AdbCommandsFakeSuccess), patch('androidtv.adb_manager.Client', ClientFakeSuccess)
-    return patch('androidtv.adb_manager.AdbCommands', AdbCommandsFakeFail), patch('androidtv.adb_manager.Client', ClientFakeFail)
+        return {'python': patch('androidtv.adb_manager.AdbCommands', AdbCommandsFakeSuccess), 'server': patch('androidtv.adb_manager.Client', ClientFakeSuccess)}
+    return {'python': patch('androidtv.adb_manager.AdbCommands', AdbCommandsFakeFail), 'server': patch('androidtv.adb_manager.Client', ClientFakeFail)}
 
 
 def patch_shell(response=None, error=False):
@@ -107,5 +107,5 @@ def patch_shell(response=None, error=False):
         raise ConnectionResetError
 
     if not error:
-        return patch('{}.AdbCommandsFakeSuccess.Shell'.format(__name__), shell_success), patch('{}.DeviceFake.shell'.format(__name__), shell_success)
-    return patch('{}.AdbCommandsFakeFail.Shell'.format(__name__), shell_fail_python), patch('{}.DeviceFake.shell'.format(__name__), shell_fail_server)
+        return {'python': patch('{}.AdbCommandsFakeSuccess.Shell'.format(__name__), shell_success), 'server': patch('{}.DeviceFake.shell'.format(__name__), shell_success)}
+    return {'python': patch('{}.AdbCommandsFakeFail.Shell'.format(__name__), shell_fail_python), 'server': patch('{}.DeviceFake.shell'.format(__name__), shell_fail_server)}
