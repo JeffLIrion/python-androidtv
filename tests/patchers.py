@@ -9,7 +9,7 @@ except ImportError:
 
 
 class AdbCommandsFakeSuccess(object):
-    """A fake of the ``adb.adb_commands.AdbCommands`` class when the connection and shell commands succeed."""
+    """A fake of the `adb.adb_commands.AdbCommands` class when the connection and shell commands succeed."""
 
     def ConnectDevice(self, *args, **kwargs):
         """Successfully connect to a device."""
@@ -21,7 +21,7 @@ class AdbCommandsFakeSuccess(object):
 
 
 class AdbCommandsFakeFail(object):
-    """A fake of the ``adb.adb_commands.AdbCommands`` class when the connection and shell commands fail."""
+    """A fake of the `adb.adb_commands.AdbCommands` class when the connection and shell commands fail."""
 
     def ConnectDevice(self, *args, **kwargs):
         """Fail to connect to a device."""
@@ -33,7 +33,7 @@ class AdbCommandsFakeFail(object):
 
 
 class ClientFakeSuccess(object):
-    """A fake of the ``adb_messenger.client.Client`` class when the connection and shell commands succeed."""
+    """A fake of the `adb_messenger.client.Client` class when the connection and shell commands succeed."""
 
     def __init__(self, host='127.0.0.1', port=5037):
         self._devices = []
@@ -43,14 +43,14 @@ class ClientFakeSuccess(object):
         return self._devices
 
     def device(self, serial):
-        """Mock the ``Client.device`` method when the device is connected via ADB."""
+        """Mock the `Client.device` method when the device is connected via ADB."""
         device = DeviceFake(serial)
         self._devices.append(device)
         return device
 
 
 class ClientFakeFail(object):
-    """A fake of the ``adb_messenger.client.Client`` class when the connection and shell commands fail."""
+    """A fake of the `adb_messenger.client.Client` class when the connection and shell commands fail."""
 
     def __init__(self, host='127.0.0.1', port=5037):
         self._devices = []
@@ -60,13 +60,13 @@ class ClientFakeFail(object):
         return self._devices
 
     def device(self, serial):
-        """Mock the ``Client.device`` method when the device is not connected via ADB."""
+        """Mock the `Client.device` method when the device is not connected via ADB."""
         self._devices = []
         return None
 
 
 class DeviceFake(object):
-    """A fake of the ``adb_messenger.device.Device`` class."""
+    """A fake of the `adb_messenger.device.Device` class."""
 
     def __init__(self, host):
         self.host = host
