@@ -93,7 +93,7 @@ def patch_connect(success):
 
 
 def patch_shell(response=None, error=False):
-    """Mock the `AdbCommandsFakeSuccess.Shell` / `AdbCommandsFakeFail.Shell` and `DeviceFake.shell` methods."""
+    """Mock the `AdbCommandsFake.Shell` and `DeviceFake.shell` methods."""
 
     def shell_success(self, cmd):
         """Mock the `AdbCommandsFake.Shell` and `DeviceFake.shell` methods when they are successful."""
