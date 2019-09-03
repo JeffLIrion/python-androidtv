@@ -33,9 +33,8 @@ class TestFireTVPython(unittest.TestCase):
         """Check that the state detection works as expected.
 
         """
-        with patch('androidtv.firetv.FireTV.get_properties', return_value=[True, True, 1, constants.APP_NETFLIX, 3, []]):
-            state, _, _ = self.ftv.update()
-            self.assertEqual(state, constants.STATE_PLAYING)
+        with patch('androidtv.firetv.FireTV.get_properties', return_value=[True, True, 1, constants.APP_NETFLIX, 3, [constants.APP_NETFLIX]]):
+            self.assertTupleEqual(self.ftv.update(), (constants.STATE_PLAYING, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
 
 
 if __name__ == "__main__":
