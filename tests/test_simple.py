@@ -23,6 +23,9 @@ class TestAndroidTVSimplePython(unittest.TestCase):
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
+            self.atv.adb_shell("TEST")
+            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "TEST")
+
             self.atv.space()
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_SPACE))
 
