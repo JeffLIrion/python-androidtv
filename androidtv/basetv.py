@@ -13,12 +13,6 @@ from .adb_manager import ADBPython, ADBServer
 
 _LOGGER = logging.getLogger(__name__)
 
-if sys.version_info[0] > 2 and sys.version_info[1] > 1:
-    LOCK_KWARGS = {'timeout': 3}
-else:
-    LOCK_KWARGS = {}
-    FileNotFoundError = IOError  # pylint: disable=redefined-builtin
-
 
 class BaseTV(object):
     """Base class for representing an Android TV / Fire TV device.
