@@ -6,7 +6,6 @@ ADB Debugging must be enabled.
 
 import logging
 import re
-import sys
 
 from . import constants
 from .adb_manager import ADBPython, ADBServer
