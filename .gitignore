@@ -1,10 +1,12 @@
 # Python files
+.coverage
 *.idea
 *.pyc
 **/__pycache__/
 androidtv.egg-info
 
 # Build files
+.eggs/
 build/
 dist/
 
