@@ -29,12 +29,19 @@ class TestFireTVPython(unittest.TestCase):
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
             self.ftv = FireTV('IP:PORT')
 
+    def assertUpdate(self, get_properties, update):
+        """Check that the results of the `update` method are as expected.
+
+        """
+        with patch('androidtv.firetv.FireTV.get_properties', return_value=get_properties):
+            self.assertTupleEqual(self.ftv.update(), update)
+
     def test_state_detection(self):
         """Check that the state detection works as expected.
 
         """
-        with patch('androidtv.firetv.FireTV.get_properties', return_value=[True, True, 1, constants.APP_NETFLIX, 3, [constants.APP_NETFLIX]]):
-            self.assertTupleEqual(self.ftv.update(), (constants.STATE_PLAYING, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
+        self.assertUpdate([True, True, 1, constants.APP_NETFLIX, 3, [constants.APP_NETFLIX]],
+                          (constants.STATE_PLAYING, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
 
 
 if __name__ == "__main__":
