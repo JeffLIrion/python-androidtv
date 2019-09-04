@@ -4,8 +4,8 @@ python-androidtv
 .. image:: https://travis-ci.com/JeffLIrion/python-androidtv.svg?branch=master
    :target: https://travis-ci.com/JeffLIrion/python-androidtv
    :alt: Build Status
-.. image:: https://coveralls.io/repos/github/JeffLIrion/python-androidtv/badge.svg?branch=test_state_detection
-   :target: https://coveralls.io/github/JeffLIrion/python-androidtv?branch=test_state_detection
+.. image:: https://coveralls.io/repos/github/JeffLIrion/python-androidtv/badge.svg
+   :target: https://coveralls.io/github/JeffLIrion/python-androidtv
    :alt: Coverage Status
 
 Documentation for this package can be found at `https://androidtv.readthedocs.io <https://androidtv.readthedocs.io>`_.
