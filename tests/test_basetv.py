@@ -188,25 +188,6 @@ class TestAndroidTVSimplePython(unittest.TestCase):
             self.atv.media_previous_track()
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_PREVIOUS))
 
-    def test_turn_on_off(self):
-        """Test that the ``AndroidTV.turn_on`` and ``AndroidTV.turn_off`` methods work correctly.
-
-        """
-        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.atv.turn_on()
-            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, constants.CMD_SCREEN_ON + " || input keyevent {0}".format(constants.KEY_POWER))
-
-            self.atv.turn_off()
-            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))
-
-    def test_start_intent(self):
-        """Test that the ``AndroidTV.start_intent`` method works correctly.
-
-        """
-        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.atv.start_intent("TEST")
-            self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "am start -a android.intent.action.VIEW -d TEST")
-
 
 class TestFireTVSimplePython(unittest.TestCase):
     PATCH_KEY = 'python'
@@ -215,28 +196,6 @@ class TestFireTVSimplePython(unittest.TestCase):
     def setUp(self):
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.ftv = FireTV('IP:PORT')
-
-    def test_turn_on_off(self):
-        """Test that the ``FireTV.turn_on`` and ``FireTV.turn_off`` methods work correctly.
-
-        """
-        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.ftv.turn_on()
-            self.assertEqual(getattr(self.ftv.adb, self.ADB_ATTR).shell_cmd, constants.CMD_SCREEN_ON + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME))
-
-            self.ftv.turn_off()
-            self.assertEqual(getattr(self.ftv.adb, self.ADB_ATTR).shell_cmd, constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_SLEEP))
-
-    def test_launch_app_stop_app(self):
-        """Test that the ``FireTV.launch_app`` and ``FireTV.stop_app`` methods work correctly.
-
-        """
-        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.ftv.launch_app("TEST")
-            self.assertEqual(getattr(self.ftv.adb, self.ADB_ATTR).shell_cmd, "monkey -p TEST -c android.intent.category.LAUNCHER 1; echo $?")
-
-            self.ftv.stop_app("TEST")
-            self.assertEqual(getattr(self.ftv.adb, self.ADB_ATTR).shell_cmd, "am force-stop TEST")
 
 
 if __name__ == "__main__":
