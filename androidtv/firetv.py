@@ -127,7 +127,7 @@ class FireTV(BaseTV):
 
         else:
             # Get the running apps
-            if running_apps is None and current_app:
+            if not running_apps and current_app:
                 running_apps = [current_app]
 
             # Determine the state using custom rules

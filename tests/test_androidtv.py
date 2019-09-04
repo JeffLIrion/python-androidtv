@@ -1,6 +1,13 @@
 import sys
 import unittest
 
+try:
+    # Python3
+    from unittest.mock import patch
+except ImportError:
+    # Python2
+    from mock import patch
+
 
 sys.path.insert(0, '..')
 
@@ -612,6 +619,27 @@ class TestAndroidTVPython(unittest.TestCase):
             new_volume_level = self.atv.volume_down(19./60)
             self.assertEqual(new_volume_level, 18./60)
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
+
+    def assertUpdate(self, get_properties, update):
+        """Check that the results of the `update` method are as expected.
+
+        """
+        with patch('androidtv.androidtv.AndroidTV.get_properties', return_value=get_properties):
+            self.assertTupleEqual(self.atv.update(), update)
+
+    def test_state_detection(self):
+        """Check that the state detection works as expected.
+
+        """
+        self.atv.max_volume = 60.
+        self.assertUpdate([False, False, -1, None, None, None, None, None, None],
+                          (constants.STATE_OFF, None, None, None, None))
+
+        self.assertUpdate([True, False, -1, None, None, None, None, None, None],
+                          (constants.STATE_IDLE, None, None, None, None))
+
+        self.assertUpdate([True, True, 2, 'com.amazon.tv.launcher', 3, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+                          (constants.STATE_PLAYING, 'com.amazon.tv.launcher', 'hmdi_arc', False, 0.5))
 
 
 class TestAndroidTVServer(TestAndroidTVPython):

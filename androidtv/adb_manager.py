@@ -17,9 +17,9 @@ from adb_messenger.client import Client
 
 _LOGGER = logging.getLogger(__name__)
 
-if sys.version_info[0] > 2 and sys.version_info[1] > 1:
+if sys.version_info[0] > 2 and sys.version_info[1] > 1:  # pragma: no cover
     LOCK_KWARGS = {'timeout': 3}
-else:
+else:  # pragma: no cover
     LOCK_KWARGS = {}
     FileNotFoundError = IOError  # pylint: disable=redefined-builtin
 

@@ -1,10 +1,17 @@
 import sys
 import unittest
 
+try:
+    # Python3
+    from unittest.mock import patch
+except ImportError:
+    # Python2
+    from mock import patch
+
 
 sys.path.insert(0, '..')
 
-from androidtv import constants
+from androidtv import constants, ha_state_detection_rules_validator
 from androidtv.firetv import FireTV
 from . import patchers
 
@@ -260,6 +267,29 @@ class TestFireTVPython(unittest.TestCase):
             state = self.ftv.update()
             self.assertTupleEqual(state, STATE3)
 
+    def assertUpdate(self, get_properties, update):
+        """Check that the results of the `update` method are as expected.
+
+        """
+        with patch('androidtv.firetv.FireTV.get_properties', return_value=get_properties):
+            self.assertTupleEqual(self.ftv.update(), update)
+
+    def test_state_detection(self):
+        """Check that the state detection works as expected.
+
+        """
+        self.assertUpdate([False, None, -1, None, None, None],
+                          (constants.STATE_OFF, None, None))
+
+        self.assertUpdate([True, False, -1, None, None, None],
+                          (constants.STATE_IDLE, None, None))
+
+        self.assertUpdate([True, True, 1, "com.amazon.tv.launcher", None, None],
+                          (constants.STATE_STANDBY, "com.amazon.tv.launcher", ["com.amazon.tv.launcher"]))
+
+        self.assertUpdate([True, True, 1, constants.APP_NETFLIX, 3, [constants.APP_NETFLIX]],
+                          (constants.STATE_PLAYING, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
+
 
 class TestFireTVServer(TestFireTVPython):
     PATCH_KEY = 'server'
@@ -282,6 +312,14 @@ class TestFireTVStateDetectionRules(unittest.TestCase):
 
         with self.assertRaises(KeyError):
             ftv = FireTV('IP:PORT', state_detection_rules=STATE_DETECTION_RULES_INVALID3)
+
+    def test_ha_state_detection_rules_validator(self):
+        """Check that ``ha_state_detection_rules_validator()`` works correctly.
+
+        """
+        with self.assertRaises(AssertionError):
+            for app_id, rules in STATE_DETECTION_RULES_INVALID1.items():
+                ha_state_detection_rules_validator(AssertionError)(rules)
 
 
 if __name__ == "__main__":
