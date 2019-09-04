@@ -54,7 +54,7 @@ class TestSetup(unittest.TestCase):
     def test_setup(self):
         """Test that the ``setup`` function works correctly.
         """
-        with self.assertRaises(Value error):
+        with self.assertRaises(ValueError):
             setup('IP:PORT', device_class=INVALID)
 
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
