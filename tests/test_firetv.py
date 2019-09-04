@@ -278,6 +278,15 @@ class TestFireTVPython(unittest.TestCase):
         """Check that the state detection works as expected.
 
         """
+        self.assertUpdate([False, None, -1, None, None, None],
+                          (constants.STATE_OFF, None, None))
+
+        self.assertUpdate([True, False, -1, None, None, None],
+                          (constants.STATE_IDLE, None, None))
+
+        self.assertUpdate([True, True, 1, "com.amazon.tv.launcher", None, None],
+                          (constants.STATE_STANDBY, "com.amazon.tv.launcher", ["com.amazon.tv.launcher"]))
+
         self.assertUpdate([True, True, 1, constants.APP_NETFLIX, 3, [constants.APP_NETFLIX]],
                           (constants.STATE_PLAYING, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
 

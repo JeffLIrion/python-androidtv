@@ -632,6 +632,12 @@ class TestAndroidTVPython(unittest.TestCase):
 
         """
         self.atv.max_volume = 60.
+        self.assertUpdate([False, False, -1, None, None, None, None, None, None],
+                          (constants.STATE_OFF, None, None, None, None))
+
+        self.assertUpdate([True, False, -1, None, None, None, None, None, None],
+                          (constants.STATE_IDLE, None, None, None, None))
+
         self.assertUpdate([True, True, 2, 'com.amazon.tv.launcher', 3, constants.STATE_IDLE, 'hmdi_arc', False, 30],
                           (constants.STATE_PLAYING, 'com.amazon.tv.launcher', 'hmdi_arc', False, 0.5))
 
