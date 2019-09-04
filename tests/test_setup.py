@@ -60,7 +60,7 @@ class TestSetup(unittest.TestCase):
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
             ftv = setup('IP:PORT')
             self.assertIsInstance(ftv, FireTV)
-            self.assertDictEqual(ftv.device_properties, DEVICE_PROPERTIES_DICT2)
+            self.assertDictEqual(ftv.device_properties, DEVICE_PROPERTIES_DICT1)
 
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
             atv = setup('IP:PORT')
