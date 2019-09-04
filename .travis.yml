@@ -4,7 +4,9 @@ python:
   - "3.6"
 install:
   - pip install .
-  - pip install flake8 pylint
+  - pip install flake8 pylint coveralls
   - python --version 2>&1 | grep -q "Python 2" && pip install mock || true
-# command to run tests
-script: flake8 androidtv/ && pylint androidtv/ && python setup.py test
+script:
+- flake8 androidtv/ && pylint androidtv/ && coverage run --source androidtv setup.py test
+after_success:
+- coveralls
