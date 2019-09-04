@@ -15,7 +15,7 @@ androidtv Documentation
 
 
 .. include:: ../../README.rst
-   :start-line: 5
+   :start-line: 9
 
 
 Indices and tables
