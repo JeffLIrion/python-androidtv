@@ -631,7 +631,7 @@ class TestAndroidTVPython(unittest.TestCase):
         """Check that the state detection works as expected.
 
         """
-        self.atv.max_volume = 60
+        self.atv.max_volume = 60.
         self.assertUpdate([True, True, 2, 'com.amazon.tv.launcher', 3, constants.STATE_IDLE, 'hmdi_arc', False, 30],
                           (constants.STATE_PLAYING, 'com.amazon.tv.launcher', 'hmdi_arc', False, 0.5))
 
