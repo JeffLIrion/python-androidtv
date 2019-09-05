@@ -11,41 +11,29 @@ except ImportError:
 
 sys.path.insert(0, '..')
 
-from androidtv import constants, ha_state_detection_rules_validator, setup
+from androidtv import setup
 from androidtv.androidtv import AndroidTV
 from androidtv.firetv import FireTV
 from . import patchers
 
 
-DEVICE_PROPERTIES_OUTPUT1 = """Amazon
-AFTT
-SERIALNO
-5.1.1
-    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
-Device "eth0" does not exist.
-"""
+DEVICE_PROPERTIES_OUTPUT1 = "Amazon\n\n\n\n\n."
 
 DEVICE_PROPERTIES_DICT1 = {'manufacturer': 'Amazon',
-                           'model': 'AFTT',
-                           'serialno': 'SERIALNO',
-                           'sw_version': '5.1.1',
-                           'wifimac': 'ab:cd:ef:gh:ij:kl',
+                           'model': '',
+                           'serialno': None,
+                           'sw_version': '',
+                           'wifimac': None,
                            'ethmac': None}
 
-DEVICE_PROPERTIES_OUTPUT2 = """Not Amazon
-AFTT
-SERIALNO
-5.1.1
-Device "wlan0" does not exist.
-    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
-"""
+DEVICE_PROPERTIES_OUTPUT2 = "Not Amazon\n\n\n\n\n."
 
 DEVICE_PROPERTIES_DICT2 = {'manufacturer': 'Not Amazon',
-                           'model': 'AFTT',
-                           'serialno': 'SERIALNO',
-                           'sw_version': '5.1.1',
+                           'model': '',
+                           'serialno': None,
+                           'sw_version': '',
                            'wifimac': None,
-                           'ethmac': 'ab:cd:ef:gh:ij:kl'}
+                           'ethmac': None}
 
 
 class TestSetup(unittest.TestCase):
