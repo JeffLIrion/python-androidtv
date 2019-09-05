@@ -13,6 +13,10 @@ from androidtv.adb_manager import ADBPython, ADBServer
 from . import patchers
 
 
+if sys.version_info[0] == 2:
+    FileNotFoundError = IOError
+
+
 class Read(object):
     """Mock an opened file that can be read."""
     def read(self):
@@ -50,6 +54,7 @@ def raise_runtime_error(*args, **kwargs):
 
 
 class LockedLock(object):
+    @staticmethod
     def acquire(*args, **kwargs):
         return False
 
