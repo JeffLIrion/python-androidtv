@@ -38,6 +38,9 @@ CMD_RUNNING_APPS = "ps | grep u0_a"
 #: Determine if the device is on
 CMD_SCREEN_ON = "dumpsys power | grep 'Display Power' | grep -q 'state=ON'"
 
+#: Get the "STREAM MUSIC" block from ``dumpsys audio``
+CMD_STREAM_MUSIC = r"dumpsys audio | grep '\- STREAM_MUSIC:' -A 12"
+
 #: Get the wake lock size
 CMD_WAKE_LOCK_SIZE = "dumpsys power | grep Locks | grep 'size='"
 
