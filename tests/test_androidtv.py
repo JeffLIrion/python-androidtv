@@ -140,6 +140,21 @@ PlaybackActivityMonitor dump time: 9:00:59 AM
   muted player piids:"""
 
 
+dumpsys audio | grep "\ - STREAM_MUSIC:" -A 12`
+STREAM_MUSIC_OFF = """- STREAM_MUSIC:
+   Muted: false
+   Min: 0
+   Max: 60
+   Current: 2 (speaker): 20, 40000 (hmdi_arc): 27, 40000000 (default): 15
+   Devices: speaker
+- STREAM_ALARM:
+   Muted: true
+   Min: 0
+   Max: 7
+   Current: 2 (speaker): 3, 40000 (hmdi_arc): 3, 40000000 (default): 2
+   Devices: speaker"""
+
+
 DUMPSYS_AUDIO_ON = """MediaFocusControl dump time: 9:03:06 AM
 
 Audio Focus stack entries (last is top of stack):
@@ -262,6 +277,22 @@ PlaybackActivityMonitor dump time: 9:03:06 AM
 
   muted player piids:"""
 
+
+# `dumpsys audio | grep "\ - STREAM_MUSIC:" -A 12`
+STREAM_MUSIC_ON = """- STREAM_MUSIC:
+   Muted: false
+   Min: 0
+   Max: 60
+   Current: 2 (speaker): 20, 40000 (hmdi_arc): 22, 40000000 (default): 15
+   Devices: hmdi_arc
+- STREAM_ALARM:
+   Muted: false
+   Min: 0
+   Max: 7
+   Current: 2 (speaker): 3, 40000 (hmdi_arc): 3, 40000000 (default): 2
+   Devices: speaker"""
+
+
 # `dumpsys power | grep 'Display Power' | grep -q 'state=ON' && echo -e '1\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' && dumpsys power | grep Locks | grep 'size=' && CURRENT_APP=$(dumpsys window windows | grep mCurrentFocus) && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && echo $CURRENT_APP && (dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {' || echo) && dumpsys audio`
 GET_PROPERTIES_OUTPUT1 = ""
 GET_PROPERTIES_DICT1 = {'screen_on': False,
@@ -292,7 +323,7 @@ STATE2 = (constants.STATE_IDLE, None, None, None, None)
 GET_PROPERTIES_OUTPUT3 = """11Wake Locks: size=2
 com.amazon.tv.launcher
 
-""" + DUMPSYS_AUDIO_ON
+""" + STREAM_MUSIC_ON
 GET_PROPERTIES_DICT3 = {'screen_on': True,
                         'awake': True,
                         'wake_lock_size': 2,
@@ -393,7 +424,7 @@ STATE_DETECTION_RULES_PLEX = {'com.plexapp.android': [{'playing': {'media_sessio
 GET_PROPERTIES_OUTPUT_PLEX_STANDBY = """11Wake Locks: size=1
 com.plexapp.android
 
-""" + DUMPSYS_AUDIO_ON
+""" + STREAM_MUSIC_ON
 
 GET_PROPERTIES_DICT_PLEX_STANDBY = {'screen_on': True,
                                     'awake': True,
@@ -411,7 +442,7 @@ STATE_PLEX_STANDBY = (constants.STATE_PLAYING, 'com.plexapp.android', 'hmdi_arc'
 GET_PROPERTIES_OUTPUT_PLEX_PLAYING = """11Wake Locks: size=3
 com.plexapp.android
 state=3
-""" + DUMPSYS_AUDIO_ON
+""" + STREAM_MUSIC_ON
 
 GET_PROPERTIES_DICT_PLEX_PLAYING = {'screen_on': True,
                                     'awake': True,
@@ -429,7 +460,7 @@ STATE_PLEX_PLAYING = (constants.STATE_PLAYING, 'com.plexapp.android', 'hmdi_arc'
 GET_PROPERTIES_OUTPUT_PLEX_PAUSED = """11Wake Locks: size=1
 com.plexapp.android
 state=3
-""" + DUMPSYS_AUDIO_ON
+""" + STREAM_MUSIC_ON
 
 GET_PROPERTIES_DICT_PLEX_PAUSED = {'screen_on': True,
                                    'awake': True,
@@ -489,11 +520,11 @@ class TestAndroidTVPython(unittest.TestCase):
             device = self.atv.device
             self.assertIsNone(device)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[self.PATCH_KEY]:
+        with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
             device = self.atv.device
             self.assertEqual('speaker', device)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[self.PATCH_KEY]:
+        with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
             device = self.atv.device
             self.assertEqual('hmdi_arc', device)
 
@@ -520,12 +551,12 @@ class TestAndroidTVPython(unittest.TestCase):
             volume = self.atv.volume
             self.assertIsNone(volume)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[self.PATCH_KEY]:
+        with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
             volume = self.atv.volume
             self.assertEqual(volume, 20)
             self.assertEqual(self.atv.max_volume, 60.)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[self.PATCH_KEY]:
+        with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
             volume = self.atv.volume
             self.assertEqual(volume, 22)
             self.assertEqual(self.atv.max_volume, 60.)
@@ -542,12 +573,12 @@ class TestAndroidTVPython(unittest.TestCase):
             volume_level = self.atv.volume_level
             self.assertIsNone(volume_level)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[self.PATCH_KEY]:
+        with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
             volume_level = self.atv.volume_level
             self.assertEqual(volume_level, 20./60)
             self.assertEqual(self.atv.max_volume, 60.)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[self.PATCH_KEY]:
+        with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
             volume_level = self.atv.volume_level
             self.assertEqual(volume_level, 22./60)
             self.assertEqual(self.atv.max_volume, 60.)
@@ -564,7 +595,7 @@ class TestAndroidTVPython(unittest.TestCase):
             is_volume_muted = self.atv.is_volume_muted
             self.assertIsNone(is_volume_muted)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[self.PATCH_KEY]:
+        with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
             is_volume_muted = self.atv.is_volume_muted
             self.assertFalse(is_volume_muted)
 
@@ -580,7 +611,7 @@ class TestAndroidTVPython(unittest.TestCase):
             new_volume_level = self.atv.set_volume_level(0.5)
             self.assertIsNone(new_volume_level)
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[self.PATCH_KEY]:
+        with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
             new_volume_level = self.atv.set_volume_level(0.5)
             self.assertEqual(new_volume_level, 0.5)
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
@@ -615,7 +646,7 @@ class TestAndroidTVPython(unittest.TestCase):
             self.assertIsNone(new_volume_level)
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[self.PATCH_KEY]:
+        with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
             new_volume_level = self.atv.volume_up()
             self.assertEqual(new_volume_level, 23./60)
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
@@ -623,7 +654,7 @@ class TestAndroidTVPython(unittest.TestCase):
             self.assertEqual(new_volume_level, 24./60)
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[self.PATCH_KEY]:
+        with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
             new_volume_level = self.atv.volume_up()
             self.assertEqual(new_volume_level, 21./60)
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
@@ -645,7 +676,7 @@ class TestAndroidTVPython(unittest.TestCase):
             self.assertIsNone(new_volume_level)
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_ON)[self.PATCH_KEY]:
+        with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
             new_volume_level = self.atv.volume_down()
             self.assertEqual(new_volume_level, 21./60)
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
@@ -653,7 +684,7 @@ class TestAndroidTVPython(unittest.TestCase):
             self.assertEqual(new_volume_level, 20./60)
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
 
-        with patchers.patch_shell(DUMPSYS_AUDIO_OFF)[self.PATCH_KEY]:
+        with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
             new_volume_level = self.atv.volume_down()
             self.assertEqual(new_volume_level, 19./60)
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
