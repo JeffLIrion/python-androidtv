@@ -140,7 +140,7 @@ PlaybackActivityMonitor dump time: 9:00:59 AM
   muted player piids:"""
 
 
-dumpsys audio | grep "\ - STREAM_MUSIC:" -A 12`
+# `dumpsys audio | grep '\- STREAM_MUSIC:' -A 12`
 STREAM_MUSIC_OFF = """- STREAM_MUSIC:
    Muted: false
    Min: 0
@@ -278,7 +278,7 @@ PlaybackActivityMonitor dump time: 9:03:06 AM
   muted player piids:"""
 
 
-# `dumpsys audio | grep "\ - STREAM_MUSIC:" -A 12`
+# `dumpsys audio | grep '\- STREAM_MUSIC:' -A 12`
 STREAM_MUSIC_ON = """- STREAM_MUSIC:
    Muted: false
    Min: 0
