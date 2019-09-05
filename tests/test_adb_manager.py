@@ -50,7 +50,7 @@ def raise_runtime_error(*args, **kwargs):
 
 
 class LockedLock(object):
-    def acquire(self, *args, **kwargs):
+    def acquire(*args, **kwargs):
         return False
 
 
