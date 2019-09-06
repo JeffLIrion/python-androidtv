@@ -16,12 +16,8 @@ from androidtv.firetv import FireTV
 from . import patchers
 
 
-
-
-# `adb shell CURRENT_APP=$(dumpsys window windows | grep mCurrentFocus) && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && echo $CURRENT_APP`
 CURRENT_APP_OUTPUT = "com.amazon.tv.launcher"
 
-# `adb shell dumpsys power | grep 'Display Power' | grep -q 'state=ON' && echo -e '1\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' && dumpsys power | grep Locks | grep 'size=' && (dumpsys media_session | grep -m 1 'state=PlaybackState {' || echo) && dumpsys window windows | grep mCurrentFocus && ps | grep u0_a`
 GET_PROPERTIES_OUTPUT1 = ""
 GET_PROPERTIES_DICT1 = {'screen_on': False,
                         'awake': False,
@@ -31,7 +27,6 @@ GET_PROPERTIES_DICT1 = {'screen_on': False,
                         'running_apps': None}
 STATE1 = (constants.STATE_OFF, None, None)
 
-# `adb shell dumpsys power | grep 'Display Power' | grep -q 'state=ON' && echo -e '1\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' && dumpsys power | grep Locks | grep 'size=' && CURRENT_APP=$(dumpsys window windows | grep mCurrentFocus) && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && echo $CURRENT_APP && (dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {' || echo) && ps | grep u0_a`
 GET_PROPERTIES_OUTPUT2 = "1"
 GET_PROPERTIES_DICT2 = {'screen_on': True,
                         'awake': False,
@@ -41,7 +36,6 @@ GET_PROPERTIES_DICT2 = {'screen_on': True,
                         'running_apps': None}
 STATE2 = (constants.STATE_IDLE, None, None)
 
-# `adb shell dumpsys power | grep 'Display Power' | grep -q 'state=ON' && echo -e '1\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' && dumpsys power | grep Locks | grep 'size=' && CURRENT_APP=$(dumpsys window windows | grep mCurrentFocus) && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && echo $CURRENT_APP && (dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {' || echo) && ps | grep u0_a`
 GET_PROPERTIES_OUTPUT3 = """11Wake Locks: size=2
 com.amazon.tv.launcher
 
