@@ -303,19 +303,16 @@ class FireTV(BaseTV):
             A list of the running apps, or ``None`` if it was not determined
 
         """
-        if get_running_apps:
-            output = self.adb.shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                    constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                    constants.CMD_WAKE_LOCK_SIZE + " && " +
-                                    constants.CMD_CURRENT_APP + " && (" +
-                                    constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
-                                    constants.CMD_RUNNING_APPS)
+        if lazy:
+            if get_running_apps:
+                output = self.adb.shell(constants.CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS)
+            else:
+                output = self.adb.shell(constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS)
         else:
-            output = self.adb.shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                    constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                    constants.CMD_WAKE_LOCK_SIZE + " && " +
-                                    constants.CMD_CURRENT_APP + " && (" +
-                                    constants.CMD_MEDIA_SESSION_STATE + " || echo)")
+            if get_running_apps:
+                output = self.adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
+            else:
+                output = self.adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
         _LOGGER.debug("Fire TV %s update response: %s", self.host, output)
 
         # ADB command was unsuccessful
