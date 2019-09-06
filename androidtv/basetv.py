@@ -1132,17 +1132,17 @@ def state_detection_rules_validator(rules, exc=KeyError):
                 if not isinstance(conditions, dict):
                     raise exc("Expected a map for entry '{0}' in 'state_detection_rules', got {1}".format(state, type(conditions).__name__))
 
-                for property, value in conditions.items():
+                for prop, value in conditions.items():
                     # The keys of the dictionary must be valid properties that can be checked
-                    if property not in constants.VALID_PROPERTIES:
-                        raise exc("Invalid property '{0}' is not in {1}".format(property, constants.VALID_PROPERTIES))
+                    if prop not in constants.VALID_PROPERTIES:
+                        raise exc("Invalid property '{0}' is not in {1}".format(prop, constants.VALID_PROPERTIES))
 
                     # The value for the `audio_state` property must be a string
-                    if property == "audio_state" and not isinstance(value, str):
+                    if prop == "audio_state" and not isinstance(value, str):
                         raise exc("Conditional value for property 'audio_state' must be a string, not {}".format(type(value).__name__))
 
                     # The value for the `media_session_state` and `wake_lock_size` properties must be an int
-                    if property != "audio_state" and not isinstance(value, int):
-                        raise exc("Conditional value for property '{0}' must be an int, not {1}".format(property, type(value).__name__))
+                    if prop != "audio_state" and not isinstance(value, int):
+                        raise exc("Conditional value for property '{0}' must be an int, not {1}".format(prop, type(value).__name__))
 
     return rules
