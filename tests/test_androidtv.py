@@ -748,6 +748,10 @@ class TestAndroidTVPython(unittest.TestCase):
             properties = self.atv.get_properties_dict(lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT4)
 
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
+            properties = self.atv.get_properties_dict(lazy=False)
+            self.assertEqual(properties, GET_PROPERTIES_DICT4)
+
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_STANDBY)[self.PATCH_KEY]:
             properties = self.atv.get_properties_dict(lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_STANDBY)

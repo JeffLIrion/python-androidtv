@@ -208,13 +208,10 @@ class AndroidTV(BaseTV):
             The absolute volume level, or ``None`` if it was not determined
 
         """
-        output = self.adb.shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                constants.CMD_AUDIO_STATE + " && " +
-                                constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                constants.CMD_WAKE_LOCK_SIZE + " && " +
-                                constants.CMD_CURRENT_APP + " && (" +
-                                constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
-                                constants.CMD_STREAM_MUSIC)
+        if lazy:
+            output = self.adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_LAZY)
+        else:
+            output = self.adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY)
         _LOGGER.debug("Android TV %s update response: %s", self.host, output)
 
         # ADB command was unsuccessful

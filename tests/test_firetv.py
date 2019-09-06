@@ -185,26 +185,6 @@ class TestFireTVPython(unittest.TestCase):
             properties = self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3)
 
-            self.ftv._state_detection_rules = STATE_DETECTION_RULES1
-            state = self.ftv.update()
-            self.assertEqual(state[0], constants.STATE_OFF)
-
-            self.ftv._state_detection_rules = STATE_DETECTION_RULES2
-            state = self.ftv.update()
-            self.assertEqual(state[0], constants.STATE_OFF)
-
-            self.ftv._state_detection_rules = STATE_DETECTION_RULES3
-            state = self.ftv.update()
-            self.assertEqual(state[0], constants.STATE_STANDBY)
-
-            self.ftv._state_detection_rules = STATE_DETECTION_RULES4
-            state = self.ftv.update()
-            self.assertEqual(state[0], constants.STATE_PAUSED)
-
-            self.ftv._state_detection_rules = STATE_DETECTION_RULES5
-            state = self.ftv.update()
-            self.assertEqual(state[0], constants.STATE_STANDBY)
-
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3A)[self.PATCH_KEY]:
             properties = self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3A)
@@ -225,6 +205,10 @@ class TestFireTVPython(unittest.TestCase):
             properties = self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3E)
 
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3E)[self.PATCH_KEY]:
+            properties = self.ftv.get_properties_dict(lazy=True, get_running_apps=False)
+            self.assertDictEqual(properties, GET_PROPERTIES_DICT3E)
+
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
             properties = self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT4)
@@ -235,6 +219,10 @@ class TestFireTVPython(unittest.TestCase):
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT5)[self.PATCH_KEY]:
             properties = self.ftv.get_properties_dict(lazy=True)
+            self.assertDictEqual(properties, GET_PROPERTIES_DICT5)
+
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT5)[self.PATCH_KEY]:
+            properties = self.ftv.get_properties_dict(lazy=False)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT5)
 
     def test_update(self):
@@ -264,6 +252,26 @@ class TestFireTVPython(unittest.TestCase):
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
             state = self.ftv.update()
             self.assertTupleEqual(state, STATE3)
+
+            self.ftv._state_detection_rules = STATE_DETECTION_RULES1
+            state = self.ftv.update()
+            self.assertEqual(state[0], constants.STATE_OFF)
+
+            self.ftv._state_detection_rules = STATE_DETECTION_RULES2
+            state = self.ftv.update()
+            self.assertEqual(state[0], constants.STATE_OFF)
+
+            self.ftv._state_detection_rules = STATE_DETECTION_RULES3
+            state = self.ftv.update()
+            self.assertEqual(state[0], constants.STATE_STANDBY)
+
+            self.ftv._state_detection_rules = STATE_DETECTION_RULES4
+            state = self.ftv.update()
+            self.assertEqual(state[0], constants.STATE_PAUSED)
+
+            self.ftv._state_detection_rules = STATE_DETECTION_RULES5
+            state = self.ftv.update()
+            self.assertEqual(state[0], constants.STATE_STANDBY)
 
     def assertUpdate(self, get_properties, update):
         """Check that the results of the `update` method are as expected.
