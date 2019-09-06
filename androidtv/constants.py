@@ -262,6 +262,7 @@ APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
 
 # Regular expressions
 REGEX_MEDIA_SESSION_STATE = re.compile(r"state=(?P<state>[0-9]+)", re.MULTILINE)
+REGEX_WAKE_LOCK_SIZE = re.compile(r"size=(?P<size>[0-9]+)")
 
 # Regular expression patterns
 DEVICE_REGEX_PATTERN = r"Devices: (.*?)\W"

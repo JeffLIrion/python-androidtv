@@ -94,7 +94,7 @@ GET_PROPERTIES_DICT3E = {'screen_on': True,
 
 GET_PROPERTIES_OUTPUT4 = """11Wake Locks: size=2
 com.amazon.tv.launcher
-state=2"""
+state=PlaybackState {state=2, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}"""
 GET_PROPERTIES_DICT4 = {'screen_on': True,
                         'awake': True,
                         'wake_lock_size': 2,
@@ -104,7 +104,7 @@ GET_PROPERTIES_DICT4 = {'screen_on': True,
 
 GET_PROPERTIES_OUTPUT5 = """11Wake Locks: size=2
 com.amazon.tv.launcher
-state=2
+state=PlaybackState {state=2, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}
 u0_a2     17243 197   998628 24932 ffffffff 00000000 S com.amazon.device.controllermanager
 u0_a2     17374 197   995368 20764 ffffffff 00000000 S com.amazon.device.controllermanager:BluetoothReceiver"""
 GET_PROPERTIES_DICT5 = {'screen_on': True,

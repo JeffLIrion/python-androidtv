@@ -411,13 +411,16 @@ class TestBaseTVPython(unittest.TestCase):
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.assertEqual(self.btv.wake_lock_size, None)
+            self.assertIsNone(self.btv.wake_lock_size)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            self.assertEqual(self.btv.wake_lock_size, None)
+            self.assertIsNone(self.btv.wake_lock_size)
 
         with patchers.patch_shell('Wake Locks: size=2')[self.PATCH_KEY]:
             self.assertEqual(self.btv.wake_lock_size, 2)
+
+        with patchers.patch_shell('INVALID')[self.PATCH_KEY]:
+            self.assertIsNone(self.btv.wake_lock_size)
 
 
 class TestHAStateDetectionRulesValidator(unittest.TestCase):

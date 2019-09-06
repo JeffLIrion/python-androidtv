@@ -297,10 +297,10 @@ STREAM_MUSIC_ON = """- STREAM_MUSIC:
 GET_PROPERTIES_OUTPUT1 = ""
 GET_PROPERTIES_DICT1 = {'screen_on': False,
                         'awake': False,
+                        'audio_state': None,
                         'wake_lock_size': -1,
                         'media_session_state': None,
                         'current_app': None,
-                        'audio_state': None,
                         'device': None,
                         'is_volume_muted': None,
                         'volume': None}
@@ -310,26 +310,26 @@ STATE1 = (constants.STATE_OFF, None, None, None, None)
 GET_PROPERTIES_OUTPUT2 = "1"
 GET_PROPERTIES_DICT2 = {'screen_on': True,
                         'awake': False,
+                        'audio_state': None,
                         'wake_lock_size': -1,
                         'media_session_state': None,
                         'current_app': None,
-                        'audio_state': None,
                         'device': None,
                         'is_volume_muted': None,
                         'volume': None}
 STATE2 = (constants.STATE_IDLE, None, None, None, None)
 
 # `dumpsys power | grep 'Display Power' | grep -q 'state=ON' && echo -e '1\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' && dumpsys power | grep Locks | grep 'size=' && CURRENT_APP=$(dumpsys window windows | grep mCurrentFocus) && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && echo $CURRENT_APP && (dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {' || echo) && dumpsys audio`
-GET_PROPERTIES_OUTPUT3 = """11Wake Locks: size=2
+GET_PROPERTIES_OUTPUT3 = """110Wake Locks: size=2
 com.amazon.tv.launcher
 
 """ + STREAM_MUSIC_ON
 GET_PROPERTIES_DICT3 = {'screen_on': True,
                         'awake': True,
+                        'audio_state': constants.STATE_IDLE,
                         'wake_lock_size': 2,
                         'current_app': 'com.amazon.tv.launcher',
                         'media_session_state': None,
-                        'audio_state': constants.STATE_IDLE,
                         'device': 'hmdi_arc',
                         'is_volume_muted': False,
                         'volume': 22}
@@ -337,77 +337,96 @@ STATE3 = (constants.STATE_PLAYING, 'com.amazon.tv.launcher', 'hmdi_arc', False, 
 
 GET_PROPERTIES_OUTPUT3A = GET_PROPERTIES_OUTPUT3[:1]
 GET_PROPERTIES_OUTPUT3B = GET_PROPERTIES_OUTPUT3[:2]
-GET_PROPERTIES_OUTPUT3C = GET_PROPERTIES_OUTPUT3.splitlines()[0]
-GET_PROPERTIES_OUTPUT3D = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:2])
-GET_PROPERTIES_OUTPUT3E = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:3])
-GET_PROPERTIES_OUTPUT3F = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:4])
+GET_PROPERTIES_OUTPUT3C = GET_PROPERTIES_OUTPUT3[:3]
+GET_PROPERTIES_OUTPUT3D = GET_PROPERTIES_OUTPUT3.splitlines()[0]
+GET_PROPERTIES_OUTPUT3E = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:2])
+GET_PROPERTIES_OUTPUT3F = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:3])
+GET_PROPERTIES_OUTPUT3G = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:4])
 
 GET_PROPERTIES_DICT3A = {'screen_on': True,
                          'awake': False,
+                         'audio_state': None,
                          'wake_lock_size': -1,
                          'current_app': None,
                          'media_session_state': None,
-                         'audio_state': None,
                          'device': None,
                          'is_volume_muted': None,
                          'volume': None}
 GET_PROPERTIES_DICT3B = {'screen_on': True,
                          'awake': True,
+                         'audio_state': None,
                          'wake_lock_size': -1,
                          'current_app': None,
                          'media_session_state': None,
-                         'audio_state': None,
                          'device': None,
                          'is_volume_muted': None,
                          'volume': None}
 GET_PROPERTIES_DICT3C = {'screen_on': True,
                          'awake': True,
-                         'wake_lock_size': 2,
+                         'audio_state': constants.STATE_IDLE,
+                         'wake_lock_size': -1,
                          'current_app': None,
                          'media_session_state': None,
-                         'audio_state': None,
                          'device': None,
                          'is_volume_muted': None,
                          'volume': None}
 GET_PROPERTIES_DICT3D = {'screen_on': True,
                          'awake': True,
+                         'audio_state': constants.STATE_IDLE,
                          'wake_lock_size': 2,
-                         'current_app': 'com.amazon.tv.launcher',
+                         'current_app': None,
                          'media_session_state': None,
-                         'audio_state': None,
                          'device': None,
                          'is_volume_muted': None,
                          'volume': None}
 GET_PROPERTIES_DICT3E = {'screen_on': True,
                          'awake': True,
+                         'audio_state': constants.STATE_IDLE,
                          'wake_lock_size': 2,
                          'current_app': 'com.amazon.tv.launcher',
                          'media_session_state': None,
-                         'audio_state': None,
+                         'device': None,
+                         'is_volume_muted': None,
+                         'volume': None}
+GET_PROPERTIES_DICT3F = {'screen_on': True,
+                         'awake': True,
+                         'audio_state': constants.STATE_IDLE,
+                         'wake_lock_size': 2,
+                         'current_app': 'com.amazon.tv.launcher',
+                         'media_session_state': None,
+                         'device': None,
+                         'is_volume_muted': None,
+                         'volume': None}
+GET_PROPERTIES_DICT3G = {'screen_on': True,
+                         'awake': True,
+                         'audio_state': constants.STATE_IDLE,
+                         'wake_lock_size': 2,
+                         'current_app': 'com.amazon.tv.launcher',
+                         'media_session_state': None,
                          'device': None,
                          'is_volume_muted': None,
                          'volume': None}
 
-GET_PROPERTIES_OUTPUT4 = """11Wake Locks: size=2
+GET_PROPERTIES_OUTPUT4 = """111Wake Locks: size=2
 com.amazon.tv.launcher
-state=1
+state=PlaybackState {state=1, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}
 """
 GET_PROPERTIES_DICT4 = {'screen_on': True,
                         'awake': True,
+                        'audio_state': constants.STATE_PAUSED,
                         'wake_lock_size': 2,
                         'current_app': 'com.amazon.tv.launcher',
                         'media_session_state': 1,
-                        'audio_state': None,
                         'device': None,
                         'is_volume_muted': None,
                         'volume': None}
 
 GET_PROPERTIES_DICT_NONE = {'screen_on': None,
                             'awake': None,
+                            'audio_state': None,
                             'wake_lock_size': None,
                             'media_session_state': None,
                             'current_app': None,
-                            'audio_state': None,
                             'device': None,
                             'is_volume_muted': None,
                             'volume': None}
@@ -421,17 +440,17 @@ STATE_DETECTION_RULES_PLEX = {'com.plexapp.android': [{'playing': {'media_sessio
                                                       'standby']}
 
 # Plex: standby
-GET_PROPERTIES_OUTPUT_PLEX_STANDBY = """11Wake Locks: size=1
+GET_PROPERTIES_OUTPUT_PLEX_STANDBY = """110Wake Locks: size=1
 com.plexapp.android
 
 """ + STREAM_MUSIC_ON
 
 GET_PROPERTIES_DICT_PLEX_STANDBY = {'screen_on': True,
                                     'awake': True,
+                                    'audio_state': constants.STATE_IDLE,
                                     'wake_lock_size': 1,
                                     'media_session_state': None,
                                     'current_app': 'com.plexapp.android',
-                                    'audio_state': constants.STATE_IDLE,
                                     'device': 'hmdi_arc',
                                     'is_volume_muted': False,
                                     'volume': 22}
@@ -439,17 +458,17 @@ GET_PROPERTIES_DICT_PLEX_STANDBY = {'screen_on': True,
 STATE_PLEX_STANDBY = (constants.STATE_PLAYING, 'com.plexapp.android', 'hmdi_arc', False, 22/60.)
 
 # Plex: playing
-GET_PROPERTIES_OUTPUT_PLEX_PLAYING = """11Wake Locks: size=3
+GET_PROPERTIES_OUTPUT_PLEX_PLAYING = """110Wake Locks: size=3
 com.plexapp.android
 state=3
 """ + STREAM_MUSIC_ON
 
 GET_PROPERTIES_DICT_PLEX_PLAYING = {'screen_on': True,
                                     'awake': True,
+                                    'audio_state': constants.STATE_IDLE,
                                     'wake_lock_size': 3,
                                     'media_session_state': 3,
                                     'current_app': 'com.plexapp.android',
-                                    'audio_state': constants.STATE_IDLE,
                                     'device': 'hmdi_arc',
                                     'is_volume_muted': False,
                                     'volume': 22}
@@ -457,17 +476,17 @@ GET_PROPERTIES_DICT_PLEX_PLAYING = {'screen_on': True,
 STATE_PLEX_PLAYING = (constants.STATE_PLAYING, 'com.plexapp.android', 'hmdi_arc', False, 22/60.)
 
 # Plex: paused
-GET_PROPERTIES_OUTPUT_PLEX_PAUSED = """11Wake Locks: size=1
+GET_PROPERTIES_OUTPUT_PLEX_PAUSED = """110Wake Locks: size=1
 com.plexapp.android
 state=3
 """ + STREAM_MUSIC_ON
 
 GET_PROPERTIES_DICT_PLEX_PAUSED = {'screen_on': True,
                                    'awake': True,
+                                   'audio_state': constants.STATE_IDLE,
                                    'wake_lock_size': 1,
                                    'media_session_state': 3,
                                    'current_app': 'com.plexapp.android',
-                                   'audio_state': constants.STATE_IDLE,
                                    'device': 'hmdi_arc',
                                    'is_volume_muted': False,
                                    'volume': 22}
@@ -501,7 +520,7 @@ class TestAndroidTVPython(unittest.TestCase):
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))
 
     def test_start_intent(self):
-        """Test that the ``AndroidTV.start_intent`` method works correctly.
+        """Test that the ``start_intent`` method works correctly.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
@@ -527,17 +546,6 @@ class TestAndroidTVPython(unittest.TestCase):
         with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
             device = self.atv.device
             self.assertEqual('hmdi_arc', device)
-
-    def test__audio_state(self):
-        """Check that the ``_audio_state`` method works correctly.
-
-        """
-        self.assertIsNone(self.atv._audio_state(None))
-        self.assertIsNone(self.atv._audio_state(''))
-        self.assertEqual(self.atv._audio_state(DUMPSYS_AUDIO_OFF), constants.STATE_IDLE)
-        self.assertEqual(self.atv._audio_state(DUMPSYS_AUDIO_ON), constants.STATE_IDLE)
-        self.assertEqual(self.atv._audio_state('OpenSL ES AudioPlayer (Buffer Queue)\nstarted'), constants.STATE_PLAYING)
-        self.assertEqual(self.atv._audio_state('paused'), constants.STATE_PAUSED)
 
     def test_volume(self):
         """Check that the ``volume`` property works correctly.
@@ -693,7 +701,7 @@ class TestAndroidTVPython(unittest.TestCase):
             self.assertEqual(getattr(self.atv.adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
 
     def test_get_properties(self):
-        """Check that ``get_properties()`` works correctly.
+        """Check that the ``get_properties`` method works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
@@ -731,6 +739,10 @@ class TestAndroidTVPython(unittest.TestCase):
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3E)[self.PATCH_KEY]:
             properties = self.atv.get_properties_dict(lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT3E)
+
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3F)[self.PATCH_KEY]:
+            properties = self.atv.get_properties_dict(lazy=True)
+            self.assertEqual(properties, GET_PROPERTIES_DICT3F)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
             properties = self.atv.get_properties_dict(lazy=True)
@@ -812,99 +824,99 @@ class TestAndroidTVPython(unittest.TestCase):
 
         """
         self.atv.max_volume = 60.
-        self.assertUpdate([False, False, -1, None, None, None, None, None, None],
+        self.assertUpdate([False, False, None, -1, None, None, None, None, None],
                           (constants.STATE_OFF, None, None, None, None))
 
-        self.assertUpdate([True, False, -1, None, None, None, None, None, None],
+        self.assertUpdate([True, False, None, -1, None, None, None, None, None],
                           (constants.STATE_IDLE, None, None, None, None))
 
         # ATV Launcher
-        self.assertUpdate([True, True, 2, constants.APP_ATV_LAUNCHER, 3, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30],
                           (constants.STATE_STANDBY, constants.APP_ATV_LAUNCHER, 'hmdi_arc', False, 0.5))
 
         # ATV Launcher with custom state detection
         self.atv._state_detection_rules = {constants.APP_ATV_LAUNCHER: [{'idle': {'audio_state': 'idle'}}]}
-        self.assertUpdate([True, True, 2, constants.APP_ATV_LAUNCHER, 3, None, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_PAUSED, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30],
                           (constants.STATE_STANDBY, constants.APP_ATV_LAUNCHER, 'hmdi_arc', False, 0.5))
 
         self.atv._state_detection_rules = {constants.APP_ATV_LAUNCHER: [{'idle': {'INVALID': 'idle'}}]}
-        self.assertUpdate([True, True, 2, constants.APP_ATV_LAUNCHER, 3, None, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30],
                           (constants.STATE_STANDBY, constants.APP_ATV_LAUNCHER, 'hmdi_arc', False, 0.5))
 
         self.atv._state_detection_rules = None
 
         # Bell Fibe
-        self.assertUpdate([True, True, 2, constants.APP_BELL_FIBE, 3, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_BELL_FIBE, 3, 'hmdi_arc', False, 30],
                           (constants.STATE_IDLE, constants.APP_BELL_FIBE, 'hmdi_arc', False, 0.5))
 
         # Netflix
-        self.assertUpdate([True, True, 2, constants.APP_NETFLIX, 2, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 2, 'hmdi_arc', False, 30],
                           (constants.STATE_PAUSED, constants.APP_NETFLIX, 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, 2, constants.APP_NETFLIX, 3, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 3, 'hmdi_arc', False, 30],
                           (constants.STATE_PLAYING, constants.APP_NETFLIX, 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, 2, constants.APP_NETFLIX, 4, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 4, 'hmdi_arc', False, 30],
                           (constants.STATE_STANDBY, constants.APP_NETFLIX, 'hmdi_arc', False, 0.5))
 
         # Plex
-        self.assertUpdate([True, True, 2, constants.APP_PLEX, 4, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_PLEX, 4, 'hmdi_arc', False, 30],
                           (constants.STATE_IDLE, constants.APP_PLEX, 'hmdi_arc', False, 0.5))
 
         # TVheadend
-        self.assertUpdate([True, True, 5, constants.APP_TVHEADEND, 4, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 5, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30],
                           (constants.STATE_PAUSED, constants.APP_TVHEADEND, 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, 6, constants.APP_TVHEADEND, 4, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30],
                           (constants.STATE_PLAYING, constants.APP_TVHEADEND, 'hmdi_arc', False, 0.5))
         
-        self.assertUpdate([True, True, 1, constants.APP_TVHEADEND, 4, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 1, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30],
                           (constants.STATE_STANDBY, constants.APP_TVHEADEND, 'hmdi_arc', False, 0.5))
 
         # VLC
-        self.assertUpdate([True, True, 6, constants.APP_VLC, 2, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 2, 'hmdi_arc', False, 30],
                           (constants.STATE_PAUSED, constants.APP_VLC, 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, 6, constants.APP_VLC, 3, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 3, 'hmdi_arc', False, 30],
                           (constants.STATE_PLAYING, constants.APP_VLC, 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, 6, constants.APP_VLC, 4, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 4, 'hmdi_arc', False, 30],
                           (constants.STATE_STANDBY, constants.APP_VLC, 'hmdi_arc', False, 0.5))
 
         # VRV
-        self.assertUpdate([True, True, 2, constants.APP_VRV, 3, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_VRV, 3, 'hmdi_arc', False, 30],
                           (constants.STATE_IDLE, constants.APP_VRV, 'hmdi_arc', False, 0.5))
 
         # YouTube
-        self.assertUpdate([True, True, 2, constants.APP_YOUTUBE, 2, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 2, 'hmdi_arc', False, 30],
                           (constants.STATE_PAUSED, constants.APP_YOUTUBE, 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, 2, constants.APP_YOUTUBE, 3, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 3, 'hmdi_arc', False, 30],
                           (constants.STATE_PLAYING, constants.APP_YOUTUBE, 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, 2, constants.APP_YOUTUBE, 4, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 4, 'hmdi_arc', False, 30],
                           (constants.STATE_STANDBY, constants.APP_YOUTUBE, 'hmdi_arc', False, 0.5))
 
         # Unknown app
-        self.assertUpdate([True, True, 2, 'unknown', 2, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 2, 'hmdi_arc', False, 30],
                           (constants.STATE_PAUSED, 'unknown', 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, 2, 'unknown', 3, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 3, 'hmdi_arc', False, 30],
                           (constants.STATE_PLAYING, 'unknown', 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, 2, 'unknown', 4, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 4, 'hmdi_arc', False, 30],
                           (constants.STATE_STANDBY, 'unknown', 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, 2, 'unknown', None, constants.STATE_PLAYING, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_PLAYING, 2, 'unknown', None, 'hmdi_arc', False, 30],
                           (constants.STATE_PLAYING, 'unknown', 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, 1, 'unknown', None, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 1, 'unknown', None, 'hmdi_arc', False, 30],
                           (constants.STATE_PAUSED, 'unknown', 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, 2, 'unknown', None, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', None, 'hmdi_arc', False, 30],
                           (constants.STATE_PLAYING, 'unknown', 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, 3, 'unknown', None, constants.STATE_IDLE, 'hmdi_arc', False, 30],
+        self.assertUpdate([True, True, constants.STATE_IDLE, 3, 'unknown', None, 'hmdi_arc', False, 30],
                           (constants.STATE_STANDBY, 'unknown', 'hmdi_arc', False, 0.5))
 
 
