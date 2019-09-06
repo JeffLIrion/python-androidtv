@@ -181,6 +181,11 @@ class AndroidTV(BaseTV):
     def get_properties(self, lazy=False):
         """Get the properties needed for Home Assistant updates.
 
+        This will send one of the following ADB commands:
+
+        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_LAZY`
+        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY`
+
         Parameters
         ----------
         lazy : bool
