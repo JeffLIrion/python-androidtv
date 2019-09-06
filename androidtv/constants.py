@@ -44,22 +44,22 @@ CMD_STREAM_MUSIC = r"dumpsys audio | grep '\- STREAM_MUSIC:' -A 12"
 #: Get the wake lock size
 CMD_WAKE_LOCK_SIZE = "dumpsys power | grep Locks | grep 'size='"
 
-#: Get the properties for an :py:class:`~androidtv.androidtv.AndroidTV` device (``lazy=True``)
+#: Get the properties for an :py:class:`~androidtv.androidtv.AndroidTV` device (``lazy=True``); see :py:meth:`androidtv.androidtv.AndroidTV.get_properties`
 CMD_ANDROIDTV_PROPERTIES_LAZY = CMD_SCREEN_ON + CMD_SUCCESS1 + " && " + CMD_AWAKE + CMD_SUCCESS1 + " && " + CMD_AUDIO_STATE + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_STREAM_MUSIC
 
-#: Get the properties for an :py:class:`~androidtv.androidtv.AndroidTV` device (``lazy=False``)
+#: Get the properties for an :py:class:`~androidtv.androidtv.AndroidTV` device (``lazy=False``); see :py:meth:`androidtv.androidtv.AndroidTV.get_properties`
 CMD_ANDROIDTV_PROPERTIES_NOT_LAZY = CMD_SCREEN_ON + CMD_SUCCESS1_FAILURE0 + " && " + CMD_AWAKE + CMD_SUCCESS1_FAILURE0 + " && " + CMD_AUDIO_STATE + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_STREAM_MUSIC
 
-#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=True, get_running_apps=True``)
+#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=True, get_running_apps=True``); see :py:meth:`androidtv.firetv.FireTV.get_properties`
 CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1 + " && " + CMD_AWAKE + CMD_SUCCESS1 + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_RUNNING_APPS
 
-#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=True, get_running_apps=False``)
+#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=True, get_running_apps=False``); see :py:meth:`androidtv.firetv.FireTV.get_properties`
 CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1 + " && " + CMD_AWAKE + CMD_SUCCESS1 + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo)"
 
-#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=False, get_running_apps=True``)
+#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=False, get_running_apps=True``); see :py:meth:`androidtv.firetv.FireTV.get_properties`
 CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1_FAILURE0 + " && " + CMD_AWAKE + CMD_SUCCESS1_FAILURE0 + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_RUNNING_APPS
 
-#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=False, get_running_apps=False``)
+#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=False, get_running_apps=False``); see :py:meth:`androidtv.firetv.FireTV.get_properties`
 CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1_FAILURE0 + " && " + CMD_AWAKE + CMD_SUCCESS1_FAILURE0 + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo)"
 
 # `getprop` commands
