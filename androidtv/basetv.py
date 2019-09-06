@@ -1118,8 +1118,8 @@ def state_detection_rules_validator(rules, exc=KeyError):
 
         # If a rule is a string, check that it is valid
         if isinstance(rule, str):
-            if rule not in constants.VALID_PROPERTIES + constants.VALID_STATES:
-                raise exc("Invalid rule '{0}' is not in {1}".format(rule, constants.VALID_PROPERTIES + constants.VALID_STATES))
+            if rule not in constants.VALID_STATE_PROPERTIES + constants.VALID_STATES:
+                raise exc("Invalid rule '{0}' is not in {1}".format(rule, constants.VALID_STATE_PROPERTIES + constants.VALID_STATES))
 
         # If a rule is a dictionary, check that it is valid
         else:
@@ -1132,17 +1132,17 @@ def state_detection_rules_validator(rules, exc=KeyError):
                 if not isinstance(conditions, dict):
                     raise exc("Expected a map for entry '{0}' in 'state_detection_rules', got {1}".format(state, type(conditions).__name__))
 
-                for condition, value in conditions.items():
-                    # The keys of the dictionary must be valid conditions that can be checked
-                    if condition not in constants.VALID_CONDITIONS:
-                        raise exc("Invalid property '{0}' is not in {1}".format(condition, constants.VALID_CONDITIONS))
+                for property, value in conditions.items():
+                    # The keys of the dictionary must be valid properties that can be checked
+                    if property not in constants.VALID_PROPERTIES:
+                        raise exc("Invalid property '{0}' is not in {1}".format(property, constants.VALID_PROPERTIES))
 
                     # The value for the `audio_state` property must be a string
-                    if condition == "audio_state" and not isinstance(value, str):
+                    if property == "audio_state" and not isinstance(value, str):
                         raise exc("Conditional value for property 'audio_state' must be a string, not {}".format(type(value).__name__))
 
                     # The value for the `media_session_state` and `wake_lock_size` properties must be an int
-                    if condition != "audio_state" and not isinstance(value, int):
-                        raise exc("Conditional value for property '{0}' must be an int, not {1}".format(condition, type(value).__name__))
+                    if property != "audio_state" and not isinstance(value, int):
+                        raise exc("Conditional value for property '{0}' must be an int, not {1}".format(property, type(value).__name__))
 
     return rules
