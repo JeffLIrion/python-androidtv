@@ -308,17 +308,11 @@ class BaseTV(object):
         Returns
         -------
         str, None
-            The audio state, as determined from the ADB shell command ``dumpsys audio``, or ``None`` if it could not be determined
+            The audio state, as determined from the ADB shell command :py:const:`androidtv.constants.CMD_AUDIO_STATE`, or ``None`` if it could not be determined
 
         """
         audio_state_response = self.adb.shell(constants.CMD_AUDIO_STATE)
-        if audio_state_response is None:
-            return None
-        if audio_state_response == '1':
-            return constants.STATE_PAUSED
-        if audio_state_response == '2':
-            return constants.STATE_PLAYING
-        return constants.STATE_IDLE
+        return self._audio_state(audio_state_response)
 
     @property
     def available(self):
@@ -477,13 +471,13 @@ class BaseTV(object):
     #                                                                         #
     # ======================================================================= #
     @staticmethod
-    def _audio_state(dumpsys_audio_response):
-        """Parse the :attr:`audio_state` property from the output of ``adb shell dumpsys audio``.
+    def _audio_state(audio_state_response):
+        """Parse the :attr:`audio_state` property from the output of the command :py:const:`androidtv.constants.CMD_AUDIO_STATE`.
 
         Parameters
         ----------
-        dumpsys_audio_response : str, None
-            The output of ``adb shell dumpsys audio``
+        audio_state_response : str, None
+            The output of the command :py:const:`androidtv.constants.CMD_AUDIO_STATE`
 
         Returns
         -------
@@ -491,18 +485,12 @@ class BaseTV(object):
             The audio state, or ``None`` if it could not be determined
 
         """
-        if not dumpsys_audio_response:
+        if not audio_state_response:
             return None
-
-        for line in dumpsys_audio_response.splitlines():
-            if 'OpenSL ES AudioPlayer (Buffer Queue)' in line:
-                # ignore this line which can cause false positives for some apps (e.g. VRV)
-                continue
-            if 'started' in line:
-                return constants.STATE_PLAYING
-            if 'paused' in line:
-                return constants.STATE_PAUSED
-
+        if audio_state_response == '1':
+            return constants.STATE_PAUSED
+        if audio_state_response == '2':
+            return constants.STATE_PLAYING
         return constants.STATE_IDLE
 
     @staticmethod
@@ -579,27 +567,27 @@ class BaseTV(object):
 
         return None
 
-    def _get_stream_music(self, dumpsys_audio_response=None):
-        """Get the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
+    def _get_stream_music(self, stream_music_raw=None):
+        """Get the ``STREAM_MUSIC`` block from the output of the command :py:const:`androidtv.constants.CMD_STREAM_MUSIC`.
 
         Parameters
         ----------
-        dumpsys_audio_response : str, None
-            The output of ``adb shell dumpsys audio``
+        stream_music_raw : str, None
+            The output of the command :py:const:`androidtv.constants.CMD_STREAM_MUSIC`
 
         Returns
         -------
         str, None
-            The ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``, or ``None`` if it could not be determined
+            The ``STREAM_MUSIC`` block from the output of :py:const:`androidtv.constants.CMD_STREAM_MUSIC`, or ``None`` if it could not be determined
 
         """
-        if not dumpsys_audio_response:
-            dumpsys_audio_response = self.adb.shell("dumpsys audio")
+        if not stream_music_raw:
+            stream_music_raw = self.adb.shell(constants.CMD_STREAM_MUSIC)
 
-        if not dumpsys_audio_response:
+        if not stream_music_raw:
             return None
 
-        matches = re.findall(constants.STREAM_MUSIC_REGEX_PATTERN, dumpsys_audio_response, re.DOTALL | re.MULTILINE)
+        matches = re.findall(constants.STREAM_MUSIC_REGEX_PATTERN, stream_music_raw, re.DOTALL | re.MULTILINE)
         if matches:
             return matches[0]
 
@@ -747,7 +735,9 @@ class BaseTV(object):
 
         """
         if wake_lock_size_response:
-            return int(wake_lock_size_response.split("=")[1].strip())
+            wake_lock_size_matches = constants.REGEX_WAKE_LOCK_SIZE.search(wake_lock_size_response)
+            if wake_lock_size_matches:
+                return int(wake_lock_size_matches.group('size'))
 
         return None
 
