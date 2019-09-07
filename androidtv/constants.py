@@ -38,7 +38,7 @@ CMD_RUNNING_APPS = "ps | grep u0_a"
 #: Determine if the device is on
 CMD_SCREEN_ON = "dumpsys power | grep 'Display Power' | grep -q 'state=ON'"
 
-#: Get the "STREAM MUSIC" block from ``dumpsys audio``
+#: Get the "STREAM_MUSIC" block from ``dumpsys audio``
 CMD_STREAM_MUSIC = r"dumpsys audio | grep '\- STREAM_MUSIC:' -A 12"
 
 #: Get the wake lock size
@@ -233,7 +233,7 @@ VALID_STATE_PROPERTIES = ("audio_state", "media_session_state")
 #: Properties that can be checked for custom state detection (used by :func:`~androidtv.basetv.state_detection_rules_validator`)
 VALID_PROPERTIES = VALID_STATE_PROPERTIES + ("wake_lock_size",)
 
-#: The required type for each entry in `VALID_PROPERTIES` (used by :func:`~androidtv.basetv.state_detection_rules_validator`)
+#: The required type for each entry in :py:const:`VALID_PROPERTIES` (used by :func:`~androidtv.basetv.state_detection_rules_validator`)
 VALID_PROPERTIES_TYPES = {"audio_state": str,
                           "media_session_state": int,
                           "wake_lock_size": int}
