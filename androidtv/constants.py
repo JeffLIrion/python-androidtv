@@ -44,22 +44,22 @@ CMD_STREAM_MUSIC = r"dumpsys audio | grep '\- STREAM_MUSIC:' -A 12"
 #: Get the wake lock size
 CMD_WAKE_LOCK_SIZE = "dumpsys power | grep Locks | grep 'size='"
 
-#: Get the properties for an :py:class:`~androidtv.androidtv.AndroidTV` device (``lazy=True``)
+#: Get the properties for an :py:class:`~androidtv.androidtv.AndroidTV` device (``lazy=True``); see :py:meth:`androidtv.androidtv.AndroidTV.get_properties`
 CMD_ANDROIDTV_PROPERTIES_LAZY = CMD_SCREEN_ON + CMD_SUCCESS1 + " && " + CMD_AWAKE + CMD_SUCCESS1 + " && " + CMD_AUDIO_STATE + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_STREAM_MUSIC
 
-#: Get the properties for an :py:class:`~androidtv.androidtv.AndroidTV` device (``lazy=False``)
+#: Get the properties for an :py:class:`~androidtv.androidtv.AndroidTV` device (``lazy=False``); see :py:meth:`androidtv.androidtv.AndroidTV.get_properties`
 CMD_ANDROIDTV_PROPERTIES_NOT_LAZY = CMD_SCREEN_ON + CMD_SUCCESS1_FAILURE0 + " && " + CMD_AWAKE + CMD_SUCCESS1_FAILURE0 + " && " + CMD_AUDIO_STATE + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_STREAM_MUSIC
 
-#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=True, get_running_apps=True``)
+#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=True, get_running_apps=True``); see :py:meth:`androidtv.firetv.FireTV.get_properties`
 CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1 + " && " + CMD_AWAKE + CMD_SUCCESS1 + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_RUNNING_APPS
 
-#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=True, get_running_apps=False``)
+#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=True, get_running_apps=False``); see :py:meth:`androidtv.firetv.FireTV.get_properties`
 CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1 + " && " + CMD_AWAKE + CMD_SUCCESS1 + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo)"
 
-#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=False, get_running_apps=True``)
+#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=False, get_running_apps=True``); see :py:meth:`androidtv.firetv.FireTV.get_properties`
 CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1_FAILURE0 + " && " + CMD_AWAKE + CMD_SUCCESS1_FAILURE0 + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_RUNNING_APPS
 
-#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=False, get_running_apps=False``)
+#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=False, get_running_apps=False``); see :py:meth:`androidtv.firetv.FireTV.get_properties`
 CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1_FAILURE0 + " && " + CMD_AWAKE + CMD_SUCCESS1_FAILURE0 + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo)"
 
 # `getprop` commands
@@ -224,14 +224,19 @@ STATE_STANDBY = 'standby'
 STATE_STOPPED = 'stopped'
 STATE_UNKNOWN = 'unknown'
 
-#: States that are valid (used by the :meth:`~androidtv.basetv.BaseTV._custom_state_detection` method)
+#: States that are valid (used by :func:`~androidtv.basetv.state_detection_rules_validator`)
 VALID_STATES = (STATE_IDLE, STATE_OFF, STATE_PLAYING, STATE_PAUSED, STATE_STANDBY)
 
-#: Properties that can be used to determine the current state
-VALID_PROPERTIES = ("audio_state", "media_session_state")
+#: Properties that can be used to determine the current state (used by :func:`~androidtv.basetv.state_detection_rules_validator`)
+VALID_STATE_PROPERTIES = ("audio_state", "media_session_state")
 
-#: Conditions that can be checked by the :meth:`~androidtv.basetv.BaseTV._conditions_are_true` method
-VALID_CONDITIONS = VALID_PROPERTIES + ("wake_lock_size",)
+#: Properties that can be checked for custom state detection (used by :func:`~androidtv.basetv.state_detection_rules_validator`)
+VALID_PROPERTIES = VALID_STATE_PROPERTIES + ("wake_lock_size",)
+
+#: The required type for each entry in `VALID_PROPERTIES` (used by :func:`~androidtv.basetv.state_detection_rules_validator`)
+VALID_PROPERTIES_TYPES = {"audio_state": str,
+                          "media_session_state": int,
+                          "wake_lock_size": int}
 
 # https://developer.android.com/reference/android/media/session/PlaybackState.html
 #: States for the :attr:`~androidtv.basetv.BaseTV.media_session_state` property

@@ -29,7 +29,7 @@ class BaseTV(object):
                                                         {'paused': {'media_session_state': 3, 'wake_lock_size': 1}},
                                                         'standby']}
 
-    The keys are app IDs, and the values are lists of rules that are evaluated in order by the :meth:`_custom_state_detection` method.
+    The keys are app IDs, and the values are lists of rules that are evaluated in order.
 
     :py:const:`~androidtv.constants.VALID_STATES`
 
@@ -1096,6 +1096,21 @@ class BaseTV(object):
 def state_detection_rules_validator(rules, exc=KeyError):
     """Validate the rules (i.e., the ``state_detection_rules`` value) for a given app ID (i.e., a key in ``state_detection_rules``).
 
+    For each ``rule`` in ``rules``, this function checks that:
+
+    * ``rule`` is a string or a dictionary
+    * If ``rule`` is a string:
+
+        * Check that ``rule`` is in :py:const:`~androidtv.constants.VALID_STATES` or :py:const:`~androidtv.constants.VALID_STATE_PROPERTIES`
+
+    * If ``rule`` is a dictionary:
+
+        * Check that each key is in :py:const:`~androidtv.constants.VALID_STATES`
+        * Check that each value is a dictionary
+
+            * Check that each key is in :py:const:`~androidtv.constants.VALID_PROPERTIES`
+            * Check that each value is of the right type, according to :py:const:`~androidtv.constants.VALID_PROPERTIES_TYPES`
+
     See :class:`~androidtv.basetv.BaseTV` for more info about the ``state_detection_rules`` parameter.
 
     Parameters
@@ -1118,8 +1133,8 @@ def state_detection_rules_validator(rules, exc=KeyError):
 
         # If a rule is a string, check that it is valid
         if isinstance(rule, str):
-            if rule not in constants.VALID_PROPERTIES + constants.VALID_STATES:
-                raise exc("Invalid rule '{0}' is not in {1}".format(rule, constants.VALID_PROPERTIES + constants.VALID_STATES))
+            if rule not in constants.VALID_STATE_PROPERTIES + constants.VALID_STATES:
+                raise exc("Invalid rule '{0}' is not in {1}".format(rule, constants.VALID_STATE_PROPERTIES + constants.VALID_STATES))
 
         # If a rule is a dictionary, check that it is valid
         else:
@@ -1132,17 +1147,13 @@ def state_detection_rules_validator(rules, exc=KeyError):
                 if not isinstance(conditions, dict):
                     raise exc("Expected a map for entry '{0}' in 'state_detection_rules', got {1}".format(state, type(conditions).__name__))
 
-                for condition, value in conditions.items():
-                    # The keys of the dictionary must be valid conditions that can be checked
-                    if condition not in constants.VALID_CONDITIONS:
-                        raise exc("Invalid property '{0}' is not in {1}".format(condition, constants.VALID_CONDITIONS))
+                for prop, value in conditions.items():
+                    # The keys of the dictionary must be valid properties that can be checked
+                    if prop not in constants.VALID_PROPERTIES:
+                        raise exc("Invalid property '{0}' is not in {1}".format(prop, constants.VALID_PROPERTIES))
 
-                    # The value for the `audio_state` property must be a string
-                    if condition == "audio_state" and not isinstance(value, str):
-                        raise exc("Conditional value for property 'audio_state' must be a string, not {}".format(type(value).__name__))
-
-                    # The value for the `media_session_state` and `wake_lock_size` properties must be an int
-                    if condition != "audio_state" and not isinstance(value, int):
-                        raise exc("Conditional value for property '{0}' must be an int, not {1}".format(condition, type(value).__name__))
+                    # Make sure the value is of the right type
+                    if not isinstance(value, constants.VALID_PROPERTIES_TYPES[prop]):
+                        raise exc("Conditional value for property '{0}' must be of type {1}, not {2}".format(prop, constants.VALID_PROPERTIES_TYPES[prop].__name__, type(value).__name__))
 
     return rules
