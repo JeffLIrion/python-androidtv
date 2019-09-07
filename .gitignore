@@ -1,5 +1,4 @@
 # Python files
-.coverage
 *.idea
 *.pyc
 **/__pycache__/
@@ -12,3 +11,7 @@ dist/
 
 # Documentation
 docs/build/
+
+# Coverage
+.coverage
+htmlcov/
