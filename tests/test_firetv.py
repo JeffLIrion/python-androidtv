@@ -203,6 +203,10 @@ class TestFireTVPython(unittest.TestCase):
             properties = self.ftv.get_properties_dict(lazy=True, get_running_apps=False)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3E)
 
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3E)[self.PATCH_KEY]:
+            properties = self.ftv.get_properties_dict(lazy=False, get_running_apps=False)
+            self.assertDictEqual(properties, GET_PROPERTIES_DICT3E)
+
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
             properties = self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT4)

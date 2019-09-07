@@ -224,14 +224,19 @@ STATE_STANDBY = 'standby'
 STATE_STOPPED = 'stopped'
 STATE_UNKNOWN = 'unknown'
 
-#: States that are valid (used by the :meth:`~androidtv.basetv.BaseTV._custom_state_detection` method)
+#: States that are valid (used by :func:`~androidtv.basetv.state_detection_rules_validator`)
 VALID_STATES = (STATE_IDLE, STATE_OFF, STATE_PLAYING, STATE_PAUSED, STATE_STANDBY)
 
-#: Properties that can be used to determine the current state
+#: Properties that can be used to determine the current state (used by :func:`~androidtv.basetv.state_detection_rules_validator`)
 VALID_STATE_PROPERTIES = ("audio_state", "media_session_state")
 
-#: Properties that can be checked by the :meth:`~androidtv.basetv.BaseTV._conditions_are_true` method
+#: Properties that can be checked for custom state detection (used by :func:`~androidtv.basetv.state_detection_rules_validator`)
 VALID_PROPERTIES = VALID_STATE_PROPERTIES + ("wake_lock_size",)
+
+#: The required type for each entry in `VALID_PROPERTIES` (used by :func:`~androidtv.basetv.state_detection_rules_validator`)
+VALID_PROPERTIES_TYPES = {"audio_state": str,
+                          "media_session_state": int,
+                          "wake_lock_size": int}
 
 # https://developer.android.com/reference/android/media/session/PlaybackState.html
 #: States for the :attr:`~androidtv.basetv.BaseTV.media_session_state` property
