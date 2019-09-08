@@ -11,6 +11,22 @@ docs:
 	@cd docs && sphinx-apidoc -f -e -o source/ ../androidtv/
 	@cd docs && make html && make html
 
+.PHONY: test
+test:
+	python setup.py test
+
 .PHONY: coverage
 coverage:
-	coverage run --source androidtv setup.py test && coverage html && coverage report
+	coverage run --source androidtv setup.py test && coverage html && coverage report -m
+
+.PHONY: tdd
+tdd:
+	coverage run --source androidtv setup.py test && coverage report -m
+
+.PHONY: lint
+lint:
+	flake8 androidtv/ && pylint androidtv/
+
+.PHONY: alltests
+alltests:
+	flake8 androidtv/ && pylint androidtv/ && coverage run --source androidtv setup.py test && coverage report -m
