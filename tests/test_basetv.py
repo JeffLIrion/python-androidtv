@@ -299,7 +299,7 @@ class TestBaseTVPython(unittest.TestCase):
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
             audio_state = self.btv.audio_state
-            self.assertEqual(audio_state, None)
+            self.assertIsNone(audio_state, None)
 
         with patchers.patch_shell('0')[self.PATCH_KEY]:
             audio_state = self.btv.audio_state
@@ -319,11 +319,11 @@ class TestBaseTVPython(unittest.TestCase):
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
             current_app = self.btv.current_app
-            self.assertEqual(current_app, None)
+            self.assertIsNone(current_app, None)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
             current_app = self.btv.current_app
-            self.assertEqual(current_app, None)
+            self.assertIsNone(current_app, None)
 
         with patchers.patch_shell('com.amazon.tv.launcher')[self.PATCH_KEY]:
             current_app = self.btv.current_app
@@ -335,15 +335,19 @@ class TestBaseTVPython(unittest.TestCase):
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
             media_session_state = self.btv.media_session_state
-            self.assertEqual(media_session_state, None)
+            self.assertIsNone(media_session_state, None)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
             media_session_state = self.btv.media_session_state
-            self.assertEqual(media_session_state, None)
+            self.assertIsNone(media_session_state, None)
+
+        with patchers.patch_shell('unknown.app\n ')[self.PATCH_KEY]:
+            media_session_state = self.btv.media_session_state
+            self.assertIsNone(media_session_state, None)
 
         with patchers.patch_shell('2')[self.PATCH_KEY]:
             media_session_state = self.btv.media_session_state
-            self.assertEqual(media_session_state, None)
+            self.assertIsNone(media_session_state, None)
 
         with patchers.patch_shell(MEDIA_SESSION_STATE_OUTPUT)[self.PATCH_KEY]:
             media_session_state = self.btv.media_session_state
@@ -355,11 +359,11 @@ class TestBaseTVPython(unittest.TestCase):
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
             running_apps = self.btv.running_apps
-            self.assertEqual(running_apps, None)
+            self.assertIsNone(running_apps, None)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
             running_apps = self.btv.running_apps
-            self.assertEqual(running_apps, None)
+            self.assertIsNone(running_apps, None)
 
         with patchers.patch_shell(RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
             running_apps = self.btv.running_apps

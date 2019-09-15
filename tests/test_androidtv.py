@@ -16,6 +16,8 @@ from androidtv.androidtv import AndroidTV
 from . import patchers
 
 
+STREAM_MUSIC_EMPTY = "- STREAM_MUSIC:\n \n- STREAM"
+
 DUMPSYS_AUDIO_OFF = """MediaFocusControl dump time: 9:00:59 AM
 
 Audio Focus stack entries (last is top of stack):
@@ -144,6 +146,18 @@ STREAM_MUSIC_OFF = """- STREAM_MUSIC:
    Min: 0
    Max: 60
    Current: 2 (speaker): 20, 40000 (hmdi_arc): 27, 40000000 (default): 15
+   Devices: speaker
+- STREAM_ALARM:
+   Muted: true
+   Min: 0
+   Max: 7
+   Current: 2 (speaker): 3, 40000 (hmdi_arc): 3, 40000000 (default): 2
+   Devices: speaker"""
+
+STREAM_MUSIC_NO_VOLUME = """- STREAM_MUSIC:
+   Muted: false
+   Min: 0
+   Max: 60
    Devices: speaker
 - STREAM_ALARM:
    Muted: true
@@ -533,6 +547,14 @@ class TestAndroidTVPython(unittest.TestCase):
             device = self.atv.device
             self.assertIsNone(device)
 
+        with patchers.patch_shell(' ')[self.PATCH_KEY]:
+            device = self.atv.device
+            self.assertIsNone(device)
+
+        with patchers.patch_shell(STREAM_MUSIC_EMPTY)[self.PATCH_KEY]:
+            device = self.atv.device
+            self.assertIsNone(device)
+
         with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
             device = self.atv.device
             self.assertEqual('speaker', device)
@@ -553,11 +575,25 @@ class TestAndroidTVPython(unittest.TestCase):
             volume = self.atv.volume
             self.assertIsNone(volume)
 
+        with patchers.patch_shell(' ')[self.PATCH_KEY]:
+            volume = self.atv.volume
+            self.assertIsNone(volume)
+
+        with patchers.patch_shell(STREAM_MUSIC_EMPTY)[self.PATCH_KEY]:
+            volume = self.atv.volume
+            self.assertIsNone(volume)
+
+        with patchers.patch_shell(STREAM_MUSIC_NO_VOLUME)[self.PATCH_KEY]:
+            volume = self.atv.volume
+            self.assertIsNone(volume)
+
+        self.atv.max_volume = None
         with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
             volume = self.atv.volume
             self.assertEqual(volume, 20)
             self.assertEqual(self.atv.max_volume, 60.)
 
+        self.atv.max_volume = None
         with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
             volume = self.atv.volume
             self.assertEqual(volume, 22)
@@ -575,11 +611,25 @@ class TestAndroidTVPython(unittest.TestCase):
             volume_level = self.atv.volume_level
             self.assertIsNone(volume_level)
 
+        with patchers.patch_shell(' ')[self.PATCH_KEY]:
+            volume_level = self.atv.volume_level
+            self.assertIsNone(volume_level)
+
+        with patchers.patch_shell(STREAM_MUSIC_EMPTY)[self.PATCH_KEY]:
+            volume_level = self.atv.volume_level
+            self.assertIsNone(volume_level)
+
+        with patchers.patch_shell(STREAM_MUSIC_NO_VOLUME)[self.PATCH_KEY]:
+            volume_level = self.atv.volume_level
+            self.assertIsNone(volume_level)
+
+        self.atv.max_volume = None
         with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
             volume_level = self.atv.volume_level
             self.assertEqual(volume_level, 20./60)
             self.assertEqual(self.atv.max_volume, 60.)
 
+        self.atv.max_volume = None
         with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
             volume_level = self.atv.volume_level
             self.assertEqual(volume_level, 22./60)
@@ -594,6 +644,14 @@ class TestAndroidTVPython(unittest.TestCase):
             self.assertIsNone(is_volume_muted)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
+            is_volume_muted = self.atv.is_volume_muted
+            self.assertIsNone(is_volume_muted)
+
+        with patchers.patch_shell(' ')[self.PATCH_KEY]:
+            is_volume_muted = self.atv.is_volume_muted
+            self.assertIsNone(is_volume_muted)
+
+        with patchers.patch_shell(STREAM_MUSIC_EMPTY)[self.PATCH_KEY]:
             is_volume_muted = self.atv.is_volume_muted
             self.assertIsNone(is_volume_muted)
 
