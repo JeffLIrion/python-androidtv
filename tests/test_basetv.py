@@ -90,6 +90,12 @@ class TestBaseTVPython(unittest.TestCase):
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.btv = BaseTV('IP:PORT')
 
+    def test_available(self):
+        """Test that the available property works correctly.
+
+        """
+        self.assertTrue(self.btv.available)
+
     def test_keys(self):
         """Test that the key methods send the correct commands.
 
