@@ -94,7 +94,7 @@ class TestBaseTVPython(unittest.TestCase):
         """Test that the available property works correctly.
 
         """
-        self.assertTrue(self.available)
+        self.assertTrue(self.btv.available)
 
     def test_keys(self):
         """Test that the key methods send the correct commands.
