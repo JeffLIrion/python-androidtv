@@ -18,7 +18,7 @@ from adb_messenger.client import Client
 _LOGGER = logging.getLogger(__name__)
 
 #: Use a timeout for the ADB threading lock if it is supported
-LOCK_KWARGS = {'timeout': 3} if if sys.version_info[0] > 2 and sys.version_info[1] > 1 else {}
+LOCK_KWARGS = {'timeout': 3} if sys.version_info[0] > 2 and sys.version_info[1] > 1 else {}
 
 if sys.version_info[0] == 2:  # pragma: no cover
     FileNotFoundError = IOError  # pylint: disable=redefined-builtin
