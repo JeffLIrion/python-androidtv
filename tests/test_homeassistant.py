@@ -58,6 +58,7 @@ def adb_decorator(override_available=False):
                     "establishing attempt in the next update. Error: %s",
                     err,
                 )
+                self.aftv.adb.close()
                 self._available = False  # pylint: disable=protected-access
                 return None
 

@@ -58,6 +58,12 @@ class ADBPython(object):
         """
         return self._adb.available
 
+    def close(self):
+        """Close the ADB socket connection.
+
+        """
+        self._adb.close()
+
     def connect(self, always_log_errors=True):
         """Connect to an Android TV / Fire TV device.
 
@@ -217,6 +223,14 @@ class ADBServer(object):
                 _LOGGER.error('ADB server is unavailable.')
                 self._available = False
             return False
+
+    def close(self):
+        """Close the ADB server socket connection.
+
+        Currently, this doesn't do anything.
+
+        """
+        pass
 
     def connect(self, always_log_errors=True):
         """Connect to an Android TV / Fire TV device.
