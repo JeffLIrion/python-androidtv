@@ -100,7 +100,6 @@ class ADBPython(object):
                 # ADB connection successfully established
                 self._available = True
                 _LOGGER.debug("ADB connection to %s successfully established", self.host)
-                print('\n\n{}\n\n'.format(type(self._adb)))
 
             except socket_error as serr:
                 if self._available or always_log_errors:

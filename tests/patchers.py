@@ -26,22 +26,6 @@ class AdbDeviceFake(object):
         self.available = False
 
 
-class AdbDeviceFakeSuccess(AdbDeviceFake):
-    """A fake of the `AdbDevice.AdbDevice` class when the connection attempt succeeds."""
-
-    def connect(self, *args, **kwargs):
-        """Successfully connect to a device."""
-        self.available = True
-
-
-class AdbDeviceFakeFail(AdbDeviceFake):
-    """A fake of the `adb_shell.adb_device.AdbDevice` class when the connection attempt fails."""
-
-    def connect(self, *args, **kwargs):
-        """Fail to connect to a device."""
-        raise socket_error
-
-
 class ClientFakeSuccess(object):
     """A fake of the `adb_messenger.client.Client` class when the connection and shell commands succeed."""
 
@@ -100,10 +84,6 @@ def patch_connect(success):
     def connect_fail_python(self, *args, **kwargs):
         """Mock the `AdbDeviceFake.connect` method when it fails."""
         raise socket_error
-
-    #if success:
-    #    return {'python': patch('androidtv.adb_manager.AdbDevice', AdbDeviceFakeSuccess), 'server': patch('androidtv.adb_manager.Client', ClientFakeSuccess)}
-    #return {'python': patch('androidtv.adb_manager.AdbDevice', AdbDeviceFakeFail), 'server': patch('androidtv.adb_manager.Client', ClientFakeFail)}
 
     if success:
         return {'python': patch('{}.AdbDeviceFake.connect'.format(__name__), connect_success_python), 'server': patch('androidtv.adb_manager.Client', ClientFakeSuccess)}
