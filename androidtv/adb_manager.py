@@ -11,8 +11,8 @@ from socket import error as socket_error
 import sys
 import threading
 
-from adb.adb_commands import AdbCommands
-from adb.sign_pythonrsa import PythonRSASigner
+from adb_shell.adb_device import AdbDevice
+from adb_shell.auth.sign_pythonrsa import PythonRSASigner
 from adb_messenger.client import Client
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ class ADBPython(object):
     def __init__(self, host, adbkey=''):
         self.host = host
         self.adbkey = adbkey
-        self._adb = None
+        self._adb = AdbDevice(serial=self.host)
 
         # keep track of whether the ADB connection is intact
         self._available = False
@@ -56,7 +56,7 @@ class ADBPython(object):
             Whether or not the ADB connection is intact
 
         """
-        return bool(self._adb)
+        return self._adb.available
 
     def connect(self, always_log_errors=True):
         """Connect to an Android TV / Fire TV device.
@@ -93,9 +93,9 @@ class ADBPython(object):
                     signer = PythonRSASigner(pub, priv)
 
                     # Connect to the device
-                    self._adb = AdbCommands().ConnectDevice(serial=self.host, rsa_keys=[signer], default_timeout_ms=9000)
+                    self._adb.connect(rsa_keys=[signer], default_timeout_s=9000)
                 else:
-                    self._adb = AdbCommands().ConnectDevice(serial=self.host, default_timeout_ms=9000)
+                    self._adb.connect(default_timeout_s=9000)
 
                 # ADB connection successfully established
                 self._available = True
@@ -108,7 +108,7 @@ class ADBPython(object):
                     _LOGGER.warning("Couldn't connect to host %s, error: %s", self.host, serr.strerror)
 
                 # ADB connection attempt failed
-                self._adb = None
+                self._adb.close()
                 self._available = False
 
             finally:
@@ -138,7 +138,7 @@ class ADBPython(object):
         if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
             _LOGGER.debug("Sending command to %s via python-adb: %s", self.host, cmd)
             try:
-                return self._adb.Shell(cmd)
+                return self._adb.shell(cmd)
             finally:
                 self._adb_lock.release()
         else:

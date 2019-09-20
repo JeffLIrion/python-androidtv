@@ -72,7 +72,8 @@ class TestADBPython(unittest.TestCase):
         """Create an `ADBPython` instance.
 
         """
-        self.adb = ADBPython('IP:PORT')
+        with patchers.patch_adb_device:
+            self.adb = ADBPython('IP:5555')
 
     def test_connect_success(self):
         """Test when the connect attempt is successful.
@@ -123,7 +124,7 @@ class TestADBServer(TestADBPython):
         """Create an `ADBServer` instance.
 
         """
-        self.adb = ADBServer('IP:PORT', 'ADB_SERVER_IP')
+        self.adb = ADBServer('IP:5555', 'ADB_SERVER_IP')
 
     def test_available(self):
         """Test that the ``available`` property works correctly.
@@ -171,7 +172,8 @@ class TestADBPythonWithAuthentication(unittest.TestCase):
         """Create an `ADBPython` instance.
 
         """
-        self.adb = ADBPython('IP:PORT', 'adbkey')
+        with patchers.patch_adb_device:
+            self.adb = ADBPython('IP:5555', 'adbkey')
 
     def test_connect_success_with_priv_key(self):
         """Test when the connect attempt is successful when using a private key.

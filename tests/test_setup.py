@@ -43,25 +43,25 @@ class TestSetup(unittest.TestCase):
         """Test that the ``setup`` function works correctly.
         """
         with self.assertRaises(ValueError):
-            setup('IP:PORT', device_class='INVALID')
+            setup('IP:5555', device_class='INVALID')
 
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            ftv = setup('IP:PORT')
+            ftv = setup('IP:5555')
             self.assertIsInstance(ftv, FireTV)
             self.assertDictEqual(ftv.device_properties, DEVICE_PROPERTIES_DICT1)
 
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            atv = setup('IP:PORT')
+            atv = setup('IP:5555')
             self.assertIsInstance(atv, AndroidTV)
             self.assertDictEqual(atv.device_properties, DEVICE_PROPERTIES_DICT2)
 
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            ftv = setup('IP:PORT', device_class='androidtv')
+            ftv = setup('IP:5555', device_class='androidtv')
             self.assertIsInstance(ftv, AndroidTV)
             self.assertDictEqual(ftv.device_properties, DEVICE_PROPERTIES_DICT1)
 
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            atv = setup('IP:PORT', device_class='firetv')
+            atv = setup('IP:5555', device_class='firetv')
             self.assertIsInstance(atv, FireTV)
             self.assertDictEqual(atv.device_properties, DEVICE_PROPERTIES_DICT2)
 
