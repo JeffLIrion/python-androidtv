@@ -32,7 +32,6 @@ class AdbDeviceFakeSuccess(AdbDeviceFake):
     def connect(self, *args, **kwargs):
         """Successfully connect to a device."""
         self.available = True
-        #return self
 
 
 class AdbDeviceFakeFail(AdbDeviceFake):
@@ -102,9 +101,13 @@ def patch_connect(success):
         """Mock the `AdbDeviceFake.connect` method when it fails."""
         raise socket_error
 
+    #if success:
+    #    return {'python': patch('androidtv.adb_manager.AdbDevice', AdbDeviceFakeSuccess), 'server': patch('androidtv.adb_manager.Client', ClientFakeSuccess)}
+    #return {'python': patch('androidtv.adb_manager.AdbDevice', AdbDeviceFakeFail), 'server': patch('androidtv.adb_manager.Client', ClientFakeFail)}
+
     if success:
-        return {'python': patch('{}.AdbDeviceFake.shell'.format(__name__), connect_success_python), 'server': patch('androidtv.adb_manager.Client', ClientFakeSuccess)}
-    return {'python': patch('{}.AdbDeviceFake.shell'.format(__name__), connect_fail_python), 'server': patch('androidtv.adb_manager.Client', ClientFakeFail)}
+        return {'python': patch('{}.AdbDeviceFake.connect'.format(__name__), connect_success_python), 'server': patch('androidtv.adb_manager.Client', ClientFakeSuccess)}
+    return {'python': patch('{}.AdbDeviceFake.connect'.format(__name__), connect_fail_python), 'server': patch('androidtv.adb_manager.Client', ClientFakeFail)}
 
 
 def patch_shell(response=None, error=False):

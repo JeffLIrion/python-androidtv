@@ -72,7 +72,7 @@ class TestADBPython(unittest.TestCase):
         """Create an `ADBPython` instance.
 
         """
-        with patchers.patch_adb_device:
+        with patchers.patch_adb_device, patchers.patch_connect(True)[self.PATCH_KEY]:
             self.adb = ADBPython('IP:5555')
 
     def test_connect_success(self):
@@ -172,7 +172,7 @@ class TestADBPythonWithAuthentication(unittest.TestCase):
         """Create an `ADBPython` instance.
 
         """
-        with patchers.patch_adb_device:
+        with patchers.patch_adb_device, patchers.patch_connect(True)[self.PATCH_KEY]:
             self.adb = ADBPython('IP:5555', 'adbkey')
 
     def test_connect_success_with_priv_key(self):

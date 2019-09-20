@@ -128,7 +128,7 @@ class TestFireTVPython(unittest.TestCase):
     PATCH_KEY = 'python'
 
     def setUp(self):
-        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
+        with patchers.patch_adb_device, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.ftv = FireTV('IP:5555')
 
     def test_turn_on_off(self):
