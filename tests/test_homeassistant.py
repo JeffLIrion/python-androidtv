@@ -87,12 +87,12 @@ class ADBDevice(MediaPlayerDevice):
         # ADB exceptions to catch
         if not self.aftv.adb_server_ip:
             # Using "python-adb" (Python ADB implementation)
-            from adb.adb_protocol import (
+            from adb_shell.exceptions import (
                 InvalidChecksumError,
                 InvalidCommandError,
                 InvalidResponseError,
+                TcpTimeoutException
             )
-            from adb.usb_exceptions import TcpTimeoutException
 
             self.exceptions = (
                 AttributeError,
