@@ -18,7 +18,7 @@ CMD_SUCCESS1 = r" && echo -e '1\c'"
 CMD_SUCCESS1_FAILURE0 = r" && echo -e '1\c' || echo -e '0\c'"
 
 #: Get the audio state
-CMD_AUDIO_STATE = r"dumpsys audio | grep -v 'Buffer Queue' | grep -q paused && echo -e '1\c' || (dumpsys audio | grep -v 'Buffer Queue' | grep -q started && echo '2\c' || echo '0\c')"
+CMD_AUDIO_STATE = r"dumpsys audio | grep paused | grep -v 'Buffer Queue' | grep -q paused && echo -e '1\c' || (dumpsys audio | grep started | grep -v 'Buffer Queue' | grep -q started && echo '2\c' || echo '0\c')"
 
 #: Determine whether the device is awake
 CMD_AWAKE = "dumpsys power | grep mWakefulness | grep -q Awake"
