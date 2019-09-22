@@ -230,7 +230,6 @@ class ADBServer(object):
         Currently, this doesn't do anything.
 
         """
-        pass
 
     def connect(self, always_log_errors=True):
         """Connect to an Android TV / Fire TV device.
