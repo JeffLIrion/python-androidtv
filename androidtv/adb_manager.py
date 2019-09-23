@@ -63,6 +63,7 @@ class ADBPython(object):
 
         """
         self._adb.close()
+        self._available = False
 
     def connect(self, always_log_errors=True):
         """Connect to an Android TV / Fire TV device.
