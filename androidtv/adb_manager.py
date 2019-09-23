@@ -99,9 +99,9 @@ class ADBPython(object):
                     signer = PythonRSASigner(pub, priv)
 
                     # Connect to the device
-                    self._adb.connect(rsa_keys=[signer], default_timeout_s=9000)
+                    self._adb.connect(rsa_keys=[signer], timeout_s=9000)
                 else:
-                    self._adb.connect(default_timeout_s=9000)
+                    self._adb.connect(timeout_s=9000)
 
                 # ADB connection successfully established
                 self._available = True
