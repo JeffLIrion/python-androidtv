@@ -212,4 +212,3 @@ class TestADBPythonClose(unittest.TestCase):
 
             self.adb.close()
             self.assertFalse(self.adb.available)
-            self.assertFalse(self.adb._available)
