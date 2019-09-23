@@ -192,3 +192,24 @@ class TestADBPythonWithAuthentication(unittest.TestCase):
             self.assertTrue(self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
+
+
+class TestADBPythonClose(unittest.TestCase):
+    """Test the `ADBPython.close` method."""
+
+    PATCH_KEY = 'python'
+
+    def test_close(self):
+        """Test the `ADBPython.close` method.
+        """
+        with patchers.patch_adb_device, patchers.patch_connect(True)[self.PATCH_KEY]:
+            self.adb = ADBPython('IP:5555')
+
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            self.assertTrue(self.adb.connect())
+            self.assertTrue(self.adb.available)
+            self.assertTrue(self.adb._available)
+
+            self.adb.close()
+            self.assertFalse(self.adb.available)
+            self.assertFalse(self.adb._available)
