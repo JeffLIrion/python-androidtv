@@ -38,7 +38,7 @@ class ADBPython(object):
     def __init__(self, host, adbkey=''):
         self.host = host
         self.adbkey = adbkey
-        self._adb = AdbDevice(serial=self.host)
+        self._adb = AdbDevice(serial=self.host, default_timeout_s=9.)
 
         # keep track of whether the ADB connection is intact
         self._available = False
@@ -99,9 +99,9 @@ class ADBPython(object):
                     signer = PythonRSASigner(pub, priv)
 
                     # Connect to the device
-                    self._adb.connect(rsa_keys=[signer], timeout_s=9000)
+                    self._adb.connect(rsa_keys=[signer], auth_timeout_s=0.1)
                 else:
-                    self._adb.connect(timeout_s=9000)
+                    self._adb.connect(auth_timeout_s=0.1)
 
                 # ADB connection successfully established
                 self._available = True
