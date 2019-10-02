@@ -8,7 +8,7 @@ from .basetv import BaseTV, state_detection_rules_validator
 from .firetv import FireTV
 
 
-__version__ = '0.0.28'
+__version__ = '0.0.29'
 
 
 def setup(host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, device_class='auto'):
