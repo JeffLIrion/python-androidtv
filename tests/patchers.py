@@ -9,7 +9,7 @@ except ImportError:
 
 
 class AdbDeviceFake(object):
-    """A fake of the `adb_shell.adb_commands.AdbDevice` class."""
+    """A fake of the `adb_shell.adb_device.AdbDevice` class."""
     def __init__(self, *args, **kwargs):
         self.available = False
 
