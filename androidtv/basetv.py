@@ -60,10 +60,12 @@ class BaseTV(object):
         The port for the ADB server
     state_detection_rules : dict, None
         A dictionary of rules for determining the state (see above)
+    auth_timeout_s : float
+        Authentication timeout (in seconds)
 
     """
 
-    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
+    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
         self.host = host
         self.adbkey = adbkey
         self.adb_server_ip = adb_server_ip
@@ -89,7 +91,7 @@ class BaseTV(object):
             self.adb = ADBServer(host, adb_server_ip, adb_server_port)
 
         # establish the ADB connection
-        self.adb.connect()
+        self.connect(auth_timeout_s=auth_timeout_s)
 
         # get device properties
         self.device_properties = self.get_device_properties()
@@ -118,13 +120,15 @@ class BaseTV(object):
         """
         return self.adb.shell(cmd)
 
-    def connect(self, always_log_errors=True):
+    def connect(self, always_log_errors=True, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
         """Connect to an Android TV / Fire TV device.
 
         Parameters
         ----------
         always_log_errors : bool
             If True, errors will always be logged; otherwise, errors will only be logged on the first failed reconnect attempt
+        auth_timeout_s : float
+            Authentication timeout (in seconds)
 
         Returns
         -------
