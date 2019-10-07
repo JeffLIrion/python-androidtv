@@ -15,6 +15,8 @@ from adb_shell.adb_device import AdbDevice
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
 from adb_messenger.client import Client
 
+from .constants import DEFAULT_AUTH_TIMEOUT_S
+
 _LOGGER = logging.getLogger(__name__)
 
 #: Use a timeout for the ADB threading lock if it is supported
@@ -64,13 +66,15 @@ class ADBPython(object):
         """
         self._adb.close()
 
-    def connect(self, always_log_errors=True):
+    def connect(self, always_log_errors=True, auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S):
         """Connect to an Android TV / Fire TV device.
 
         Parameters
         ----------
         always_log_errors : bool
             If True, errors will always be logged; otherwise, errors will only be logged on the first failed reconnect attempt
+        auth_timeout_s : float
+            Authentication timeout (in seconds)
 
         Returns
         -------
@@ -99,9 +103,9 @@ class ADBPython(object):
                     signer = PythonRSASigner(pub, priv)
 
                     # Connect to the device
-                    self._adb.connect(rsa_keys=[signer], auth_timeout_s=0.1)
+                    self._adb.connect(rsa_keys=[signer], auth_timeout_s=auth_timeout_s)
                 else:
-                    self._adb.connect(auth_timeout_s=0.1)
+                    self._adb.connect(auth_timeout_s=auth_timeout_s)
 
                 # ADB connection successfully established
                 self._available = True
