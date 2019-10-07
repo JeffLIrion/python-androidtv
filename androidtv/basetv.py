@@ -136,7 +136,7 @@ class BaseTV(object):
             Whether or not the connection was successfully established and the device is available
 
         """
-        if isinstance(self.adb, AdbPython):
+        if isinstance(self.adb, ADBPython):
             return self.adb.connect(always_log_errors, auth_timeout_s)
         return self.adb.connect(always_log_errors)
 
