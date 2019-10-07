@@ -294,3 +294,6 @@ MAX_VOLUME_REGEX_PATTERN = r"Max: (\d{1,})"
 MUTED_REGEX_PATTERN = r"Muted: (.*?)\W"
 STREAM_MUSIC_REGEX_PATTERN = "STREAM_MUSIC(.*?)- STREAM"
 VOLUME_REGEX_PATTERN = r"\): (\d{1,})"
+
+#: Default authentication timeout (in s) for :meth:`adb_shell.tcp_handle.TcpHandle.connect`
+DEFAULT_AUTH_TIMEOUT_S = 0.1
