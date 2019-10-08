@@ -96,6 +96,16 @@ class TestBaseTVPython(unittest.TestCase):
         """
         self.assertTrue(self.btv.available)
 
+    def test_adb_close(self):
+        """Test that the ``adb_close`` method works correctly.
+
+        """
+        self.btv.adb_close()
+        if self.PATCH_KEY == 'python'
+            self.assertTrue(self.btv.available)
+        else:
+            self.assertFalse(self.btv.available)
+
     def test_keys(self):
         """Test that the key methods send the correct commands.
 
