@@ -51,7 +51,7 @@ class AndroidTV(BaseTV):
             The intent that will be sent is ``am start -a android.intent.action.VIEW -d <uri>``
 
         """
-        self.adb.shell("am start -a android.intent.action.VIEW -d {}".format(uri))
+        self._adb.shell("am start -a android.intent.action.VIEW -d {}".format(uri))
 
     # ======================================================================= #
     #                                                                         #
@@ -216,9 +216,9 @@ class AndroidTV(BaseTV):
 
         """
         if lazy:
-            output = self.adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_LAZY)
+            output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_LAZY)
         else:
-            output = self.adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY)
+            output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY)
         _LOGGER.debug("Android TV %s update response: %s", self.host, output)
 
         # ADB command was unsuccessful
@@ -312,8 +312,8 @@ class AndroidTV(BaseTV):
     # ======================================================================= #
     def turn_on(self):
         """Send ``POWER`` action if the device is off."""
-        self.adb.shell(constants.CMD_SCREEN_ON + " || input keyevent {0}".format(constants.KEY_POWER))
+        self._adb.shell(constants.CMD_SCREEN_ON + " || input keyevent {0}".format(constants.KEY_POWER))
 
     def turn_off(self):
         """Send ``POWER`` action if the device is not off."""
-        self.adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))
+        self._adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))
