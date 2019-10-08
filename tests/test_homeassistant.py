@@ -58,7 +58,7 @@ def adb_decorator(override_available=False):
                     "establishing attempt in the next update. Error: %s",
                     err,
                 )
-                self.aftv.adb.close()
+                self.aftv.adb_close()
                 self._available = False  # pylint: disable=protected-access
                 return None
 
@@ -166,7 +166,7 @@ class AndroidTVDevice(ADBDevice):
         # Check if device is disconnected.
         if not self._available:
             # Try to connect
-            self._available = self.aftv.connect(always_log_errors=False)
+            self._available = self.aftv.adb_connect(always_log_errors=False)
 
             # To be safe, wait until the next update to run ADB commands if
             # using the Python ADB implementation.
@@ -205,7 +205,7 @@ class FireTVDevice(ADBDevice):
         # Check if device is disconnected.
         if not self._available:
             # Try to connect
-            self._available = self.aftv.connect(always_log_errors=False)
+            self._available = self.aftv.adb_connect(always_log_errors=False)
 
             # To be safe, wait until the next update to run ADB commands if
             # using the Python ADB implementation.
