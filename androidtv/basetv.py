@@ -143,6 +143,9 @@ class BaseTV(object):
     def adb_close(self):
         """Close the ADB connection.
 
+        This only works for the Python ADB implementation (see :meth:`androidtv.adb_manager.ADBPython.close`).
+        For the ADB server approach, this doesn't do anything (see :meth:`androidtv.adb_manager.ADBServer.close`).
+
         """
         self._adb.close()
 
