@@ -102,6 +102,8 @@ class TestBaseTVPython(unittest.TestCase):
         """
         self.btv.adb_close()
         if self.PATCH_KEY == 'python':
+            self.assertFalse(self.btv.available)
+        else:
             self.assertTrue(self.btv.available)
 
     def test_keys(self):
