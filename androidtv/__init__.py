@@ -5,13 +5,14 @@ ADB Debugging must be enabled.
 
 from .androidtv import AndroidTV
 from .basetv import BaseTV, state_detection_rules_validator
+from .constants import DEFAULT_AUTH_TIMEOUT_S
 from .firetv import FireTV
 
 
 __version__ = '0.0.30'
 
 
-def setup(host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, device_class='auto', auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
+def setup(host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, device_class='auto', auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S):
     """Connect to a device and determine whether it's an Android TV or an Amazon Fire TV.
 
     Parameters
