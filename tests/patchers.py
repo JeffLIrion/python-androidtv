@@ -27,7 +27,7 @@ class AdbDeviceFake(object):
 
 
 class ClientFakeSuccess(object):
-    """A fake of the `adb_messenger.client.Client` class when the connection and shell commands succeed."""
+    """A fake of the `ppadb.client.Client` class when the connection and shell commands succeed."""
 
     def __init__(self, host='127.0.0.1', port=5037):
         self._devices = []
@@ -44,7 +44,7 @@ class ClientFakeSuccess(object):
 
 
 class ClientFakeFail(object):
-    """A fake of the `adb_messenger.client.Client` class when the connection and shell commands fail."""
+    """A fake of the `ppadb.client.Client` class when the connection and shell commands fail."""
 
     def __init__(self, host='127.0.0.1', port=5037):
         self._devices = []
@@ -60,7 +60,7 @@ class ClientFakeFail(object):
 
 
 class DeviceFake(object):
-    """A fake of the `adb_messenger.device.Device` class."""
+    """A fake of the `ppadb.device.Device` class."""
 
     def __init__(self, host):
         self.host = host
