@@ -917,7 +917,7 @@ class TestAndroidTVPython(unittest.TestCase):
 
         # Plex
         self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_PLEX, 4, 'hmdi_arc', False, 30],
-                          (constants.STATE_IDLE, constants.APP_PLEX, 'hmdi_arc', False, 0.5))
+                          (constants.STATE_STANDBY, constants.APP_PLEX, 'hmdi_arc', False, 0.5))
 
         self.assertUpdate([True, True, constants.STATE_IDLE, 3, constants.APP_PLEX, 3, 'hmdi_arc', False, 30],
                           (constants.STATE_PLAYING, constants.APP_PLEX, 'hmdi_arc', False, 0.5))
