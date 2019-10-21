@@ -117,6 +117,7 @@ class AndroidTV(BaseTV):
                     state = constants.STATE_STANDBY
 
             # Plex
+            elif current_app == constants.APP_PLEX:
                 if media_session_state == 3:
                     if wake_lock_size == 1:
                         state = constants.STATE_PAUSED
