@@ -93,6 +93,22 @@ class TestADBPython(unittest.TestCase):
             self.assertFalse(self.adb.available)
             self.assertFalse(self.adb._available)
 
+        if self.PATCH_KEY == 'python':
+            with patchers.PATCH_CONNECT_PYTHON_FAIL_EXCEPTION:
+                self.assertFalse(self.adb.connect())
+                self.assertFalse(self.adb.available)
+                self.assertFalse(self.adb._available)
+
+    def test_connect_fail_lock(self):
+        """Test when the connect attempt fails due to the lock.
+
+        """
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            with patch.object(self.adb, '_adb_lock', LockedLock):
+                self.assertFalse(self.adb.connect())
+                self.assertFalse(self.adb.available)
+                self.assertFalse(self.adb._available)
+
     def test_adb_shell_fail(self):
         """Test when an ADB command is not sent because the device is unavailable.
 

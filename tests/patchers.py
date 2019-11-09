@@ -1,5 +1,3 @@
-from socket import error as socket_error
-
 try:
     # Python3
     from unittest.mock import patch
@@ -83,11 +81,14 @@ def patch_connect(success):
 
     def connect_fail_python(self, *args, **kwargs):
         """Mock the `AdbDeviceFake.connect` method when it fails."""
-        raise socket_error
+        raise OSError
 
     if success:
         return {'python': patch('{}.AdbDeviceFake.connect'.format(__name__), connect_success_python), 'server': patch('androidtv.adb_manager.Client', ClientFakeSuccess)}
     return {'python': patch('{}.AdbDeviceFake.connect'.format(__name__), connect_fail_python), 'server': patch('androidtv.adb_manager.Client', ClientFakeFail)}
+
+
+PATCH_CONNECT_PYTHON_FAIL_EXCEPTION = patch('{}.AdbDeviceFake.connect'.format(__name__), side_effect=Exception)
 
 
 def patch_shell(response=None, error=False):
