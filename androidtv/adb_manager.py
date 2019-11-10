@@ -133,6 +133,7 @@ class ADBPython(object):
             finally:
                 self._adb_lock.release()
 
+        # Lock could not be acquired
         self._available = False
         return False
 
@@ -151,18 +152,18 @@ class ADBPython(object):
 
         """
         if not self.available:
-            _LOGGER.debug("ADB command not sent to %s because python-adb connection is not established: %s", self.host, cmd)
+            _LOGGER.debug("ADB command not sent to %s because adb-shell connection is not established: %s", self.host, cmd)
             return None
 
         if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
-            _LOGGER.debug("Sending command to %s via python-adb: %s", self.host, cmd)
+            _LOGGER.debug("Sending command to %s via adb-shell: %s", self.host, cmd)
             try:
                 return self._adb.shell(cmd)
             finally:
                 self._adb_lock.release()
-        else:
-            _LOGGER.debug("ADB command not sent to %s because python-adb lock not acquired: %s", self.host, cmd)
 
+        # Lock could not be acquired
+        _LOGGER.debug("ADB command not sent to %s via adb-shell because lock not acquired: %s", self.host, cmd)
         return None
 
 
@@ -289,6 +290,7 @@ class ADBServer(object):
             finally:
                 self._adb_lock.release()
 
+        # Lock could not be acquired
         self._available = False
         return False
 
@@ -316,7 +318,7 @@ class ADBServer(object):
                 return self._adb_device.shell(cmd)
             finally:
                 self._adb_lock.release()
-        else:
-            _LOGGER.debug("ADB command not sent to %s via ADB server %s:%s because pure-python-adb lock not acquired: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
 
+        # Lock could not be acquired
+        _LOGGER.debug("ADB command not sent to %s via ADB server %s:%s because pure-python-adb lock not acquired: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
         return None
