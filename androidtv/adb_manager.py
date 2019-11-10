@@ -163,7 +163,7 @@ class ADBPython(object):
                 self._adb_lock.release()
 
         # Lock could not be acquired
-        _LOGGER.debug("ADB command not sent to %s via adb-shell because lock not acquired: %s", self.host, cmd)
+        _LOGGER.debug("ADB command not sent to %s because adb-shell lock not acquired: %s", self.host, cmd)
         return None
 
 
