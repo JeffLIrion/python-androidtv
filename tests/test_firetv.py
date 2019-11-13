@@ -348,6 +348,16 @@ class TestFireTVPython(unittest.TestCase):
         self.assertUpdate([True, True, 1, constants.APP_NETFLIX, 1, [constants.APP_NETFLIX]],
                           (constants.STATE_STANDBY, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
 
+        # Plex
+        self.assertUpdate([True, True, 1, constants.APP_PLEX, 3, [constants.APP_PLEX]],
+                          (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX]))
+
+        self.assertUpdate([True, True, 2, constants.APP_PLEX, 3, [constants.APP_PLEX]],
+                          (constants.STATE_PAUSED, constants.APP_PLEX, [constants.APP_PLEX]))
+
+        self.assertUpdate([True, True, 1, constants.APP_PLEX, 1, [constants.APP_PLEX]],
+                          (constants.STATE_STANDBY, constants.APP_PLEX, [constants.APP_PLEX]))
+
         # Sport 1
         self.assertUpdate([True, True, 3, constants.APP_SPORT1, 3, [constants.APP_SPORT1]],
                           (constants.STATE_PLAYING, constants.APP_SPORT1, [constants.APP_SPORT1]))
