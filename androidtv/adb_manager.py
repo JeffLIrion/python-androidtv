@@ -116,7 +116,7 @@ class ADBPython(object):
                         _LOGGER.warning("Couldn't connect to host %s.  %s: %s", self.host, exc.__class__.__name__, exc.strerror)
 
                     # ADB connection attempt failed
-                    self._adb.close()
+                    self.close()
                     self._available = False
 
                 except Exception as exc:  # pylint: disable=broad-except
@@ -124,7 +124,7 @@ class ADBPython(object):
                         _LOGGER.warning("Couldn't connect to host %s.  %s: %s", self.host, exc.__class__.__name__, exc)
 
                     # ADB connection attempt failed
-                    self._adb.close()
+                    self.close()
                     self._available = False
 
                 finally:
@@ -134,6 +134,8 @@ class ADBPython(object):
                 self._adb_lock.release()
 
         # Lock could not be acquired
+        _LOGGER.warning("Couldn't connect to host %s because adb-shell lock not acquired.", self.host)
+        self.close()
         self._available = False
         return False
 
@@ -163,7 +165,7 @@ class ADBPython(object):
                 self._adb_lock.release()
 
         # Lock could not be acquired
-        _LOGGER.debug("ADB command not sent to %s because adb-shell lock not acquired: %s", self.host, cmd)
+        _LOGGER.warning("ADB command not sent to %s because adb-shell lock not acquired: %s", self.host, cmd)
         return None
 
 
@@ -291,6 +293,8 @@ class ADBServer(object):
                 self._adb_lock.release()
 
         # Lock could not be acquired
+        _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s because pure-python-adb lock not acquired.", self.host, self.adb_server_ip, self.adb_server_port)
+        self.close()
         self._available = False
         return False
 
@@ -320,5 +324,5 @@ class ADBServer(object):
                 self._adb_lock.release()
 
         # Lock could not be acquired
-        _LOGGER.debug("ADB command not sent to %s via ADB server %s:%s because pure-python-adb lock not acquired: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
+        _LOGGER.warning("ADB command not sent to %s via ADB server %s:%s because pure-python-adb lock not acquired: %s", self.host, self.adb_server_ip, self.adb_server_port, cmd)
         return None
