@@ -86,6 +86,7 @@ class ADBPython(object):
             try:
                 # Catch errors
                 try:
+                    # Connect with authentication
                     if self.adbkey:
                         # private key
                         with open(self.adbkey) as f:
@@ -100,14 +101,16 @@ class ADBPython(object):
 
                         signer = PythonRSASigner(pub, priv)
 
-                        # Connect to the device
                         self._adb.connect(rsa_keys=[signer], auth_timeout_s=auth_timeout_s)
+
+                    # Connect without authentication
                     else:
                         self._adb.connect(auth_timeout_s=auth_timeout_s)
 
                     # ADB connection successfully established
-                    self._available = True
                     _LOGGER.debug("ADB connection to %s successfully established", self.host)
+                    self._available = True
+                    return True
 
                 except OSError as exc:
                     if self._available or always_log_errors:
@@ -118,6 +121,7 @@ class ADBPython(object):
                     # ADB connection attempt failed
                     self.close()
                     self._available = False
+                    return False
 
                 except Exception as exc:  # pylint: disable=broad-except
                     if self._available or always_log_errors:
@@ -126,9 +130,7 @@ class ADBPython(object):
                     # ADB connection attempt failed
                     self.close()
                     self._available = False
-
-                finally:
-                    return self._available
+                    return False
 
             finally:
                 self._adb_lock.release()
@@ -272,22 +274,24 @@ class ADBServer(object):
                     if self._adb_device:
                         _LOGGER.debug("ADB connection to %s via ADB server %s:%s successfully established", self.host, self.adb_server_ip, self.adb_server_port)
                         self._available = True
+                        return True
 
                     # ADB connection attempt failed (without an exception)
-                    else:
-                        if self._available or always_log_errors:
-                            _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s", self.host, self.adb_server_ip, self.adb_server_port)
-                        self._available = False
+                    if self._available or always_log_errors:
+                        _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s", self.host, self.adb_server_ip, self.adb_server_port)
 
+                    self.close()
+                    self._available = False
+                    return False
+
+                # ADB connection attempt failed
                 except Exception as exc:  # noqa pylint: disable=broad-except
                     if self._available or always_log_errors:
                         _LOGGER.warning("Couldn't connect to host %s via ADB server %s:%s, error: %s", self.host, self.adb_server_ip, self.adb_server_port, exc)
 
-                    # ADB connection attempt failed
+                    self.close()
                     self._available = False
-
-                finally:
-                    return self._available
+                    return False
 
             finally:
                 self._adb_lock.release()
