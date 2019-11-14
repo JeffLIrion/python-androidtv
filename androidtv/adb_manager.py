@@ -84,7 +84,7 @@ class ADBPython(object):
         if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
             # Make sure that we release the lock
             try:
-                # Catch errors
+                # Catch exceptions
                 try:
                     # Connect with authentication
                     if self.adbkey:
@@ -266,6 +266,7 @@ class ADBServer(object):
         if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
             # Make sure that we release the lock
             try:
+                # Catch exceptions
                 try:
                     self._adb_client = Client(host=self.adb_server_ip, port=self.adb_server_port)
                     self._adb_device = self._adb_client.device(self.host)
