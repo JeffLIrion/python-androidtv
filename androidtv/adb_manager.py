@@ -242,6 +242,12 @@ class ADBServer(object):
                 self._available = False
             return False
 
+        except Exception as exc:  # noqa pylint: disable=broad-except
+            if self._available:
+                _LOGGER.error('ADB server is unavailable, error: %s', exc)
+                self._available = False
+            return False
+
     def close(self):
         """Close the ADB server socket connection.
 

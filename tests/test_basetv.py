@@ -87,7 +87,7 @@ class TestBaseTVPython(unittest.TestCase):
     ADB_ATTR = '_adb'
 
     def setUp(self):
-        with patchers.patch_adb_device, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
+        with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.btv = BaseTV('IP:5555')
 
     def test_available(self):
