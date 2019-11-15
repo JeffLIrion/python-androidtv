@@ -1,3 +1,5 @@
+"""Define patches used for androidtv tests."""
+
 try:
     # Python3
     from unittest.mock import patch
@@ -8,6 +10,7 @@ except ImportError:
 
 class AdbDeviceFake(object):
     """A fake of the `adb_shell.adb_device.AdbDevice` class."""
+
     def __init__(self, *args, **kwargs):
         """Initialize a fake `adb_shell.adb_device.AdbDevice` instance."""
         self.available = False
@@ -28,7 +31,7 @@ class AdbDeviceFake(object):
 class ClientFakeSuccess(object):
     """A fake of the `ppadb.client.Client` class when the connection and shell commands succeed."""
 
-    def __init__(self, host='127.0.0.1', port=5037):
+    def __init__(self, host="127.0.0.1", port=5037):
         """Initialize a `ClientFakeSuccess` instance."""
         self._devices = []
 
@@ -46,7 +49,7 @@ class ClientFakeSuccess(object):
 class ClientFakeFail(object):
     """A fake of the `ppadb.client.Client` class when the connection and shell commands fail."""
 
-    def __init__(self, host='127.0.0.1', port=5037):
+    def __init__(self, host="127.0.0.1", port=5037):
         """Initialize a `ClientFakeFail` instance."""
         self._devices = []
 
@@ -57,7 +60,6 @@ class ClientFakeFail(object):
     def device(self, serial):
         """Mock the `Client.device` method when the device is not connected via ADB."""
         self._devices = []
-        return None
 
 
 class DeviceFake(object):
@@ -77,7 +79,7 @@ class DeviceFake(object):
 
 
 def patch_connect(success):
-    """Mock the `adb_shell.adb_device.AdbDevice` and `adb_messenger.client.Client` classes."""
+    """Mock the `adb_shell.adb_device.AdbDevice` and `ppadb.client.Client` classes."""
 
     def connect_success_python(self, *args, **kwargs):
         """Mock the `AdbDeviceFake.connect` method when it succeeds."""
@@ -88,8 +90,8 @@ def patch_connect(success):
         raise OSError
 
     if success:
-        return {'python': patch('{}.AdbDeviceFake.connect'.format(__name__), connect_success_python), 'server': patch('androidtv.adb_manager.Client', ClientFakeSuccess)}
-    return {'python': patch('{}.AdbDeviceFake.connect'.format(__name__), connect_fail_python), 'server': patch('androidtv.adb_manager.Client', ClientFakeFail)}
+        return {"python": patch("{}.AdbDeviceFake.connect".format(__name__), connect_success_python), "server": patch("androidtv.adb_manager.Client", ClientFakeSuccess)}
+    return {"python": patch("{}.AdbDeviceFake.connect".format(__name__), connect_fail_python), "server": patch("androidtv.adb_manager.Client", ClientFakeFail)}
 
 
 def patch_shell(response=None, error=False):
@@ -111,15 +113,15 @@ def patch_shell(response=None, error=False):
         raise ConnectionResetError
 
     if not error:
-        return {'python': patch('{}.AdbDeviceFake.shell'.format(__name__), shell_success), 'server': patch('{}.DeviceFake.shell'.format(__name__), shell_success)}
-    return {'python': patch('{}.AdbDeviceFake.shell'.format(__name__), shell_fail_python), 'server': patch('{}.DeviceFake.shell'.format(__name__), shell_fail_server)}
+        return {"python": patch("{}.AdbDeviceFake.shell".format(__name__), shell_success), "server": patch("{}.DeviceFake.shell".format(__name__), shell_success)}
+    return {"python": patch("{}.AdbDeviceFake.shell".format(__name__), shell_fail_python), "server": patch("{}.DeviceFake.shell".format(__name__), shell_fail_server)}
 
 
-PATCH_ADB_DEVICE = patch('androidtv.adb_manager.AdbDevice', AdbDeviceFake)
+PATCH_ADB_DEVICE = patch("androidtv.adb_manager.AdbDevice", AdbDeviceFake)
 
 
 class CustomException(Exception):
     """A custom exception type."""
 
 
-PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION = {'python': patch('{}.AdbDeviceFake.connect'.format(__name__), side_effect=CustomException), 'server': patch('{}.ClientFakeSuccess.devices'.format(__name__), side_effect=CustomException)}
+PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION = {"python": patch("{}.AdbDeviceFake.connect".format(__name__), side_effect=CustomException), "server": patch("{}.ClientFakeSuccess.devices".format(__name__), side_effect=CustomException)}
