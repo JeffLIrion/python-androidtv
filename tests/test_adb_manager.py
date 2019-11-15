@@ -49,10 +49,6 @@ def open_priv_pub(infile):
         pass
 
 
-def raise_runtime_error(*args, **kwargs):
-    raise RuntimeError
-
-
 class LockedLock(object):
     @staticmethod
     def acquire(*args, **kwargs):
@@ -72,7 +68,7 @@ class TestADBPython(unittest.TestCase):
         """Create an `ADBPython` instance.
 
         """
-        with patchers.patch_adb_device, patchers.patch_connect(True)[self.PATCH_KEY]:
+        with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY]:
             self.adb = ADBPython('IP:5555')
 
     def test_connect_success(self):
@@ -93,11 +89,15 @@ class TestADBPython(unittest.TestCase):
             self.assertFalse(self.adb.available)
             self.assertFalse(self.adb._available)
 
-        if self.PATCH_KEY == 'python':
-            with patchers.PATCH_CONNECT_PYTHON_FAIL_EXCEPTION:
-                self.assertFalse(self.adb.connect())
-                self.assertFalse(self.adb.available)
-                self.assertFalse(self.adb._available)
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            self.assertTrue(self.adb.connect())
+            self.assertTrue(self.adb.available)
+            self.assertTrue(self.adb._available)
+
+        with patchers.PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION[self.PATCH_KEY]:
+            self.assertFalse(self.adb.connect())
+            self.assertFalse(self.adb.available)
+            self.assertFalse(self.adb._available)
 
     def test_connect_fail_lock(self):
         """Test when the connect attempt fails due to the lock.
@@ -148,25 +148,32 @@ class TestADBServer(TestADBPython):
         """
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
+            self.assertTrue(self.adb.available)
             self.adb._available = False
             self.assertTrue(self.adb.available)
+            self.assertTrue(self.adb._available)
 
-        with patchers.patch_connect(True)[self.PATCH_KEY], patch('{}.patchers.ClientFakeSuccess.devices'.format(__name__), raise_runtime_error):
-            self.assertFalse(self.adb.available)
-
-        with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
-            self.adb._available = False
-            self.assertTrue(self.adb.available)
-
-        with patch('{}.patchers.DeviceFake.get_serial_no'.format(__name__), raise_runtime_error):
+        with patchers.patch_connect(True)[self.PATCH_KEY], patch('{}.patchers.ClientFakeSuccess.devices'.format(__name__), side_effect=RuntimeError):
             self.assertFalse(self.adb.available)
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
 
-        with patch.object(self.adb._adb_client, 'devices', return_empty_list):
+        with patch('{}.patchers.DeviceFake.get_serial_no'.format(__name__), side_effect=RuntimeError):
             self.assertFalse(self.adb.available)
+
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            self.assertTrue(self.adb.connect())
+
+        with patch.object(self.adb._adb_client, 'devices', return_value=[]):
+            self.assertFalse(self.adb.available)
+
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            self.assertTrue(self.adb.connect())
+
+        with patchers.PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION[self.PATCH_KEY]:
+            self.assertFalse(self.adb.available)
+            self.assertFalse(self.adb._available)
 
     def test_connect_fail_server(self):
         """Test that the ``connect`` method works correctly.
@@ -175,8 +182,10 @@ class TestADBServer(TestADBPython):
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
 
-        with patch('{}.patchers.ClientFakeSuccess.devices'.format(__name__), raise_runtime_error):#, patchers.patch_connect(True)[self.PATCH_KEY]:
+        with patch('{}.patchers.ClientFakeSuccess.devices'.format(__name__), side_effect=RuntimeError):
             self.assertFalse(self.adb.connect())
+            self.assertFalse(self.adb.available)
+            self.assertFalse(self.adb._available)
 
 
 class TestADBPythonWithAuthentication(unittest.TestCase):
@@ -188,7 +197,7 @@ class TestADBPythonWithAuthentication(unittest.TestCase):
         """Create an `ADBPython` instance.
 
         """
-        with patchers.patch_adb_device, patchers.patch_connect(True)[self.PATCH_KEY]:
+        with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY]:
             self.adb = ADBPython('IP:5555', 'adbkey')
 
     def test_connect_success_with_priv_key(self):
@@ -218,7 +227,7 @@ class TestADBPythonClose(unittest.TestCase):
     def test_close(self):
         """Test the `ADBPython.close` method.
         """
-        with patchers.patch_adb_device, patchers.patch_connect(True)[self.PATCH_KEY]:
+        with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY]:
             self.adb = ADBPython('IP:5555')
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
