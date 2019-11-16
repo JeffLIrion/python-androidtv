@@ -128,7 +128,7 @@ Your Home Assistant configuration will look like:
 2. Python ADB Implementation
 ----------------------------
 
-The second way that ``androidtv`` can communicate with devices is using the Python ADB implementation (credit: `python-adb <https://github.com/google/python-adb>`_).  
+The second way that ``androidtv`` can communicate with devices is using the Python ADB implementation (credit: `adb-shell <https://github.com/JeffLIrion/adb_shell>`_).  
 
 If your device requires ADB authentication, you will need to follow the instructions in the "ADB Authentication" section below. Once you have an authenticated key, this approach does not require any additional setup or addons. However, users with newer devices may find that the ADB connection is unstable. For a Fire TV device, you can try setting the ``get_sources`` configuration option to ``false``. If the problem cannot be resolved, you should use the ADB server option.
 
