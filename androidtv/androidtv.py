@@ -197,7 +197,7 @@ class AndroidTV(BaseTV):
     #                               properties                                #
     #                                                                         #
     # ======================================================================= #
-    def get_properties(self, lazy=False, get_running_apps=False):
+    def get_properties(self, get_running_apps=True, lazy=False):
         """Get the properties needed for Home Assistant updates.
 
         This will send one of the following ADB commands:
@@ -310,7 +310,7 @@ class AndroidTV(BaseTV):
 
         return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, device, is_volume_muted, volume, running_apps
 
-    def get_properties_dict(self, lazy=True, get_running_apps=False):
+    def get_properties_dict(self, get_running_apps=True, lazy=True):
         """Get the properties needed for Home Assistant updates and return them as a dictionary.
 
         Parameters
