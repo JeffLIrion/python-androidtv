@@ -304,9 +304,9 @@ class AndroidTV(BaseTV):
         is_volume_muted = self._is_volume_muted(stream_music)
 
         # `running_apps` property
-        if not get_running_apps or len(lines) < 14:
+        if not get_running_apps or len(lines) < 16:
             return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, device, is_volume_muted, volume, None
-        running_apps = self._running_apps(lines[13:])
+        running_apps = self._running_apps(lines[15:])
 
         return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, device, is_volume_muted, volume, running_apps
 

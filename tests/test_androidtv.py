@@ -304,7 +304,8 @@ STREAM_MUSIC_ON = """- STREAM_MUSIC:
    Devices: speaker"""
 
 
-RUNNING_APPS = """u0_a2     17243 197   998628 24932 ffffffff 00000000 S com.amazon.device.controllermanager
+RUNNING_APPS = """
+u0_a2     17243 197   998628 24932 ffffffff 00000000 S com.amazon.device.controllermanager
 u0_a2     17374 197   995368 20764 ffffffff 00000000 S com.amazon.device.controllermanager:BluetoothReceiver"""
 
 
@@ -839,6 +840,18 @@ class TestAndroidTVPython(unittest.TestCase):
             properties = self.atv.get_properties_dict(lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PAUSED)
 
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED + RUNNING_APPS)[self.PATCH_KEY]:
+            true_properties = GET_PROPERTIES_DICT_PLEX_PAUSED.copy()
+            true_properties['running_apps'] = ['com.amazon.device.controllermanager', 'com.amazon.device.controllermanager:BluetoothReceiver']
+            properties = self.atv.get_properties_dict(lazy=True, get_running_apps=True)
+            self.assertEqual(properties, true_properties)
+
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED + RUNNING_APPS)[self.PATCH_KEY]:
+            true_properties = GET_PROPERTIES_DICT_PLEX_PAUSED.copy()
+            true_properties['running_apps'] = ['com.amazon.device.controllermanager', 'com.amazon.device.controllermanager:BluetoothReceiver']
+            properties = self.atv.get_properties_dict(lazy=False, get_running_apps=True)
+            self.assertEqual(properties, true_properties)
+
     def test_update(self):
         """Check that the ``update`` method works correctly.
 
@@ -886,6 +899,12 @@ class TestAndroidTVPython(unittest.TestCase):
             self.atv._state_detection_rules = STATE_DETECTION_RULES5
             state = self.atv.update()
             self.assertEqual(state[0], constants.STATE_IDLE)
+
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3 + RUNNING_APPS)[self.PATCH_KEY]:
+            self.atv._state_detection_rules = None
+            state = self.atv.update(get_running_apps=True)
+            true_state = STATE3[:2] + (['com.amazon.device.controllermanager', 'com.amazon.device.controllermanager:BluetoothReceiver'],) + STATE3[3:]
+            self.assertTupleEqual(state, true_state)
 
     def assertUpdate(self, get_properties, update):
         """Check that the results of the `update` method are as expected.
