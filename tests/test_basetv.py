@@ -106,6 +106,22 @@ class TestBaseTVPython(unittest.TestCase):
         else:
             self.assertTrue(self.btv.available)
 
+    def test_adb_pull(self):
+        """Test that the ``adb_pull`` method works correctly.
+
+        """
+        with patchers.PATCH_PULL[self.PATCH_KEY] as patch_pull:
+            self.btv.adb_pull("TEST_LOCAL_PATCH", "TEST_DEVICE_PATH")
+            self.assertEqual(patch_pull.call_count, 1)
+
+    def test_adb_push(self):
+        """Test that the ``adb_push`` method works correctly.
+
+        """
+        with patchers.PATCH_PUSH[self.PATCH_KEY] as patch_push:
+            self.btv.adb_push("TEST_LOCAL_PATCH", "TEST_DEVICE_PATH")
+            self.assertEqual(patch_push.call_count, 1)
+
     def test_keys(self):
         """Test that the key methods send the correct commands.
 
