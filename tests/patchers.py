@@ -23,6 +23,12 @@ class AdbDeviceFake(object):
         """Try to connect to a device."""
         raise NotImplementedError
 
+    def push(self, *args, **kwargs):
+        """Push a file to the device."""
+
+    def pull(self, *args, **kwargs):
+        """Pull a file from the device."""
+
     def shell(self, cmd):
         """Send an ADB shell command."""
         return None
@@ -73,6 +79,12 @@ class DeviceFake(object):
         """Get the serial number for the device (IP:PORT)."""
         return self.host
 
+    def push(self, *args, **kwargs):
+        """Push a file to the device."""
+
+    def pull(self, *args, **kwargs):
+        """Pull a file from the device."""
+
     def shell(self, cmd):
         """Send an ADB shell command."""
         raise NotImplementedError
@@ -116,6 +128,10 @@ def patch_shell(response=None, error=False):
         return {"python": patch("{}.AdbDeviceFake.shell".format(__name__), shell_success), "server": patch("{}.DeviceFake.shell".format(__name__), shell_success)}
     return {"python": patch("{}.AdbDeviceFake.shell".format(__name__), shell_fail_python), "server": patch("{}.DeviceFake.shell".format(__name__), shell_fail_server)}
 
+
+PATCH_PUSH = {"python": patch("{}.AdbDeviceFake.push".format(__name__)), "server": patch("{}.DeviceFake.push".format(__name__))}
+
+PATCH_PULL = {"python": patch("{}.AdbDeviceFake.pull".format(__name__)), "server": patch("{}.DeviceFake.pull".format(__name__))}
 
 PATCH_ADB_DEVICE = patch("androidtv.adb_manager.AdbDevice", AdbDeviceFake)
 

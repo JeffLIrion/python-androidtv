@@ -110,7 +110,7 @@ class TestADBPython(unittest.TestCase):
                 self.assertFalse(self.adb._available)
 
     def test_adb_shell_fail(self):
-        """Test when an ADB command is not sent because the device is unavailable.
+        """Test when an ADB shell command is not sent because the device is unavailable.
 
         """
         self.assertFalse(self.adb.available)
@@ -123,13 +123,67 @@ class TestADBPython(unittest.TestCase):
                 self.assertIsNone(self.adb.shell("TEST"))
 
     def test_adb_shell_success(self):
-        """Test when an ADB command is successfully sent.
+        """Test when an ADB shell command is successfully sent.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("TEST")[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
             self.assertEqual(self.adb.shell("TEST"), "TEST")
-        
+
+    def test_adb_push_fail(self):
+        """Test when an ADB push command is not executed because the device is unavailable.
+
+        """
+        self.assertFalse(self.adb.available)
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            with patchers.PATCH_PUSH[self.PATCH_KEY] as patch_push:
+                self.adb.push("TEST_LOCAL_PATCH", "TEST_DEVICE_PATH")
+                patch_push.assert_not_called()
+
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            with patchers.PATCH_PUSH[self.PATCH_KEY] as patch_push:
+                self.assertTrue(self.adb.connect())
+                with patch.object(self.adb, '_adb_lock', LockedLock):
+                    self.adb.push("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
+                    patch_push.assert_not_called()
+
+    def test_adb_push_success(self):
+        """Test when an ADB push command is successfully executed.
+
+        """
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            with patchers.PATCH_PUSH[self.PATCH_KEY] as patch_push:
+                self.assertTrue(self.adb.connect())
+                self.adb.push("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
+                self.assertEqual(patch_push.call_count, 1)
+
+    def test_adb_pull_fail(self):
+        """Test when an ADB pull command is not executed because the device is unavailable.
+
+        """
+        self.assertFalse(self.adb.available)
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            with patchers.PATCH_PULL[self.PATCH_KEY] as patch_pull:
+                self.adb.pull("TEST_LOCAL_PATCH", "TEST_DEVICE_PATH")
+                patch_pull.assert_not_called()
+
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            with patchers.PATCH_PULL[self.PATCH_KEY] as patch_pull:
+                self.assertTrue(self.adb.connect())
+                with patch.object(self.adb, '_adb_lock', LockedLock):
+                    self.adb.pull("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
+                    patch_pull.assert_not_called()
+
+    def test_adb_pull_success(self):
+        """Test when an ADB pull command is successfully executed.
+
+        """
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            with patchers.PATCH_PULL[self.PATCH_KEY] as patch_pull:
+                self.assertTrue(self.adb.connect())
+                self.adb.pull("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
+                self.assertEqual(patch_pull.call_count, 1)
+
 
 class TestADBServer(TestADBPython):
     """Test the `ADBServer` class."""
