@@ -58,7 +58,7 @@ class AndroidTV(BaseTV):
     #                          Home Assistant Update                          #
     #                                                                         #
     # ======================================================================= #
-    def update(self, get_running_apps=False):
+    def update(self, get_running_apps=True):
         """Get the info needed for a Home Assistant update.
 
         Parameters
@@ -108,7 +108,7 @@ class AndroidTV(BaseTV):
             # Determine the state using custom rules
             state = self._custom_state_detection(current_app=current_app, media_session_state=media_session_state, wake_lock_size=wake_lock_size, audio_state=audio_state)
             if state:
-                return state, current_app, device, is_volume_muted, volume_level
+                return state, current_app, running_apps, device, is_volume_muted, volume_level
 
             # ATV Launcher
             if current_app in [constants.APP_ATV_LAUNCHER, None]:
@@ -207,10 +207,10 @@ class AndroidTV(BaseTV):
 
         Parameters
         ----------
-        lazy : bool
-            Whether or not to continue retrieving properties if the device is off or the screensaver is running
         get_running_apps : bool
             Whether or not to get the :attr:`~androidtv.basetv.BaseTV.running_apps` property
+        lazy : bool
+            Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
         Returns
         -------
