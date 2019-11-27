@@ -481,7 +481,7 @@ GET_PROPERTIES_DICT_PLEX_STANDBY = {'screen_on': True,
                                     'volume': 22,
                                     'running_apps': None}
 
-STATE_PLEX_STANDBY = (constants.STATE_PLAYING, 'com.plexapp.android', 'com.plexapp.android', 'hmdi_arc', False, 22/60.)
+STATE_PLEX_STANDBY = (constants.STATE_PLAYING, 'com.plexapp.android', ['com.plexapp.android'], 'hmdi_arc', False, 22/60.)
 
 # Plex: playing
 GET_PROPERTIES_OUTPUT_PLEX_PLAYING = """110Wake Locks: size=3
