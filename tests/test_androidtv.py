@@ -304,9 +304,11 @@ STREAM_MUSIC_ON = """- STREAM_MUSIC:
    Devices: speaker"""
 
 
-RUNNING_APPS = """
-u0_a2     17243 197   998628 24932 ffffffff 00000000 S com.amazon.device.controllermanager
-u0_a2     17374 197   995368 20764 ffffffff 00000000 S com.amazon.device.controllermanager:BluetoothReceiver"""
+RUNNING_APPS_OUTPUT = """
+u0_a18    316   197   1189204 115000 ffffffff 00000000 S com.netflix.ninja
+u0_a2     15121 197   998628 24628 ffffffff 00000000 S com.amazon.device.controllermanager"""
+
+RUNNING_APPS_LIST = ['com.netflix.ninja', 'com.amazon.device.controllermanager']
 
 
 GET_PROPERTIES_OUTPUT1 = ""
@@ -554,6 +556,22 @@ class TestAndroidTVPython(unittest.TestCase):
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.atv.start_intent("TEST")
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "am start -a android.intent.action.VIEW -d TEST")
+
+    def test_running_apps(self):
+        """Check that the ``running_apps`` property works correctly.
+
+        """
+        with patchers.patch_shell(None)[self.PATCH_KEY]:
+            running_apps = self.atv.running_apps
+            self.assertIsNone(running_apps, None)
+
+        with patchers.patch_shell('')[self.PATCH_KEY]:
+            running_apps = self.atv.running_apps
+            self.assertIsNone(running_apps, None)
+
+        with patchers.patch_shell(RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
+            running_apps = self.atv.running_apps
+            self.assertListEqual(running_apps, RUNNING_APPS_LIST)
 
     def test_device(self):
         """Check that the ``device`` property works correctly.
@@ -844,15 +862,19 @@ class TestAndroidTVPython(unittest.TestCase):
             properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PAUSED)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED + RUNNING_APPS)[self.PATCH_KEY]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED)[self.PATCH_KEY]:
+            properties = self.atv.get_properties_dict(get_running_apps=False, lazy=True)
+            self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PAUSED)
+
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED + RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
             true_properties = GET_PROPERTIES_DICT_PLEX_PAUSED.copy()
-            true_properties['running_apps'] = ['com.amazon.device.controllermanager', 'com.amazon.device.controllermanager:BluetoothReceiver']
+            true_properties['running_apps'] = RUNNING_APPS_LIST
             properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, true_properties)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED + RUNNING_APPS)[self.PATCH_KEY]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED + RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
             true_properties = GET_PROPERTIES_DICT_PLEX_PAUSED.copy()
-            true_properties['running_apps'] = ['com.amazon.device.controllermanager', 'com.amazon.device.controllermanager:BluetoothReceiver']
+            true_properties['running_apps'] = RUNNING_APPS_LIST
             properties = self.atv.get_properties_dict(get_running_apps=True, lazy=False)
             self.assertEqual(properties, true_properties)
 
@@ -904,10 +926,10 @@ class TestAndroidTVPython(unittest.TestCase):
             state = self.atv.update()
             self.assertEqual(state[0], constants.STATE_IDLE)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3 + RUNNING_APPS)[self.PATCH_KEY]:
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3 + RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
             self.atv._state_detection_rules = None
             state = self.atv.update(get_running_apps=True)
-            true_state = STATE3[:2] + (['com.amazon.device.controllermanager', 'com.amazon.device.controllermanager:BluetoothReceiver'],) + STATE3[3:]
+            true_state = STATE3[:2] + (RUNNING_APPS_LIST,) + STATE3[3:]
             self.assertTupleEqual(state, true_state)
 
     def assertUpdate(self, get_properties, update):
