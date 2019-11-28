@@ -446,20 +446,6 @@ class BaseTV(object):
         return media_session_state
 
     @property
-    def running_apps(self):
-        """Return a list of running user applications.
-
-        Returns
-        -------
-        list
-            A list of the running apps
-
-        """
-        running_apps_response = self._adb.shell(constants.CMD_RUNNING_APPS)
-
-        return self._running_apps(running_apps_response)
-
-    @property
     def screen_on(self):
         """Check if the screen is on.
 
