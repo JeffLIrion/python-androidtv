@@ -181,17 +181,6 @@ class BaseTV(object):
         """
         self._adb.close()
 
-    def _key(self, key):
-        """Send a key event to device.
-
-        Parameters
-        ----------
-        key : str, int
-            The Key constant
-
-        """
-        self._adb.shell('input keyevent {0}'.format(key))
-
     # ======================================================================= #
     #                                                                         #
     #                        Home Assistant device info                       #
@@ -778,9 +767,100 @@ class BaseTV(object):
 
     # ======================================================================= #
     #                                                                         #
+    #                               App methods                               #
+    #                                                                         #
+    # ======================================================================= #
+    def _send_intent(self, pkg, intent, count=1):
+        """Send an intent to the device.
+
+        Parameters
+        ----------
+        pkg : str
+            The command that will be sent is ``monkey -p <pkg> -c <intent> <count>; echo $?``
+        intent : str
+            The command that will be sent is ``monkey -p <pkg> -c <intent> <count>; echo $?``
+        count : int, str
+            The command that will be sent is ``monkey -p <pkg> -c <intent> <count>; echo $?``
+
+        Returns
+        -------
+        dict
+            A dictionary with keys ``'output'`` and ``'retcode'``, if they could be determined; otherwise, an empty dictionary
+
+        """
+        cmd = 'monkey -p {} -c {} {}; echo $?'.format(pkg, intent, count)
+
+        # adb shell outputs in weird format, so we cut it into lines,
+        # separate the retcode and return info to the user
+        res = self._adb.shell(cmd)
+        if res is None:
+            return {}
+
+        res = res.strip().split("\r\n")
+        retcode = res[-1]
+        output = "\n".join(res[:-1])
+
+        return {"output": output, "retcode": retcode}
+
+    def launch_app(self, app):
+        """Launch an app.
+
+        Parameters
+        ----------
+        app : str
+            The ID of the app that will be launched
+
+        Returns
+        -------
+        dict
+            A dictionary with keys ``'output'`` and ``'retcode'``, if they could be determined; otherwise, an empty dictionary
+
+        """
+        return self._send_intent(app, constants.INTENT_LAUNCH)
+
+    def stop_app(self, app):
+        """Stop an app.
+
+        Parameters
+        ----------
+        app : str
+            The ID of the app that will be stopped
+
+        Returns
+        -------
+        str, None
+            The output of the ``am force-stop`` ADB shell command, or ``None`` if the device is unavailable
+
+        """
+        return self._adb.shell("am force-stop {0}".format(app))
+
+    def start_intent(self, uri):
+        """Start an intent on the device.
+
+        Parameters
+        ----------
+        uri : str
+            The intent that will be sent is ``am start -a android.intent.action.VIEW -d <uri>``
+
+        """
+        self._adb.shell("am start -a android.intent.action.VIEW -d {}".format(uri))
+
+    # ======================================================================= #
+    #                                                                         #
     #                      "key" methods: basic commands                      #
     #                                                                         #
     # ======================================================================= #
+    def _key(self, key):
+        """Send a key event to device.
+
+        Parameters
+        ----------
+        key : str, int
+            The Key constant
+
+        """
+        self._adb.shell('input keyevent {0}'.format(key))
+
     def power(self):
         """Send power action."""
         self._key(constants.KEY_POWER)

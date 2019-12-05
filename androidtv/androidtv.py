@@ -39,22 +39,6 @@ class AndroidTV(BaseTV):
 
     # ======================================================================= #
     #                                                                         #
-    #                               ADB methods                               #
-    #                                                                         #
-    # ======================================================================= #
-    def start_intent(self, uri):
-        """Start an intent on the device.
-
-        Parameters
-        ----------
-        uri : str
-            The intent that will be sent is ``am start -a android.intent.action.VIEW -d <uri>``
-
-        """
-        self._adb.shell("am start -a android.intent.action.VIEW -d {}".format(uri))
-
-    # ======================================================================= #
-    #                                                                         #
     #                          Home Assistant Update                          #
     #                                                                         #
     # ======================================================================= #

@@ -82,6 +82,11 @@ CMD_MAC_WLAN0 = "ip addr show wlan0 | grep -m 1 ether"
 CMD_MAC_ETH0 = "ip addr show eth0 | grep -m 1 ether"
 
 
+# Intents
+INTENT_LAUNCH = "android.intent.category.LAUNCHER"
+INTENT_HOME = "android.intent.category.HOME"
+
+
 # ADB key event codes
 # https://developer.android.com/reference/android/view/KeyEvent
 KEY_BACK = 4
@@ -260,6 +265,8 @@ APP_AMAZON_VIDEO = 'com.amazon.avod'
 APP_ATV_LAUNCHER = 'com.google.android.tvlauncher'
 APP_BELL_FIBE = 'com.quickplay.android.bellmediaplayer'
 APP_FIREFOX = 'org.mozilla.tv.firefox'
+APP_FIRETV_PACKAGE_LAUNCHER = "com.amazon.tv.launcher"
+APP_FIRETV_PACKAGE_SETTINGS = "com.amazon.tv.settings"
 APP_HULU = 'com.hulu.plus'
 APP_JELLYFIN_TV = 'org.jellyfin.androidtv'
 APP_KODI = 'org.xbmc.kodi'
