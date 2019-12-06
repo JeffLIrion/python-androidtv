@@ -58,11 +58,6 @@ DEVICE_PROPERTIES_DICT3 = {'manufacturer': 'Not Amazon',
 
 MEDIA_SESSION_STATE_OUTPUT = "com.amazon.tv.launcher\nstate=PlaybackState {state=2, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}"
 
-RUNNING_APPS_OUTPUT = """u0_a18    316   197   1189204 115000 ffffffff 00000000 S com.netflix.ninja
-u0_a2     15121 197   998628 24628 ffffffff 00000000 S com.amazon.device.controllermanager"""
-
-RUNNING_APPS_LIST = ['com.netflix.ninja', 'com.amazon.device.controllermanager']
-
 STATE_DETECTION_RULES1 = {'com.amazon.tv.launcher': ['off']}
 STATE_DETECTION_RULES2 = {'com.amazon.tv.launcher': ['media_session_state', 'off']}
 STATE_DETECTION_RULES3 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_size': 2}}]}
@@ -384,22 +379,6 @@ class TestBaseTVPython(unittest.TestCase):
         with patchers.patch_shell(MEDIA_SESSION_STATE_OUTPUT)[self.PATCH_KEY]:
             media_session_state = self.btv.media_session_state
             self.assertEqual(media_session_state, 2)
-
-    def test_running_apps(self):
-        """Check that the ``running_apps`` property works correctly.
-
-        """
-        with patchers.patch_shell(None)[self.PATCH_KEY]:
-            running_apps = self.btv.running_apps
-            self.assertIsNone(running_apps, None)
-
-        with patchers.patch_shell('')[self.PATCH_KEY]:
-            running_apps = self.btv.running_apps
-            self.assertIsNone(running_apps, None)
-
-        with patchers.patch_shell(RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
-            running_apps = self.btv.running_apps
-            self.assertListEqual(running_apps, RUNNING_APPS_LIST)
 
     def test_screen_on(self):
         """Check that the ``screen_on`` property works correctly.

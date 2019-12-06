@@ -112,6 +112,7 @@ class ADBDevice(MediaPlayerDevice):
         self._adb_response = None
         self._available = self.aftv.available
         self._current_app = None
+        self._running_apps = None
         self._state = None
 
     @property
@@ -178,7 +179,7 @@ class AndroidTVDevice(ADBDevice):
             return
 
         # Get the updated state and attributes.
-        state, self._current_app, self._device, self._is_volume_muted, self._volume_level = (
+        state, self._current_app, self._device, self._is_volume_muted, self._volume_level, self._running_apps = (
             self.aftv.update()
         )
 
@@ -197,7 +198,6 @@ class FireTVDevice(ADBDevice):
         super().__init__(aftv, name, apps, turn_on_command, turn_off_command)
 
         self._get_sources = get_sources
-        self._running_apps = None
 
     @adb_decorator(override_available=True)
     def update(self):
