@@ -5,9 +5,7 @@ import unittest
 sys.path.insert(0, '..')
 
 from androidtv import constants, ha_state_detection_rules_validator
-from androidtv.androidtv import AndroidTV
 from androidtv.basetv import BaseTV
-from androidtv.firetv import FireTV
 from . import patchers
 
 
@@ -399,11 +397,11 @@ class TestBaseTVPython(unittest.TestCase):
         """
         with patchers.patch_connect(True)['python'], patchers.patch_shell('')['python']:
             # Make sure that no error is raised when the state detection rules are valid
-            btv1 = BaseTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES1)
-            btv2 = BaseTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES2)
-            btv3 = BaseTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES3)
-            btv4 = BaseTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES4)
-            btv5 = BaseTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES5)
+            BaseTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES1)
+            BaseTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES2)
+            BaseTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES3)
+            BaseTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES4)
+            BaseTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES5)
 
             # Make sure that an error is raised when the state detection rules are invalid
             self.assertRaises(TypeError, BaseTV, 'IP:5555', '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID1)

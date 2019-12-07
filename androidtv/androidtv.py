@@ -58,8 +58,8 @@ class AndroidTV(BaseTV):
             The current running app
         running_apps : list
             A list of the running apps if ``get_running_apps`` is True, otherwise the list ``[current_app]``
-        device : str
-            The current playback device
+        audio_output_device : str
+            The current audio playback device
         is_volume_muted : bool
             Whether or not the volume is muted
         volume_level : float
@@ -67,7 +67,7 @@ class AndroidTV(BaseTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, device, is_volume_muted, volume, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
+        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
 
         # Get the volume (between 0 and 1)
         volume_level = self._volume_level(volume)
@@ -92,7 +92,7 @@ class AndroidTV(BaseTV):
             # Determine the state using custom rules
             state = self._custom_state_detection(current_app=current_app, media_session_state=media_session_state, wake_lock_size=wake_lock_size, audio_state=audio_state)
             if state:
-                return state, current_app, running_apps, device, is_volume_muted, volume_level
+                return state, current_app, running_apps, audio_output_device, is_volume_muted, volume_level
 
             # ATV Launcher
             if current_app in [constants.APP_ATV_LAUNCHER, None]:
@@ -174,7 +174,7 @@ class AndroidTV(BaseTV):
                 else:
                     state = constants.STATE_STANDBY
 
-        return state, current_app, running_apps, device, is_volume_muted, volume_level
+        return state, current_app, running_apps, audio_output_device, is_volume_muted, volume_level
 
     # ======================================================================= #
     #                                                                         #
@@ -210,8 +210,8 @@ class AndroidTV(BaseTV):
             The current app property, or ``None`` if it was not determined
         media_session_state : int, None
             The state from the output of ``dumpsys media_session``, or ``None`` if it was not determined
-        device : str, None
-            The current playback device, or ``None`` if it was not determined
+        audio_output_device : str, None
+            The current audio playback device, or ``None`` if it was not determined
         is_volume_muted : bool, None
             Whether or not the volume is muted, or ``None`` if it was not determined
         volume : int, None
@@ -278,21 +278,21 @@ class AndroidTV(BaseTV):
         # the "STREAM_MUSIC" block from `adb shell dumpsys audio`
         stream_music = self._get_stream_music(stream_music_raw)
 
-        # `device` property
-        device = self._device(stream_music)
+        # `audio_output_device` property
+        audio_output_device = self._audio_output_device(stream_music)
 
         # `volume` property
-        volume = self._volume(stream_music, device)
+        volume = self._volume(stream_music, audio_output_device)
 
         # `is_volume_muted` property
         is_volume_muted = self._is_volume_muted(stream_music)
 
         # `running_apps` property
         if not get_running_apps or len(lines) < 16:
-            return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, device, is_volume_muted, volume, None
+            return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, None
         running_apps = self._running_apps(lines[15:])
 
-        return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, device, is_volume_muted, volume, running_apps
+        return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps
 
     def get_properties_dict(self, get_running_apps=True, lazy=True):
         """Get the properties needed for Home Assistant updates and return them as a dictionary.
@@ -308,10 +308,10 @@ class AndroidTV(BaseTV):
         -------
         dict
             A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'current_app'``,
-            ``'media_session_state'``, ``'audio_state'``, ``'device'``, ``'is_volume_muted'``, ``'volume'``, and ``'running_apps'``
+            ``'media_session_state'``, ``'audio_state'``, ``'audio_output_device'``, ``'is_volume_muted'``, ``'volume'``, and ``'running_apps'``
 
         """
-        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, device, is_volume_muted, volume, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
         return {'screen_on': screen_on,
                 'awake': awake,
@@ -319,7 +319,7 @@ class AndroidTV(BaseTV):
                 'wake_lock_size': wake_lock_size,
                 'current_app': current_app,
                 'media_session_state': media_session_state,
-                'device': device,
+                'audio_output_device': audio_output_device,
                 'is_volume_muted': is_volume_muted,
                 'volume': volume,
                 'running_apps': running_apps}
