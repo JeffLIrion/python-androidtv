@@ -59,7 +59,7 @@ class AndroidTV(BaseTV):
         running_apps : list
             A list of the running apps if ``get_running_apps`` is True, otherwise the list ``[current_app]``
         audio_output_device : str
-            The current playback device
+            The current audio playback device
         is_volume_muted : bool
             Whether or not the volume is muted
         volume_level : float

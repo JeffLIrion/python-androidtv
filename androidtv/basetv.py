@@ -392,12 +392,12 @@ class BaseTV(object):
 
     @property
     def audio_output_device(self):
-        """Get the current playback device.
+        """Get the current audio playback device.
 
         Returns
         -------
         str, None
-            The current playback device, or ``None`` if it could not be determined
+            The current audio playback device, or ``None`` if it could not be determined
 
         """
         stream_music = self._get_stream_music()
@@ -569,7 +569,7 @@ class BaseTV(object):
 
     @staticmethod
     def _audio_output_device(stream_music):
-        """Get the current playback device from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
+        """Get the current audio playback device from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
 
         Parameters
         ----------
@@ -579,7 +579,7 @@ class BaseTV(object):
         Returns
         -------
         str, None
-            The current playback device, or ``None`` if it could not be determined
+            The current audio playback device, or ``None`` if it could not be determined
 
         """
         if not stream_music:
@@ -697,7 +697,7 @@ class BaseTV(object):
         stream_music : str, None
             The ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``
         audio_output_device : str, None
-            The current playback device
+            The current audio playback device
 
         Returns
         -------

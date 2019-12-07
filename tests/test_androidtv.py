@@ -1071,11 +1071,11 @@ class TestStateDetectionRulesValidator(unittest.TestCase):
         """
         with patchers.patch_connect(True)['python'], patchers.patch_shell('')['python']:
             # Make sure that no error is raised when the state detection rules are valid
-            _ = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES1)
-            _ = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES2)
-            _ = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES3)
-            _ = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES4)
-            _ = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES5)
+            AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES1)
+            AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES2)
+            AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES3)
+            AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES4)
+            AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES5)
 
 
 if __name__ == "__main__":
