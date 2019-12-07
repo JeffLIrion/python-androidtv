@@ -318,7 +318,7 @@ GET_PROPERTIES_DICT1 = {'screen_on': False,
                         'wake_lock_size': -1,
                         'media_session_state': None,
                         'current_app': None,
-                        'device': None,
+                        'audio_output_device': None,
                         'is_volume_muted': None,
                         'volume': None,
                         'running_apps': None}
@@ -331,7 +331,7 @@ GET_PROPERTIES_DICT2 = {'screen_on': True,
                         'wake_lock_size': -1,
                         'media_session_state': None,
                         'current_app': None,
-                        'device': None,
+                        'audio_output_device': None,
                         'is_volume_muted': None,
                         'volume': None,
                         'running_apps': None}
@@ -347,11 +347,11 @@ GET_PROPERTIES_DICT3 = {'screen_on': True,
                         'wake_lock_size': 2,
                         'current_app': 'com.amazon.tv.launcher',
                         'media_session_state': None,
-                        'device': 'hmdi_arc',
+                        'audio_output_device': 'hmdi_arc',
                         'is_volume_muted': False,
                         'volume': 22,
                         'running_apps': None}
-STATE3 = (constants.STATE_PLAYING, 'com.amazon.tv.launcher', ['com.amazon.tv.launcher'], 'hmdi_arc', False, 22/60.)
+STATE3 = (constants.STATE_PLAYING, 'com.amazon.tv.launcher', ['com.amazon.tv.launcher'], 'hmdi_arc', False, (22 / 60.))
 
 GET_PROPERTIES_OUTPUT3A = GET_PROPERTIES_OUTPUT3[:1]
 GET_PROPERTIES_OUTPUT3B = GET_PROPERTIES_OUTPUT3[:2]
@@ -367,7 +367,7 @@ GET_PROPERTIES_DICT3A = {'screen_on': True,
                          'wake_lock_size': -1,
                          'current_app': None,
                          'media_session_state': None,
-                         'device': None,
+                         'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
                          'running_apps': None}
@@ -377,7 +377,7 @@ GET_PROPERTIES_DICT3B = {'screen_on': True,
                          'wake_lock_size': -1,
                          'current_app': None,
                          'media_session_state': None,
-                         'device': None,
+                         'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
                          'running_apps': None}
@@ -387,7 +387,7 @@ GET_PROPERTIES_DICT3C = {'screen_on': True,
                          'wake_lock_size': -1,
                          'current_app': None,
                          'media_session_state': None,
-                         'device': None,
+                         'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
                          'running_apps': None}
@@ -397,7 +397,7 @@ GET_PROPERTIES_DICT3D = {'screen_on': True,
                          'wake_lock_size': 2,
                          'current_app': None,
                          'media_session_state': None,
-                         'device': None,
+                         'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
                          'running_apps': None}
@@ -407,7 +407,7 @@ GET_PROPERTIES_DICT3E = {'screen_on': True,
                          'wake_lock_size': 2,
                          'current_app': 'com.amazon.tv.launcher',
                          'media_session_state': None,
-                         'device': None,
+                         'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
                          'running_apps': None}
@@ -417,7 +417,7 @@ GET_PROPERTIES_DICT3F = {'screen_on': True,
                          'wake_lock_size': 2,
                          'current_app': 'com.amazon.tv.launcher',
                          'media_session_state': None,
-                         'device': None,
+                         'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
                          'running_apps': None}
@@ -427,7 +427,7 @@ GET_PROPERTIES_DICT3G = {'screen_on': True,
                          'wake_lock_size': 2,
                          'current_app': 'com.amazon.tv.launcher',
                          'media_session_state': None,
-                         'device': None,
+                         'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
                          'running_apps': None}
@@ -442,7 +442,7 @@ GET_PROPERTIES_DICT4 = {'screen_on': True,
                         'wake_lock_size': 2,
                         'current_app': 'com.amazon.tv.launcher',
                         'media_session_state': 1,
-                        'device': None,
+                        'audio_output_device': None,
                         'is_volume_muted': None,
                         'volume': None,
                         'running_apps': None}
@@ -453,7 +453,7 @@ GET_PROPERTIES_DICT_NONE = {'screen_on': None,
                             'wake_lock_size': None,
                             'media_session_state': None,
                             'current_app': None,
-                            'device': None,
+                            'audio_output_device': None,
                             'is_volume_muted': None,
                             'volume': None,
                             'running_apps': None}
@@ -478,7 +478,7 @@ GET_PROPERTIES_DICT_PLEX_STANDBY = {'screen_on': True,
                                     'wake_lock_size': 1,
                                     'media_session_state': None,
                                     'current_app': 'com.plexapp.android',
-                                    'device': 'hmdi_arc',
+                                    'audio_output_device': 'hmdi_arc',
                                     'is_volume_muted': False,
                                     'volume': 22,
                                     'running_apps': None}
@@ -497,7 +497,7 @@ GET_PROPERTIES_DICT_PLEX_PLAYING = {'screen_on': True,
                                     'wake_lock_size': 3,
                                     'media_session_state': 3,
                                     'current_app': 'com.plexapp.android',
-                                    'device': 'hmdi_arc',
+                                    'audio_output_device': 'hmdi_arc',
                                     'is_volume_muted': False,
                                     'volume': 22,
                                     'running_apps': None}
@@ -516,7 +516,7 @@ GET_PROPERTIES_DICT_PLEX_PAUSED = {'screen_on': True,
                                    'wake_lock_size': 1,
                                    'media_session_state': 3,
                                    'current_app': 'com.plexapp.android',
-                                   'device': 'hmdi_arc',
+                                   'audio_output_device': 'hmdi_arc',
                                    'is_volume_muted': False,
                                    'volume': 22,
                                    'running_apps': None}
@@ -573,33 +573,33 @@ class TestAndroidTVPython(unittest.TestCase):
             running_apps = self.atv.running_apps
             self.assertListEqual(running_apps, RUNNING_APPS_LIST)
 
-    def test_device(self):
+    def test_audio_output_device(self):
         """Check that the ``device`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            device = self.atv.device
-            self.assertIsNone(device)
+            audio_output_device = self.atv.audio_output_device
+            self.assertIsNone(audio_output_device)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            device = self.atv.device
-            self.assertIsNone(device)
+            audio_output_device = self.atv.audio_output_device
+            self.assertIsNone(audio_output_device)
 
         with patchers.patch_shell(' ')[self.PATCH_KEY]:
-            device = self.atv.device
-            self.assertIsNone(device)
+            audio_output_device = self.atv.audio_output_device
+            self.assertIsNone(audio_output_device)
 
         with patchers.patch_shell(STREAM_MUSIC_EMPTY)[self.PATCH_KEY]:
-            device = self.atv.device
-            self.assertIsNone(device)
+            audio_output_device = self.atv.audio_output_device
+            self.assertIsNone(audio_output_device)
 
         with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
-            device = self.atv.device
-            self.assertEqual('speaker', device)
+            audio_output_device = self.atv.audio_output_device
+            self.assertEqual('speaker', audio_output_device)
 
         with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
-            device = self.atv.device
-            self.assertEqual('hmdi_arc', device)
+            audio_output_device = self.atv.audio_output_device
+            self.assertEqual('hmdi_arc', audio_output_device)
 
     def test_volume(self):
         """Check that the ``volume`` property works correctly.
@@ -1071,11 +1071,11 @@ class TestStateDetectionRulesValidator(unittest.TestCase):
         """
         with patchers.patch_connect(True)['python'], patchers.patch_shell('')['python']:
             # Make sure that no error is raised when the state detection rules are valid
-            atv1 = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES1)
-            atv2 = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES2)
-            atv3 = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES3)
-            atv4 = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES4)
-            atv5 = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES5)
+            _ = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES1)
+            _ = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES2)
+            _ = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES3)
+            _ = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES4)
+            _ = AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES5)
 
 
 if __name__ == "__main__":

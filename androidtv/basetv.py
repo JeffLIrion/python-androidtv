@@ -391,7 +391,7 @@ class BaseTV(object):
         return self._current_app(current_app_response)
 
     @property
-    def device(self):
+    def audio_output_device(self):
         """Get the current playback device.
 
         Returns
@@ -402,7 +402,7 @@ class BaseTV(object):
         """
         stream_music = self._get_stream_music()
 
-        return self._device(stream_music)
+        return self._audio_output_device(stream_music)
 
     @property
     def is_volume_muted(self):
@@ -457,9 +457,9 @@ class BaseTV(object):
 
         """
         stream_music = self._get_stream_music()
-        device = self._device(stream_music)
+        audio_output_device = self._audio_output_device(stream_music)
 
-        return self._volume(stream_music, device)
+        return self._volume(stream_music, audio_output_device)
 
     @property
     def volume_level(self):
@@ -568,7 +568,7 @@ class BaseTV(object):
         return current_app, media_session_state
 
     @staticmethod
-    def _device(stream_music):
+    def _audio_output_device(stream_music):
         """Get the current playback device from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
 
         Parameters
@@ -689,14 +689,14 @@ class BaseTV(object):
 
         return None
 
-    def _volume(self, stream_music, device):
+    def _volume(self, stream_music, audio_output_device):
         """Get the absolute volume level from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
 
         Parameters
         ----------
         stream_music : str, None
             The ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``
-        device : str, None
+        audio_output_device : str, None
             The current playback device
 
         Returns
@@ -715,10 +715,10 @@ class BaseTV(object):
             else:
                 self.max_volume = 15.
 
-        if not device:
+        if not audio_output_device:
             return None
 
-        volume_matches = re.findall(device + constants.VOLUME_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
+        volume_matches = re.findall(audio_output_device + constants.VOLUME_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
         if volume_matches:
             return int(volume_matches[0])
 
