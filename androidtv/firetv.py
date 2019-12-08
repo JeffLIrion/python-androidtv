@@ -15,22 +15,24 @@ _LOGGER = logging.getLogger(__name__)
 class FireTV(BaseTV):
     """Representation of an Amazon Fire TV device.
 
-        Parameters
-        ----------
-        host : str
-            The address of the device in the format ``<ip address>:<host>``
-        adbkey : str
-            The path to the ``adbkey`` file for ADB authentication
-        adb_server_ip : str
-            The IP address of the ADB server
-        adb_server_port : int
-            The port for the ADB server
-        state_detection_rules : dict, None
-            A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
-        auth_timeout_s : float
-            Authentication timeout (in seconds)
+    Parameters
+    ----------
+    host : str
+        The address of the device; may be an IP address or a host name
+    port : int
+        The device port to which we are connecting (default is 5555)
+    adbkey : str
+        The path to the ``adbkey`` file for ADB authentication
+    adb_server_ip : str
+        The IP address of the ADB server
+    adb_server_port : int
+        The port for the ADB server
+    state_detection_rules : dict, None
+        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
+    auth_timeout_s : float
+        Authentication timeout (in seconds)
 
-        """
+    """
 
     DEVICE_CLASS = 'firetv'
 
