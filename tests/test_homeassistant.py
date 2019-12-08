@@ -242,7 +242,7 @@ class TestAndroidTVPythonImplementation(unittest.TestCase):
     def setUp(self):
         """Set up an `AndroidTVDevice` media player."""
         with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[self.PATCH_KEY]:
-            aftv = setup("IP:5555", device_class="androidtv")
+            aftv = setup("HOST", 5555, device_class="androidtv")
             self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, None, None)
 
     def test_reconnect(self):
@@ -276,7 +276,7 @@ class TestAndroidTVPythonImplementation(unittest.TestCase):
                 self.assertIsNotNone(self.aftv.state)
 
         assert (
-            "ADB connection to {} successfully established".format(self.aftv.aftv.host)
+            "ADB connection to {}:{} successfully established".format(self.aftv.aftv.host, self.aftv.aftv.port)
             in logs.output[0]
         )
 
@@ -311,7 +311,7 @@ class TestAndroidTVServerImplementation(unittest.TestCase):
         """Set up an `AndroidTVDevice` media player."""
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[self.PATCH_KEY]:
             aftv = setup(
-                "IP:5555", adb_server_ip="ADB_SERVER_IP", device_class="androidtv"
+                "HOST", 5555, adb_server_ip="ADB_SERVER_IP", device_class="androidtv"
             )
             self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, None, None)
 
@@ -341,8 +341,9 @@ class TestAndroidTVServerImplementation(unittest.TestCase):
                 self.assertIsNotNone(self.aftv.state)
 
         assert (
-            "ADB connection to {} via ADB server {}:{} successfully established".format(
+            "ADB connection to {}:{} via ADB server {}:{} successfully established".format(
                 self.aftv.aftv.host,
+                self.aftv.aftv.port,
                 self.aftv.aftv.adb_server_ip,
                 self.aftv.aftv.adb_server_port,
             )
@@ -372,7 +373,7 @@ class TestFireTVPythonImplementation(TestAndroidTVPythonImplementation):
     def setUp(self):
         """Set up a `FireTVDevice` media player."""
         with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[self.PATCH_KEY]:
-            aftv = setup("IP:5555", device_class="firetv")
+            aftv = setup("HOST", 5555, device_class="firetv")
             self.aftv = FireTVDevice(aftv, "Fake Fire TV", {}, True, None, None)
 
 
@@ -384,6 +385,6 @@ class TestFireTVServerImplementation(TestAndroidTVServerImplementation):
         """Set up a `FireTVDevice` media player."""
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[self.PATCH_KEY]:
             aftv = setup(
-                "IP:5555", adb_server_ip="ADB_SERVER_IP", device_class="firetv"
+                "HOST", 5555, adb_server_ip="ADB_SERVER_IP", device_class="firetv"
             )
             self.aftv = FireTVDevice(aftv, "Fake Fire TV", {}, True, None, None)

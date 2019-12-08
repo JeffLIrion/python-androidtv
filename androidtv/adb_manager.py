@@ -41,7 +41,7 @@ class ADBPython(object):
     """
     def __init__(self, host, port, adbkey=''):
         self.host = host
-        self.port = port
+        self.port = int(port)
         self.adbkey = adbkey
         # self._adb = AdbDeviceTcp(host=self.host, port=self.port, default_timeout_s=9.)
         self._adb = AdbDevice(serial='{}:{}'.format(self.host, self.port), default_timeout_s=9.)
@@ -245,7 +245,7 @@ class ADBServer(object):
     """
     def __init__(self, host, port=5555, adb_server_ip='', adb_server_port=5037):
         self.host = host
-        self.port = port
+        self.port = int(port)
         self.adb_server_ip = adb_server_ip
         self.adb_server_port = adb_server_port
         self._adb_client = None

@@ -536,7 +536,7 @@ class TestAndroidTVPython(unittest.TestCase):
 
     def setUp(self):
         with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.atv = AndroidTV('IP:5555')
+            self.atv = AndroidTV('HOST', 5555)
 
     def test_turn_on_off(self):
         """Test that the ``AndroidTV.turn_on`` and ``AndroidTV.turn_off`` methods work correctly.
@@ -1061,7 +1061,7 @@ class TestAndroidTVServer(TestAndroidTVPython):
 
     def setUp(self):
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.atv = AndroidTV('IP:5555', adb_server_ip='ADB_SERVER_IP')
+            self.atv = AndroidTV('HOST', 5555, adb_server_ip='ADB_SERVER_IP')
 
 
 class TestStateDetectionRulesValidator(unittest.TestCase):
@@ -1071,11 +1071,11 @@ class TestStateDetectionRulesValidator(unittest.TestCase):
         """
         with patchers.patch_connect(True)['python'], patchers.patch_shell('')['python']:
             # Make sure that no error is raised when the state detection rules are valid
-            AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES1)
-            AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES2)
-            AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES3)
-            AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES4)
-            AndroidTV('IP:5555', state_detection_rules=STATE_DETECTION_RULES5)
+            AndroidTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES1)
+            AndroidTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES2)
+            AndroidTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES3)
+            AndroidTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES4)
+            AndroidTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES5)
 
 
 if __name__ == "__main__":
