@@ -37,7 +37,7 @@ class FireTV(BaseTV):
     DEVICE_CLASS = 'firetv'
 
     def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
-        BaseTV.__init__(self, host, port=5555, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
+        BaseTV.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
 
     # ======================================================================= #
     #                                                                         #
