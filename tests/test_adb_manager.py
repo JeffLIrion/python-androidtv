@@ -69,7 +69,7 @@ class TestADBPython(unittest.TestCase):
 
         """
         with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.adb = ADBPython('IP:5555')
+            self.adb = ADBPython('IP', 5555)
 
     def test_connect_success(self):
         """Test when the connect attempt is successful.
@@ -252,7 +252,7 @@ class TestADBPythonWithAuthentication(unittest.TestCase):
 
         """
         with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.adb = ADBPython('IP:5555', 'adbkey')
+            self.adb = ADBPython('IP', 5555, 'adbkey')
 
     def test_connect_success_with_priv_key(self):
         """Test when the connect attempt is successful when using a private key.
@@ -282,7 +282,7 @@ class TestADBPythonClose(unittest.TestCase):
         """Test the `ADBPython.close` method.
         """
         with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.adb = ADBPython('IP:5555')
+            self.adb = ADBPython('IP', 5555)
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
