@@ -51,7 +51,9 @@ class BaseTV(object):
     Parameters
     ----------
     host : str
-        The address of the device in the format ``<ip address>:<host>``
+        The address of the device; may be an IP address or a host name
+    port : int
+        The device port to which we are connecting (default is 5555)
     adbkey : str
         The path to the ``adbkey`` file for ADB authentication
     adb_server_ip : str
@@ -65,8 +67,9 @@ class BaseTV(object):
 
     """
 
-    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
+    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
         self.host = host
+        self.port = port
         self.adbkey = adbkey
         self.adb_server_ip = adb_server_ip
         self.adb_server_port = adb_server_port
@@ -85,10 +88,10 @@ class BaseTV(object):
         # the handler for ADB commands
         if not adb_server_ip:
             # python-adb
-            self._adb = ADBPython(host, adbkey)
+            self._adb = ADBPython(host, port, adbkey)
         else:
             # pure-python-adb
-            self._adb = ADBServer(host, adb_server_ip, adb_server_port)
+            self._adb = ADBServer(host, port, adb_server_ip, adb_server_port)
 
         # establish the ADB connection
         self.adb_connect(auth_timeout_s=auth_timeout_s)
@@ -202,7 +205,7 @@ class BaseTV(object):
                                      constants.CMD_MAC_WLAN0 + " && " +
                                      constants.CMD_MAC_ETH0)
 
-        _LOGGER.debug("%s `get_device_properties` response: %s", self.host, properties)
+        _LOGGER.debug("%s:%d `get_device_properties` response: %s", self.host, self.port, properties)
 
         if not properties:
             return {}
@@ -214,7 +217,7 @@ class BaseTV(object):
         manufacturer, model, serialno, version, mac_wlan0_output, mac_eth0_output = lines
 
         if not serialno.strip():
-            _LOGGER.warning("Could not obtain serialno for %s, got: '%s'", self.host, serialno)
+            _LOGGER.warning("Could not obtain serialno for %s:%d, got: '%s'", self.host, self.port, serialno)
             serialno = None
 
         mac_wlan0_matches = re.findall(constants.MAC_REGEX_PATTERN, mac_wlan0_output)
