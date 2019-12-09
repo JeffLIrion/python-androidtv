@@ -11,7 +11,6 @@ import sys
 import threading
 
 from adb_shell.adb_device import AdbDevice
-# from adb_shell.adb_device import AdbDeviceTcp
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
 from ppadb.client import Client
 
@@ -43,7 +42,6 @@ class ADBPython(object):
         self.host = host
         self.port = int(port)
         self.adbkey = adbkey
-        # self._adb = AdbDeviceTcp(host=self.host, port=self.port, default_timeout_s=9.)
         self._adb = AdbDevice(serial='{}:{}'.format(self.host, self.port), default_timeout_s=9.)
 
         # keep track of whether the ADB connection is intact
