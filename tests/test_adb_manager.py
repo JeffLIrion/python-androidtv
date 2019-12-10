@@ -68,7 +68,7 @@ class TestADBPython(unittest.TestCase):
         """Create an `ADBPython` instance.
 
         """
-        with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY]:
+        with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY]:
             self.adb = ADBPython('HOST', 5555)
 
     def test_connect_success(self):
@@ -251,7 +251,7 @@ class TestADBPythonWithAuthentication(unittest.TestCase):
         """Create an `ADBPython` instance.
 
         """
-        with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY]:
+        with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY]:
             self.adb = ADBPython('HOST', 5555, 'adbkey')
 
     def test_connect_success_with_priv_key(self):
@@ -281,7 +281,7 @@ class TestADBPythonClose(unittest.TestCase):
     def test_close(self):
         """Test the `ADBPython.close` method.
         """
-        with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY]:
+        with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY]:
             self.adb = ADBPython('HOST', 5555)
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
