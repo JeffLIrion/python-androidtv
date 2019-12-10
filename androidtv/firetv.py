@@ -15,27 +15,29 @@ _LOGGER = logging.getLogger(__name__)
 class FireTV(BaseTV):
     """Representation of an Amazon Fire TV device.
 
-        Parameters
-        ----------
-        host : str
-            The address of the device in the format ``<ip address>:<host>``
-        adbkey : str
-            The path to the ``adbkey`` file for ADB authentication
-        adb_server_ip : str
-            The IP address of the ADB server
-        adb_server_port : int
-            The port for the ADB server
-        state_detection_rules : dict, None
-            A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
-        auth_timeout_s : float
-            Authentication timeout (in seconds)
+    Parameters
+    ----------
+    host : str
+        The address of the device; may be an IP address or a host name
+    port : int
+        The device port to which we are connecting (default is 5555)
+    adbkey : str
+        The path to the ``adbkey`` file for ADB authentication
+    adb_server_ip : str
+        The IP address of the ADB server
+    adb_server_port : int
+        The port for the ADB server
+    state_detection_rules : dict, None
+        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
+    auth_timeout_s : float
+        Authentication timeout (in seconds)
 
-        """
+    """
 
     DEVICE_CLASS = 'firetv'
 
-    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
-        BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
+    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
+        BaseTV.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
 
     # ======================================================================= #
     #                                                                         #
@@ -249,7 +251,7 @@ class FireTV(BaseTV):
                 output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
             else:
                 output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
-        _LOGGER.debug("Fire TV %s `get_properties` response: %s", self.host, output)
+        _LOGGER.debug("Fire TV %s:%d `get_properties` response: %s", self.host, self.port, output)
 
         # ADB command was unsuccessful
         if output is None:

@@ -43,25 +43,25 @@ class TestSetup(unittest.TestCase):
         """Test that the ``setup`` function works correctly.
         """
         with self.assertRaises(ValueError):
-            setup('IP:5555', device_class='INVALID')
+            setup('HOST', 5555, device_class='INVALID')
 
         with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            ftv = setup('IP:5555')
+            ftv = setup('HOST', 5555)
             self.assertIsInstance(ftv, FireTV)
             self.assertDictEqual(ftv.device_properties, DEVICE_PROPERTIES_DICT1)
 
         with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            atv = setup('IP:5555')
+            atv = setup('HOST', 5555)
             self.assertIsInstance(atv, AndroidTV)
             self.assertDictEqual(atv.device_properties, DEVICE_PROPERTIES_DICT2)
 
         with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            ftv = setup('IP:5555', device_class='androidtv')
+            ftv = setup('HOST', 5555, device_class='androidtv')
             self.assertIsInstance(ftv, AndroidTV)
             self.assertDictEqual(ftv.device_properties, DEVICE_PROPERTIES_DICT1)
 
         with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            atv = setup('IP:5555', device_class='firetv')
+            atv = setup('HOST', 5555, device_class='firetv')
             self.assertIsInstance(atv, FireTV)
             self.assertDictEqual(atv.device_properties, DEVICE_PROPERTIES_DICT2)
 
