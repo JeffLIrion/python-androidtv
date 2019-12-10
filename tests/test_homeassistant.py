@@ -241,7 +241,7 @@ class TestAndroidTVPythonImplementation(unittest.TestCase):
 
     def setUp(self):
         """Set up an `AndroidTVDevice` media player."""
-        with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[self.PATCH_KEY]:
+        with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[self.PATCH_KEY]:
             aftv = setup("HOST", 5555, device_class="androidtv")
             self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, None, None)
 
@@ -372,7 +372,7 @@ class TestFireTVPythonImplementation(TestAndroidTVPythonImplementation):
 
     def setUp(self):
         """Set up a `FireTVDevice` media player."""
-        with patchers.PATCH_ADB_DEVICE, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[self.PATCH_KEY]:
+        with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[self.PATCH_KEY]:
             aftv = setup("HOST", 5555, device_class="firetv")
             self.aftv = FireTVDevice(aftv, "Fake Fire TV", {}, True, None, None)
 
