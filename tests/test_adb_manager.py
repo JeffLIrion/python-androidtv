@@ -50,9 +50,14 @@ def open_priv_pub(infile):
 
 
 class LockedLock(object):
-    @staticmethod
-    def acquire(*args, **kwargs):
-        return False
+    def __init__(self, *args, **kwargs):
+        self._acquired = False
+
+    def acquire(self, *args, **kwargs):
+        return self._acquired
+
+    def release(self, *args, **kwargs):
+        self._acquired = True
 
 
 def return_empty_list(*args, **kwargs):
@@ -104,7 +109,7 @@ class TestADBPython(unittest.TestCase):
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY]:
-            with patch.object(self.adb, '_adb_lock', LockedLock):
+            with patch.object(self.adb, '_adb_lock', LockedLock()):
                 self.assertFalse(self.adb.connect())
                 self.assertFalse(self.adb.available)
                 self.assertFalse(self.adb._available)
@@ -119,7 +124,7 @@ class TestADBPython(unittest.TestCase):
 
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("TEST")[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
-            with patch.object(self.adb, '_adb_lock', LockedLock):
+            with patch.object(self.adb, '_adb_lock', LockedLock()):
                 self.assertIsNone(self.adb.shell("TEST"))
 
     def test_adb_shell_success(self):
@@ -143,7 +148,7 @@ class TestADBPython(unittest.TestCase):
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             with patchers.PATCH_PUSH[self.PATCH_KEY] as patch_push:
                 self.assertTrue(self.adb.connect())
-                with patch.object(self.adb, '_adb_lock', LockedLock):
+                with patch.object(self.adb, '_adb_lock', LockedLock()):
                     self.adb.push("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
                     patch_push.assert_not_called()
 
@@ -170,7 +175,7 @@ class TestADBPython(unittest.TestCase):
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             with patchers.PATCH_PULL[self.PATCH_KEY] as patch_pull:
                 self.assertTrue(self.adb.connect())
-                with patch.object(self.adb, '_adb_lock', LockedLock):
+                with patch.object(self.adb, '_adb_lock', LockedLock()):
                     self.adb.pull("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
                     patch_pull.assert_not_called()
 
