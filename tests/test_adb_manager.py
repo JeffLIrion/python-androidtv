@@ -126,6 +126,7 @@ class TestADBPython(unittest.TestCase):
             self.assertTrue(self.adb.connect())
             with patch.object(self.adb, '_adb_lock', LockedLock()):
                 self.assertIsNone(self.adb.shell("TEST"))
+                self.assertIsNone(self.adb.shell("TEST2"))
 
     def test_adb_shell_success(self):
         """Test when an ADB shell command is successfully sent.
