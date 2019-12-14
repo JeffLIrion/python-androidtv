@@ -49,15 +49,20 @@ def open_priv_pub(infile):
         pass
 
 
-class LockedLock(object):
+class FakeLock(object):
     def __init__(self, *args, **kwargs):
-        self._acquired = False
+        self._acquired = True
 
     def acquire(self, *args, **kwargs):
         return self._acquired
 
     def release(self, *args, **kwargs):
         self._acquired = True
+
+
+class LockedLock(FakeLock):
+    def __init__(self, *args, **kwargs):
+        self._acquired = False
 
 
 def return_empty_list(*args, **kwargs):
@@ -135,6 +140,19 @@ class TestADBPython(unittest.TestCase):
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("TEST")[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
             self.assertEqual(self.adb.shell("TEST"), "TEST")
+
+    def test_adb_shell_fail_lock_released(self):
+        """Test that the ADB lock gets released when an exception is raised.
+
+        """
+        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("TEST")[self.PATCH_KEY]:
+            self.assertTrue(self.adb.connect())
+
+        with patchers.patch_shell("TEST", error=True)[self.PATCH_KEY], patch.object(self.adb, '_adb_lock', FakeLock()):
+            with patch('{}.FakeLock.release'.format(__name__)) as release:
+                with self.assertRaises(Exception):
+                    self.adb.shell("TEST")
+                assert release.called
 
     def test_adb_push_fail(self):
         """Test when an ADB push command is not executed because the device is unavailable.
