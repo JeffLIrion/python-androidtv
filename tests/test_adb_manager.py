@@ -154,6 +154,19 @@ class TestADBPython(unittest.TestCase):
                     self.adb.shell("TEST")
                 assert release.called
 
+    def test_adb_shell_lock_not_acquired_not_released(self):
+        """Test that the lock does not get released if it is not acquired.
+
+        """
+        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("TEST")[self.PATCH_KEY]:
+            self.assertTrue(self.adb.connect())
+            self.assertEqual(self.adb.shell("TEST"), "TEST")
+
+        with patchers.patch_shell("TEST")[self.PATCH_KEY], patch.object(self.adb, '_adb_lock', LockedLock()):
+            with patch('{}.LockedLock.release'.format(__name__)) as release:
+                self.assertIsNone(self.adb.shell("TEST"))
+                release.assert_not_called()
+
     def test_adb_push_fail(self):
         """Test when an ADB push command is not executed because the device is unavailable.
 
