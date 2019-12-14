@@ -6,6 +6,7 @@
 """
 
 
+from contextlib import contextmanager
 import logging
 import sys
 import threading
@@ -23,6 +24,30 @@ LOCK_KWARGS = {'timeout': 3} if sys.version_info[0] > 2 and sys.version_info[1] 
 
 if sys.version_info[0] == 2:  # pragma: no cover
     FileNotFoundError = IOError  # pylint: disable=redefined-builtin
+
+
+@contextmanager
+def _acquire(lock):
+    """Handle acquisition and release of a ``threading.Lock`` object with ``LOCK_KWARGS`` keyword arguments.
+
+    Parameters
+    ----------
+    lock : threading.Lock
+        The lock that we will try to acquire
+
+    Yields
+    ------
+    acquired : bool
+        Whether or not the lock was acquired
+
+    """
+    try:
+        acquired = lock.acquire(**LOCK_KWARGS)
+        yield acquired
+
+    finally:
+        if acquired:
+            lock.release()
 
 
 class ADBPython(object):
@@ -84,9 +109,8 @@ class ADBPython(object):
             Whether or not the connection was successfully established and the device is available
 
         """
-        if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
-            # Make sure that we release the lock
-            try:
+        with _acquire(self._adb_lock) as acquired:
+            if acquired:
                 # Catch exceptions
                 try:
                     # Connect with authentication
@@ -135,9 +159,6 @@ class ADBPython(object):
                     self._available = False
                     return False
 
-            finally:
-                self._adb_lock.release()
-
         # Lock could not be acquired
         _LOGGER.warning("Couldn't connect to %s:%d because adb-shell lock not acquired.", self.host, self.port)
         self.close()
@@ -159,12 +180,11 @@ class ADBPython(object):
             _LOGGER.debug("ADB command not sent to %s:%d because adb-shell connection is not established: pull(%s, %s)", self.host, self.port, local_path, device_path)
             return
 
-        if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
-            _LOGGER.debug("Sending command to %s:%d via adb-shell: pull(%s, %s)", self.host, self.port, local_path, device_path)
-            try:
+        with _acquire(self._adb_lock) as acquired:
+            if acquired:
+                _LOGGER.debug("Sending command to %s:%d via adb-shell: pull(%s, %s)", self.host, self.port, local_path, device_path)
                 self._adb.pull(device_path, local_path)
-            finally:
-                self._adb_lock.release()
+                return
 
         # Lock could not be acquired
         _LOGGER.warning("ADB command not sent to %s:%d because adb-shell lock not acquired: pull(%s, %s)", self.host, self.port, local_path, device_path)
@@ -185,12 +205,11 @@ class ADBPython(object):
             _LOGGER.debug("ADB command not sent to %s:%d because adb-shell connection is not established: push(%s, %s)", self.host, self.port, local_path, device_path)
             return
 
-        if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
-            _LOGGER.debug("Sending command to %s:%d via adb-shell: push(%s, %s)", self.host, self.port, local_path, device_path)
-            try:
+        with _acquire(self._adb_lock) as acquired:
+            if acquired:
+                _LOGGER.debug("Sending command to %s:%d via adb-shell: push(%s, %s)", self.host, self.port, local_path, device_path)
                 self._adb.push(local_path, device_path)
-            finally:
-                self._adb_lock.release()
+                return
 
         # Lock could not be acquired
         _LOGGER.warning("ADB command not sent to %s:%d because adb-shell lock not acquired: push(%s, %s)", self.host, self.port, local_path, device_path)
@@ -214,12 +233,10 @@ class ADBPython(object):
             _LOGGER.debug("ADB command not sent to %s:%d because adb-shell connection is not established: %s", self.host, self.port, cmd)
             return None
 
-        if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
-            _LOGGER.debug("Sending command to %s:%d via adb-shell: %s", self.host, self.port, cmd)
-            try:
+        with _acquire(self._adb_lock) as acquired:
+            if acquired:
+                _LOGGER.debug("Sending command to %s:%d via adb-shell: %s", self.host, self.port, cmd)
                 return self._adb.shell(cmd)
-            finally:
-                self._adb_lock.release()
 
         # Lock could not be acquired
         _LOGGER.warning("ADB command not sent to %s:%d because adb-shell lock not acquired: %s", self.host, self.port, cmd)
@@ -326,9 +343,8 @@ class ADBServer(object):
             Whether or not the connection was successfully established and the device is available
 
         """
-        if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
-            # Make sure that we release the lock
-            try:
+        with _acquire(self._adb_lock) as acquired:
+            if acquired:
                 # Catch exceptions
                 try:
                     self._adb_client = Client(host=self.adb_server_ip, port=self.adb_server_port)
@@ -357,9 +373,6 @@ class ADBServer(object):
                     self._available = False
                     return False
 
-            finally:
-                self._adb_lock.release()
-
         # Lock could not be acquired
         _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d because pure-python-adb lock not acquired.", self.host, self.port, self.adb_server_ip, self.adb_server_port)
         self.close()
@@ -381,12 +394,11 @@ class ADBServer(object):
             _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: pull(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
             return
 
-        if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
-            _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: pull(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
-            try:
+        with _acquire(self._adb_lock) as acquired:
+            if acquired:
+                _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: pull(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
                 self._adb_device.pull(device_path, local_path)
-            finally:
-                self._adb_lock.release()
+                return
 
         # Lock could not be acquired
         _LOGGER.warning("ADB command not sent to %s:%d via ADB server %s:%d: pull(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
@@ -407,12 +419,11 @@ class ADBServer(object):
             _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
             return
 
-        if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
-            _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
-            try:
+        with _acquire(self._adb_lock) as acquired:
+            if acquired:
+                _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
                 self._adb_device.push(local_path, device_path)
-            finally:
-                self._adb_lock.release()
+                return
 
         # Lock could not be acquired
         _LOGGER.warning("ADB command not sent to %s:%d via ADB server %s:%d: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
@@ -436,12 +447,10 @@ class ADBServer(object):
             _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, cmd)
             return None
 
-        if self._adb_lock.acquire(**LOCK_KWARGS):  # pylint: disable=unexpected-keyword-arg
-            _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, cmd)
-            try:
+        with _acquire(self._adb_lock) as acquired:
+            if acquired:
+                _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, cmd)
                 return self._adb_device.shell(cmd)
-            finally:
-                self._adb_lock.release()
 
         # Lock could not be acquired
         _LOGGER.warning("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb lock not acquired: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, cmd)
