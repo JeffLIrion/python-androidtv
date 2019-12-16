@@ -65,10 +65,6 @@ class LockedLock(FakeLock):
         self._acquired = False
 
 
-def return_empty_list(*args, **kwargs):
-    return []
-
-
 class TestADBPython(unittest.TestCase):
     """Test the `ADBPython` class."""
 
