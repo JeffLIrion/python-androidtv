@@ -10,6 +10,7 @@ except ImportError:
 sys.path.insert(0, '..')
 
 from androidtv.adb_manager import ADBPython, ADBServer
+from androidtv.exceptions import LockNotAcquiredException
 from . import patchers
 
 
@@ -126,8 +127,11 @@ class TestADBPython(unittest.TestCase):
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("TEST")[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
             with patch.object(self.adb, '_adb_lock', LockedLock()):
-                self.assertIsNone(self.adb.shell("TEST"))
-                self.assertIsNone(self.adb.shell("TEST2"))
+                with self.assertRaises(LockNotAcquiredException):
+                    self.assertIsNone(self.adb.shell("TEST"))
+
+                with self.assertRaises(LockNotAcquiredException):
+                    self.assertIsNone(self.adb.shell("TEST2"))
 
     def test_adb_shell_success(self):
         """Test when an ADB shell command is successfully sent.
@@ -160,8 +164,9 @@ class TestADBPython(unittest.TestCase):
 
         with patchers.patch_shell("TEST")[self.PATCH_KEY], patch.object(self.adb, '_adb_lock', LockedLock()):
             with patch('{}.LockedLock.release'.format(__name__)) as release:
-                self.assertIsNone(self.adb.shell("TEST"))
-                release.assert_not_called()
+                with self.assertRaises(LockNotAcquiredException):
+                    self.adb.shell("TEST")
+                    release.assert_not_called()
 
     def test_adb_push_fail(self):
         """Test when an ADB push command is not executed because the device is unavailable.
@@ -177,7 +182,9 @@ class TestADBPython(unittest.TestCase):
             with patchers.PATCH_PUSH[self.PATCH_KEY] as patch_push:
                 self.assertTrue(self.adb.connect())
                 with patch.object(self.adb, '_adb_lock', LockedLock()):
-                    self.adb.push("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
+                    with self.assertRaises(LockNotAcquiredException):
+                        self.adb.push("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
+
                     patch_push.assert_not_called()
 
     def test_adb_push_success(self):
@@ -204,7 +211,8 @@ class TestADBPython(unittest.TestCase):
             with patchers.PATCH_PULL[self.PATCH_KEY] as patch_pull:
                 self.assertTrue(self.adb.connect())
                 with patch.object(self.adb, '_adb_lock', LockedLock()):
-                    self.adb.pull("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
+                    with self.assertRaises(LockNotAcquiredException):
+                        self.adb.pull("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
                     patch_pull.assert_not_called()
 
     def test_adb_pull_success(self):
