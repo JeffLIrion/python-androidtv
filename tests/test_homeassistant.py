@@ -6,6 +6,12 @@ import unittest
 
 sys.path.insert(0, '..')
 
+from adb_shell.exceptions import (
+    InvalidChecksumError,
+    InvalidCommandError,
+    InvalidResponseError,
+    TcpTimeoutException,
+)
 from androidtv import setup
 from androidtv.constants import APPS, KEYS, STATE_IDLE, STATE_OFF, STATE_PAUSED, STATE_PLAYING, STATE_STANDBY
 from androidtv.exceptions import LockNotAcquiredException
