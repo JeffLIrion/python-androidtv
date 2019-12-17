@@ -60,6 +60,9 @@ def adb_decorator(override_available=False):
 
             try:
                 return func(self, *args, **kwargs)
+            except LockNotAcquiredException:
+                # If the ADB lock could not be acquired, skip this command
+                return
             except self.exceptions as err:
                 _LOGGER.error(
                     "Failed to execute an ADB command. ADB connection re-"
@@ -401,7 +404,7 @@ class TestAndroidTVPythonImplementation(unittest.TestCase):
         """Set up an `AndroidTVDevice` media player."""
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[self.PATCH_KEY]:
             aftv = setup("HOST", 5555, device_class="androidtv")
-            self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, None, None)
+            self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
 
     def test_reconnect(self):
         """Test that the error and reconnection attempts are logged correctly.
@@ -471,7 +474,7 @@ class TestAndroidTVServerImplementation(unittest.TestCase):
             aftv = setup(
                 "HOST", 5555, adb_server_ip="ADB_SERVER_IP", device_class="androidtv"
             )
-            self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, None, None)
+            self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
 
     def test_reconnect(self):
         """Test that the error and reconnection attempts are logged correctly.
