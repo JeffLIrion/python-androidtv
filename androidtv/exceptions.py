@@ -4,4 +4,4 @@
 
 
 class LockNotAcquiredException(Exception):
-	"""The ADB lock could not be acquired."""
+    """The ADB lock could not be acquired."""
