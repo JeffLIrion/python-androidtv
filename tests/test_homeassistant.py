@@ -3,6 +3,10 @@ import logging
 import sys
 import unittest
 
+try:
+    from unittest.mock import patch
+except ImportError:
+    from mock import patch
 
 sys.path.insert(0, '..')
 
@@ -23,6 +27,9 @@ _LOGGER = logging.getLogger(__name__)
 
 SUPPORT_ANDROIDTV = 12345
 SUPPORT_FIRETV = 12345
+
+DIRECTION_PULL = "pull"
+DIRECTION_PUSH = "push"
 
 class MediaPlayerDevice(object):
     _unique_id = None
@@ -258,6 +265,14 @@ class ADBDevice(MediaPlayerDevice):
 
         self.schedule_update_ha_state()
         return self._adb_response
+
+    @adb_decorator()
+    def adb_filesync(self, direction, local_path, device_path):
+        """Transfer a file between your HA instance and an Android TV / Fire TV device."""
+        if direction == DIRECTION_PULL:
+            self.aftv.adb_pull(local_path, device_path)
+        else:
+            self.aftv.adb_push(local_path, device_path)
 
 
 class AndroidTVDevice(ADBDevice):
@@ -555,3 +570,86 @@ class TestFireTVServerImplementation(TestAndroidTVServerImplementation):
                 "HOST", 5555, adb_server_ip="ADB_SERVER_IP", device_class="firetv"
             )
             self.aftv = FireTVDevice(aftv, "Fake Fire TV", {}, True, None, None)
+
+
+@unittest.skipIf(sys.version_info.major == 2, "Test requires Python 3")
+class TestADBCommandAndFileSync(unittest.TestCase):
+    """Test ADB and FileSync services."""
+
+    def test_adb_command(self):
+        """Test sending a command via the `androidtv.adb_command` service."""
+        patch_key = "server"
+        command = "test command"
+        response = "test response"
+
+        with patchers.patch_connect(True)[patch_key], patchers.patch_shell("")[patch_key]:
+            aftv = setup(
+                "HOST", 5555, adb_server_ip="ADB_SERVER_IP", device_class="androidtv"
+            )
+            self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
+
+        with patch("androidtv.basetv.BaseTV.adb_shell", return_value=response) as patch_shell:
+            self.aftv.adb_command(command)
+
+            patch_shell.assert_called_with(command)
+            assert self.aftv._adb_response == response
+
+    def test_adb_command_key(self):
+        """Test sending a key command via the `androidtv.adb_command` service."""
+        patch_key = "server"
+        command = "HOME"
+        response = None
+
+        with patchers.patch_connect(True)[patch_key], patchers.patch_shell("")[patch_key]:
+            aftv = setup(
+                "HOST", 5555, adb_server_ip="ADB_SERVER_IP", device_class="androidtv"
+            )
+            self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
+
+        with patch("androidtv.basetv.BaseTV.adb_shell", return_value=response) as patch_shell:
+            self.aftv.adb_command(command)
+
+            patch_shell.assert_called_with("input keyevent {}".format(self.aftv._keys[command]))
+            assert self.aftv._adb_response is None
+
+    def test_adb_command_get_properties(self):
+        """Test sending the "GET_PROPERTIES" command via the `androidtv.adb_command` service."""
+        patch_key = "server"
+        command = "GET_PROPERTIES"
+        response = {"key": "value"}
+
+        with patchers.patch_connect(True)[patch_key], patchers.patch_shell("")[patch_key]:
+            aftv = setup(
+                "HOST", 5555, adb_server_ip="ADB_SERVER_IP", device_class="androidtv"
+            )
+            self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
+
+        with patch("androidtv.androidtv.AndroidTV.get_properties_dict", return_value=response) as patch_get_props:
+            command = "GET_PROPERTIES"
+            self.aftv.adb_command(command)
+
+            assert patch_get_props.called
+            assert self.aftv._adb_response == str(response)
+
+    def test_update_lock_not_acquired(self):
+        """Test that the state does not get updated when a `LockNotAcquiredException` is raised."""
+        patch_key = "server"
+
+        with patchers.patch_connect(True)[patch_key], patchers.patch_shell("")[patch_key]:
+            aftv = setup(
+                "HOST", 5555, adb_server_ip="ADB_SERVER_IP", device_class="androidtv"
+            )
+            self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
+
+        with patchers.patch_shell("")[patch_key]:
+            self.aftv.update()
+            assert self.aftv.state == STATE_OFF
+
+        with patch("androidtv.androidtv.AndroidTV.update", side_effect=LockNotAcquiredException):
+            with patchers.patch_shell("1")[patch_key]:
+                self.aftv.update()
+                assert self.aftv.state == STATE_OFF
+
+        with patchers.patch_shell("1")[patch_key]:
+            self.aftv.update()
+            assert self.aftv.state == STATE_IDLE
