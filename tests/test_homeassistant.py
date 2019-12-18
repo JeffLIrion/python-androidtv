@@ -625,7 +625,6 @@ class TestADBCommandAndFileSync(unittest.TestCase):
             self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
 
         with patch("androidtv.androidtv.AndroidTV.get_properties_dict", return_value=response) as patch_get_props:
-            command = "GET_PROPERTIES"
             self.aftv.adb_command(command)
 
             assert patch_get_props.called
