@@ -168,7 +168,7 @@ class ADBPython(object):
                     return False
 
         except LockNotAcquiredException:
-            # ADB connection attempt failed because lock was not acquired
+            _LOGGER.warning("Couldn't connect to %s:%d because adb-shell lock not acquired.", self.host, self.port)
             self.close()
             self._available = False
             return False
@@ -367,7 +367,7 @@ class ADBServer(object):
                     return False
 
         except LockNotAcquiredException:
-            # ADB connection attempt failed because lock was not acquired
+            _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d because pure-python-adb lock not acquired.", self.host, self.port, self.adb_server_ip, self.adb_server_port)
             self.close()
             self._available = False
             return False
