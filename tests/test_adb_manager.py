@@ -9,7 +9,7 @@ except ImportError:
 
 sys.path.insert(0, '..')
 
-from androidtv.adb_manager import ADBPython, ADBServer
+from androidtv.adb_manager import _acquire, ADBPython, ADBServer
 from androidtv.exceptions import LockNotAcquiredException
 from . import patchers
 
@@ -55,6 +55,9 @@ class FakeLock(object):
         self._acquired = True
 
     def acquire(self, *args, **kwargs):
+        if self._acquired:
+            self._acquired = False
+            return True
         return self._acquired
 
     def release(self, *args, **kwargs):
@@ -77,6 +80,19 @@ class TestADBPython(unittest.TestCase):
         """
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY]:
             self.adb = ADBPython('HOST', 5555)
+
+    def test_locked_lock(self):
+        """Test that the ``FakeLock`` class works as expected.
+
+        """
+        with patch.object(self.adb, '_adb_lock', FakeLock()):
+            with _acquire(self.adb._adb_lock):
+                with self.assertRaises(LockNotAcquiredException):
+                    with _acquire(self.adb._adb_lock):
+                        pass
+
+            with _acquire(self.adb._adb_lock) as acquired:
+                self.assertTrue(acquired)
 
     def test_connect_success(self):
         """Test when the connect attempt is successful.
