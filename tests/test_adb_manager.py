@@ -144,10 +144,10 @@ class TestADBPython(unittest.TestCase):
             self.assertTrue(self.adb.connect())
             with patch.object(self.adb, '_adb_lock', LockedLock()):
                 with self.assertRaises(LockNotAcquiredException):
-                    self.assertIsNone(self.adb.shell("TEST"))
+                    self.adb.shell("TEST")
 
                 with self.assertRaises(LockNotAcquiredException):
-                    self.assertIsNone(self.adb.shell("TEST2"))
+                    self.adb.shell("TEST2")
 
     def test_adb_shell_success(self):
         """Test when an ADB shell command is successfully sent.
@@ -182,7 +182,8 @@ class TestADBPython(unittest.TestCase):
             with patch('{}.LockedLock.release'.format(__name__)) as release:
                 with self.assertRaises(LockNotAcquiredException):
                     self.adb.shell("TEST")
-                    release.assert_not_called()
+
+                release.assert_not_called()
 
     def test_adb_push_fail(self):
         """Test when an ADB push command is not executed because the device is unavailable.
@@ -337,6 +338,7 @@ class TestADBPythonClose(unittest.TestCase):
 
     def test_close(self):
         """Test the `ADBPython.close` method.
+
         """
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY]:
             self.adb = ADBPython('HOST', 5555)
