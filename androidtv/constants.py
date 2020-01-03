@@ -11,6 +11,11 @@
 import re
 
 
+# Intents
+INTENT_LAUNCH = "android.intent.category.LAUNCHER"
+INTENT_HOME = "android.intent.category.HOME"
+
+
 # echo '1' if the previous shell command was successful
 CMD_SUCCESS1 = r" && echo -e '1\c'"
 
@@ -83,11 +88,6 @@ CMD_VERSION = "getprop ro.build.version.release"
 # Commands for getting the MAC address
 CMD_MAC_WLAN0 = "ip addr show wlan0 | grep -m 1 ether"
 CMD_MAC_ETH0 = "ip addr show eth0 | grep -m 1 ether"
-
-
-# Intents
-INTENT_LAUNCH = "android.intent.category.LAUNCHER"
-INTENT_HOME = "android.intent.category.HOME"
 
 
 # ADB key event codes
