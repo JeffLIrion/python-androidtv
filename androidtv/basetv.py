@@ -812,7 +812,7 @@ class BaseTV(object):
         ----------
         app : str
             The ID of the app that will be launched
-        check_current : book
+        check_current : bool
             Whether to check that the app is not already the current app before launching it
 
         """
