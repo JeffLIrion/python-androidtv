@@ -151,15 +151,9 @@ class TestFireTVPython(unittest.TestCase):
         """Test that the ``FireTV.launch_app`` and ``FireTV.stop_app`` methods work correctly.
 
         """
-        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('output\r\nretcode')[self.PATCH_KEY]:
-            result = self.ftv.launch_app("TEST")
-            self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "monkey -p TEST -c android.intent.category.LAUNCHER 1; echo $?")
-            self.assertDictEqual(result, {'output': 'output', 'retcode': 'retcode'})
-
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
-            result = self.ftv.launch_app("TEST")
-            self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "monkey -p TEST -c android.intent.category.LAUNCHER 1; echo $?")
-            self.assertDictEqual(result, {})
+            self.ftv.launch_app("TEST")
+            self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP.format("TEST"))
 
             self.ftv.stop_app("TEST")
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "am force-stop TEST")
