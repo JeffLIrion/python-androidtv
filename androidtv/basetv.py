@@ -813,13 +813,8 @@ class BaseTV(object):
         app : str
             The ID of the app that will be launched
 
-        Returns
-        -------
-        dict
-            A dictionary with keys ``'output'`` and ``'retcode'``, if they could be determined; otherwise, an empty dictionary
-
         """
-        return self._send_intent(app, constants.INTENT_LAUNCH)
+        self._adb.shell(constants.CMD_LAUNCH_APP.format(app))
 
     def stop_app(self, app):
         """Stop an app.
