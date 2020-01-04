@@ -805,21 +805,16 @@ class BaseTV(object):
 
         return {"output": output, "retcode": retcode}
 
-    def launch_app(self, app, check_current=True):
+    def launch_app(self, app):
         """Launch an app.
 
         Parameters
         ----------
         app : str
             The ID of the app that will be launched
-        check_current : bool
-            Whether to check that the app is not already the current app before launching it
 
         """
-        if check_current:
-            self._adb.shell(constants.CMD_LAUNCH_APP.format(app))
-        else:
-            self._send_intent(app, constants.INTENT_LAUNCH)
+        self._adb.shell(constants.CMD_LAUNCH_APP.format(app))
 
     def stop_app(self, app):
         """Stop an app.
