@@ -147,19 +147,27 @@ class TestFireTVPython(unittest.TestCase):
             self.ftv.turn_off()
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_SLEEP))
 
-    def test_launch_app_stop_app(self):
-        """Test that the ``FireTV.launch_app`` and ``FireTV.stop_app`` methods work correctly.
+    def test_send_intent(self):
+        """Test that the ``_send_intent`` method works correctly.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('output\r\nretcode')[self.PATCH_KEY]:
-            result = self.ftv.launch_app("TEST")
+            result = self.ftv._send_intent("TEST", constants.INTENT_LAUNCH)
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "monkey -p TEST -c android.intent.category.LAUNCHER 1; echo $?")
             self.assertDictEqual(result, {'output': 'output', 'retcode': 'retcode'})
 
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
-            result = self.ftv.launch_app("TEST")
+            result = self.ftv._send_intent("TEST", constants.INTENT_LAUNCH)
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "monkey -p TEST -c android.intent.category.LAUNCHER 1; echo $?")
             self.assertDictEqual(result, {})
+
+    def test_launch_app_stop_app(self):
+        """Test that the ``FireTV.launch_app`` and ``FireTV.stop_app`` methods work correctly.
+
+        """
+        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
+            self.ftv.launch_app("TEST")
+            self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP.format("TEST"))
 
             self.ftv.stop_app("TEST")
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "am force-stop TEST")
