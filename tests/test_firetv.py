@@ -151,7 +151,7 @@ class TestFireTVPython(unittest.TestCase):
         """Test that the ``_send_intent`` method works correctly.
 
         """
-        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('output\r\nretcode')[self.PATCH_KEY]:		
+        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('output\r\nretcode')[self.PATCH_KEY]:
             result = self.ftv._send_intent("TEST", constants.INTENT_LAUNCH)
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "monkey -p TEST -c android.intent.category.LAUNCHER 1; echo $?")
             self.assertDictEqual(result, {'output': 'output', 'retcode': 'retcode'})
