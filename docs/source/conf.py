@@ -22,7 +22,7 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'androidtv'
-copyright = '2019, Jeff Irion'
+copyright = '2020, Jeff Irion'
 author = 'Jeff Irion'
 
 # The short X.Y version
