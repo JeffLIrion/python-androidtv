@@ -1090,14 +1090,8 @@ class BaseTV(object):
     #                              volume methods                             #
     #                                                                         #
     # ======================================================================= #
-    def set_volume_level(self, volume_level, current_volume_level=None):
+    def set_volume_level(self, volume_level, current_volume_level=None, current_audio_index=3):
         """Set the volume to the desired level.
-
-        .. note::
-
-           This method works by sending volume up/down commands with a 1 second pause in between.  Without this pause,
-           the device will do a quick power cycle.  This is the most robust solution I've found so far.
-
 
         Parameters
         ----------
@@ -1105,6 +1099,8 @@ class BaseTV(object):
             The new volume level (between 0 and 1)
         current_volume_level : float, None
             The current volume level (between 0 and 1); if it is not provided, it will be determined
+        current_audio_index : int, None
+            TODO
 
         Returns
         -------
@@ -1112,32 +1108,24 @@ class BaseTV(object):
             The new volume level (between 0 and 1), or ``None`` if ``self.max_volume`` could not be determined
 
         """
-        # if necessary, determine the current volume and/or the max volume
-        if current_volume_level is None or not self.max_volume:
-            current_volume = self.volume
+        # if necessary, determine the current volume, current audio index, and the max volume
+        if current_volume_level is None or current_audio_index is None or not self.max_volume:
+            stream_music = self._get_stream_music()
+            audio_output_device = self._audio_output_device(stream_music)
+            current_volume = self._volume(stream_music, audio_output_device)
+            current_audio_index = 3
         else:
             current_volume = min(max(round(self.max_volume * current_volume_level), 0.), self.max_volume)
 
-        # if `self.max_volume` or `current_volume` could not be determined, do not proceed
-        if not self.max_volume or current_volume is None:
+        # if `current_volume`, `current_audio_index`, or `self.max_volume` could not be determined, do not proceed
+        if current_volume is None or current_audio_index is None or not self.max_volume:
             return None
 
         new_volume = min(max(round(self.max_volume * volume_level), 0.), self.max_volume)
 
-        # Case 1: the new volume is the same as the current volume
-        if new_volume == current_volume:
-            return new_volume / self.max_volume
-
-        # Case 2: the new volume is less than the current volume
-        if new_volume < current_volume:
-            cmd = "(" + " && sleep 1 && ".join(["input keyevent {0}".format(constants.KEY_VOLUME_DOWN)] * int(current_volume - new_volume)) + ") &"
-
-        # Case 3: the new volume is greater than the current volume
-        else:
-            cmd = "(" + " && sleep 1 && ".join(["input keyevent {0}".format(constants.KEY_VOLUME_UP)] * int(new_volume - current_volume)) + ") &"
-
-        # send the volume down/up commands
-        self._adb.shell(cmd)
+        # If the new volume is different from the current volume, then set the volume
+        if new_volume != current_volume:
+            self._adb.shell("media volume --show --stream {} --set {}".format(current_audio_index, new_volume))
 
         # return the new volume level
         return new_volume / self.max_volume

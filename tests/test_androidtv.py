@@ -712,17 +712,17 @@ class TestAndroidTVPython(unittest.TestCase):
         with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
             new_volume_level = self.atv.set_volume_level(0.5)
             self.assertEqual(new_volume_level, 0.5)
-            self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
+            self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "media volume --show --stream 3 --set 30")
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
             new_volume_level = self.atv.set_volume_level(0.5, 22./60)
             self.assertEqual(new_volume_level, 0.5)
-            self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "(input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24 && sleep 1 && input keyevent 24) &")
+            self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "media volume --show --stream 3 --set 30")
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
             new_volume_level = self.atv.set_volume_level(22./60, 0.5)
             self.assertEqual(new_volume_level, 22./60)
-            self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "(input keyevent 25 && sleep 1 && input keyevent 25 && sleep 1 && input keyevent 25 && sleep 1 && input keyevent 25 && sleep 1 && input keyevent 25 && sleep 1 && input keyevent 25 && sleep 1 && input keyevent 25 && sleep 1 && input keyevent 25) &")
+            self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "media volume --show --stream 3 --set 22")
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
             self.atv.adb_shell('')
