@@ -343,6 +343,20 @@ class BaseTV(object):
     #                                                                         #
     # ======================================================================= #
     @property
+    def audio_output_device(self):
+        """Get the current audio playback device.
+
+        Returns
+        -------
+        str, None
+            The current audio playback device, or ``None`` if it could not be determined
+
+        """
+        stream_music = self._get_stream_music()
+
+        return self._audio_output_device(stream_music)
+
+    @property
     def audio_state(self):
         """Check if audio is playing, paused, or idle.
 
@@ -392,20 +406,6 @@ class BaseTV(object):
         current_app_response = self._adb.shell(constants.CMD_CURRENT_APP)
 
         return self._current_app(current_app_response)
-
-    @property
-    def audio_output_device(self):
-        """Get the current audio playback device.
-
-        Returns
-        -------
-        str, None
-            The current audio playback device, or ``None`` if it could not be determined
-
-        """
-        stream_music = self._get_stream_music()
-
-        return self._audio_output_device(stream_music)
 
     @property
     def is_volume_muted(self):
@@ -498,6 +498,30 @@ class BaseTV(object):
     #                                                                         #
     # ======================================================================= #
     @staticmethod
+    def _audio_output_device(stream_music):
+        """Get the current audio playback device from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
+
+        Parameters
+        ----------
+        stream_music : str, None
+            The ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``
+
+        Returns
+        -------
+        str, None
+            The current audio playback device, or ``None`` if it could not be determined
+
+        """
+        if not stream_music:
+            return None
+
+        matches = re.findall(constants.DEVICE_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
+        if matches:
+            return matches[0]
+
+        return None
+
+    @staticmethod
     def _audio_state(audio_state_response):
         """Parse the :attr:`audio_state` property from the output of the command :py:const:`androidtv.constants.CMD_AUDIO_STATE`.
 
@@ -569,30 +593,6 @@ class BaseTV(object):
             media_session_state = None
 
         return current_app, media_session_state
-
-    @staticmethod
-    def _audio_output_device(stream_music):
-        """Get the current audio playback device from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
-
-        Parameters
-        ----------
-        stream_music : str, None
-            The ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``
-
-        Returns
-        -------
-        str, None
-            The current audio playback device, or ``None`` if it could not be determined
-
-        """
-        if not stream_music:
-            return None
-
-        matches = re.findall(constants.DEVICE_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
-        if matches:
-            return matches[0]
-
-        return None
 
     def _get_stream_music(self, stream_music_raw=None):
         """Get the ``STREAM_MUSIC`` block from the output of the command :py:const:`androidtv.constants.CMD_STREAM_MUSIC`.
