@@ -1110,7 +1110,7 @@ class BaseTV(object):
             if not self.max_volume:
                 return None
 
-        new_volume = min(max(round(self.max_volume * volume_level), 0.), self.max_volume)
+        new_volume = int(min(max(round(self.max_volume * volume_level), 0.), self.max_volume))
 
         self._adb.shell("media volume --show --stream 3 --set {}".format(new_volume))
 
