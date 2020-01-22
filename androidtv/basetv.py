@@ -1090,17 +1090,13 @@ class BaseTV(object):
     #                              volume methods                             #
     #                                                                         #
     # ======================================================================= #
-    def set_volume_level(self, volume_level, current_volume_level=None, current_audio_index=3):
+    def set_volume_level(self, volume_level):
         """Set the volume to the desired level.
 
         Parameters
         ----------
         volume_level : float
             The new volume level (between 0 and 1)
-        current_volume_level : float, None
-            The current volume level (between 0 and 1); if it is not provided, it will be determined
-        current_audio_index : int, None
-            TODO
 
         Returns
         -------
@@ -1108,24 +1104,15 @@ class BaseTV(object):
             The new volume level (between 0 and 1), or ``None`` if ``self.max_volume`` could not be determined
 
         """
-        # if necessary, determine the current volume, current audio index, and the max volume
-        if current_volume_level is None or current_audio_index is None or not self.max_volume:
-            stream_music = self._get_stream_music()
-            audio_output_device = self._audio_output_device(stream_music)
-            current_volume = self._volume(stream_music, audio_output_device)
-            current_audio_index = 3
-        else:
-            current_volume = min(max(round(self.max_volume * current_volume_level), 0.), self.max_volume)
-
-        # if `current_volume`, `current_audio_index`, or `self.max_volume` could not be determined, do not proceed
-        if current_volume is None or current_audio_index is None or not self.max_volume:
-            return None
+        # if necessary, determine the max volume
+        if not self.max_volume:
+            _ = self.volume
+            if not self.max_volume:
+                return None
 
         new_volume = min(max(round(self.max_volume * volume_level), 0.), self.max_volume)
 
-        # If the new volume is different from the current volume, then set the volume
-        if new_volume != current_volume:
-            self._adb.shell("media volume --show --stream {} --set {}".format(current_audio_index, new_volume))
+        self._adb.shell("media volume --show --stream 3 --set {}".format(new_volume))
 
         # return the new volume level
         return new_volume / self.max_volume
