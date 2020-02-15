@@ -6,6 +6,7 @@ Submodules
 
 .. toctree::
 
+   androidtv.adb_manager
    androidtv.androidtv
    androidtv.basetv
    androidtv.constants
@@ -15,6 +16,6 @@ Module contents
 ---------------
 
 .. automodule:: androidtv
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -4,77 +4,40 @@ ADB Debugging must be enabled.
 """
 
 
+import logging
+
 from .basetv import BaseTV
 from . import constants
 
-
-# Apps
-APP_PACKAGE_LAUNCHER = "com.amazon.tv.launcher"
-APP_PACKAGE_SETTINGS = "com.amazon.tv.settings"
-
-# Intents
-INTENT_LAUNCH = "android.intent.category.LAUNCHER"
-INTENT_HOME = "android.intent.category.HOME"
+_LOGGER = logging.getLogger(__name__)
 
 
 class FireTV(BaseTV):
-    """Representation of an Amazon Fire TV device."""
+    """Representation of an Amazon Fire TV device.
+
+    Parameters
+    ----------
+    host : str
+        The address of the device; may be an IP address or a host name
+    port : int
+        The device port to which we are connecting (default is 5555)
+    adbkey : str
+        The path to the ``adbkey`` file for ADB authentication
+    adb_server_ip : str
+        The IP address of the ADB server
+    adb_server_port : int
+        The port for the ADB server
+    state_detection_rules : dict, None
+        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
+    auth_timeout_s : float
+        Authentication timeout (in seconds)
+
+    """
 
     DEVICE_CLASS = 'firetv'
 
-    def __init__(self, host, adbkey='', adb_server_ip='', adb_server_port=5037):
-        """Initialize a ``FireTV`` object.
-
-        Parameters
-        ----------
-        host : str
-            The address of the device in the format ``<ip address>:<host>``
-        adbkey : str
-            The path to the ``adbkey`` file for ADB authentication; the file ``adbkey.pub`` must be in the same directory
-        adb_server_ip : str
-            The IP address of the ADB server
-        adb_server_port : int
-            The port for the ADB server
-
-        """
-        BaseTV.__init__(self, host, adbkey, adb_server_ip, adb_server_port)
-
-    # ======================================================================= #
-    #                                                                         #
-    #                               ADB methods                               #
-    #                                                                         #
-    # ======================================================================= #
-    def _send_intent(self, pkg, intent, count=1):
-        """Send an intent to the device.
-
-        Parameters
-        ----------
-        pkg : str
-            The command that will be sent is ``monkey -p <intent> -c <pkg> <count>; echo $?``
-        intent : str
-            The command that will be sent is ``monkey -p <intent> -c <pkg> <count>; echo $?``
-        count : int, str
-            The command that will be sent is ``monkey -p <intent> -c <pkg> <count>; echo $?``
-
-        Returns
-        -------
-        dict
-            A dictionary with keys ``'output'`` and ``'retcode'``, if they could be determined; otherwise, an empty dictionary
-
-        """
-        cmd = 'monkey -p {} -c {} {}; echo $?'.format(pkg, intent, count)
-
-        # adb shell outputs in weird format, so we cut it into lines,
-        # separate the retcode and return info to the user
-        res = self.adb_shell(cmd)
-        if res is None:
-            return {}
-
-        res = res.strip().split("\r\n")
-        retcode = res[-1]
-        output = "\n".join(res[:-1])
-
-        return {"output": output, "retcode": retcode}
+    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
+        BaseTV.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
 
     # ======================================================================= #
     #                                                                         #
@@ -87,7 +50,7 @@ class FireTV(BaseTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the ``running_apps`` property
+            Whether or not to get the :attr:`~androidtv.basetv.BaseTV.running_apps` property
 
         Returns
         -------
@@ -100,10 +63,16 @@ class FireTV(BaseTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, wake_lock_size, media_session_state, current_app, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
+        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
+
+        # Check if device is unavailable
+        if screen_on is None:
+            state = None
+            current_app = None
+            running_apps = None
 
         # Check if device is off
-        if not screen_on:
+        elif not screen_on:
             state = constants.STATE_OFF
             current_app = None
             running_apps = None
@@ -116,12 +85,16 @@ class FireTV(BaseTV):
 
         else:
             # Get the running apps
-            if running_apps is None and current_app:
+            if not running_apps and current_app:
                 running_apps = [current_app]
 
-            # Get the state
-            # TODO: determine the state differently based on the `current_app`.
-            if current_app in [APP_PACKAGE_LAUNCHER, APP_PACKAGE_SETTINGS]:
+            # Determine the state using custom rules
+            state = self._custom_state_detection(current_app=current_app, media_session_state=media_session_state, wake_lock_size=wake_lock_size)
+            if state:
+                return state, current_app, running_apps
+
+            # Determine the state based on the `current_app`
+            if current_app in [constants.APP_FIRETV_PACKAGE_LAUNCHER, constants.APP_FIRETV_PACKAGE_SETTINGS, None]:
                 state = constants.STATE_STANDBY
 
             # Amazon Video
@@ -130,6 +103,29 @@ class FireTV(BaseTV):
                     state = constants.STATE_PLAYING
                 else:
                     # wake_lock_size == 2
+                    state = constants.STATE_PAUSED
+
+            # Firefox
+            elif current_app == constants.APP_FIREFOX:
+                if wake_lock_size == 3:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
+
+            # Hulu
+            elif current_app == constants.APP_HULU:
+                if wake_lock_size == 4:
+                    state = constants.STATE_PLAYING
+                elif wake_lock_size == 2:
+                    state = constants.STATE_PAUSED
+                else:
+                    state = constants.STATE_STANDBY
+
+            # Jellyfin
+            elif current_app == constants.APP_JELLYFIN_TV:
+                if wake_lock_size == 2:
+                    state = constants.STATE_PLAYING
+                else:
                     state = constants.STATE_PAUSED
 
             # Netflix
@@ -141,35 +137,13 @@ class FireTV(BaseTV):
                 else:
                     state = constants.STATE_STANDBY
 
-            # Jellyfin
-            elif current_app == constants.APP_JELLYFIN_TV:
-                if wake_lock_size == 2:
-                    state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_PAUSED
-
-            # Spotify
-            elif current_app == constants.APP_SPOTIFY:
-                if media_session_state == 2:
-                    state = constants.STATE_PAUSED
-                elif media_session_state == 3:
-                    state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_STANDBY
-
-            # Waipu TV
-            elif current_app == constants.APP_WAIPU_TV:
-                if wake_lock_size == 2:
-                    state = constants.STATE_PAUSED
-                elif wake_lock_size == 3:
-                    state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_STANDBY
-
-            # Firefox
-            elif current_app == constants.APP_FIREFOX:
-                if wake_lock_size == 3:
-                    state = constants.STATE_PLAYING
+            # Plex
+            elif current_app == constants.APP_PLEX:
+                if media_session_state == 3:
+                    if wake_lock_size == 2:
+                        state = constants.STATE_PAUSED
+                    else:
+                        state = constants.STATE_PLAYING
                 else:
                     state = constants.STATE_STANDBY
 
@@ -182,6 +156,15 @@ class FireTV(BaseTV):
                 else:
                     state = constants.STATE_STANDBY
 
+            # Spotify
+            elif current_app == constants.APP_SPOTIFY:
+                if media_session_state == 2:
+                    state = constants.STATE_PAUSED
+                elif media_session_state == 3:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
+
             # Twitch
             elif current_app == constants.APP_TWITCH:
                 if wake_lock_size == 2:
@@ -189,6 +172,15 @@ class FireTV(BaseTV):
                 elif media_session_state == 3:
                     state = constants.STATE_PLAYING
                 elif media_session_state == 4:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_STANDBY
+
+            # Waipu TV
+            elif current_app == constants.APP_WAIPU_TV:
+                if wake_lock_size == 2:
+                    state = constants.STATE_PAUSED
+                elif wake_lock_size == 3:
                     state = constants.STATE_PLAYING
                 else:
                     state = constants.STATE_STANDBY
@@ -213,53 +205,23 @@ class FireTV(BaseTV):
 
     # ======================================================================= #
     #                                                                         #
-    #                              App methods                                #
-    #                                                                         #
-    # ======================================================================= #
-    def launch_app(self, app):
-        """Launch an app.
-
-        Parameters
-        ----------
-        app : str
-            The ID of the app that will be launched
-
-        Returns
-        -------
-        dict
-            A dictionary with keys ``'output'`` and ``'retcode'``, if they could be determined; otherwise, an empty dictionary
-
-        """
-        return self._send_intent(app, INTENT_LAUNCH)
-
-    def stop_app(self, app):
-        """Stop an app.
-
-        Parameters
-        ----------
-        app : str
-            The ID of the app that will be stopped
-
-        Returns
-        -------
-        str, None
-            The output of the ``am force-stop`` ADB shell command, or ``None`` if the device is unavailable
-
-        """
-        return self.adb_shell("am force-stop {0}".format(app))
-
-    # ======================================================================= #
-    #                                                                         #
     #                               properties                                #
     #                                                                         #
     # ======================================================================= #
     def get_properties(self, get_running_apps=True, lazy=False):
         """Get the properties needed for Home Assistant updates.
 
+        This will send one of the following ADB commands:
+
+        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS`
+        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS`
+        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS`
+        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS`
+
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the ``running_apps`` property
+            Whether or not to get the :attr:`~androidtv.basetv.BaseTV.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
@@ -271,27 +233,25 @@ class FireTV(BaseTV):
             Whether or not the device is awake (screensaver is not running), or ``None`` if it was not determined
         wake_lock_size : int, None
             The size of the current wake lock, or ``None`` if it was not determined
+        current_app : str, None
+            The current app property, or ``None`` if it was not determined
         media_session_state : int, None
             The state from the output of ``dumpsys media_session``, or ``None`` if it was not determined
-        current_app : dict, None
-            The current app property, or ``None`` if it was not determined
         running_apps : list, None
             A list of the running apps, or ``None`` if it was not determined
 
         """
-        if get_running_apps:
-            output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                    constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                    constants.CMD_WAKE_LOCK_SIZE + " && (" +
-                                    constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
-                                    constants.CMD_CURRENT_APP + " && " +
-                                    constants.CMD_RUNNING_APPS)
+        if lazy:
+            if get_running_apps:
+                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS)
+            else:
+                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS)
         else:
-            output = self.adb_shell(constants.CMD_SCREEN_ON + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                    constants.CMD_AWAKE + (constants.CMD_SUCCESS1 if lazy else constants.CMD_SUCCESS1_FAILURE0) + " && " +
-                                    constants.CMD_WAKE_LOCK_SIZE + " && (" +
-                                    constants.CMD_MEDIA_SESSION_STATE + " || echo) && " +
-                                    constants.CMD_CURRENT_APP)
+            if get_running_apps:
+                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
+            else:
+                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
+        _LOGGER.debug("Fire TV %s:%d `get_properties` response: %s", self.host, self.port, output)
 
         # ADB command was unsuccessful
         if output is None:
@@ -314,22 +274,22 @@ class FireTV(BaseTV):
             return screen_on, awake, -1, None, None, None
         wake_lock_size = self._wake_lock_size(lines[0])
 
-        # `media_session_state` property
+        # `current_app` property
         if len(lines) < 2:
             return screen_on, awake, wake_lock_size, None, None, None
-        media_session_state = self._media_session_state(lines[1])
+        current_app = self._current_app(lines[1])
 
-        # `current_app` property
+        # `media_session_state` property
         if len(lines) < 3:
-            return screen_on, awake, wake_lock_size, media_session_state, None, None
-        current_app = self._current_app(lines[2])
+            return screen_on, awake, wake_lock_size, current_app, None, None
+        media_session_state = self._media_session_state(lines[2], current_app)
 
         # `running_apps` property
         if not get_running_apps or len(lines) < 4:
-            return screen_on, awake, wake_lock_size, media_session_state, current_app, None
+            return screen_on, awake, wake_lock_size, current_app, media_session_state, None
         running_apps = self._running_apps(lines[3:])
 
-        return screen_on, awake, wake_lock_size, media_session_state, current_app, running_apps
+        return screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps
 
     def get_properties_dict(self, get_running_apps=True, lazy=True):
         """Get the properties needed for Home Assistant updates and return them as a dictionary.
@@ -337,25 +297,44 @@ class FireTV(BaseTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the ``running_apps`` property
+            Whether or not to get the :attr:`~androidtv.basetv.BaseTV.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
         Returns
         -------
         dict
-             A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'media_session_state'``,
-             ``'current_app'``, and ``'running_apps'``
+             A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'current_app'``,
+             ``'media_session_state'``, and ``'running_apps'``
 
         """
-        screen_on, awake, wake_lock_size, media_session_state, current_app, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
         return {'screen_on': screen_on,
                 'awake': awake,
                 'wake_lock_size': wake_lock_size,
-                'media_session_state': media_session_state,
                 'current_app': current_app,
+                'media_session_state': media_session_state,
                 'running_apps': running_apps}
+
+    # ======================================================================= #
+    #                                                                         #
+    #                               Properties                                #
+    #                                                                         #
+    # ======================================================================= #
+    @property
+    def running_apps(self):
+        """Return a list of running user applications.
+
+        Returns
+        -------
+        list
+            A list of the running apps
+
+        """
+        running_apps_response = self._adb.shell(constants.CMD_FIRETV_RUNNING_APPS)
+
+        return self._running_apps(running_apps_response)
 
     # ======================================================================= #
     #                                                                         #
@@ -364,8 +343,8 @@ class FireTV(BaseTV):
     # ======================================================================= #
     def turn_on(self):
         """Send ``POWER`` and ``HOME`` actions if the device is off."""
-        self.adb_shell(constants.CMD_SCREEN_ON + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME))
+        self._adb.shell(constants.CMD_SCREEN_ON + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME))
 
     def turn_off(self):
         """Send ``SLEEP`` action if the device is not off."""
-        self.adb_shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_SLEEP))
+        self._adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_SLEEP))

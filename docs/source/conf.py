@@ -22,13 +22,13 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'androidtv'
-copyright = '2019, Jeff Irion'
+copyright = '2020, Jeff Irion'
 author = 'Jeff Irion'
 
 # The short X.Y version
-version = '0.0.15'
+version = '0.0.39'
 # The full version, including alpha/beta/rc tags
-release = '0.0.15'
+release = '0.0.39'
 
 
 # -- General configuration ---------------------------------------------------
@@ -77,7 +77,7 @@ pygments_style = 'sphinx'
 
 autodoc_mock_imports = ['adb', 'adb_messenger']
 
-autodoc_default_flags = ['members', 'undoc-members', 'private-members', 'show-inheritance']
+autodoc_default_options = {'members': True, 'undoc-members': True, 'private-members': True, 'show-inheritance': True}
 
 # -- Options for HTML output -------------------------------------------------
 

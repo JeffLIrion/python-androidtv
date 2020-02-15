@@ -5,8 +5,13 @@
 androidtv.egg-info
 
 # Build files
+.eggs/
 build/
 dist/
 
 # Documentation
 docs/build/
+
+# Coverage
+.coverage
+htmlcov/
