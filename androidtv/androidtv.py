@@ -109,7 +109,11 @@ class AndroidTV(BaseTV):
                 if media_session_state == 2:
                     state = constants.STATE_PAUSED
                 elif media_session_state == 3:
-                    state = constants.STATE_PLAYING
+                    if audio_state == 'idle':
+                        # Continue Watching screen to paused
+                        state = constants.STATE_PAUSED
+                    else:
+                        state = constants.STATE_PLAYING
                 else:
                     state = constants.STATE_STANDBY
 
