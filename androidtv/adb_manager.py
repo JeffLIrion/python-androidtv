@@ -227,7 +227,6 @@ class ADBPython(object):
             return None
 
         with _acquire(self._adb_lock):
-            print('\n\n\n' + self._adb.shell.__doc__ + '\n\n\n')
             _LOGGER.debug("Taking screencap from %s:%d via adb-shell", self.host, self.port)
             return self._adb.shell("screencap -p", decode=False)
 
