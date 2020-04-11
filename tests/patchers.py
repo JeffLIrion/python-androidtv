@@ -29,7 +29,7 @@ class AdbDeviceTcpFake(object):
     def pull(self, *args, **kwargs):
         """Pull a file from the device."""
 
-    def shell(self, cmd):
+    def shell(self, cmd, *args, **kwargs):
         """Send an ADB shell command."""
         return None
 
@@ -89,6 +89,10 @@ class DeviceFake(object):
         """Send an ADB shell command."""
         raise NotImplementedError
 
+    def screencap(self):
+        """Take a screencap."""
+        raise NotImplementedError
+
 
 def patch_connect(success):
     """Mock the `adb_shell.adb_device.AdbDeviceTcp` and `ppadb.client.Client` classes."""
@@ -109,12 +113,12 @@ def patch_connect(success):
 def patch_shell(response=None, error=False):
     """Mock the `AdbDeviceTcpFake.shell` and `DeviceFake.shell` methods."""
 
-    def shell_success(self, cmd):
+    def shell_success(self, cmd, *args, **kwargs):
         """Mock the `AdbDeviceTcpFake.shell` and `DeviceFake.shell` methods when they are successful."""
         self.shell_cmd = cmd
         return response
 
-    def shell_fail_python(self, cmd):
+    def shell_fail_python(self, cmd, *args, **kwargs):
         """Mock the `AdbDeviceTcpFake.shell` method when it fails."""
         self.shell_cmd = cmd
         raise AttributeError

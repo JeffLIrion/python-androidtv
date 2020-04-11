@@ -1,6 +1,11 @@
 import sys
 import unittest
 
+try:
+    from unittest.mock import patch
+except ImportError:
+    from mock import patch
+
 
 sys.path.insert(0, '..')
 
@@ -74,6 +79,8 @@ STATE_DETECTION_RULES_INVALID9 = {'com.amazon.tv.launcher': [{'standby': {'audio
 STATE_DETECTION_RULES_INVALID10 = {'com.amazon.tv.launcher': [{'standby': {'media_session_state': 'INVALID'}}]}
 STATE_DETECTION_RULES_INVALID11 = {'com.amazon.tv.launcher': [{'standby': {'audio_state': 123}}]}
 
+PNG_IMAGE = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\n\x00\x00\x00\n\x08\x06\x00\x00\x00\x8d2\xcf\xbd\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00\tpHYs\x00\x00\x0fa\x00\x00\x0fa\x01\xa8?\xa7i\x00\x00\x00\x0eIDAT\x18\x95c`\x18\x05\x83\x13\x00\x00\x01\x9a\x00\x01\x16\xca\xd3i\x00\x00\x00\x00IEND\xaeB`\x82'
+
 
 class TestBaseTVPython(unittest.TestCase):
     PATCH_KEY = 'python'
@@ -114,6 +121,13 @@ class TestBaseTVPython(unittest.TestCase):
         with patchers.PATCH_PUSH[self.PATCH_KEY] as patch_push:
             self.btv.adb_push("TEST_LOCAL_PATCH", "TEST_DEVICE_PATH")
             self.assertEqual(patch_push.call_count, 1)
+
+    def test_adb_screencap(self):
+        """Test that the ``adb_screencap`` method works correctly.
+
+        """
+        with patch.object(self.btv._adb, 'screencap', return_value=PNG_IMAGE):
+            self.assertEqual(self.btv.adb_screencap(), PNG_IMAGE)
 
     def test_keys(self):
         """Test that the key methods send the correct commands.
