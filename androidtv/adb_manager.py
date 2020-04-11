@@ -213,6 +213,24 @@ class ADBPython(object):
             self._adb.push(local_path, device_path)
             return
 
+    def screencap(self):
+        """Take a screenshot using the Python ADB implementation.
+
+        Returns
+        -------
+        bytes
+            The screencap as a binary .png image
+
+        """
+        if not self.available:
+            _LOGGER.debug("ADB screencap not taken from %s:%d because adb-shell connection is not established", self.host, self.port)
+            return None
+
+        with _acquire(self._adb_lock):
+            print('\n\n\n' + self._adb.shell.__doc__ + '\n\n\n')
+            _LOGGER.debug("Taking screencap from %s:%d via adb-shell", self.host, self.port)
+            return self._adb.shell("screencap -p", decode=False)
+
     def shell(self, cmd):
         """Send an ADB command using the Python ADB implementation.
 
@@ -411,6 +429,23 @@ class ADBServer(object):
             _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
             self._adb_device.push(local_path, device_path)
             return
+
+    def screencap(self):
+        """Take a screenshot using an ADB server.
+
+        Returns
+        -------
+        bytes
+            The screencap as a binary .png image
+
+        """
+        if not self.available:
+            _LOGGER.debug("ADB screencap not taken from %s:%d via ADB server %s:%d because pure-python-adb connection is not established", self.host, self.port, self.adb_server_ip, self.adb_server_port)
+            return None
+
+        with _acquire(self._adb_lock):
+            _LOGGER.debug("Taking screencap from %s:%d via ADB server %s:%d", self.host, self.port, self.adb_server_ip, self.adb_server_port)
+            return self._adb_device.screencap()
 
     def shell(self, cmd):
         """Send an ADB command using an ADB server.

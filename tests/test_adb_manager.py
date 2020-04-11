@@ -30,6 +30,9 @@ class ReadFail(object):
         raise FileNotFoundError
 
 
+PNG_IMAGE = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\n\x00\x00\x00\n\x08\x06\x00\x00\x00\x8d2\xcf\xbd\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00\tpHYs\x00\x00\x0fa\x00\x00\x0fa\x01\xa8?\xa7i\x00\x00\x00\x0eIDAT\x18\x95c`\x18\x05\x83\x13\x00\x00\x01\x9a\x00\x01\x16\xca\xd3i\x00\x00\x00\x00IEND\xaeB`\x82'
+
+
 @contextmanager
 def open_priv(infile):
     """A patch that will read the private key but not the public key."""
@@ -241,6 +244,42 @@ class TestADBPython(unittest.TestCase):
                 self.assertTrue(self.adb.connect())
                 self.adb.pull("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
                 self.assertEqual(patch_pull.call_count, 1)
+
+    def test_adb_screencap_fail_unavailable(self):
+        """Test when an ADB screencap command fails because the connection is unavailable.
+
+        """        
+        self.assertFalse(self.adb.available)
+        self.assertIsNone(self.adb.screencap())
+
+    def test_adb_screencap_lock_not_acquired(self):
+        """Test when an ADB screencap command fails because the ADB lock could not be acquired.
+
+        """
+        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("TEST")[self.PATCH_KEY]:
+            self.assertTrue(self.adb.connect())
+            self.assertEqual(self.adb.shell("TEST"), "TEST")
+
+        with patchers.patch_shell(PNG_IMAGE)[self.PATCH_KEY], patch.object(self.adb, '_adb_lock', LockedLock()):
+            with patch('{}.LockedLock.release'.format(__name__)) as release:
+                with self.assertRaises(LockNotAcquiredException):
+                    self.adb.screencap()
+
+                release.assert_not_called()
+
+    def test_adb_screencap_success(self):
+        """Test the `screencap` method.
+
+        """
+        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(PNG_IMAGE)[self.PATCH_KEY]:
+            self.assertTrue(self.adb.connect())
+
+            if isinstance(self.adb, ADBPython):
+                self.assertEqual(self.adb.screencap(), PNG_IMAGE)
+
+            else:
+                with patch.object(self.adb._adb_device, 'screencap', return_value=PNG_IMAGE):
+                    self.assertEqual(self.adb.screencap(), PNG_IMAGE)
 
 
 class TestADBServer(TestADBPython):
