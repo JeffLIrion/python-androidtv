@@ -32,6 +32,7 @@ class ReadFail(object):
 
 PNG_IMAGE = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\n\x00\x00\x00\n\x08\x06\x00\x00\x00\x8d2\xcf\xbd\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00\tpHYs\x00\x00\x0fa\x00\x00\x0fa\x01\xa8?\xa7i\x00\x00\x00\x0eIDAT\x18\x95c`\x18\x05\x83\x13\x00\x00\x01\x9a\x00\x01\x16\xca\xd3i\x00\x00\x00\x00IEND\xaeB`\x82'
 
+PNG_IMAGE_NEEDS_REPLACING = PNG_IMAGE[:5] + b'\r' + PNG_IMAGE[5:]
 
 @contextmanager
 def open_priv(infile):
@@ -276,6 +277,9 @@ class TestADBPython(unittest.TestCase):
 
             if isinstance(self.adb, ADBPython):
                 self.assertEqual(self.adb.screencap(), PNG_IMAGE)
+
+                with patchers.patch_shell(PNG_IMAGE_NEEDS_REPLACING)[self.PATCH_KEY]:
+                    self.assertEqual(self.adb.screencap(), PNG_IMAGE)
 
             else:
                 with patch.object(self.adb._adb_device, 'screencap', return_value=PNG_IMAGE):

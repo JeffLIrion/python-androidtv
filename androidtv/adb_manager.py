@@ -228,7 +228,10 @@ class ADBPython(object):
 
         with _acquire(self._adb_lock):
             _LOGGER.debug("Taking screencap from %s:%d via adb-shell", self.host, self.port)
-            return self._adb.shell("screencap -p", decode=False)
+            result = self._adb.shell("screencap -p", decode=False)
+            if result[5] == 0x0d:
+                return result.replace(b"\r\n", b"\n")
+            return result
 
     def shell(self, cmd):
         """Send an ADB command using the Python ADB implementation.
