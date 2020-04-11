@@ -155,6 +155,20 @@ class BaseTV(object):
         """
         return self._adb.push(local_path, device_path)
 
+    def adb_screencap(self):
+        """Take a screencap.
+
+        This calls :py:meth:`androidtv.adb_manager.ADBPython.screencap` or :py:meth:`androidtv.adb_manager.ADBServer.screencap`,
+        depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
+
+        Returns
+        -------
+        bytes
+            The screencap as a binary .png image
+
+        """
+        return self._adb.screencap()
+
     def adb_connect(self, always_log_errors=True, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
         """Connect to an Android TV / Fire TV device.
 
