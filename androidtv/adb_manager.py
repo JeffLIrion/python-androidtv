@@ -338,9 +338,10 @@ class ADBServer(object):
     def close(self):
         """Close the ADB server socket connection.
 
-        Currently, this doesn't do anything.
+        Currently, this doesn't do anything except set ``self._available = False``.
 
         """
+        self._available = False
 
     def connect(self, always_log_errors=True):
         """Connect to an Android TV / Fire TV device.
@@ -371,7 +372,7 @@ class ADBServer(object):
 
                     # ADB connection attempt failed (without an exception)
                     if self._available or always_log_errors:
-                        _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d", self.host, self.port, self.adb_server_ip, self.adb_server_port)
+                        _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d because the server is not connected to the device", self.host, self.port, self.adb_server_ip, self.adb_server_port)
 
                     self.close()
                     self._available = False
