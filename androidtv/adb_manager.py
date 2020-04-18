@@ -279,8 +279,9 @@ class ADBServer(object):
         self._adb_client = None
         self._adb_device = None
 
-        # keep track of whether the ADB connection is intact
+        # keep track of whether the ADB connection is/was intact
         self._available = False
+        self._was_available = False
 
         # use a lock to make sure that ADB commands don't overlap
         self._adb_lock = threading.Lock()
@@ -295,52 +296,18 @@ class ADBServer(object):
             Whether or not the ADB connection is intact
 
         """
-        if not self._adb_client:
+        if not self._adb_client or not self._adb_device:
             return False
 
-        try:
-            # make sure the server is available
-            adb_devices = self._adb_client.devices()
-
-            # make sure the device is available
-            try:
-                # case 1: the device is currently available
-                host_port = '{}:{}'.format(self.host, self.port)
-                if any([host_port in dev.get_serial_no() for dev in adb_devices]):
-                    if not self._available:
-                        self._available = True
-                    return True
-
-                # case 2: the device is not currently available
-                if self._available:
-                    _LOGGER.error('ADB server is not connected to the device.')
-                    self._available = False
-                return False
-
-            except RuntimeError:
-                if self._available:
-                    _LOGGER.error('ADB device is unavailable; encountered an error when searching for device.')
-                    self._available = False
-                return False
-
-        except RuntimeError:
-            if self._available:
-                _LOGGER.error('ADB server is unavailable.')
-                self._available = False
-            return False
-
-        except Exception as exc:  # noqa pylint: disable=broad-except
-            if self._available:
-                _LOGGER.error('ADB server is unavailable, error: %s', exc)
-                self._available = False
-            return False
+        return self._available
 
     def close(self):
         """Close the ADB server socket connection.
 
-        Currently, this doesn't do anything.
+        Currently, this doesn't do anything except set ``self._available = False``.
 
         """
+        self._available = False
 
     def connect(self, always_log_errors=True):
         """Connect to an Android TV / Fire TV device.
@@ -367,29 +334,33 @@ class ADBServer(object):
                     if self._adb_device:
                         _LOGGER.debug("ADB connection to %s:%d via ADB server %s:%d successfully established", self.host, self.port, self.adb_server_ip, self.adb_server_port)
                         self._available = True
+                        self._was_available = True
                         return True
 
                     # ADB connection attempt failed (without an exception)
-                    if self._available or always_log_errors:
-                        _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d", self.host, self.port, self.adb_server_ip, self.adb_server_port)
+                    if self._was_available or always_log_errors:
+                        _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d because the server is not connected to the device", self.host, self.port, self.adb_server_ip, self.adb_server_port)
 
                     self.close()
                     self._available = False
+                    self._was_available = False
                     return False
 
                 # ADB connection attempt failed
                 except Exception as exc:  # noqa pylint: disable=broad-except
-                    if self._available or always_log_errors:
+                    if self._was_available or always_log_errors:
                         _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d, error: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, exc)
 
                     self.close()
                     self._available = False
+                    self._was_available = False
                     return False
 
         except LockNotAcquiredException:
             _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d because pure-python-adb lock not acquired.", self.host, self.port, self.adb_server_ip, self.adb_server_port)
             self.close()
             self._available = False
+            self._was_available = False
             return False
 
     def pull(self, local_path, device_path):
@@ -463,7 +434,7 @@ class ADBServer(object):
             The response from the device, if there is a response
 
         """
-        if not self._available:
+        if not self.available:
             _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, cmd)
             return None
 
