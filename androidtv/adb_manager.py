@@ -279,8 +279,9 @@ class ADBServer(object):
         self._adb_client = None
         self._adb_device = None
 
-        # keep track of whether the ADB connection is intact
+        # keep track of whether the ADB connection is/was intact
         self._available = False
+        self._was_available = False
 
         # use a lock to make sure that ADB commands don't overlap
         self._adb_lock = threading.Lock()
@@ -368,29 +369,33 @@ class ADBServer(object):
                     if self._adb_device:
                         _LOGGER.debug("ADB connection to %s:%d via ADB server %s:%d successfully established", self.host, self.port, self.adb_server_ip, self.adb_server_port)
                         self._available = True
+                        self._was_available = True
                         return True
 
                     # ADB connection attempt failed (without an exception)
-                    if self._available or always_log_errors:
+                    if self._was_available or always_log_errors:
                         _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d because the server is not connected to the device", self.host, self.port, self.adb_server_ip, self.adb_server_port)
 
                     self.close()
                     self._available = False
+                    self._was_available = False
                     return False
 
                 # ADB connection attempt failed
                 except Exception as exc:  # noqa pylint: disable=broad-except
-                    if self._available or always_log_errors:
+                    if self._was_available or always_log_errors:
                         _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d, error: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, exc)
 
                     self.close()
                     self._available = False
+                    self._was_available = False
                     return False
 
         except LockNotAcquiredException:
             _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d because pure-python-adb lock not acquired.", self.host, self.port, self.adb_server_ip, self.adb_server_port)
             self.close()
             self._available = False
+            self._was_available = False
             return False
 
     def pull(self, local_path, device_path):
