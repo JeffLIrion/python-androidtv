@@ -297,39 +297,6 @@ class TestADBServer(TestADBPython):
         """
         self.adb = ADBServer('HOST', 5555, 'ADB_SERVER_IP')
 
-    def test_available(self):
-        """Test that the ``available`` property works correctly.
-
-        """
-        with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
-            self.assertTrue(self.adb.available)
-            self.adb._available = False
-            self.assertTrue(self.adb.available)
-            self.assertTrue(self.adb._available)
-
-        with patchers.patch_connect(True)[self.PATCH_KEY], patch('{}.patchers.ClientFakeSuccess.devices'.format(__name__), side_effect=RuntimeError):
-            self.assertFalse(self.adb.available)
-
-        with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
-
-        with patch('{}.patchers.DeviceFake.get_serial_no'.format(__name__), side_effect=RuntimeError):
-            self.assertFalse(self.adb.available)
-
-        with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
-
-        with patch.object(self.adb._adb_client, 'devices', return_value=[]):
-            self.assertFalse(self.adb.available)
-
-        with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
-
-        with patchers.PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION[self.PATCH_KEY]:
-            self.assertFalse(self.adb.available)
-            self.assertFalse(self.adb._available)
-
     def test_connect_fail_server(self):
         """Test that the ``connect`` method works correctly.
 
