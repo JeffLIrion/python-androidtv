@@ -403,7 +403,7 @@ class ADBServer(object):
             The file on the device that will be pulled
 
         """
-        if not self.available:
+        if not self._available:
             _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: pull(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
             return
 
@@ -423,7 +423,7 @@ class ADBServer(object):
             The path where the file will be saved on the device
 
         """
-        if not self.available:
+        if not self._available:
             _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
             return
 
@@ -441,7 +441,7 @@ class ADBServer(object):
             The screencap as a binary .png image
 
         """
-        if not self.available:
+        if not self._available:
             _LOGGER.debug("ADB screencap not taken from %s:%d via ADB server %s:%d because pure-python-adb connection is not established", self.host, self.port, self.adb_server_ip, self.adb_server_port)
             return None
 
