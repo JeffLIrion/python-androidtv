@@ -296,45 +296,10 @@ class ADBServer(object):
             Whether or not the ADB connection is intact
 
         """
-        if not self._adb_client:
+        if not self._adb_client or not self._adb_device:
             return False
 
-        try:
-            # make sure the server is available
-            adb_devices = self._adb_client.devices()
-
-            # make sure the device is available
-            try:
-                # case 1: the device is currently available
-                host_port = '{}:{}'.format(self.host, self.port)
-                if any([host_port in dev.get_serial_no() for dev in adb_devices]):
-                    if not self._available:
-                        self._available = True
-                    return True
-
-                # case 2: the device is not currently available
-                if self._available:
-                    _LOGGER.error('ADB server is not connected to the device.')
-                    self._available = False
-                return False
-
-            except RuntimeError:
-                if self._available:
-                    _LOGGER.error('ADB device is unavailable; encountered an error when searching for device.')
-                    self._available = False
-                return False
-
-        except RuntimeError:
-            if self._available:
-                _LOGGER.error('ADB server is unavailable.')
-                self._available = False
-            return False
-
-        except Exception as exc:  # noqa pylint: disable=broad-except
-            if self._available:
-                _LOGGER.error('ADB server is unavailable, error: %s', exc)
-                self._available = False
-            return False
+        return self._available
 
     def close(self):
         """Close the ADB server socket connection.
@@ -409,7 +374,7 @@ class ADBServer(object):
             The file on the device that will be pulled
 
         """
-        if not self._available:
+        if not self.available:
             _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: pull(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
             return
 
@@ -429,7 +394,7 @@ class ADBServer(object):
             The path where the file will be saved on the device
 
         """
-        if not self._available:
+        if not self.available:
             _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
             return
 
@@ -447,7 +412,7 @@ class ADBServer(object):
             The screencap as a binary .png image
 
         """
-        if not self._available:
+        if not self.available:
             _LOGGER.debug("ADB screencap not taken from %s:%d via ADB server %s:%d because pure-python-adb connection is not established", self.host, self.port, self.adb_server_ip, self.adb_server_port)
             return None
 
@@ -469,7 +434,7 @@ class ADBServer(object):
             The response from the device, if there is a response
 
         """
-        if not self._available:
+        if not self.available:
             _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, cmd)
             return None
 
