@@ -344,7 +344,7 @@ class TestFireTVPython(unittest.TestCase):
 
         self.ftv._state_detection_rules = {constants.APP_AMAZON_VIDEO: [{'standby': {'media_session_state': 2}}]}
         self.assertUpdate([True, True, 2, constants.APP_AMAZON_VIDEO, None, [constants.APP_AMAZON_VIDEO]],
-                          (constants.STATE_PAUSED, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
+                          (constants.STATE_STANDBY, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
 
         # Firefox
         self.assertUpdate([True, True, 3, constants.APP_FIREFOX, 3, [constants.APP_FIREFOX]],
