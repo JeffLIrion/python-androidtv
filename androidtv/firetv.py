@@ -99,11 +99,12 @@ class FireTV(BaseTV):
 
             # Amazon Video
             elif current_app == constants.APP_AMAZON_VIDEO:
-                if wake_lock_size == 5:
+                if media_session_state == 2:
+                    state = constants.STATE_PAUSED
+                elif media_session_state == 3:
                     state = constants.STATE_PLAYING
                 else:
-                    # wake_lock_size == 2
-                    state = constants.STATE_PAUSED
+                    state = constants.STATE_STANDBY
 
             # Firefox
             elif current_app == constants.APP_FIREFOX:
