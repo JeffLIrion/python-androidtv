@@ -324,32 +324,32 @@ class TestBaseTVPython(unittest.TestCase):
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.assertFalse(self.btv.awake)
+            self.assertFalse(self.btv.awake())
 
         with patchers.patch_shell('0')[self.PATCH_KEY]:
-            self.assertFalse(self.btv.awake)
+            self.assertFalse(self.btv.awake())
 
         with patchers.patch_shell('1')[self.PATCH_KEY]:
-            self.assertTrue(self.btv.awake)
+            self.assertTrue(self.btv.awake())
 
     def test_audio_state(self):
         """Check that the ``audio_state`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            audio_state = self.btv.audio_state
+            audio_state = self.btv.audio_state()
             self.assertIsNone(audio_state, None)
 
         with patchers.patch_shell('0')[self.PATCH_KEY]:
-            audio_state = self.btv.audio_state
+            audio_state = self.btv.audio_state()
             self.assertEqual(audio_state, constants.STATE_IDLE)
 
         with patchers.patch_shell('1')[self.PATCH_KEY]:
-            audio_state = self.btv.audio_state
+            audio_state = self.btv.audio_state()
             self.assertEqual(audio_state, constants.STATE_PAUSED)
 
         with patchers.patch_shell('2')[self.PATCH_KEY]:
-            audio_state = self.btv.audio_state
+            audio_state = self.btv.audio_state()
             self.assertEqual(audio_state, constants.STATE_PLAYING)
 
     def test_current_app(self):
@@ -357,15 +357,15 @@ class TestBaseTVPython(unittest.TestCase):
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            current_app = self.btv.current_app
+            current_app = self.btv.current_app()
             self.assertIsNone(current_app, None)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            current_app = self.btv.current_app
+            current_app = self.btv.current_app()
             self.assertIsNone(current_app, None)
 
         with patchers.patch_shell('com.amazon.tv.launcher')[self.PATCH_KEY]:
-            current_app = self.btv.current_app
+            current_app = self.btv.current_app()
             self.assertEqual(current_app, "com.amazon.tv.launcher")
 
     def test_media_session_state(self):
@@ -373,23 +373,23 @@ class TestBaseTVPython(unittest.TestCase):
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            media_session_state = self.btv.media_session_state
+            media_session_state = self.btv.media_session_state()
             self.assertIsNone(media_session_state, None)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            media_session_state = self.btv.media_session_state
+            media_session_state = self.btv.media_session_state()
             self.assertIsNone(media_session_state, None)
 
         with patchers.patch_shell('unknown.app\n ')[self.PATCH_KEY]:
-            media_session_state = self.btv.media_session_state
+            media_session_state = self.btv.media_session_state()
             self.assertIsNone(media_session_state, None)
 
         with patchers.patch_shell('2')[self.PATCH_KEY]:
-            media_session_state = self.btv.media_session_state
+            media_session_state = self.btv.media_session_state()
             self.assertIsNone(media_session_state, None)
 
         with patchers.patch_shell(MEDIA_SESSION_STATE_OUTPUT)[self.PATCH_KEY]:
-            media_session_state = self.btv.media_session_state
+            media_session_state = self.btv.media_session_state()
             self.assertEqual(media_session_state, 2)
 
     def test_screen_on(self):
@@ -397,13 +397,13 @@ class TestBaseTVPython(unittest.TestCase):
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.assertFalse(self.btv.screen_on)
+            self.assertFalse(self.btv.screen_on())
 
         with patchers.patch_shell('0')[self.PATCH_KEY]:
-            self.assertFalse(self.btv.screen_on)
+            self.assertFalse(self.btv.screen_on())
 
         with patchers.patch_shell('1')[self.PATCH_KEY]:
-            self.assertTrue(self.btv.screen_on)
+            self.assertTrue(self.btv.screen_on())
 
     def test_state_detection_rules_validator(self):
         """Check that the ``state_detection_rules_validator`` function works correctly.
@@ -435,16 +435,16 @@ class TestBaseTVPython(unittest.TestCase):
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.assertIsNone(self.btv.wake_lock_size)
+            self.assertIsNone(self.btv.wake_lock_size())
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            self.assertIsNone(self.btv.wake_lock_size)
+            self.assertIsNone(self.btv.wake_lock_size())
 
         with patchers.patch_shell('Wake Locks: size=2')[self.PATCH_KEY]:
-            self.assertEqual(self.btv.wake_lock_size, 2)
+            self.assertEqual(self.btv.wake_lock_size(), 2)
 
         with patchers.patch_shell('INVALID')[self.PATCH_KEY]:
-            self.assertIsNone(self.btv.wake_lock_size)
+            self.assertIsNone(self.btv.wake_lock_size())
 
 
 class TestHAStateDetectionRulesValidator(unittest.TestCase):

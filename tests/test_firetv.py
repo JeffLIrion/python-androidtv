@@ -177,15 +177,15 @@ class TestFireTVPython(unittest.TestCase):
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            running_apps = self.ftv.running_apps
+            running_apps = self.ftv.running_apps()
             self.assertIsNone(running_apps, None)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            running_apps = self.ftv.running_apps
+            running_apps = self.ftv.running_apps()
             self.assertIsNone(running_apps, None)
 
         with patchers.patch_shell(RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
-            running_apps = self.ftv.running_apps
+            running_apps = self.ftv.running_apps()
             self.assertListEqual(running_apps, RUNNING_APPS_LIST)
 
     def test_get_properties(self):

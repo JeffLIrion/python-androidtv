@@ -104,6 +104,18 @@ class BaseTV(object):
     #                               ADB methods                               #
     #                                                                         #
     # ======================================================================= #
+    @property
+    def available(self):
+        """Whether the ADB connection is intact.
+
+        Returns
+        -------
+        bool
+            Whether or not the ADB connection is intact
+
+        """
+        return self._adb.available
+
     def adb_shell(self, cmd):
         """Send an ADB command.
 
@@ -356,7 +368,6 @@ class BaseTV(object):
     #                               Properties                                #
     #                                                                         #
     # ======================================================================= #
-    @property
     def audio_output_device(self):
         """Get the current audio playback device.
 
@@ -370,7 +381,6 @@ class BaseTV(object):
 
         return self._audio_output_device(stream_music)
 
-    @property
     def audio_state(self):
         """Check if audio is playing, paused, or idle.
 
@@ -383,19 +393,6 @@ class BaseTV(object):
         audio_state_response = self._adb.shell(constants.CMD_AUDIO_STATE)
         return self._audio_state(audio_state_response)
 
-    @property
-    def available(self):
-        """Check whether the ADB connection is intact.
-
-        Returns
-        -------
-        bool
-            Whether or not the ADB connection is intact
-
-        """
-        return self._adb.available
-
-    @property
     def awake(self):
         """Check if the device is awake (screensaver is not running).
 
@@ -407,7 +404,6 @@ class BaseTV(object):
         """
         return self._adb.shell(constants.CMD_AWAKE + constants.CMD_SUCCESS1_FAILURE0) == '1'
 
-    @property
     def current_app(self):
         """Return the current app.
 
@@ -421,7 +417,6 @@ class BaseTV(object):
 
         return self._current_app(current_app_response)
 
-    @property
     def is_volume_muted(self):
         """Whether or not the volume is muted.
 
@@ -435,7 +430,6 @@ class BaseTV(object):
 
         return self._is_volume_muted(stream_music)
 
-    @property
     def media_session_state(self):
         """Get the state from the output of ``dumpsys media_session``.
 
@@ -451,7 +445,6 @@ class BaseTV(object):
 
         return media_session_state
 
-    @property
     def screen_on(self):
         """Check if the screen is on.
 
@@ -463,7 +456,6 @@ class BaseTV(object):
         """
         return self._adb.shell(constants.CMD_SCREEN_ON + constants.CMD_SUCCESS1_FAILURE0) == '1'
 
-    @property
     def volume(self):
         """Get the absolute volume level.
 
@@ -478,7 +470,6 @@ class BaseTV(object):
 
         return self._volume(stream_music, audio_output_device)
 
-    @property
     def volume_level(self):
         """Get the relative volume level.
 
@@ -488,11 +479,10 @@ class BaseTV(object):
             The volume level (between 0 and 1), or ``None`` if it could not be determined
 
         """
-        volume = self.volume
+        volume = self.volume()
 
         return self._volume_level(volume)
 
-    @property
     def wake_lock_size(self):
         """Get the size of the current wake lock.
 
@@ -1120,7 +1110,7 @@ class BaseTV(object):
         """
         # if necessary, determine the max volume
         if not self.max_volume:
-            _ = self.volume
+            _ = self.volume()
             if not self.max_volume:
                 return None
 
@@ -1146,7 +1136,7 @@ class BaseTV(object):
 
         """
         if current_volume_level is None or not self.max_volume:
-            current_volume = self.volume
+            current_volume = self.volume()
         else:
             current_volume = round(self.max_volume * current_volume_level)
 
@@ -1175,7 +1165,7 @@ class BaseTV(object):
 
         """
         if current_volume_level is None or not self.max_volume:
-            current_volume = self.volume
+            current_volume = self.volume()
         else:
             current_volume = round(self.max_volume * current_volume_level)
 

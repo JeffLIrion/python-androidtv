@@ -331,7 +331,6 @@ class AndroidTV(BaseTV):
     #                               Properties                                #
     #                                                                         #
     # ======================================================================= #
-    @property
     def running_apps(self):
         """Return a list of running user applications.
 
