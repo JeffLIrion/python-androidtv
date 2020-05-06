@@ -41,8 +41,8 @@ class BaseTV(object):
     **Valid rules:**
 
     * ``'standby'``, ``'playing'``, ``'paused'``, ``'idle'``, or ``'off'`` = always report the specified state when this app is open
-    * ``'media_session_state'`` = try to use the :attr:`media_session_state` property to determine the state
-    * ``'audio_state'`` = try to use the :attr:`audio_state` property to determine the state
+    * ``'media_session_state'`` = try to use the :meth:`media_session_state` property to determine the state
+    * ``'audio_state'`` = try to use the :meth:`audio_state` property to determine the state
     * ``{'<VALID_STATE>': {'<PROPERTY1>': VALUE1, '<PROPERTY2>': VALUE2, ...}}`` = check if each of the properties is equal to the specified value, and if so return the state
 
       * The valid properties are ``'media_session_state'``, ``'audio_state'``, and ``'wake_lock_size'``
@@ -278,13 +278,13 @@ class BaseTV(object):
         Parameters
         ----------
         current_app : str, None
-            The :attr:`current_app` property
+            The :meth:`current_app` property
         media_session_state : int, None
-            The :attr:`media_session_state` property
+            The :meth:`media_session_state` property
         wake_lock_size : int, None
-            The :attr:`wake_lock_size` property
+            The :meth:`wake_lock_size` property
         audio_state : str, None
-            The :attr:`audio_state` property
+            The :meth:`audio_state` property
 
         Returns
         -------
@@ -332,11 +332,11 @@ class BaseTV(object):
         conditions : dict
             A dictionary of conditions to be checked (see the ``state_detection_rules`` parameter in :class:`~androidtv.basetv.BaseTV`)
         media_session_state : int, None
-            The :attr:`media_session_state` property
+            The :meth:`media_session_state` property
         wake_lock_size : int, None
-            The :attr:`wake_lock_size` property
+            The :meth:`wake_lock_size` property
         audio_state : str, None
-            The :attr:`audio_state` property
+            The :meth:`audio_state` property
 
         Returns
         -------
@@ -527,7 +527,7 @@ class BaseTV(object):
 
     @staticmethod
     def _audio_state(audio_state_response):
-        """Parse the :attr:`audio_state` property from the output of the command :py:const:`androidtv.constants.CMD_AUDIO_STATE`.
+        """Parse the :meth:`audio_state` property from the output of the command :py:const:`androidtv.constants.CMD_AUDIO_STATE`.
 
         Parameters
         ----------
