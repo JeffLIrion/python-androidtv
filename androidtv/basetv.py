@@ -62,18 +62,17 @@ class BaseTV(object):
         The port for the ADB server
     state_detection_rules : dict, None
         A dictionary of rules for determining the state (see above)
-    auth_timeout_s : float
-        Authentication timeout (in seconds)
 
     """
 
-    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
+    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
         self.host = host
         self.port = int(port)
         self.adbkey = adbkey
         self.adb_server_ip = adb_server_ip
         self.adb_server_port = adb_server_port
         self._state_detection_rules = state_detection_rules
+        self.device_properties = {}
 
         # make sure the rules are valid
         if self._state_detection_rules:
@@ -92,13 +91,6 @@ class BaseTV(object):
         else:
             # pure-python-adb
             self._adb = ADBServer(host, port, adb_server_ip, adb_server_port)
-
-        # establish the ADB connection
-        #self.adb_connect(auth_timeout_s=auth_timeout_s)
-
-        # get device properties
-        #self.device_properties = self.get_device_properties()
-        self.device_properties = {}
 
     # ======================================================================= #
     #                                                                         #
