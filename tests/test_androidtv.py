@@ -291,6 +291,7 @@ class TestAndroidTVPython(unittest.TestCase):
     def setUp(self):
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.atv = AndroidTV('HOST', 5555)
+            self.atv.adb_connect()
 
     def test_turn_on_off(self):
         """Test that the ``AndroidTV.turn_on`` and ``AndroidTV.turn_off`` methods work correctly.
@@ -810,6 +811,7 @@ class TestAndroidTVServer(TestAndroidTVPython):
     def setUp(self):
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.atv = AndroidTV('HOST', 5555, adb_server_ip='ADB_SERVER_IP')
+            self.atv.adb_connect()
 
 
 class TestStateDetectionRulesValidator(unittest.TestCase):

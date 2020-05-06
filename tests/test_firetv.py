@@ -135,6 +135,7 @@ class TestFireTVPython(unittest.TestCase):
     def setUp(self):
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.ftv = FireTV('HOST', 5555)
+            self.ftv.adb_connect()
 
     def test_turn_on_off(self):
         """Test that the ``FireTV.turn_on`` and ``FireTV.turn_off`` methods work correctly.
@@ -457,6 +458,7 @@ class TestFireTVServer(TestFireTVPython):
     def setUp(self):
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.ftv = FireTV('HOST', 5555, adb_server_ip='ADB_SERVER_PORT')
+            self.ftv.adb_connect()
 
 
 if __name__ == "__main__":

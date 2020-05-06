@@ -94,10 +94,11 @@ class BaseTV(object):
             self._adb = ADBServer(host, port, adb_server_ip, adb_server_port)
 
         # establish the ADB connection
-        self.adb_connect(auth_timeout_s=auth_timeout_s)
+        #self.adb_connect(auth_timeout_s=auth_timeout_s)
 
         # get device properties
-        self.device_properties = self.get_device_properties()
+        #self.device_properties = self.get_device_properties()
+        self.device_properties = {}
 
     # ======================================================================= #
     #                                                                         #
