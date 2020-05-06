@@ -50,7 +50,7 @@ class AndroidTV(BaseTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :attr:`~androidtv.basetv.BaseTV.running_apps` property
+            Whether or not to get the :meth:`~androidtv.androidtv.AndroidTV.running_apps` property
 
         Returns
         -------
@@ -180,7 +180,7 @@ class AndroidTV(BaseTV):
 
     # ======================================================================= #
     #                                                                         #
-    #                               properties                                #
+    #                               Properties                                #
     #                                                                         #
     # ======================================================================= #
     def get_properties(self, get_running_apps=True, lazy=False):
@@ -194,7 +194,7 @@ class AndroidTV(BaseTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :attr:`~androidtv.basetv.BaseTV.running_apps` property
+            Whether or not to get the :meth:`~androidtv.androidtv.AndroidTV.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
@@ -302,7 +302,7 @@ class AndroidTV(BaseTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :attr:`~androidtv.basetv.BaseTV.running_apps` property
+            Whether or not to get the :meth:`~androidtv.androidtv.AndroidTV.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
@@ -326,12 +326,6 @@ class AndroidTV(BaseTV):
                 'volume': volume,
                 'running_apps': running_apps}
 
-    # ======================================================================= #
-    #                                                                         #
-    #                               Properties                                #
-    #                                                                         #
-    # ======================================================================= #
-    @property
     def running_apps(self):
         """Return a list of running user applications.
 
