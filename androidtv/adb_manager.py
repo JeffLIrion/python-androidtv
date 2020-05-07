@@ -6,7 +6,8 @@
 """
 
 
-from contextlib import contextmanager
+import asyncio
+from contextlib import asynccontextmanager, contextmanager
 import logging
 import sys
 import threading
@@ -26,6 +27,8 @@ LOCK_KWARGS = {'timeout': 3} if sys.version_info[0] > 2 and sys.version_info[1] 
 if sys.version_info[0] == 2:  # pragma: no cover
     FileNotFoundError = IOError  # pylint: disable=redefined-builtin
 
+#: Timeout for acquiring the async lock that protects ADB commands
+TIMEOUT = 3.0
 
 @contextmanager
 def _acquire(lock):
@@ -52,6 +55,27 @@ def _acquire(lock):
         if not acquired:
             raise LockNotAcquiredException
         yield acquired
+
+    finally:
+        if acquired:
+            lock.release()
+
+
+@asynccontextmanager
+async def _aacquire(lock):
+    """TODO
+
+    """
+    try:
+        acquired = False
+        try:
+            acquired = asyncio.wait_for(lock.acquire(), TIMEOUT)
+            if not acquired:
+                raise LockNotAcquiredException
+            yield acquired
+
+        except asyncio.TimeoutError:
+            raise LockNotAcquiredException
 
     finally:
         if acquired:

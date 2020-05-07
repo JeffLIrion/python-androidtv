@@ -9,13 +9,10 @@ except ImportError:
 
 sys.path.insert(0, '..')
 
-from androidtv.adb_manager import _acquire, ADBPython, ADBServer
+from androidtv.adb_manager import _acquire, _aacquire, ADBPython, ADBServer
 from androidtv.exceptions import LockNotAcquiredException
 from . import patchers
-
-
-if sys.version_info[0] == 2:
-    FileNotFoundError = IOError
+from .async_wrapper import awaiter
 
 
 class Read(object):
@@ -72,6 +69,31 @@ class LockedLock(FakeLock):
     def __init__(self, *args, **kwargs):
         self._acquired = False
 
+
+class AsyncFakeLock:
+    def __init__(self):
+        self._acquired = True
+
+    async def acquire(self):
+        if self._acquired:
+            self._acquired = False
+            return True
+        return self._acquired
+
+    async def release(self):
+        self._acquired = True
+
+
+class TestLockAcquire(unittest.TestCase):
+    def setUp(self):
+        self.lock = AsyncFakeLock()
+
+    @awaiter
+    async def test_succeed(self):
+        async with _aacquire(self.lock):
+            self.assertTrue(True)
+            return
+        self.assertTrue(False)
 
 class TestADBPython(unittest.TestCase):
     """Test the `ADBPython` class."""
