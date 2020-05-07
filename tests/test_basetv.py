@@ -89,6 +89,7 @@ class TestBaseTVPython(unittest.TestCase):
     def setUp(self):
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.btv = BaseTV('HOST', 5555)
+            self.btv.adb_connect()
 
     def test_available(self):
         """Test that the available property works correctly.

@@ -41,15 +41,27 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
 
     """
     if device_class == 'androidtv':
-        return AndroidTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
+        atv = AndroidTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+        atv.adb_connect(auth_timeout_s=auth_timeout_s)
+        atv.device_properties = atv.get_device_properties()
+        return atv
 
     if device_class == 'firetv':
-        return FireTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
+        ftv = FireTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+        ftv.adb_connect(auth_timeout_s=auth_timeout_s)
+        ftv.device_properties = ftv.get_device_properties()
+        return ftv
 
     if device_class != 'auto':
         raise ValueError("`device_class` must be 'androidtv', 'firetv', or 'auto'.")
 
-    aftv = BaseTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, auth_timeout_s)
+    aftv = BaseTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+
+    # establish the ADB connection
+    aftv.adb_connect(auth_timeout_s=auth_timeout_s)
+
+    # get device properties
+    aftv.device_properties = aftv.get_device_properties()
 
     # Fire TV
     if aftv.device_properties.get('manufacturer') == 'Amazon':
