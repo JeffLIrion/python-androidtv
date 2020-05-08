@@ -1,17 +1,25 @@
+import asyncio
 import sys
 import unittest
+from unittest.mock import patch
 
 try:
-    from unittest.mock import patch
+    from unittest.mock import AsyncMock
 except ImportError:
-    from mock import patch
+    from unittest.mock import MagicMock
+
+    class AsyncMock(MagicMock):
+        async def __call__(self, *args, **kwargs):
+            return super(AsyncMock, self).__call__(*args, **kwargs)
 
 
 sys.path.insert(0, '..')
 
 from androidtv import constants, ha_state_detection_rules_validator
 from androidtv.basetv import BaseTV
+
 from . import patchers
+from .async_wrapper import awaiter
 
 
 DEVICE_PROPERTIES_OUTPUT1 = """Amazon
@@ -82,15 +90,15 @@ STATE_DETECTION_RULES_INVALID11 = {'com.amazon.tv.launcher': [{'standby': {'audi
 PNG_IMAGE = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\n\x00\x00\x00\n\x08\x06\x00\x00\x00\x8d2\xcf\xbd\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00\tpHYs\x00\x00\x0fa\x00\x00\x0fa\x01\xa8?\xa7i\x00\x00\x00\x0eIDAT\x18\x95c`\x18\x05\x83\x13\x00\x00\x01\x9a\x00\x01\x16\xca\xd3i\x00\x00\x00\x00IEND\xaeB`\x82'
 
 
-@unittest.skip
 class TestBaseTVPython(unittest.TestCase):
     PATCH_KEY = 'python'
     ADB_ATTR = '_adb'
 
-    def setUp(self):
+    @awaiter
+    async def setUp(self):
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.btv = BaseTV('HOST', 5555)
-            self.btv.adb_connect()
+            await self.btv.adb_connect()
 
     def test_available(self):
         """Test that the available property works correctly.
@@ -98,316 +106,328 @@ class TestBaseTVPython(unittest.TestCase):
         """
         self.assertTrue(self.btv.available)
 
-    def test_adb_close(self):
+    @awaiter
+    async def test_adb_close(self):
         """Test that the ``adb_close`` method works correctly.
 
         """
-        self.btv.adb_close()
+        await self.btv.adb_close()
         if self.PATCH_KEY == 'python':
             self.assertFalse(self.btv.available)
         else:
             self.assertTrue(self.btv.available)
 
-    def test_adb_pull(self):
+    @awaiter
+    async def test_adb_pull(self):
         """Test that the ``adb_pull`` method works correctly.
 
         """
         with patchers.PATCH_PULL[self.PATCH_KEY] as patch_pull:
-            self.btv.adb_pull("TEST_LOCAL_PATCH", "TEST_DEVICE_PATH")
+            await self.btv.adb_pull("TEST_LOCAL_PATCH", "TEST_DEVICE_PATH")
             self.assertEqual(patch_pull.call_count, 1)
 
-    def test_adb_push(self):
+    @awaiter
+    async def test_adb_push(self):
         """Test that the ``adb_push`` method works correctly.
 
         """
         with patchers.PATCH_PUSH[self.PATCH_KEY] as patch_push:
-            self.btv.adb_push("TEST_LOCAL_PATCH", "TEST_DEVICE_PATH")
+            await self.btv.adb_push("TEST_LOCAL_PATCH", "TEST_DEVICE_PATH")
             self.assertEqual(patch_push.call_count, 1)
 
-    def test_adb_screencap(self):
+    @awaiter
+    async def test_adb_screencap(self):
         """Test that the ``adb_screencap`` method works correctly.
 
         """
-        with patch.object(self.btv._adb, 'screencap', return_value=PNG_IMAGE):
-            self.assertEqual(self.btv.adb_screencap(), PNG_IMAGE)
+        with patch.object(self.btv._adb, 'screencap', return_value=PNG_IMAGE, new_callable=AsyncMock):
+            self.assertEqual(await self.btv.adb_screencap(), PNG_IMAGE)
 
-    def test_keys(self):
+    @awaiter
+    async def test_keys(self):
         """Test that the key methods send the correct commands.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.btv.adb_shell("TEST")
+            await self.btv.adb_shell("TEST")
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "TEST")
 
-            self.btv.space()
+            await self.btv.space()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_SPACE))
 
-            self.btv.key_0()
+            await self.btv.key_0()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_0))
 
-            self.btv.key_1()
+            await self.btv.key_1()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_1))
 
-            self.btv.key_2()
+            await self.btv.key_2()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_2))
 
-            self.btv.key_3()
+            await self.btv.key_3()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_3))
 
-            self.btv.key_4()
+            await self.btv.key_4()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_4))
 
-            self.btv.key_5()
+            await self.btv.key_5()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_5))
 
-            self.btv.key_6()
+            await self.btv.key_6()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_6))
 
-            self.btv.key_7()
+            await self.btv.key_7()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_7))
 
-            self.btv.key_8()
+            await self.btv.key_8()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_8))
 
-            self.btv.key_9()
+            await self.btv.key_9()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_9))
 
-            self.btv.key_a()
+            await self.btv.key_a()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_A))
 
-            self.btv.key_b()
+            await self.btv.key_b()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_B))
 
-            self.btv.key_c()
+            await self.btv.key_c()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_C))
 
-            self.btv.key_d()
+            await self.btv.key_d()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_D))
 
-            self.btv.key_e()
+            await self.btv.key_e()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_E))
 
-            self.btv.key_f()
+            await self.btv.key_f()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_F))
 
-            self.btv.key_g()
+            await self.btv.key_g()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_G))
 
-            self.btv.key_h()
+            await self.btv.key_h()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_H))
 
-            self.btv.key_i()
+            await self.btv.key_i()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_I))
 
-            self.btv.key_j()
+            await self.btv.key_j()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_J))
 
-            self.btv.key_k()
+            await self.btv.key_k()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_K))
 
-            self.btv.key_l()
+            await self.btv.key_l()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_L))
 
-            self.btv.key_m()
+            await self.btv.key_m()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_M))
 
-            self.btv.key_n()
+            await self.btv.key_n()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_N))
 
-            self.btv.key_o()
+            await self.btv.key_o()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_O))
 
-            self.btv.key_p()
+            await self.btv.key_p()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_P))
 
-            self.btv.key_q()
+            await self.btv.key_q()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_Q))
 
-            self.btv.key_r()
+            await self.btv.key_r()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_R))
 
-            self.btv.key_s()
+            await self.btv.key_s()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_S))
 
-            self.btv.key_t()
+            await self.btv.key_t()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_T))
 
-            self.btv.key_u()
+            await self.btv.key_u()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_U))
 
-            self.btv.key_v()
+            await self.btv.key_v()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_V))
 
-            self.btv.key_w()
+            await self.btv.key_w()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_W))
 
-            self.btv.key_x()
+            await self.btv.key_x()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_X))
 
-            self.btv.key_y()
+            await self.btv.key_y()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_Y))
 
-            self.btv.key_z()
+            await self.btv.key_z()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_Z))
 
-            self.btv.power()
+            await self.btv.power()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_POWER))
 
-            self.btv.sleep()
+            await self.btv.sleep()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_SLEEP))
 
-            self.btv.home()
+            await self.btv.home()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_HOME))
 
-            self.btv.up()
+            await self.btv.up()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_UP))
 
-            self.btv.down()
+            await self.btv.down()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_DOWN))
 
-            self.btv.left()
+            await self.btv.left()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_LEFT))
 
-            self.btv.right()
+            await self.btv.right()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_RIGHT))
 
-            self.btv.enter()
+            await self.btv.enter()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_ENTER))
 
-            self.btv.back()
+            await self.btv.back()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_BACK))
 
-            self.btv.menu()
+            await self.btv.menu()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_MENU))
 
-            self.btv.mute_volume()
+            await self.btv.mute_volume()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_MUTE))
 
-            self.btv.media_play()
+            await self.btv.media_play()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_PLAY))
 
-            self.btv.media_pause()
+            await self.btv.media_pause()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_PAUSE))
 
-            self.btv.media_play_pause()
+            await self.btv.media_play_pause()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_PLAY_PAUSE))
 
-            self.btv.media_stop()
+            await self.btv.media_stop()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_STOP))
 
-            self.btv.media_next_track()
+            await self.btv.media_next_track()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_NEXT))
 
-            self.btv.media_previous_track()
+            await self.btv.media_previous_track()
             self.assertEqual(getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_PREVIOUS))
 
-    def test_get_device_properties(self):
+    @awaiter
+    async def test_get_device_properties(self):
         """Check that ``get_device_properties`` works correctly.
 
         """
         with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            device_properties = self.btv.get_device_properties()
+            device_properties = await self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT1, device_properties)
 
         with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            device_properties = self.btv.get_device_properties()
+            device_properties = await self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT2, device_properties)
 
         with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
-            device_properties = self.btv.get_device_properties()
+            device_properties = await self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT3, device_properties)
 
         with patchers.patch_shell('manufacturer')[self.PATCH_KEY]:
-            device_properties = self.btv.get_device_properties()
+            device_properties = await self.btv.get_device_properties()
             self.assertDictEqual({}, device_properties)
 
-    def test_awake(self):
+    @awaiter
+    async def test_awake(self):
         """Check that the ``awake`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.assertFalse(self.btv.awake())
+            self.assertFalse(await self.btv.awake())
 
         with patchers.patch_shell('0')[self.PATCH_KEY]:
-            self.assertFalse(self.btv.awake())
+            self.assertFalse(await self.btv.awake())
 
         with patchers.patch_shell('1')[self.PATCH_KEY]:
-            self.assertTrue(self.btv.awake())
+            self.assertTrue(await self.btv.awake())
 
-    def test_audio_state(self):
+    @awaiter
+    async def test_audio_state(self):
         """Check that the ``audio_state`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            audio_state = self.btv.audio_state()
+            audio_state = await self.btv.audio_state()
             self.assertIsNone(audio_state, None)
 
         with patchers.patch_shell('0')[self.PATCH_KEY]:
-            audio_state = self.btv.audio_state()
+            audio_state = await self.btv.audio_state()
             self.assertEqual(audio_state, constants.STATE_IDLE)
 
         with patchers.patch_shell('1')[self.PATCH_KEY]:
-            audio_state = self.btv.audio_state()
+            audio_state = await self.btv.audio_state()
             self.assertEqual(audio_state, constants.STATE_PAUSED)
 
         with patchers.patch_shell('2')[self.PATCH_KEY]:
-            audio_state = self.btv.audio_state()
+            audio_state = await self.btv.audio_state()
             self.assertEqual(audio_state, constants.STATE_PLAYING)
 
-    def test_current_app(self):
+    @awaiter
+    async def test_current_app(self):
         """Check that the ``current_app`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            current_app = self.btv.current_app()
+            current_app = await self.btv.current_app()
             self.assertIsNone(current_app, None)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            current_app = self.btv.current_app()
+            current_app = await self.btv.current_app()
             self.assertIsNone(current_app, None)
 
         with patchers.patch_shell('com.amazon.tv.launcher')[self.PATCH_KEY]:
-            current_app = self.btv.current_app()
+            current_app = await self.btv.current_app()
             self.assertEqual(current_app, "com.amazon.tv.launcher")
 
-    def test_media_session_state(self):
+    @awaiter
+    async def test_media_session_state(self):
         """Check that the ``media_session_state`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            media_session_state = self.btv.media_session_state()
+            media_session_state = await self.btv.media_session_state()
             self.assertIsNone(media_session_state, None)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            media_session_state = self.btv.media_session_state()
+            media_session_state = await self.btv.media_session_state()
             self.assertIsNone(media_session_state, None)
 
         with patchers.patch_shell('unknown.app\n ')[self.PATCH_KEY]:
-            media_session_state = self.btv.media_session_state()
+            media_session_state = await self.btv.media_session_state()
             self.assertIsNone(media_session_state, None)
 
         with patchers.patch_shell('2')[self.PATCH_KEY]:
-            media_session_state = self.btv.media_session_state()
+            media_session_state = await self.btv.media_session_state()
             self.assertIsNone(media_session_state, None)
 
         with patchers.patch_shell(MEDIA_SESSION_STATE_OUTPUT)[self.PATCH_KEY]:
-            media_session_state = self.btv.media_session_state()
+            media_session_state = await self.btv.media_session_state()
             self.assertEqual(media_session_state, 2)
 
-    def test_screen_on(self):
+    @awaiter
+    async def test_screen_on(self):
         """Check that the ``screen_on`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.assertFalse(self.btv.screen_on())
+            self.assertFalse(await self.btv.screen_on())
 
         with patchers.patch_shell('0')[self.PATCH_KEY]:
-            self.assertFalse(self.btv.screen_on())
+            self.assertFalse(await self.btv.screen_on())
 
         with patchers.patch_shell('1')[self.PATCH_KEY]:
-            self.assertTrue(self.btv.screen_on())
+            self.assertTrue(await self.btv.screen_on())
 
-    def test_state_detection_rules_validator(self):
+    @awaiter
+    async def test_state_detection_rules_validator(self):
         """Check that the ``state_detection_rules_validator`` function works correctly.
 
         """
@@ -432,21 +452,22 @@ class TestBaseTVPython(unittest.TestCase):
             self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID10)
             self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID11)
 
-    def test_wake_lock_size(self):
+    @awaiter
+    async def test_wake_lock_size(self):
         """Check that the ``wake_lock_size`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.assertIsNone(self.btv.wake_lock_size())
+            self.assertIsNone(await self.btv.wake_lock_size())
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            self.assertIsNone(self.btv.wake_lock_size())
+            self.assertIsNone(await self.btv.wake_lock_size())
 
         with patchers.patch_shell('Wake Locks: size=2')[self.PATCH_KEY]:
-            self.assertEqual(self.btv.wake_lock_size(), 2)
+            self.assertEqual(await self.btv.wake_lock_size(), 2)
 
         with patchers.patch_shell('INVALID')[self.PATCH_KEY]:
-            self.assertIsNone(self.btv.wake_lock_size())
+            self.assertIsNone(await self.btv.wake_lock_size())
 
 
 class TestHAStateDetectionRulesValidator(unittest.TestCase):
