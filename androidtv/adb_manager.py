@@ -30,6 +30,7 @@ if sys.version_info[0] == 2:  # pragma: no cover
 #: Default timeout for acquiring the async lock that protects ADB commands
 DEFAULT_TIMEOUT = 3.0
 
+
 @contextmanager
 def _acquire(lock):
     """Handle acquisition and release of a ``threading.Lock`` object with ``LOCK_KWARGS`` keyword arguments.
