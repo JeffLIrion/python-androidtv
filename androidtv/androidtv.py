@@ -42,7 +42,7 @@ class AndroidTV(BaseTV):
     #                          Home Assistant Update                          #
     #                                                                         #
     # ======================================================================= #
-    def update(self, get_running_apps=True):
+    async def update(self, get_running_apps=True):
         """Get the info needed for a Home Assistant update.
 
         Parameters
@@ -67,7 +67,7 @@ class AndroidTV(BaseTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
+        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps = await self.get_properties(get_running_apps=get_running_apps, lazy=True)
 
         # Get the volume (between 0 and 1)
         volume_level = self._volume_level(volume)
@@ -181,7 +181,7 @@ class AndroidTV(BaseTV):
     #                               Properties                                #
     #                                                                         #
     # ======================================================================= #
-    def get_properties(self, get_running_apps=True, lazy=False):
+    async def get_properties(self, get_running_apps=True, lazy=False):
         """Get the properties needed for Home Assistant updates.
 
         This will send one of the following ADB commands:
@@ -222,14 +222,14 @@ class AndroidTV(BaseTV):
         """
         if lazy:
             if get_running_apps:
-                output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_LAZY_RUNNING_APPS)
+                output = await self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_LAZY_RUNNING_APPS)
             else:
-                output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_LAZY_NO_RUNNING_APPS)
+                output = await self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_LAZY_NO_RUNNING_APPS)
         else:
             if get_running_apps:
-                output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
+                output = await self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
             else:
-                output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
+                output = await self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
         _LOGGER.debug("Android TV %s:%d `get_properties` response: %s", self.host, self.port, output)
 
         # ADB command was unsuccessful
@@ -276,7 +276,7 @@ class AndroidTV(BaseTV):
         stream_music_raw = "\n".join(lines[3:])
 
         # the "STREAM_MUSIC" block from `adb shell dumpsys audio`
-        stream_music = self._get_stream_music(stream_music_raw)
+        stream_music = await self._get_stream_music(stream_music_raw)
 
         # `audio_output_device` property
         audio_output_device = self._audio_output_device(stream_music)
@@ -294,7 +294,7 @@ class AndroidTV(BaseTV):
 
         return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps
 
-    def get_properties_dict(self, get_running_apps=True, lazy=True):
+    async def get_properties_dict(self, get_running_apps=True, lazy=True):
         """Get the properties needed for Home Assistant updates and return them as a dictionary.
 
         Parameters
@@ -311,7 +311,7 @@ class AndroidTV(BaseTV):
             ``'media_session_state'``, ``'audio_state'``, ``'audio_output_device'``, ``'is_volume_muted'``, ``'volume'``, and ``'running_apps'``
 
         """
-        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps = await self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
         return {'screen_on': screen_on,
                 'awake': awake,
@@ -324,7 +324,7 @@ class AndroidTV(BaseTV):
                 'volume': volume,
                 'running_apps': running_apps}
 
-    def running_apps(self):
+    async def running_apps(self):
         """Return a list of running user applications.
 
         Returns
@@ -333,7 +333,7 @@ class AndroidTV(BaseTV):
             A list of the running apps
 
         """
-        running_apps_response = self._adb.shell(constants.CMD_ANDROIDTV_RUNNING_APPS)
+        running_apps_response = await self._adb.shell(constants.CMD_ANDROIDTV_RUNNING_APPS)
 
         return self._running_apps(running_apps_response)
 
@@ -342,10 +342,10 @@ class AndroidTV(BaseTV):
     #                           turn on/off methods                           #
     #                                                                         #
     # ======================================================================= #
-    def turn_on(self):
+    async def turn_on(self):
         """Send ``POWER`` action if the device is off."""
-        self._adb.shell(constants.CMD_SCREEN_ON + " || input keyevent {0}".format(constants.KEY_POWER))
+        await self._adb.shell(constants.CMD_SCREEN_ON + " || input keyevent {0}".format(constants.KEY_POWER))
 
-    def turn_off(self):
+    async def turn_off(self):
         """Send ``POWER`` action if the device is not off."""
-        self._adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))
+        await self._adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))

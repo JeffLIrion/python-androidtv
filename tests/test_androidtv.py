@@ -1,19 +1,25 @@
+import asyncio
 import sys
 import unittest
+from unittest.mock import patch
 
 try:
-    # Python3
-    from unittest.mock import patch
+    from unittest.mock import AsyncMock
 except ImportError:
-    # Python2
-    from mock import patch
+    from unittest.mock import MagicMock
+
+    class AsyncMock(MagicMock):
+        async def __call__(self, *args, **kwargs):
+            return super(AsyncMock, self).__call__(*args, **kwargs)
 
 
 sys.path.insert(0, '..')
 
 from androidtv import constants
 from androidtv.androidtv import AndroidTV
+
 from . import patchers
+from .async_wrapper import awaiter
 
 
 STREAM_MUSIC_EMPTY = "- STREAM_MUSIC:\n \n- STREAM"
@@ -284,525 +290,537 @@ STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_siz
 STATE_DETECTION_RULES5 = {'com.amazon.tv.launcher': ['audio_state']}
 
 
-@unittest.skip
 class TestAndroidTVPython(unittest.TestCase):
     PATCH_KEY = 'python'
     ADB_ATTR = '_adb'
 
-    def setUp(self):
+    @awaiter
+    async def setUp(self):
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.atv = AndroidTV('HOST', 5555)
-            self.atv.adb_connect()
+            await self.atv.adb_connect()
 
-    def test_turn_on_off(self):
+    @awaiter
+    async def test_turn_on_off(self):
         """Test that the ``AndroidTV.turn_on`` and ``AndroidTV.turn_off`` methods work correctly.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.atv.turn_on()
+            await self.atv.turn_on()
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_SCREEN_ON + " || input keyevent {0}".format(constants.KEY_POWER))
 
-            self.atv.turn_off()
+            await self.atv.turn_off()
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))
 
-    def test_start_intent(self):
+    @awaiter
+    async def test_start_intent(self):
         """Test that the ``start_intent`` method works correctly.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.atv.start_intent("TEST")
+            await self.atv.start_intent("TEST")
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "am start -a android.intent.action.VIEW -d TEST")
 
-    def test_running_apps(self):
+    @awaiter
+    async def test_running_apps(self):
         """Check that the ``running_apps`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            running_apps = self.atv.running_apps()
+            running_apps = await self.atv.running_apps()
             self.assertIsNone(running_apps, None)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            running_apps = self.atv.running_apps()
+            running_apps = await self.atv.running_apps()
             self.assertIsNone(running_apps, None)
 
         with patchers.patch_shell(RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
-            running_apps = self.atv.running_apps()
+            running_apps = await self.atv.running_apps()
             self.assertListEqual(running_apps, RUNNING_APPS_LIST)
 
-    def test_audio_output_device(self):
+    @awaiter
+    async def test_audio_output_device(self):
         """Check that the ``device`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            audio_output_device = self.atv.audio_output_device()
+            audio_output_device = await self.atv.audio_output_device()
             self.assertIsNone(audio_output_device)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            audio_output_device = self.atv.audio_output_device()
+            audio_output_device = await self.atv.audio_output_device()
             self.assertIsNone(audio_output_device)
 
         with patchers.patch_shell(' ')[self.PATCH_KEY]:
-            audio_output_device = self.atv.audio_output_device()
+            audio_output_device = await self.atv.audio_output_device()
             self.assertIsNone(audio_output_device)
 
         with patchers.patch_shell(STREAM_MUSIC_EMPTY)[self.PATCH_KEY]:
-            audio_output_device = self.atv.audio_output_device()
+            audio_output_device = await self.atv.audio_output_device()
             self.assertIsNone(audio_output_device)
 
         with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
-            audio_output_device = self.atv.audio_output_device()
+            audio_output_device = await self.atv.audio_output_device()
             self.assertEqual('speaker', audio_output_device)
 
         with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
-            audio_output_device = self.atv.audio_output_device()
+            audio_output_device = await self.atv.audio_output_device()
             self.assertEqual('hmdi_arc', audio_output_device)
 
-    def test_volume(self):
+    async def test_volume(self):
         """Check that the ``volume`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            volume = self.atv.volume()
+            volume = await self.atv.volume()
             self.assertIsNone(volume)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            volume = self.atv.volume()
+            volume = await self.atv.volume()
             self.assertIsNone(volume)
 
         with patchers.patch_shell(' ')[self.PATCH_KEY]:
-            volume = self.atv.volume()
+            volume = await self.atv.volume()
             self.assertIsNone(volume)
 
         with patchers.patch_shell(STREAM_MUSIC_EMPTY)[self.PATCH_KEY]:
-            volume = self.atv.volume()
+            volume = await self.atv.volume()
             self.assertIsNone(volume)
 
         with patchers.patch_shell(STREAM_MUSIC_NO_VOLUME)[self.PATCH_KEY]:
-            volume = self.atv.volume()
+            volume = await self.atv.volume()
             self.assertIsNone(volume)
 
         self.atv.max_volume = None
         with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
-            volume = self.atv.volume()
+            volume = await self.atv.volume()
             self.assertEqual(volume, 20)
             self.assertEqual(self.atv.max_volume, 60.)
 
         self.atv.max_volume = None
         with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
-            volume = self.atv.volume()
+            volume = await self.atv.volume()
             self.assertEqual(volume, 22)
             self.assertEqual(self.atv.max_volume, 60.)
 
-    def test_volume_level(self):
+    @awaiter
+    async def test_volume_level(self):
         """Check that the ``volume_level`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
+            volume_level = await self.atv.volume_level()
             self.assertIsNone(volume_level)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
+            volume_level = await self.atv.volume_level()
             self.assertIsNone(volume_level)
 
         with patchers.patch_shell(' ')[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
+            volume_level = await self.atv.volume_level()
             self.assertIsNone(volume_level)
 
         with patchers.patch_shell(STREAM_MUSIC_EMPTY)[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
+            volume_level = await self.atv.volume_level()
             self.assertIsNone(volume_level)
 
         with patchers.patch_shell(STREAM_MUSIC_NO_VOLUME)[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
+            volume_level = await self.atv.volume_level()
             self.assertIsNone(volume_level)
 
         self.atv.max_volume = None
         with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
+            volume_level = await self.atv.volume_level()
             self.assertEqual(volume_level, 20./60)
             self.assertEqual(self.atv.max_volume, 60.)
 
         self.atv.max_volume = None
         with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
+            volume_level = await self.atv.volume_level()
             self.assertEqual(volume_level, 22./60)
             self.assertEqual(self.atv.max_volume, 60.)
 
-    def test_is_volume_muted(self):
+    @awaiter
+    async def test_is_volume_muted(self):
         """Check that the ``is_volume_muted`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            is_volume_muted = self.atv.is_volume_muted()
+            is_volume_muted = await self.atv.is_volume_muted()
             self.assertIsNone(is_volume_muted)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            is_volume_muted = self.atv.is_volume_muted()
+            is_volume_muted = await self.atv.is_volume_muted()
             self.assertIsNone(is_volume_muted)
 
         with patchers.patch_shell(' ')[self.PATCH_KEY]:
-            is_volume_muted = self.atv.is_volume_muted()
+            is_volume_muted = await self.atv.is_volume_muted()
             self.assertIsNone(is_volume_muted)
 
         with patchers.patch_shell(STREAM_MUSIC_EMPTY)[self.PATCH_KEY]:
-            is_volume_muted = self.atv.is_volume_muted()
+            is_volume_muted = await self.atv.is_volume_muted()
             self.assertIsNone(is_volume_muted)
 
         with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
-            is_volume_muted = self.atv.is_volume_muted()
+            is_volume_muted = await self.atv.is_volume_muted()
             self.assertFalse(is_volume_muted)
 
-    def test_set_volume_level(self):
+    @awaiter
+    async def test_set_volume_level(self):
         """Check that the ``set_volume_level`` method works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            new_volume_level = self.atv.set_volume_level(0.5)
+            new_volume_level = await self.atv.set_volume_level(0.5)
             self.assertIsNone(new_volume_level)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            new_volume_level = self.atv.set_volume_level(0.5)
+            new_volume_level = await self.atv.set_volume_level(0.5)
             self.assertIsNone(new_volume_level)
 
         with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
-            new_volume_level = self.atv.set_volume_level(0.5)
+            new_volume_level = await self.atv.set_volume_level(0.5)
             self.assertEqual(new_volume_level, 0.5)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "media volume --show --stream 3 --set 30")
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            new_volume_level = self.atv.set_volume_level(30./60)
+            new_volume_level = await self.atv.set_volume_level(30./60)
             self.assertEqual(new_volume_level, 0.5)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "media volume --show --stream 3 --set 30")
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            new_volume_level = self.atv.set_volume_level(22./60)
+            new_volume_level = await self.atv.set_volume_level(22./60)
             self.assertEqual(new_volume_level, 22./60)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "media volume --show --stream 3 --set 22")
 
-    def test_volume_up(self):
+    @awaiter
+    async def test_volume_up(self):
         """Check that the ``volume_up`` method works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            new_volume_level = self.atv.volume_up()
+            new_volume_level = await self.atv.volume_up()
             self.assertIsNone(new_volume_level)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            new_volume_level = self.atv.volume_up()
+            new_volume_level = await self.atv.volume_up()
             self.assertIsNone(new_volume_level)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
 
         with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
-            new_volume_level = self.atv.volume_up()
+            new_volume_level = await self.atv.volume_up()
             self.assertEqual(new_volume_level, 23./60)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
-            new_volume_level = self.atv.volume_up(23./60)
+            new_volume_level = await self.atv.volume_up(23./60)
             self.assertEqual(new_volume_level, 24./60)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
 
         with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
-            new_volume_level = self.atv.volume_up()
+            new_volume_level = await self.atv.volume_up()
             self.assertEqual(new_volume_level, 21./60)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
-            new_volume_level = self.atv.volume_up(21./60)
+            new_volume_level = await self.atv.volume_up(21./60)
             self.assertEqual(new_volume_level, 22./60)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "input keyevent 24")
 
-    def test_volume_down(self):
+    @awaiter
+    async def test_volume_down(self):
         """Check that the ``volume_down`` method works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            new_volume_level = self.atv.volume_down()
+            new_volume_level = await self.atv.volume_down()
             self.assertIsNone(new_volume_level)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            new_volume_level = self.atv.volume_down()
+            new_volume_level = await self.atv.volume_down()
             self.assertIsNone(new_volume_level)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
 
         with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
-            new_volume_level = self.atv.volume_down()
+            new_volume_level = await self.atv.volume_down()
             self.assertEqual(new_volume_level, 21./60)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
-            new_volume_level = self.atv.volume_down(21./60)
+            new_volume_level = await self.atv.volume_down(21./60)
             self.assertEqual(new_volume_level, 20./60)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
 
         with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
-            new_volume_level = self.atv.volume_down()
+            new_volume_level = await self.atv.volume_down()
             self.assertEqual(new_volume_level, 19./60)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
-            new_volume_level = self.atv.volume_down(19./60)
+            new_volume_level = await self.atv.volume_down(19./60)
             self.assertEqual(new_volume_level, 18./60)
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
 
-    def test_get_properties(self):
+    @awaiter
+    async def test_get_properties(self):
         """Check that the ``get_properties`` method works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT_NONE)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT1)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT2)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT3)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3A)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT3A)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3B)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT3B)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3C)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT3C)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3D)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT3D)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3E)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT3E)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3F)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT3F)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT4)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=False)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=False)
             self.assertEqual(properties, GET_PROPERTIES_DICT4)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=False, lazy=False)
+            properties = await self.atv.get_properties_dict(get_running_apps=False, lazy=False)
             self.assertEqual(properties, GET_PROPERTIES_DICT4)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_STANDBY)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_STANDBY)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PLAYING)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PLAYING)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PAUSED)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PAUSED)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=False, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=False, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PAUSED)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED + RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
             true_properties = GET_PROPERTIES_DICT_PLEX_PAUSED.copy()
             true_properties['running_apps'] = RUNNING_APPS_LIST
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, true_properties)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED + RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
             true_properties = GET_PROPERTIES_DICT_PLEX_PAUSED.copy()
             true_properties['running_apps'] = RUNNING_APPS_LIST
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=False)
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=False)
             self.assertEqual(properties, true_properties)
 
-    def test_update(self):
+    @awaiter
+    async def test_update(self):
         """Check that the ``update`` method works correctly.
 
         """
         with patchers.patch_connect(False)[self.PATCH_KEY]:
-            self.atv.adb_connect()
-        state = self.atv.update()
+            await self.atv.adb_connect()
+        state = await self.atv.update()
         self.assertTupleEqual(state, STATE_NONE)
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.atv.adb_connect()
+            await self.atv.adb_connect()
 
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            state = self.atv.update()
+            state = await self.atv.update()
             self.assertTupleEqual(state, STATE_NONE)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            state = self.atv.update()
+            state = await self.atv.update()
             self.assertTupleEqual(state, STATE1)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            state = self.atv.update()
+            state = await self.atv.update()
             self.assertTupleEqual(state, STATE2)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
-            state = self.atv.update()
+            state = await self.atv.update()
             self.assertTupleEqual(state, STATE3)
 
             self.atv._state_detection_rules = STATE_DETECTION_RULES1
-            state = self.atv.update()
+            state = await self.atv.update()
             self.assertEqual(state[0], constants.STATE_OFF)
 
             self.atv._state_detection_rules = STATE_DETECTION_RULES2
-            state = self.atv.update()
+            state = await self.atv.update()
             self.assertEqual(state[0], constants.STATE_OFF)
 
             self.atv._state_detection_rules = STATE_DETECTION_RULES3
-            state = self.atv.update()
+            state = await self.atv.update()
             self.assertEqual(state[0], constants.STATE_STANDBY)
 
             self.atv._state_detection_rules = STATE_DETECTION_RULES4
-            state = self.atv.update()
+            state = await self.atv.update()
             self.assertEqual(state[0], constants.STATE_PAUSED)
 
             self.atv._state_detection_rules = STATE_DETECTION_RULES5
-            state = self.atv.update()
+            state = await self.atv.update()
             self.assertEqual(state[0], constants.STATE_IDLE)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3 + RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
             self.atv._state_detection_rules = None
-            state = self.atv.update(get_running_apps=True)
+            state = await self.atv.update(get_running_apps=True)
             true_state = STATE3[:2] + (RUNNING_APPS_LIST,) + STATE3[3:]
             self.assertTupleEqual(state, true_state)
 
-    def assertUpdate(self, get_properties, update):
+    async def assertUpdate(self, get_properties, update):
         """Check that the results of the `update` method are as expected.
 
         """
-        with patch('androidtv.androidtv.AndroidTV.get_properties', return_value=get_properties):
-            self.assertTupleEqual(self.atv.update(), update)
+        with patch('androidtv.androidtv.AndroidTV.get_properties', return_value=get_properties, new_callable=AsyncMock):
+            self.assertTupleEqual(await self.atv.update(), update)
 
-    def test_state_detection(self):
+    @awaiter
+    async def test_state_detection(self):
         """Check that the state detection works as expected.
 
         """
         self.atv.max_volume = 60.
-        self.assertUpdate([False, False, None, -1, None, None, None, None, None, None],
-                          (constants.STATE_OFF, None, None, None, None, None))
+        await self.assertUpdate([False, False, None, -1, None, None, None, None, None, None],
+                                (constants.STATE_OFF, None, None, None, None, None))
 
-        self.assertUpdate([True, False, None, -1, None, None, None, None, None, None],
-                          (constants.STATE_IDLE, None, None, None, None, None))
+        await self.assertUpdate([True, False, None, -1, None, None, None, None, None, None],
+                                (constants.STATE_IDLE, None, None, None, None, None))
 
         # ATV Launcher
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_STANDBY, constants.APP_ATV_LAUNCHER, [constants.APP_ATV_LAUNCHER], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_STANDBY, constants.APP_ATV_LAUNCHER, [constants.APP_ATV_LAUNCHER], 'hmdi_arc', False, 0.5))
 
         # ATV Launcher with custom state detection
         self.atv._state_detection_rules = {constants.APP_ATV_LAUNCHER: [{'idle': {'audio_state': 'idle'}}]}
-        self.assertUpdate([True, True, constants.STATE_PAUSED, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_STANDBY, constants.APP_ATV_LAUNCHER, [constants.APP_ATV_LAUNCHER], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_PAUSED, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_STANDBY, constants.APP_ATV_LAUNCHER, [constants.APP_ATV_LAUNCHER], 'hmdi_arc', False, 0.5))
 
         self.atv._state_detection_rules = {constants.APP_ATV_LAUNCHER: [{'idle': {'INVALID': 'idle'}}]}
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_STANDBY, constants.APP_ATV_LAUNCHER, [constants.APP_ATV_LAUNCHER], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_STANDBY, constants.APP_ATV_LAUNCHER, [constants.APP_ATV_LAUNCHER], 'hmdi_arc', False, 0.5))
 
         self.atv._state_detection_rules = None
 
         # Bell Fibe
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_BELL_FIBE, 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_IDLE, constants.APP_BELL_FIBE, [constants.APP_BELL_FIBE], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_BELL_FIBE, 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_IDLE, constants.APP_BELL_FIBE, [constants.APP_BELL_FIBE], 'hmdi_arc', False, 0.5))
 
         # Netflix
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 2, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PAUSED, constants.APP_NETFLIX, [constants.APP_NETFLIX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 2, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PAUSED, constants.APP_NETFLIX, [constants.APP_NETFLIX], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PLAYING, constants.APP_NETFLIX, [constants.APP_NETFLIX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PLAYING, constants.APP_NETFLIX, [constants.APP_NETFLIX], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 4, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_STANDBY, constants.APP_NETFLIX, [constants.APP_NETFLIX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 4, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_STANDBY, constants.APP_NETFLIX, [constants.APP_NETFLIX], 'hmdi_arc', False, 0.5))
 
         # Plex
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_PLEX, 4, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_STANDBY, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_PLEX, 4, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_STANDBY, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 3, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 3, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 4, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 4, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 5, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 5, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 7, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 7, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 1, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PAUSED, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 1, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PAUSED, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
 
         # TVheadend
-        self.assertUpdate([True, True, constants.STATE_IDLE, 5, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PAUSED, constants.APP_TVHEADEND, [constants.APP_TVHEADEND], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 5, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PAUSED, constants.APP_TVHEADEND, [constants.APP_TVHEADEND], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PLAYING, constants.APP_TVHEADEND, [constants.APP_TVHEADEND], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PLAYING, constants.APP_TVHEADEND, [constants.APP_TVHEADEND], 'hmdi_arc', False, 0.5))
         
-        self.assertUpdate([True, True, constants.STATE_IDLE, 1, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_STANDBY, constants.APP_TVHEADEND, [constants.APP_TVHEADEND], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 1, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_STANDBY, constants.APP_TVHEADEND, [constants.APP_TVHEADEND], 'hmdi_arc', False, 0.5))
 
         # VLC
-        self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 2, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PAUSED, constants.APP_VLC, [constants.APP_VLC], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 2, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PAUSED, constants.APP_VLC, [constants.APP_VLC], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PLAYING, constants.APP_VLC, [constants.APP_VLC], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PLAYING, constants.APP_VLC, [constants.APP_VLC], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 4, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_STANDBY, constants.APP_VLC, [constants.APP_VLC], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 4, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_STANDBY, constants.APP_VLC, [constants.APP_VLC], 'hmdi_arc', False, 0.5))
 
         # VRV
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_VRV, 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_IDLE, constants.APP_VRV, [constants.APP_VRV], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_VRV, 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_IDLE, constants.APP_VRV, [constants.APP_VRV], 'hmdi_arc', False, 0.5))
 
         # YouTube
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 2, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PAUSED, constants.APP_YOUTUBE, [constants.APP_YOUTUBE], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 2, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PAUSED, constants.APP_YOUTUBE, [constants.APP_YOUTUBE], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PLAYING, constants.APP_YOUTUBE, [constants.APP_YOUTUBE], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PLAYING, constants.APP_YOUTUBE, [constants.APP_YOUTUBE], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 4, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_STANDBY, constants.APP_YOUTUBE, [constants.APP_YOUTUBE], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 4, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_STANDBY, constants.APP_YOUTUBE, [constants.APP_YOUTUBE], 'hmdi_arc', False, 0.5))
 
         # Unknown app
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 2, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PAUSED, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 2, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PAUSED, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 3, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PLAYING, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 3, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PLAYING, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 4, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_STANDBY, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 4, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_STANDBY, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_PLAYING, 2, 'unknown', None, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PLAYING, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_PLAYING, 2, 'unknown', None, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PLAYING, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 1, 'unknown', None, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PAUSED, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 1, 'unknown', None, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PAUSED, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', None, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_PLAYING, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', None, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_PLAYING, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
 
-        self.assertUpdate([True, True, constants.STATE_IDLE, 3, 'unknown', None, 'hmdi_arc', False, 30, None],
-                          (constants.STATE_STANDBY, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 3, 'unknown', None, 'hmdi_arc', False, 30, None],
+                                (constants.STATE_STANDBY, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
 
 
 class TestStateDetectionRulesValidator(unittest.TestCase):
