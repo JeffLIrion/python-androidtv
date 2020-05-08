@@ -1,19 +1,24 @@
 import sys
 import unittest
+from unittest.mock import patch
 
 try:
-    # Python3
-    from unittest.mock import patch
+    from unittest.mock import AsyncMock
 except ImportError:
-    # Python2
-    from mock import patch
+    from unittest.mock import MagicMock
+
+    class AsyncMock(MagicMock):
+        async def __call__(self, *args, **kwargs):
+            return super(AsyncMock, self).__call__(*args, **kwargs)
 
 
 sys.path.insert(0, '..')
 
 from androidtv import constants, ha_state_detection_rules_validator
 from androidtv.firetv import FireTV
+
 from . import patchers
+from .async_wrapper import awaiter
 
 
 CURRENT_APP_OUTPUT = "com.amazon.tv.launcher"
@@ -133,323 +138,331 @@ class TestFireTVPython(unittest.TestCase):
     ADB_ATTR = '_adb'
     PATCH_KEY = 'python'
 
-    def setUp(self):
+    @awaiter
+    async def setUp(self):
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.ftv = FireTV('HOST', 5555)
-            self.ftv.adb_connect()
+            await self.ftv.adb_connect()
 
-    def test_turn_on_off(self):
+    @awaiter
+    async def test_turn_on_off(self):
         """Test that the ``FireTV.turn_on`` and ``FireTV.turn_off`` methods work correctly.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.ftv.turn_on()
+            await self.ftv.turn_on()
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_SCREEN_ON + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME))
 
-            self.ftv.turn_off()
+            await self.ftv.turn_off()
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_SLEEP))
 
-    def test_send_intent(self):
+    @awaiter
+    async def test_send_intent(self):
         """Test that the ``_send_intent`` method works correctly.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('output\r\nretcode')[self.PATCH_KEY]:
-            result = self.ftv._send_intent("TEST", constants.INTENT_LAUNCH)
+            result = await self.ftv._send_intent("TEST", constants.INTENT_LAUNCH)
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "monkey -p TEST -c android.intent.category.LAUNCHER 1; echo $?")
             self.assertDictEqual(result, {'output': 'output', 'retcode': 'retcode'})
 
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
-            result = self.ftv._send_intent("TEST", constants.INTENT_LAUNCH)
+            result = await self.ftv._send_intent("TEST", constants.INTENT_LAUNCH)
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "monkey -p TEST -c android.intent.category.LAUNCHER 1; echo $?")
             self.assertDictEqual(result, {})
 
-    def test_launch_app_stop_app(self):
+    @awaiter
+    async def test_launch_app_stop_app(self):
         """Test that the ``FireTV.launch_app`` and ``FireTV.stop_app`` methods work correctly.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.ftv.launch_app("TEST")
+            await self.ftv.launch_app("TEST")
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP.format("TEST"))
 
-            self.ftv.stop_app("TEST")
+            await self.ftv.stop_app("TEST")
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "am force-stop TEST")
 
-    def test_running_apps(self):
+    @awaiter
+    async def test_running_apps(self):
         """Check that the ``running_apps`` property works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            running_apps = self.ftv.running_apps()
+            running_apps = await self.ftv.running_apps()
             self.assertIsNone(running_apps, None)
 
         with patchers.patch_shell('')[self.PATCH_KEY]:
-            running_apps = self.ftv.running_apps()
+            running_apps = await self.ftv.running_apps()
             self.assertIsNone(running_apps, None)
 
         with patchers.patch_shell(RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
-            running_apps = self.ftv.running_apps()
+            running_apps = await self.ftv.running_apps()
             self.assertListEqual(running_apps, RUNNING_APPS_LIST)
 
-    def test_get_properties(self):
+    @awaiter
+    async def test_get_properties(self):
         """Check that ``get_properties()`` works correctly.
 
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=True)
+            properties = await self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT_NONE)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=True)
+            properties = await self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT1)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=True)
+            properties = await self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT2)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=True)
+            properties = await self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3A)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=True)
+            properties = await self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3A)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3B)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=True)
+            properties = await self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3B)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3C)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=True)
+            properties = await self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3C)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3D)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=True)
+            properties = await self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3D)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3E)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=True)
+            properties = await self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3E)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3E)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=True, get_running_apps=False)
+            properties = await self.ftv.get_properties_dict(lazy=True, get_running_apps=False)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3E)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3E)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=False, get_running_apps=False)
+            properties = await self.ftv.get_properties_dict(lazy=False, get_running_apps=False)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3E)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=True)
+            properties = await self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT4)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=True, get_running_apps=False)
+            properties = await self.ftv.get_properties_dict(lazy=True, get_running_apps=False)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT4)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT5)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=True)
+            properties = await self.ftv.get_properties_dict(lazy=True)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT5)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT5)[self.PATCH_KEY]:
-            properties = self.ftv.get_properties_dict(lazy=False)
+            properties = await self.ftv.get_properties_dict(lazy=False)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT5)
 
-    def test_update(self):
+    @awaiter
+    async def test_update(self):
         """Check that the ``update`` method works correctly.
 
         """
         with patchers.patch_connect(False)[self.PATCH_KEY]:
-            self.ftv.adb_connect()
-        state = self.ftv.update()
+            await self.ftv.adb_connect()
+        state = await self.ftv.update()
         self.assertTupleEqual(state, STATE_NONE)
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.assertTrue(self.ftv.adb_connect())
+            self.assertTrue(await self.ftv.adb_connect())
 
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            state = self.ftv.update()
+            state = await self.ftv.update()
             self.assertTupleEqual(state, STATE_NONE)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            state = self.ftv.update()
+            state = await self.ftv.update()
             self.assertTupleEqual(state, STATE1)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            state = self.ftv.update()
+            state = await self.ftv.update()
             self.assertTupleEqual(state, STATE2)
 
         with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
-            state = self.ftv.update()
+            state = await self.ftv.update()
             self.assertTupleEqual(state, STATE3)
 
             self.ftv._state_detection_rules = STATE_DETECTION_RULES1
-            state = self.ftv.update()
+            state = await self.ftv.update()
             self.assertEqual(state[0], constants.STATE_OFF)
 
             self.ftv._state_detection_rules = STATE_DETECTION_RULES2
-            state = self.ftv.update()
+            state = await self.ftv.update()
             self.assertEqual(state[0], constants.STATE_OFF)
 
             self.ftv._state_detection_rules = STATE_DETECTION_RULES3
-            state = self.ftv.update()
+            state = await self.ftv.update()
             self.assertEqual(state[0], constants.STATE_STANDBY)
 
             self.ftv._state_detection_rules = STATE_DETECTION_RULES4
-            state = self.ftv.update()
+            state = await self.ftv.update()
             self.assertEqual(state[0], constants.STATE_PAUSED)
 
             self.ftv._state_detection_rules = STATE_DETECTION_RULES5
-            state = self.ftv.update()
+            state = await self.ftv.update()
             self.assertEqual(state[0], constants.STATE_STANDBY)
 
-    def assertUpdate(self, get_properties, update):
+    async def assertUpdate(self, get_properties, update):
         """Check that the results of the `update` method are as expected.
 
         """
-        with patch('androidtv.firetv.FireTV.get_properties', return_value=get_properties):
+        with patch('androidtv.firetv.FireTV.get_properties', return_value=get_properties, new_callable=AsyncMock):
             self.assertTupleEqual(self.ftv.update(), update)
 
-    def test_state_detection(self):
+    @awaiter
+    async def test_state_detection(self):
         """Check that the state detection works as expected.
 
         """
-        self.assertUpdate([False, None, -1, None, None, None],
-                          (constants.STATE_OFF, None, None))
+        await self.assertUpdate([False, None, -1, None, None, None],
+                                (constants.STATE_OFF, None, None))
 
-        self.assertUpdate([True, False, -1, None, None, None],
-                          (constants.STATE_IDLE, None, None))
+        await self.assertUpdate([True, False, -1, None, None, None],
+                                (constants.STATE_IDLE, None, None))
 
-        self.assertUpdate([True, True, 1, "com.amazon.tv.launcher", None, None],
-                          (constants.STATE_STANDBY, "com.amazon.tv.launcher", ["com.amazon.tv.launcher"]))
+        await self.assertUpdate([True, True, 1, "com.amazon.tv.launcher", None, None],
+                                (constants.STATE_STANDBY, "com.amazon.tv.launcher", ["com.amazon.tv.launcher"]))
 
         # Amazon Video
-        self.assertUpdate([True, True, 1, constants.APP_AMAZON_VIDEO, 3, [constants.APP_AMAZON_VIDEO]],
-                          (constants.STATE_PLAYING, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
+        await self.assertUpdate([True, True, 1, constants.APP_AMAZON_VIDEO, 3, [constants.APP_AMAZON_VIDEO]],
+                                (constants.STATE_PLAYING, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
 
-        self.assertUpdate([True, True, 1, constants.APP_AMAZON_VIDEO, 2, [constants.APP_AMAZON_VIDEO]],
-                          (constants.STATE_PAUSED, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
+        await self.assertUpdate([True, True, 1, constants.APP_AMAZON_VIDEO, 2, [constants.APP_AMAZON_VIDEO]],
+                                (constants.STATE_PAUSED, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
 
-        self.assertUpdate([True, True, 1, constants.APP_AMAZON_VIDEO, 1, [constants.APP_AMAZON_VIDEO]],
-                          (constants.STATE_STANDBY, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
+        await self.assertUpdate([True, True, 1, constants.APP_AMAZON_VIDEO, 1, [constants.APP_AMAZON_VIDEO]],
+                                (constants.STATE_STANDBY, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
 
         # Amazon Video with custom state detection rules
         self.ftv._state_detection_rules = {constants.APP_AMAZON_VIDEO: ['media_session_state']}
 
-        self.assertUpdate([True, True, 2, constants.APP_AMAZON_VIDEO, 2, [constants.APP_AMAZON_VIDEO]],
-                          (constants.STATE_PAUSED, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
+        await self.assertUpdate([True, True, 2, constants.APP_AMAZON_VIDEO, 2, [constants.APP_AMAZON_VIDEO]],
+                                (constants.STATE_PAUSED, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
 
-        self.assertUpdate([True, True, 5, constants.APP_AMAZON_VIDEO, 3, [constants.APP_AMAZON_VIDEO]],
-                          (constants.STATE_PLAYING, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
+        await self.assertUpdate([True, True, 5, constants.APP_AMAZON_VIDEO, 3, [constants.APP_AMAZON_VIDEO]],
+                                (constants.STATE_PLAYING, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
 
-        self.assertUpdate([True, True, 5, constants.APP_AMAZON_VIDEO, 1, [constants.APP_AMAZON_VIDEO]],
-                          (constants.STATE_STANDBY, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
+        await self.assertUpdate([True, True, 5, constants.APP_AMAZON_VIDEO, 1, [constants.APP_AMAZON_VIDEO]],
+                                (constants.STATE_STANDBY, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
 
         self.ftv._state_detection_rules = {constants.APP_AMAZON_VIDEO: [{'standby': {'media_session_state': 2}}]}
-        self.assertUpdate([True, True, 2, constants.APP_AMAZON_VIDEO, None, [constants.APP_AMAZON_VIDEO]],
-                          (constants.STATE_STANDBY, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
+        await self.assertUpdate([True, True, 2, constants.APP_AMAZON_VIDEO, None, [constants.APP_AMAZON_VIDEO]],
+                                (constants.STATE_STANDBY, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
 
         # Firefox
-        self.assertUpdate([True, True, 3, constants.APP_FIREFOX, 3, [constants.APP_FIREFOX]],
-                          (constants.STATE_PLAYING, constants.APP_FIREFOX, [constants.APP_FIREFOX]))
+        await self.assertUpdate([True, True, 3, constants.APP_FIREFOX, 3, [constants.APP_FIREFOX]],
+                                (constants.STATE_PLAYING, constants.APP_FIREFOX, [constants.APP_FIREFOX]))
 
-        self.assertUpdate([True, True, 1, constants.APP_FIREFOX, 3, [constants.APP_FIREFOX]],
-                          (constants.STATE_STANDBY, constants.APP_FIREFOX, [constants.APP_FIREFOX]))
+        await self.assertUpdate([True, True, 1, constants.APP_FIREFOX, 3, [constants.APP_FIREFOX]],
+                                (constants.STATE_STANDBY, constants.APP_FIREFOX, [constants.APP_FIREFOX]))
 
         # Hulu
-        self.assertUpdate([True, True, 4, constants.APP_HULU, 3, [constants.APP_HULU]],
-                          (constants.STATE_PLAYING, constants.APP_HULU, [constants.APP_HULU]))
+        await self.assertUpdate([True, True, 4, constants.APP_HULU, 3, [constants.APP_HULU]],
+                                (constants.STATE_PLAYING, constants.APP_HULU, [constants.APP_HULU]))
 
-        self.assertUpdate([True, True, 2, constants.APP_HULU, 3, [constants.APP_HULU]],
-                          (constants.STATE_PAUSED, constants.APP_HULU, [constants.APP_HULU]))
+        await self.assertUpdate([True, True, 2, constants.APP_HULU, 3, [constants.APP_HULU]],
+                                (constants.STATE_PAUSED, constants.APP_HULU, [constants.APP_HULU]))
 
-        self.assertUpdate([True, True, 1, constants.APP_HULU, 3, [constants.APP_HULU]],
-                          (constants.STATE_STANDBY, constants.APP_HULU, [constants.APP_HULU]))
+        await self.assertUpdate([True, True, 1, constants.APP_HULU, 3, [constants.APP_HULU]],
+                                (constants.STATE_STANDBY, constants.APP_HULU, [constants.APP_HULU]))
 
         # Jellyfin
-        self.assertUpdate([True, True, 2, constants.APP_JELLYFIN_TV, 3, [constants.APP_JELLYFIN_TV]],
-                          (constants.STATE_PLAYING, constants.APP_JELLYFIN_TV, [constants.APP_JELLYFIN_TV]))
+        await self.assertUpdate([True, True, 2, constants.APP_JELLYFIN_TV, 3, [constants.APP_JELLYFIN_TV]],
+                                (constants.STATE_PLAYING, constants.APP_JELLYFIN_TV, [constants.APP_JELLYFIN_TV]))
 
-        self.assertUpdate([True, True, 4, constants.APP_JELLYFIN_TV, 3, [constants.APP_JELLYFIN_TV]],
-                          (constants.STATE_PAUSED, constants.APP_JELLYFIN_TV, [constants.APP_JELLYFIN_TV]))
+        await self.assertUpdate([True, True, 4, constants.APP_JELLYFIN_TV, 3, [constants.APP_JELLYFIN_TV]],
+                                (constants.STATE_PAUSED, constants.APP_JELLYFIN_TV, [constants.APP_JELLYFIN_TV]))
 
         # Netfilx
-        self.assertUpdate([True, True, 1, constants.APP_NETFLIX, 3, [constants.APP_NETFLIX]],
-                          (constants.STATE_PLAYING, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
+        await self.assertUpdate([True, True, 1, constants.APP_NETFLIX, 3, [constants.APP_NETFLIX]],
+                                (constants.STATE_PLAYING, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
 
-        self.assertUpdate([True, True, 1, constants.APP_NETFLIX, 2, [constants.APP_NETFLIX]],
-                          (constants.STATE_PAUSED, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
+        await self.assertUpdate([True, True, 1, constants.APP_NETFLIX, 2, [constants.APP_NETFLIX]],
+                                (constants.STATE_PAUSED, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
 
-        self.assertUpdate([True, True, 1, constants.APP_NETFLIX, 1, [constants.APP_NETFLIX]],
-                          (constants.STATE_STANDBY, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
+        await self.assertUpdate([True, True, 1, constants.APP_NETFLIX, 1, [constants.APP_NETFLIX]],
+                                (constants.STATE_STANDBY, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
 
         # Plex
-        self.assertUpdate([True, True, 1, constants.APP_PLEX, 3, [constants.APP_PLEX]],
-                          (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX]))
+        await self.assertUpdate([True, True, 1, constants.APP_PLEX, 3, [constants.APP_PLEX]],
+                                (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX]))
 
-        self.assertUpdate([True, True, 2, constants.APP_PLEX, 3, [constants.APP_PLEX]],
-                          (constants.STATE_PAUSED, constants.APP_PLEX, [constants.APP_PLEX]))
+        await self.assertUpdate([True, True, 2, constants.APP_PLEX, 3, [constants.APP_PLEX]],
+                                (constants.STATE_PAUSED, constants.APP_PLEX, [constants.APP_PLEX]))
 
-        self.assertUpdate([True, True, 1, constants.APP_PLEX, 1, [constants.APP_PLEX]],
-                          (constants.STATE_STANDBY, constants.APP_PLEX, [constants.APP_PLEX]))
+        await self.assertUpdate([True, True, 1, constants.APP_PLEX, 1, [constants.APP_PLEX]],
+                                (constants.STATE_STANDBY, constants.APP_PLEX, [constants.APP_PLEX]))
 
         # Sport 1
-        self.assertUpdate([True, True, 3, constants.APP_SPORT1, 3, [constants.APP_SPORT1]],
-                          (constants.STATE_PLAYING, constants.APP_SPORT1, [constants.APP_SPORT1]))
+        await self.assertUpdate([True, True, 3, constants.APP_SPORT1, 3, [constants.APP_SPORT1]],
+                                (constants.STATE_PLAYING, constants.APP_SPORT1, [constants.APP_SPORT1]))
 
-        self.assertUpdate([True, True, 2, constants.APP_SPORT1, 3, [constants.APP_SPORT1]],
-                          (constants.STATE_PAUSED, constants.APP_SPORT1, [constants.APP_SPORT1]))
+        await self.assertUpdate([True, True, 2, constants.APP_SPORT1, 3, [constants.APP_SPORT1]],
+                                (constants.STATE_PAUSED, constants.APP_SPORT1, [constants.APP_SPORT1]))
 
-        self.assertUpdate([True, True, 1, constants.APP_SPORT1, 3, [constants.APP_SPORT1]],
-                          (constants.STATE_STANDBY, constants.APP_SPORT1, [constants.APP_SPORT1]))
+        await self.assertUpdate([True, True, 1, constants.APP_SPORT1, 3, [constants.APP_SPORT1]],
+                                (constants.STATE_STANDBY, constants.APP_SPORT1, [constants.APP_SPORT1]))
 
         # Spotify
-        self.assertUpdate([True, True, 1, constants.APP_SPOTIFY, 3, [constants.APP_SPOTIFY]],
-                          (constants.STATE_PLAYING, constants.APP_SPOTIFY, [constants.APP_SPOTIFY]))
+        await self.assertUpdate([True, True, 1, constants.APP_SPOTIFY, 3, [constants.APP_SPOTIFY]],
+                                (constants.STATE_PLAYING, constants.APP_SPOTIFY, [constants.APP_SPOTIFY]))
 
-        self.assertUpdate([True, True, 1, constants.APP_SPOTIFY, 2, [constants.APP_SPOTIFY]],
-                          (constants.STATE_PAUSED, constants.APP_SPOTIFY, [constants.APP_SPOTIFY]))
+        await self.assertUpdate([True, True, 1, constants.APP_SPOTIFY, 2, [constants.APP_SPOTIFY]],
+                                (constants.STATE_PAUSED, constants.APP_SPOTIFY, [constants.APP_SPOTIFY]))
 
-        self.assertUpdate([True, True, 1, constants.APP_SPOTIFY, 1, [constants.APP_SPOTIFY]],
-                          (constants.STATE_STANDBY, constants.APP_SPOTIFY, [constants.APP_SPOTIFY]))
+        await self.assertUpdate([True, True, 1, constants.APP_SPOTIFY, 1, [constants.APP_SPOTIFY]],
+                                (constants.STATE_STANDBY, constants.APP_SPOTIFY, [constants.APP_SPOTIFY]))
 
         # Twitch
-        self.assertUpdate([True, True, 2, constants.APP_TWITCH, 3, [constants.APP_TWITCH]],
-                          (constants.STATE_PAUSED, constants.APP_TWITCH, [constants.APP_TWITCH]))
+        await self.assertUpdate([True, True, 2, constants.APP_TWITCH, 3, [constants.APP_TWITCH]],
+                                (constants.STATE_PAUSED, constants.APP_TWITCH, [constants.APP_TWITCH]))
 
-        self.assertUpdate([True, True, 1, constants.APP_TWITCH, 3, [constants.APP_TWITCH]],
-                          (constants.STATE_PLAYING, constants.APP_TWITCH, [constants.APP_TWITCH]))
+        await self.assertUpdate([True, True, 1, constants.APP_TWITCH, 3, [constants.APP_TWITCH]],
+                                (constants.STATE_PLAYING, constants.APP_TWITCH, [constants.APP_TWITCH]))
 
-        self.assertUpdate([True, True, 1, constants.APP_TWITCH, 4, [constants.APP_TWITCH]],
-                          (constants.STATE_PLAYING, constants.APP_TWITCH, [constants.APP_TWITCH]))
+        await self.assertUpdate([True, True, 1, constants.APP_TWITCH, 4, [constants.APP_TWITCH]],
+                                (constants.STATE_PLAYING, constants.APP_TWITCH, [constants.APP_TWITCH]))
 
-        self.assertUpdate([True, True, 1, constants.APP_TWITCH, 1, [constants.APP_TWITCH]],
-                          (constants.STATE_STANDBY, constants.APP_TWITCH, [constants.APP_TWITCH]))
+        await self.assertUpdate([True, True, 1, constants.APP_TWITCH, 1, [constants.APP_TWITCH]],
+                                (constants.STATE_STANDBY, constants.APP_TWITCH, [constants.APP_TWITCH]))
 
         # Waipu TV
-        self.assertUpdate([True, True, 3, constants.APP_WAIPU_TV, 1, [constants.APP_WAIPU_TV]],
-                          (constants.STATE_PLAYING, constants.APP_WAIPU_TV, [constants.APP_WAIPU_TV]))
+        await self.assertUpdate([True, True, 3, constants.APP_WAIPU_TV, 1, [constants.APP_WAIPU_TV]],
+                                (constants.STATE_PLAYING, constants.APP_WAIPU_TV, [constants.APP_WAIPU_TV]))
 
-        self.assertUpdate([True, True, 2, constants.APP_WAIPU_TV, 1, [constants.APP_WAIPU_TV]],
-                          (constants.STATE_PAUSED, constants.APP_WAIPU_TV, [constants.APP_WAIPU_TV]))
+        await self.assertUpdate([True, True, 2, constants.APP_WAIPU_TV, 1, [constants.APP_WAIPU_TV]],
+                                (constants.STATE_PAUSED, constants.APP_WAIPU_TV, [constants.APP_WAIPU_TV]))
 
-        self.assertUpdate([True, True, 1, constants.APP_WAIPU_TV, 1, [constants.APP_WAIPU_TV]],
-                          (constants.STATE_STANDBY, constants.APP_WAIPU_TV, [constants.APP_WAIPU_TV]))
+        await self.assertUpdate([True, True, 1, constants.APP_WAIPU_TV, 1, [constants.APP_WAIPU_TV]],
+                                (constants.STATE_STANDBY, constants.APP_WAIPU_TV, [constants.APP_WAIPU_TV]))
 
         # Unknown app
-        self.assertUpdate([True, True, 1, 'unknown', 3, ['unknown']],
-                          (constants.STATE_PLAYING, 'unknown', ['unknown']))
+        await self.assertUpdate([True, True, 1, 'unknown', 3, ['unknown']],
+                                (constants.STATE_PLAYING, 'unknown', ['unknown']))
 
-        self.assertUpdate([True, True, 1, 'unknown', 2, ['unknown']],
-                          (constants.STATE_PAUSED, 'unknown', ['unknown']))
+        await self.assertUpdate([True, True, 1, 'unknown', 2, ['unknown']],
+                                (constants.STATE_PAUSED, 'unknown', ['unknown']))
 
-        self.assertUpdate([True, True, 1, 'unknown', 1, ['unknown']],
-                          (constants.STATE_STANDBY, 'unknown', ['unknown']))
+        await self.assertUpdate([True, True, 1, 'unknown', 1, ['unknown']],
+                                (constants.STATE_STANDBY, 'unknown', ['unknown']))
 
-        self.assertUpdate([True, True, 1, 'unknown', None, ['unknown']],
-                          (constants.STATE_PLAYING, 'unknown', ['unknown']))
+        await self.assertUpdate([True, True, 1, 'unknown', None, ['unknown']],
+                                (constants.STATE_PLAYING, 'unknown', ['unknown']))
 
-        self.assertUpdate([True, True, 2, 'unknown', None, ['unknown']],
-                          (constants.STATE_PAUSED, 'unknown', ['unknown']))
+        await self.assertUpdate([True, True, 2, 'unknown', None, ['unknown']],
+                                (constants.STATE_PAUSED, 'unknown', ['unknown']))
 
 
 if __name__ == "__main__":

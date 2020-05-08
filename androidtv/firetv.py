@@ -42,7 +42,7 @@ class FireTV(BaseTV):
     #                          Home Assistant Update                          #
     #                                                                         #
     # ======================================================================= #
-    def update(self, get_running_apps=True):
+    async def update(self, get_running_apps=True):
         """Get the info needed for a Home Assistant update.
 
         Parameters
@@ -61,7 +61,7 @@ class FireTV(BaseTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
+        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = await self.get_properties(get_running_apps=get_running_apps, lazy=True)
 
         # Check if device is unavailable
         if screen_on is None:
@@ -207,7 +207,7 @@ class FireTV(BaseTV):
     #                               Properties                                #
     #                                                                         #
     # ======================================================================= #
-    def get_properties(self, get_running_apps=True, lazy=False):
+    async def get_properties(self, get_running_apps=True, lazy=False):
         """Get the properties needed for Home Assistant updates.
 
         This will send one of the following ADB commands:
@@ -242,14 +242,14 @@ class FireTV(BaseTV):
         """
         if lazy:
             if get_running_apps:
-                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS)
+                output = await self._adb.shell(constants.CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS)
             else:
-                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS)
+                output = await self._adb.shell(constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS)
         else:
             if get_running_apps:
-                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
+                output = await self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
             else:
-                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
+                output = await self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
         _LOGGER.debug("Fire TV %s:%d `get_properties` response: %s", self.host, self.port, output)
 
         # ADB command was unsuccessful
@@ -290,7 +290,7 @@ class FireTV(BaseTV):
 
         return screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps
 
-    def get_properties_dict(self, get_running_apps=True, lazy=True):
+    async def get_properties_dict(self, get_running_apps=True, lazy=True):
         """Get the properties needed for Home Assistant updates and return them as a dictionary.
 
         Parameters
@@ -307,7 +307,7 @@ class FireTV(BaseTV):
              ``'media_session_state'``, and ``'running_apps'``
 
         """
-        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = await self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
         return {'screen_on': screen_on,
                 'awake': awake,
@@ -316,7 +316,7 @@ class FireTV(BaseTV):
                 'media_session_state': media_session_state,
                 'running_apps': running_apps}
 
-    def running_apps(self):
+    async def running_apps(self):
         """Return a list of running user applications.
 
         Returns
@@ -325,7 +325,7 @@ class FireTV(BaseTV):
             A list of the running apps
 
         """
-        running_apps_response = self._adb.shell(constants.CMD_FIRETV_RUNNING_APPS)
+        running_apps_response = await self._adb.shell(constants.CMD_FIRETV_RUNNING_APPS)
 
         return self._running_apps(running_apps_response)
 
@@ -334,10 +334,10 @@ class FireTV(BaseTV):
     #                           turn on/off methods                           #
     #                                                                         #
     # ======================================================================= #
-    def turn_on(self):
+    async def turn_on(self):
         """Send ``POWER`` and ``HOME`` actions if the device is off."""
-        self._adb.shell(constants.CMD_SCREEN_ON + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME))
+        await self._adb.shell(constants.CMD_SCREEN_ON + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME))
 
-    def turn_off(self):
+    async def turn_off(self):
         """Send ``SLEEP`` action if the device is not off."""
-        self._adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_SLEEP))
+        await self._adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_SLEEP))
