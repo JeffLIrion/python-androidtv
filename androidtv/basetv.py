@@ -8,7 +8,7 @@ import logging
 import re
 
 from . import constants
-from .adb_manager import ADBPython, ADBServer
+from .adb_manager import ADBPython
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -85,12 +85,7 @@ class BaseTV(object):
         self.max_volume = None
 
         # the handler for ADB commands
-        if not adb_server_ip:
-            # python-adb
-            self._adb = ADBPython(host, port, adbkey)
-        else:
-            # pure-python-adb
-            self._adb = ADBServer(host, port, adb_server_ip, adb_server_port)
+        self._adb = ADBPython(host, port, adbkey)
 
     # ======================================================================= #
     #                                                                         #

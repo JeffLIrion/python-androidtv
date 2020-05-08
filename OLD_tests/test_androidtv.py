@@ -284,6 +284,7 @@ STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_siz
 STATE_DETECTION_RULES5 = {'com.amazon.tv.launcher': ['audio_state']}
 
 
+@unittest.skip
 class TestAndroidTVPython(unittest.TestCase):
     PATCH_KEY = 'python'
     ADB_ATTR = '_adb'
@@ -802,16 +803,6 @@ class TestAndroidTVPython(unittest.TestCase):
 
         self.assertUpdate([True, True, constants.STATE_IDLE, 3, 'unknown', None, 'hmdi_arc', False, 30, None],
                           (constants.STATE_STANDBY, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
-
-
-class TestAndroidTVServer(TestAndroidTVPython):
-    PATCH_KEY = 'server'
-    ADB_ATTR = '_adb_device'
-
-    def setUp(self):
-        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.atv = AndroidTV('HOST', 5555, adb_server_ip='ADB_SERVER_IP')
-            self.atv.adb_connect()
 
 
 class TestStateDetectionRulesValidator(unittest.TestCase):

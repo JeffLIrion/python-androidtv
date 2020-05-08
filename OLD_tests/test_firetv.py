@@ -128,6 +128,7 @@ STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_siz
 STATE_DETECTION_RULES5 = {'com.amazon.tv.launcher': ['audio_state']}
 
 
+@unittest.skip
 class TestFireTVPython(unittest.TestCase):
     ADB_ATTR = '_adb'
     PATCH_KEY = 'python'
@@ -449,16 +450,6 @@ class TestFireTVPython(unittest.TestCase):
 
         self.assertUpdate([True, True, 2, 'unknown', None, ['unknown']],
                           (constants.STATE_PAUSED, 'unknown', ['unknown']))
-
-
-class TestFireTVServer(TestFireTVPython):
-    ADB_ATTR = '_adb_device'
-    PATCH_KEY = 'server'
-
-    def setUp(self):
-        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.ftv = FireTV('HOST', 5555, adb_server_ip='ADB_SERVER_PORT')
-            self.ftv.adb_connect()
 
 
 if __name__ == "__main__":

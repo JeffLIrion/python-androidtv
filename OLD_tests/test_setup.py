@@ -36,6 +36,7 @@ DEVICE_PROPERTIES_DICT2 = {'manufacturer': 'Not Amazon',
                            'ethmac': None}
 
 
+@unittest.skip
 class TestSetup(unittest.TestCase):
     PATCH_KEY = 'python'
 

@@ -2,15 +2,11 @@ import asyncio
 from contextlib import contextmanager
 import sys
 import unittest
-
-try:
-    from unittest.mock import patch
-except ImportError:
-    from mock import patch
+from unittest.mock import patch
 
 sys.path.insert(0, '..')
 
-from androidtv.adb_manager import _acquire, _aacquire, ADBPython, ADBServer
+from androidtv.adb_manager import _acquire, ADBPython
 from androidtv.exceptions import LockNotAcquiredException
 from . import patchers
 from .async_wrapper import awaiter
@@ -52,25 +48,6 @@ def open_priv_pub(infile):
         pass
 
 
-class FakeLock(object):
-    def __init__(self, *args, **kwargs):
-        self._acquired = True
-
-    def acquire(self, *args, **kwargs):
-        if self._acquired:
-            self._acquired = False
-            return True
-        return self._acquired
-
-    def release(self, *args, **kwargs):
-        self._acquired = True
-
-
-class LockedLock(FakeLock):
-    def __init__(self, *args, **kwargs):
-        self._acquired = False
-
-
 class AsyncFakeLock:
     def __init__(self):
         self._acquired = True
@@ -81,7 +58,7 @@ class AsyncFakeLock:
             return True
         return self._acquired
 
-    async def release(self):
+    def release(self):
         self._acquired = True
 
 
@@ -96,11 +73,13 @@ class AsyncTimedLock(AsyncFakeLock):
         return await super().acquire()
 
 
-class TestLockAcquire(unittest.TestCase):
+class TestLock(unittest.TestCase):
+    """Test the async lock code."""
+
     @awaiter
     async def test_succeed(self):
         lock = AsyncFakeLock()
-        async with _aacquire(lock):
+        async with _acquire(lock):
             self.assertTrue(True)
             return
         self.assertTrue(False)
@@ -109,14 +88,14 @@ class TestLockAcquire(unittest.TestCase):
     async def test_fail(self):
         lock = AsyncLockedLock()
         with self.assertRaises(LockNotAcquiredException):
-            async with _aacquire(lock):
-                pass #self.assertTrue(False)
+            async with _acquire(lock):
+                pass # self.assertTrue(False)
 
     @awaiter
     async def test_fail_timeout(self):
         lock = AsyncTimedLock()
         with self.assertRaises(LockNotAcquiredException):
-            async with _aacquire(lock, 0.1):
+            async with _acquire(lock, 0.1):
                 pass #self.assertTrue(False)
 
 
@@ -132,229 +111,216 @@ class TestADBPython(unittest.TestCase):
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY]:
             self.adb = ADBPython('HOST', 5555)
 
-    def test_locked_lock(self):
+    '''@awaiter
+    async def test_locked_lock(self):
         """Test that the ``FakeLock`` class works as expected.
 
         """
-        with patch.object(self.adb, '_adb_lock', FakeLock()):
+        with patch.object(self.adb, '_adb_lock', AsyncFakeLock()):
             with _acquire(self.adb._adb_lock):
                 with self.assertRaises(LockNotAcquiredException):
                     with _acquire(self.adb._adb_lock):
                         pass
 
             with _acquire(self.adb._adb_lock) as acquired:
-                self.assertTrue(acquired)
+                self.assertTrue(acquired)'''
 
-    def test_connect_success(self):
+    @awaiter
+    async def test_connect_success(self):
         """Test when the connect attempt is successful.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
+            self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
 
-    def test_connect_fail(self):
+    @awaiter
+    async def test_connect_fail(self):
         """Test when the connect attempt fails.
 
         """
         with patchers.patch_connect(False)[self.PATCH_KEY]:
-            self.assertFalse(self.adb.connect())
+            self.assertFalse(await self.adb.connect())
             self.assertFalse(self.adb.available)
             self.assertFalse(self.adb._available)
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
+            self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
 
         with patchers.PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION[self.PATCH_KEY]:
-            self.assertFalse(self.adb.connect())
+            self.assertFalse(await self.adb.connect())
             self.assertFalse(self.adb.available)
             self.assertFalse(self.adb._available)
 
-    def test_connect_fail_lock(self):
+    @awaiter
+    async def test_connect_fail_lock(self):
         """Test when the connect attempt fails due to the lock.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY]:
-            with patch.object(self.adb, '_adb_lock', LockedLock()):
-                self.assertFalse(self.adb.connect())
+            with patch.object(self.adb, '_adb_lock', AsyncLockedLock()):
+                self.assertFalse(await self.adb.connect())
                 self.assertFalse(self.adb.available)
                 self.assertFalse(self.adb._available)
 
-    def test_adb_shell_fail(self):
+    @awaiter
+    async def test_adb_shell_fail(self):
         """Test when an ADB shell command is not sent because the device is unavailable.
 
         """
         self.assertFalse(self.adb.available)
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.assertIsNone(self.adb.shell("TEST"))
+            self.assertIsNone(await self.adb.shell("TEST"))
 
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("TEST")[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
-            with patch.object(self.adb, '_adb_lock', LockedLock()):
+            self.assertTrue(await self.adb.connect())
+            with patch.object(self.adb, '_adb_lock', AsyncLockedLock()):
                 with self.assertRaises(LockNotAcquiredException):
-                    self.adb.shell("TEST")
+                    await self.adb.shell("TEST")
 
                 with self.assertRaises(LockNotAcquiredException):
-                    self.adb.shell("TEST2")
+                    await self.adb.shell("TEST2")
 
-    def test_adb_shell_success(self):
+    @awaiter
+    async def test_adb_shell_success(self):
         """Test when an ADB shell command is successfully sent.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("TEST")[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
-            self.assertEqual(self.adb.shell("TEST"), "TEST")
+            self.assertTrue(await self.adb.connect())
+            self.assertEqual(await self.adb.shell("TEST"), "TEST")
 
-    def test_adb_shell_fail_lock_released(self):
+    @awaiter
+    async def test_adb_shell_fail_lock_released(self):
         """Test that the ADB lock gets released when an exception is raised.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("TEST")[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
+            self.assertTrue(await self.adb.connect())
 
-        with patchers.patch_shell("TEST", error=True)[self.PATCH_KEY], patch.object(self.adb, '_adb_lock', FakeLock()):
-            with patch('{}.FakeLock.release'.format(__name__)) as release:
+        with patchers.patch_shell("TEST", error=True)[self.PATCH_KEY], patch.object(self.adb, '_adb_lock', AsyncFakeLock()):
+            with patch('{}.AsyncFakeLock.release'.format(__name__)) as release:
                 with self.assertRaises(Exception):
-                    self.adb.shell("TEST")
+                    await self.adb.shell("TEST")
                 assert release.called
 
-    def test_adb_shell_lock_not_acquired_not_released(self):
+    @awaiter
+    async def test_adb_shell_lock_not_acquired_not_released(self):
         """Test that the lock does not get released if it is not acquired.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("TEST")[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
-            self.assertEqual(self.adb.shell("TEST"), "TEST")
+            self.assertTrue(await self.adb.connect())
+            self.assertEqual(await self.adb.shell("TEST"), "TEST")
 
-        with patchers.patch_shell("TEST")[self.PATCH_KEY], patch.object(self.adb, '_adb_lock', LockedLock()):
-            with patch('{}.LockedLock.release'.format(__name__)) as release:
+        with patchers.patch_shell("TEST")[self.PATCH_KEY], patch.object(self.adb, '_adb_lock', AsyncLockedLock()):
+            with patch('{}.AsyncLockedLock.release'.format(__name__)) as release:
                 with self.assertRaises(LockNotAcquiredException):
-                    self.adb.shell("TEST")
+                    await self.adb.shell("TEST")
 
                 release.assert_not_called()
 
-    def test_adb_push_fail(self):
+    @awaiter
+    async def test_adb_push_fail(self):
         """Test when an ADB push command is not executed because the device is unavailable.
 
         """
         self.assertFalse(self.adb.available)
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             with patchers.PATCH_PUSH[self.PATCH_KEY] as patch_push:
-                self.adb.push("TEST_LOCAL_PATCH", "TEST_DEVICE_PATH")
+                await self.adb.push("TEST_LOCAL_PATCH", "TEST_DEVICE_PATH")
                 patch_push.assert_not_called()
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             with patchers.PATCH_PUSH[self.PATCH_KEY] as patch_push:
-                self.assertTrue(self.adb.connect())
-                with patch.object(self.adb, '_adb_lock', LockedLock()):
+                self.assertTrue(await self.adb.connect())
+                with patch.object(self.adb, '_adb_lock', AsyncLockedLock()):
                     with self.assertRaises(LockNotAcquiredException):
-                        self.adb.push("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
+                        await self.adb.push("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
 
                     patch_push.assert_not_called()
 
-    def test_adb_push_success(self):
+    @awaiter
+    async def test_adb_push_success(self):
         """Test when an ADB push command is successfully executed.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             with patchers.PATCH_PUSH[self.PATCH_KEY] as patch_push:
-                self.assertTrue(self.adb.connect())
-                self.adb.push("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
+                self.assertTrue(await self.adb.connect())
+                await self.adb.push("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
                 self.assertEqual(patch_push.call_count, 1)
 
-    def test_adb_pull_fail(self):
+    @awaiter
+    async def test_adb_pull_fail(self):
         """Test when an ADB pull command is not executed because the device is unavailable.
 
         """
         self.assertFalse(self.adb.available)
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             with patchers.PATCH_PULL[self.PATCH_KEY] as patch_pull:
-                self.adb.pull("TEST_LOCAL_PATCH", "TEST_DEVICE_PATH")
+                await self.adb.pull("TEST_LOCAL_PATCH", "TEST_DEVICE_PATH")
                 patch_pull.assert_not_called()
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             with patchers.PATCH_PULL[self.PATCH_KEY] as patch_pull:
-                self.assertTrue(self.adb.connect())
-                with patch.object(self.adb, '_adb_lock', LockedLock()):
+                self.assertTrue(await self.adb.connect())
+                with patch.object(self.adb, '_adb_lock', AsyncLockedLock()):
                     with self.assertRaises(LockNotAcquiredException):
-                        self.adb.pull("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
+                        await self.adb.pull("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
                     patch_pull.assert_not_called()
 
-    def test_adb_pull_success(self):
+    @awaiter
+    async def test_adb_pull_success(self):
         """Test when an ADB pull command is successfully executed.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             with patchers.PATCH_PULL[self.PATCH_KEY] as patch_pull:
-                self.assertTrue(self.adb.connect())
-                self.adb.pull("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
+                self.assertTrue(await self.adb.connect())
+                await self.adb.pull("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
                 self.assertEqual(patch_pull.call_count, 1)
 
-    def test_adb_screencap_fail_unavailable(self):
+    @awaiter
+    async def test_adb_screencap_fail_unavailable(self):
         """Test when an ADB screencap command fails because the connection is unavailable.
 
         """        
         self.assertFalse(self.adb.available)
-        self.assertIsNone(self.adb.screencap())
+        self.assertIsNone(await self.adb.screencap())
 
-    def test_adb_screencap_lock_not_acquired(self):
+    @awaiter
+    async def test_adb_screencap_lock_not_acquired(self):
         """Test when an ADB screencap command fails because the ADB lock could not be acquired.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("TEST")[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
-            self.assertEqual(self.adb.shell("TEST"), "TEST")
+            self.assertTrue(await self.adb.connect())
+            self.assertEqual(await self.adb.shell("TEST"), "TEST")
 
-        with patchers.patch_shell(PNG_IMAGE)[self.PATCH_KEY], patch.object(self.adb, '_adb_lock', LockedLock()):
-            with patch('{}.LockedLock.release'.format(__name__)) as release:
+        with patchers.patch_shell(PNG_IMAGE)[self.PATCH_KEY], patch.object(self.adb, '_adb_lock', AsyncLockedLock()):
+            with patch('{}.AsyncLockedLock.release'.format(__name__)) as release:
                 with self.assertRaises(LockNotAcquiredException):
-                    self.adb.screencap()
+                    await self.adb.screencap()
 
                 release.assert_not_called()
 
-    def test_adb_screencap_success(self):
+    @awaiter
+    async def test_adb_screencap_success(self):
         """Test the `screencap` method.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(PNG_IMAGE)[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
+            self.assertTrue(await self.adb.connect())
 
             if isinstance(self.adb, ADBPython):
-                self.assertEqual(self.adb.screencap(), PNG_IMAGE)
+                self.assertEqual(await self.adb.screencap(), PNG_IMAGE)
 
                 with patchers.patch_shell(PNG_IMAGE_NEEDS_REPLACING)[self.PATCH_KEY]:
-                    self.assertEqual(self.adb.screencap(), PNG_IMAGE)
-
-            else:
-                with patch.object(self.adb._adb_device, 'screencap', return_value=PNG_IMAGE):
-                    self.assertEqual(self.adb.screencap(), PNG_IMAGE)
-
-
-class TestADBServer(TestADBPython):
-    """Test the `ADBServer` class."""
-
-    PATCH_KEY = 'server'
-
-    def setUp(self):
-        """Create an `ADBServer` instance.
-
-        """
-        self.adb = ADBServer('HOST', 5555, 'ADB_SERVER_IP')
-
-    def test_connect_fail_server(self):
-        """Test that the ``connect`` method works correctly.
-
-        """
-        with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
-
-        with patch('{}.patchers.ClientFakeSuccess.devices'.format(__name__), side_effect=RuntimeError):
-            self.assertFalse(self.adb.connect())
-            self.assertFalse(self.adb.available)
-            self.assertFalse(self.adb._available)
+                    self.assertEqual(await self.adb.screencap(), PNG_IMAGE)
 
 
 class TestADBPythonWithAuthentication(unittest.TestCase):
@@ -369,25 +335,28 @@ class TestADBPythonWithAuthentication(unittest.TestCase):
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY]:
             self.adb = ADBPython('HOST', 5555, 'adbkey')
 
-    def test_connect_success_with_priv_key(self):
+    @awaiter
+    async def test_connect_success_with_priv_key(self):
         """Test when the connect attempt is successful when using a private key.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.open', open_priv), patch('androidtv.adb_manager.PythonRSASigner', return_value=None):
-            self.assertTrue(self.adb.connect())
+            self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
 
-    def test_connect_success_with_priv_pub_key(self):
+    @awaiter
+    async def test_connect_success_with_priv_pub_key(self):
         """Test when the connect attempt is successful when using private and public keys.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.open', open_priv_pub), patch('androidtv.adb_manager.PythonRSASigner', return_value=None):
-            self.assertTrue(self.adb.connect())
+            self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
 
 
+'''
 class TestADBPythonClose(unittest.TestCase):
     """Test the `ADBPython.close` method."""
 
@@ -406,4 +375,4 @@ class TestADBPythonClose(unittest.TestCase):
             self.assertTrue(self.adb._available)
 
             self.adb.close()
-            self.assertFalse(self.adb.available)
+            self.assertFalse(self.adb.available)'''
