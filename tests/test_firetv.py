@@ -133,7 +133,6 @@ STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_siz
 STATE_DETECTION_RULES5 = {'com.amazon.tv.launcher': ['audio_state']}
 
 
-@unittest.skip
 class TestFireTVPython(unittest.TestCase):
     ADB_ATTR = '_adb'
     PATCH_KEY = 'python'
@@ -319,7 +318,7 @@ class TestFireTVPython(unittest.TestCase):
 
         """
         with patch('androidtv.firetv.FireTV.get_properties', return_value=get_properties, new_callable=AsyncMock):
-            self.assertTupleEqual(self.ftv.update(), update)
+            self.assertTupleEqual(await self.ftv.update(), update)
 
     @awaiter
     async def test_state_detection(self):
