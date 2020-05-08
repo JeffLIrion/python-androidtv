@@ -12,7 +12,7 @@ from .firetv import FireTV
 __version__ = '0.0.41'
 
 
-def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, device_class='auto', auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S):
+async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, device_class='auto', auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S):
     """Connect to a device and determine whether it's an Android TV or an Amazon Fire TV.
 
     Parameters
@@ -42,14 +42,14 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
     """
     if device_class == 'androidtv':
         atv = AndroidTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
-        atv.adb_connect(auth_timeout_s=auth_timeout_s)
-        atv.device_properties = atv.get_device_properties()
+        await atv.adb_connect(auth_timeout_s=auth_timeout_s)
+        atv.device_properties = await atv.get_device_properties()
         return atv
 
     if device_class == 'firetv':
         ftv = FireTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
-        ftv.adb_connect(auth_timeout_s=auth_timeout_s)
-        ftv.device_properties = ftv.get_device_properties()
+        await ftv.adb_connect(auth_timeout_s=auth_timeout_s)
+        ftv.device_properties = await ftv.get_device_properties()
         return ftv
 
     if device_class != 'auto':
@@ -58,10 +58,10 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
     aftv = BaseTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
 
     # establish the ADB connection
-    aftv.adb_connect(auth_timeout_s=auth_timeout_s)
+    await aftv.adb_connect(auth_timeout_s=auth_timeout_s)
 
     # get device properties
-    aftv.device_properties = aftv.get_device_properties()
+    aftv.device_properties = await aftv.get_device_properties()
 
     # Fire TV
     if aftv.device_properties.get('manufacturer') == 'Amazon':

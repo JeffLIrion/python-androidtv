@@ -1,12 +1,6 @@
 import sys
 import unittest
-
-try:
-    # Python3
-    from unittest.mock import patch
-except ImportError:
-    # Python2
-    from mock import patch
+from unittest.mock import patch
 
 
 sys.path.insert(0, '..')
@@ -14,7 +8,9 @@ sys.path.insert(0, '..')
 from androidtv import setup
 from androidtv.androidtv import AndroidTV
 from androidtv.firetv import FireTV
+
 from . import patchers
+from .async_wrapper import awaiter
 
 
 DEVICE_PROPERTIES_OUTPUT1 = "Amazon\n\n\n\n\n."
@@ -36,33 +32,33 @@ DEVICE_PROPERTIES_DICT2 = {'manufacturer': 'Not Amazon',
                            'ethmac': None}
 
 
-@unittest.skip
 class TestSetup(unittest.TestCase):
     PATCH_KEY = 'python'
 
-    def test_setup(self):
+    @awaiter
+    async def test_setup(self):
         """Test that the ``setup`` function works correctly.
         """
         with self.assertRaises(ValueError):
-            setup('HOST', 5555, device_class='INVALID')
+            await setup('HOST', 5555, device_class='INVALID')
 
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            ftv = setup('HOST', 5555)
+            ftv = await setup('HOST', 5555)
             self.assertIsInstance(ftv, FireTV)
             self.assertDictEqual(ftv.device_properties, DEVICE_PROPERTIES_DICT1)
 
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            atv = setup('HOST', 5555)
+            atv = await setup('HOST', 5555)
             self.assertIsInstance(atv, AndroidTV)
             self.assertDictEqual(atv.device_properties, DEVICE_PROPERTIES_DICT2)
 
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            ftv = setup('HOST', 5555, device_class='androidtv')
+            ftv = await setup('HOST', 5555, device_class='androidtv')
             self.assertIsInstance(ftv, AndroidTV)
             self.assertDictEqual(ftv.device_properties, DEVICE_PROPERTIES_DICT1)
 
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            atv = setup('HOST', 5555, device_class='firetv')
+            atv = await setup('HOST', 5555, device_class='firetv')
             self.assertIsInstance(atv, FireTV)
             self.assertDictEqual(atv.device_properties, DEVICE_PROPERTIES_DICT2)
 
