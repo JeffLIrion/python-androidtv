@@ -2,11 +2,7 @@ import functools
 import logging
 import sys
 import unittest
-
-try:
-    from unittest.mock import patch
-except ImportError:
-    from mock import patch
+from unittest.mock import patch
 
 sys.path.insert(0, '..')
 
@@ -21,6 +17,7 @@ from androidtv.constants import APPS, KEYS, STATE_IDLE, STATE_OFF, STATE_PAUSED,
 from androidtv.exceptions import LockNotAcquiredException
 
 from . import patchers
+from .async_wrapper import awaiter
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -415,19 +412,20 @@ class FireTVDevice(ADBDevice):
 # =========================================================================== #
 
 
-@unittest.skip
 class TestAndroidTVPythonImplementation(unittest.TestCase):
     """Test the androidtv media player for an Android TV device."""
 
     PATCH_KEY = "python"
 
-    def setUp(self):
+    @awaiter
+    async def setUp(self):
         """Set up an `AndroidTVDevice` media player."""
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[self.PATCH_KEY]:
-            aftv = setup("HOST", 5555, device_class="androidtv")
+            aftv = await setup("HOST", 5555, device_class="androidtv")
             self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
 
-    def test_reconnect(self):
+    @awaiter
+    async def test_reconnect(self):
         """Test that the error and reconnection attempts are logged correctly.
 
         "Handles device/service unavailable. Log a warning once when
@@ -438,7 +436,7 @@ class TestAndroidTVPythonImplementation(unittest.TestCase):
         with self.assertLogs(level=logging.WARNING) as logs:
             with patchers.patch_connect(False)[self.PATCH_KEY], patchers.patch_shell(error=True)[self.PATCH_KEY]:
                 for _ in range(5):
-                    self.aftv.update()
+                    await self.aftv.update()
                     self.assertFalse(self.aftv.available)
                     self.assertIsNone(self.aftv.state)
 
@@ -449,11 +447,11 @@ class TestAndroidTVPythonImplementation(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as logs:
             with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[self.PATCH_KEY]:
                 # Update 1 will reconnect
-                self.aftv.update()
+                await self.aftv.update()
                 self.assertTrue(self.aftv.available)
 
                 # Update 2 will update the state
-                self.aftv.update()
+                await self.aftv.update()
                 self.assertTrue(self.aftv.available)
                 self.assertIsNotNone(self.aftv.state)
 
@@ -462,35 +460,36 @@ class TestAndroidTVPythonImplementation(unittest.TestCase):
             in logs.output[0]
         )
 
-    def test_adb_shell_returns_none(self):
+    @awaiter
+    async def test_adb_shell_returns_none(self):
         """Test the case that the ADB shell command returns `None`.
 
         The state should be `None` and the device should be unavailable.
         """
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.aftv.update()
+            await self.aftv.update()
             self.assertFalse(self.aftv.available)
             self.assertIsNone(self.aftv.state)
 
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[self.PATCH_KEY]:
             # Update 1 will reconnect
-            self.aftv.update()
+            await self.aftv.update()
             self.assertTrue(self.aftv.available)
 
             # Update 2 will update the state
-            self.aftv.update()
+            await self.aftv.update()
             self.assertTrue(self.aftv.available)
             self.assertIsNotNone(self.aftv.state)
 
 
-# class TestFireTVPythonImplementation(TestAndroidTVPythonImplementation):
-class TestFireTVPythonImplementation(unittest.TestCase):
+class TestFireTVPythonImplementation(TestAndroidTVPythonImplementation):
     """Test the androidtv media player for a Fire TV device."""
 
-    def setUp(self):
+    @awaiter
+    async def setUp(self):
         """Set up a `FireTVDevice` media player."""
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[self.PATCH_KEY]:
-            aftv = setup("HOST", 5555, device_class="firetv")
+            aftv = await setup("HOST", 5555, device_class="firetv")
             self.aftv = FireTVDevice(aftv, "Fake Fire TV", {}, True, None, None)
 
 
