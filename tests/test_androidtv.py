@@ -15,8 +15,8 @@ except ImportError:
 
 sys.path.insert(0, '..')
 
-from androidtv import constants
-from androidtv.androidtv import AndroidTV
+from aio_androidtv import constants
+from aio_androidtv.androidtv import AndroidTV
 
 from . import patchers
 from .async_wrapper import awaiter
@@ -703,7 +703,7 @@ class TestAndroidTVPython(unittest.TestCase):
         """Check that the results of the `update` method are as expected.
 
         """
-        with patch('androidtv.androidtv.AndroidTV.get_properties', return_value=get_properties, new_callable=AsyncMock):
+        with patch('aio_androidtv.androidtv.AndroidTV.get_properties', return_value=get_properties, new_callable=AsyncMock):
             self.assertTupleEqual(await self.atv.update(), update)
 
     @awaiter

@@ -7,8 +7,8 @@ release:
 
 .PHONY: docs
 docs:
-	@cd docs/source && rm -f androidtv*.rst
-	@cd docs && sphinx-apidoc -f -e -o source/ ../androidtv/
+	@cd docs/source && rm -f aio_androidtv*.rst
+	@cd docs && sphinx-apidoc -f -e -o source/ ../aio_androidtv/
 	@cd docs && make html && make html
 
 .PHONY: test
@@ -17,16 +17,16 @@ test:
 
 .PHONY: coverage
 coverage:
-	coverage run --source androidtv setup.py test && coverage html && coverage report -m
+	coverage run --source aio_androidtv setup.py test && coverage html && coverage report -m
 
 .PHONY: tdd
 tdd:
-	coverage run --source androidtv setup.py test && coverage report -m
+	coverage run --source aio_androidtv setup.py test && coverage report -m
 
 .PHONY: lint
 lint:
-	flake8 androidtv/ && pylint androidtv/
+	flake8 aio_androidtv/ && pylint aio_androidtv/
 
 .PHONY: alltests
 alltests:
-	flake8 androidtv/ && pylint androidtv/ && coverage run --source androidtv setup.py test && coverage report -m
+	flake8 aio_androidtv/ && pylint aio_androidtv/ && coverage run --source aio_androidtv setup.py test && coverage report -m

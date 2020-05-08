@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=source
 set BUILDDIR=build
-set SPHINXPROJ=androidtv
+set SPHINXPROJ=aio_androidtv
 
 if "%1" == "" goto help
 

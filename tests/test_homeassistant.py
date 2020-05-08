@@ -12,9 +12,9 @@ from adb_shell.exceptions import (
     InvalidResponseError,
     TcpTimeoutException,
 )
-from androidtv import setup
-from androidtv.constants import APPS, KEYS, STATE_IDLE, STATE_OFF, STATE_PAUSED, STATE_PLAYING, STATE_STANDBY
-from androidtv.exceptions import LockNotAcquiredException
+from aio_androidtv import setup
+from aio_androidtv.constants import APPS, KEYS, STATE_IDLE, STATE_OFF, STATE_PAUSED, STATE_PLAYING, STATE_STANDBY
+from aio_androidtv.exceptions import LockNotAcquiredException
 
 from . import patchers
 from .async_wrapper import awaiter

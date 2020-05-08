@@ -2,7 +2,7 @@
 *.idea
 *.pyc
 **/__pycache__/
-androidtv.egg-info
+aio_androidtv.egg-info
 
 # Build files
 .eggs/

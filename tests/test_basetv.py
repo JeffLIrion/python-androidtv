@@ -15,8 +15,8 @@ except ImportError:
 
 sys.path.insert(0, '..')
 
-from androidtv import constants, ha_state_detection_rules_validator
-from androidtv.basetv import BaseTV
+from aio_androidtv import constants, ha_state_detection_rules_validator
+from aio_androidtv.basetv import BaseTV
 
 from . import patchers
 from .async_wrapper import awaiter

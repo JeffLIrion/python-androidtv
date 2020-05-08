@@ -14,8 +14,8 @@ except ImportError:
 
 sys.path.insert(0, '..')
 
-from androidtv import constants, ha_state_detection_rules_validator
-from androidtv.firetv import FireTV
+from aio_androidtv import constants, ha_state_detection_rules_validator
+from aio_androidtv.firetv import FireTV
 
 from . import patchers
 from .async_wrapper import awaiter
@@ -317,7 +317,7 @@ class TestFireTVPython(unittest.TestCase):
         """Check that the results of the `update` method are as expected.
 
         """
-        with patch('androidtv.firetv.FireTV.get_properties', return_value=get_properties, new_callable=AsyncMock):
+        with patch('aio_androidtv.firetv.FireTV.get_properties', return_value=get_properties, new_callable=AsyncMock):
             self.assertTupleEqual(await self.ftv.update(), update)
 
     @awaiter

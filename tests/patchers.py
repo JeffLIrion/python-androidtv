@@ -79,7 +79,7 @@ PATCH_PUSH = {KEY_PYTHON: patch("{}.AdbDeviceTcpFake.push".format(__name__), new
 
 PATCH_PULL = {KEY_PYTHON: patch("{}.AdbDeviceTcpFake.pull".format(__name__), new_callable=AsyncMock)}
 
-PATCH_ADB_DEVICE_TCP = patch("androidtv.adb_manager.AdbDeviceTcp", AdbDeviceTcpFake)
+PATCH_ADB_DEVICE_TCP = patch("aio_androidtv.adb_manager.AdbDeviceTcp", AdbDeviceTcpFake)
 
 
 class CustomException(Exception):

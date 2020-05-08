@@ -5,9 +5,9 @@ from unittest.mock import patch
 
 sys.path.insert(0, '..')
 
-from androidtv import setup
-from androidtv.androidtv import AndroidTV
-from androidtv.firetv import FireTV
+from aio_androidtv import setup
+from aio_androidtv.androidtv import AndroidTV
+from aio_androidtv.firetv import FireTV
 
 from . import patchers
 from .async_wrapper import awaiter

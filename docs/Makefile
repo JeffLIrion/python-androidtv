@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = androidtv
+SPHINXPROJ    = aio_androidtv
 SOURCEDIR     = source
 BUILDDIR      = build
 

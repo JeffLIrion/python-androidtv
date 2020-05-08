@@ -6,8 +6,9 @@ from unittest.mock import patch
 
 sys.path.insert(0, '..')
 
-from androidtv.adb_manager import _acquire, ADBPython
-from androidtv.exceptions import LockNotAcquiredException
+from aio_androidtv.adb_manager import _acquire, ADBPython
+from aio_androidtv.exceptions import LockNotAcquiredException
+
 from . import patchers
 from .async_wrapper import awaiter
 
@@ -340,7 +341,7 @@ class TestADBPythonWithAuthentication(unittest.TestCase):
         """Test when the connect attempt is successful when using a private key.
 
         """
-        with patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.open', open_priv), patch('androidtv.adb_manager.PythonRSASigner', return_value=None):
+        with patchers.patch_connect(True)[self.PATCH_KEY], patch('aio_androidtv.adb_manager.open', open_priv), patch('aio_androidtv.adb_manager.PythonRSASigner', return_value=None):
             self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
@@ -350,19 +351,19 @@ class TestADBPythonWithAuthentication(unittest.TestCase):
         """Test when the connect attempt is successful when using private and public keys.
 
         """
-        with patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.open', open_priv_pub), patch('androidtv.adb_manager.PythonRSASigner', return_value=None):
+        with patchers.patch_connect(True)[self.PATCH_KEY], patch('aio_androidtv.adb_manager.open', open_priv_pub), patch('aio_androidtv.adb_manager.PythonRSASigner', return_value=None):
             self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
 
 
-'''
 class TestADBPythonClose(unittest.TestCase):
     """Test the `ADBPython.close` method."""
 
     PATCH_KEY = 'python'
 
-    def test_close(self):
+    @awaiter
+    async def test_close(self):
         """Test the `ADBPython.close` method.
 
         """
@@ -370,9 +371,9 @@ class TestADBPythonClose(unittest.TestCase):
             self.adb = ADBPython('HOST', 5555)
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
+            self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
 
-            self.adb.close()
-            self.assertFalse(self.adb.available)'''
+            await self.adb.close()
+            self.assertFalse(self.adb.available)
