@@ -1,11 +1,10 @@
 language: python
 python:
-  - "2.7"
-  - "3.6"
+  - "3.7"
+  - "3.8"
 install:
   - pip install .
   - pip install flake8 pylint coveralls
-  - python --version 2>&1 | grep -q "Python 2" && pip install mock || true
 script:
 - flake8 androidtv/ && pylint androidtv/ && coverage run --source androidtv setup.py test
 after_success:
