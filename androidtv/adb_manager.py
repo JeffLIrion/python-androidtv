@@ -27,8 +27,8 @@ LOCK_KWARGS = {'timeout': 3} if sys.version_info[0] > 2 and sys.version_info[1] 
 if sys.version_info[0] == 2:  # pragma: no cover
     FileNotFoundError = IOError  # pylint: disable=redefined-builtin
 
-#: Timeout for acquiring the async lock that protects ADB commands
-TIMEOUT = 3.0
+#: Default timeout for acquiring the async lock that protects ADB commands
+DEFAULT_TIMEOUT = 3.0
 
 @contextmanager
 def _acquire(lock):
@@ -62,14 +62,14 @@ def _acquire(lock):
 
 
 @asynccontextmanager
-async def _aacquire(lock):
+async def _aacquire(lock, timeout=DEFAULT_TIMEOUT):
     """TODO
 
     """
     try:
         acquired = False
         try:
-            acquired = asyncio.wait_for(lock.acquire(), TIMEOUT)
+            acquired = await asyncio.wait_for(lock.acquire(), timeout)
             if not acquired:
                 raise LockNotAcquiredException
             yield acquired

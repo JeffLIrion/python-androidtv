@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import contextmanager
 import sys
 import unittest
@@ -84,16 +85,40 @@ class AsyncFakeLock:
         self._acquired = True
 
 
-class TestLockAcquire(unittest.TestCase):
-    def setUp(self):
-        self.lock = AsyncFakeLock()
+class AsyncLockedLock(AsyncFakeLock):
+    def __init__(self):
+        self._acquired = False
 
+
+class AsyncTimedLock(AsyncFakeLock):
+    async def acquire(self):
+        await asyncio.sleep(1.0)
+        return await super().acquire()
+
+
+class TestLockAcquire(unittest.TestCase):
     @awaiter
     async def test_succeed(self):
-        async with _aacquire(self.lock):
+        lock = AsyncFakeLock()
+        async with _aacquire(lock):
             self.assertTrue(True)
             return
         self.assertTrue(False)
+
+    @awaiter
+    async def test_fail(self):
+        lock = AsyncLockedLock()
+        with self.assertRaises(LockNotAcquiredException):
+            async with _aacquire(lock):
+                pass #self.assertTrue(False)
+
+    @awaiter
+    async def test_fail_timeout(self):
+        lock = AsyncTimedLock()
+        with self.assertRaises(LockNotAcquiredException):
+            async with _aacquire(lock, 0.1):
+                pass #self.assertTrue(False)
+
 
 class TestADBPython(unittest.TestCase):
     """Test the `ADBPython` class."""
