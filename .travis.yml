@@ -6,6 +6,6 @@ install:
   - pip install .
   - pip install flake8 pylint coveralls
 script:
-- flake8 androidtv/ && pylint androidtv/ && coverage run --source androidtv setup.py test
+- flake8 aio_androidtv/ && pylint aio_androidtv/ && coverage run --source aio_androidtv setup.py test
 after_success:
 - coveralls
