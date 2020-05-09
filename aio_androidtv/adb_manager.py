@@ -76,7 +76,7 @@ class ADBPython(object):
         self.host = host
         self.port = int(port)
         self.adbkey = adbkey
-        self._adb = AdbDeviceTcp(host=self.host, port=self.port, default_timeout_s=9.)
+        self._adb = AdbDeviceTcp(host=self.host, port=self.port, default_timeout_s=9., banner=b'aio-androidtv')
 
         # keep track of whether the ADB connection is intact
         self._available = False
