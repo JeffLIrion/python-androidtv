@@ -31,7 +31,7 @@ class BaseTV(object):
 
     The keys are app IDs, and the values are lists of rules that are evaluated in order.
 
-    :py:const:`~androidtv.constants.VALID_STATES`
+    :py:const:`~aio_androidtv.constants.VALID_STATES`
 
     .. code-block:: python
 
@@ -107,7 +107,7 @@ class BaseTV(object):
     async def adb_shell(self, cmd):
         """Send an ADB command.
 
-        This calls :py:meth:`androidtv.adb_manager.ADBPython.shell` or :py:meth:`androidtv.adb_manager.ADBServer.shell`,
+        This calls :py:meth:`aio_androidtv.adb_manager.ADBPython.shell` or :py:meth:`aio_androidtv.adb_manager.ADBServer.shell`,
         depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
 
         Parameters
@@ -126,7 +126,7 @@ class BaseTV(object):
     async def adb_pull(self, local_path, device_path):
         """Pull a file from the device.
 
-        This calls :py:meth:`androidtv.adb_manager.ADBPython.pull` or :py:meth:`androidtv.adb_manager.ADBServer.pull`,
+        This calls :py:meth:`aio_androidtv.adb_manager.ADBPython.pull` or :py:meth:`aio_androidtv.adb_manager.ADBServer.pull`,
         depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
 
         Parameters
@@ -142,7 +142,7 @@ class BaseTV(object):
     async def adb_push(self, local_path, device_path):
         """Push a file to the device.
 
-        This calls :py:meth:`androidtv.adb_manager.ADBPython.push` or :py:meth:`androidtv.adb_manager.ADBServer.push`,
+        This calls :py:meth:`aio_androidtv.adb_manager.ADBPython.push` or :py:meth:`aio_androidtv.adb_manager.ADBServer.push`,
         depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
 
         Parameters
@@ -158,7 +158,7 @@ class BaseTV(object):
     async def adb_screencap(self):
         """Take a screencap.
 
-        This calls :py:meth:`androidtv.adb_manager.ADBPython.screencap` or :py:meth:`androidtv.adb_manager.ADBServer.screencap`,
+        This calls :py:meth:`aio_androidtv.adb_manager.ADBPython.screencap` or :py:meth:`aio_androidtv.adb_manager.ADBServer.screencap`,
         depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
 
         Returns
@@ -191,8 +191,8 @@ class BaseTV(object):
     async def adb_close(self):
         """Close the ADB connection.
 
-        This only works for the Python ADB implementation (see :meth:`androidtv.adb_manager.ADBPython.close`).
-        For the ADB server approach, this doesn't do anything (see :meth:`androidtv.adb_manager.ADBServer.close`).
+        This only works for the Python ADB implementation (see :meth:`aio_androidtv.adb_manager.ADBPython.close`).
+        For the ADB server approach, this doesn't do anything (see :meth:`aio_androidtv.adb_manager.ADBServer.close`).
 
         """
         await self._adb.close()
@@ -317,7 +317,7 @@ class BaseTV(object):
         Parameters
         ----------
         conditions : dict
-            A dictionary of conditions to be checked (see the ``state_detection_rules`` parameter in :class:`~androidtv.basetv.BaseTV`)
+            A dictionary of conditions to be checked (see the ``state_detection_rules`` parameter in :class:`~aio_androidtv.basetv.BaseTV`)
         media_session_state : int, None
             The :meth:`media_session_state` property
         wake_lock_size : int, None
@@ -374,7 +374,7 @@ class BaseTV(object):
         Returns
         -------
         str, None
-            The audio state, as determined from the ADB shell command :py:const:`androidtv.constants.CMD_AUDIO_STATE`, or ``None`` if it could not be determined
+            The audio state, as determined from the ADB shell command :py:const:`aio_androidtv.constants.CMD_AUDIO_STATE`, or ``None`` if it could not be determined
 
         """
         audio_state_response = await self._adb.shell(constants.CMD_AUDIO_STATE)
@@ -515,12 +515,12 @@ class BaseTV(object):
 
     @staticmethod
     def _audio_state(audio_state_response):
-        """Parse the :meth:`audio_state` property from the output of the command :py:const:`androidtv.constants.CMD_AUDIO_STATE`.
+        """Parse the :meth:`audio_state` property from the output of the command :py:const:`aio_androidtv.constants.CMD_AUDIO_STATE`.
 
         Parameters
         ----------
         audio_state_response : str, None
-            The output of the command :py:const:`androidtv.constants.CMD_AUDIO_STATE`
+            The output of the command :py:const:`aio_androidtv.constants.CMD_AUDIO_STATE`
 
         Returns
         -------
@@ -538,12 +538,12 @@ class BaseTV(object):
 
     @staticmethod
     def _current_app(current_app_response):
-        """Get the current app from the output of the command :py:const:`androidtv.constants.CMD_CURRENT_APP`.
+        """Get the current app from the output of the command :py:const:`aio_androidtv.constants.CMD_CURRENT_APP`.
 
         Parameters
         ----------
         current_app_response : str, None
-            The output from the ADB command :py:const:`androidtv.constants.CMD_CURRENT_APP`
+            The output from the ADB command :py:const:`aio_androidtv.constants.CMD_CURRENT_APP`
 
         Returns
         -------
@@ -558,12 +558,12 @@ class BaseTV(object):
 
     @staticmethod
     def _current_app_media_session_state(media_session_state_response):
-        """Get the current app and the media session state properties from the output of :py:const:`androidtv.constants.CMD_MEDIA_SESSION_STATE_FULL`.
+        """Get the current app and the media session state properties from the output of :py:const:`aio_androidtv.constants.CMD_MEDIA_SESSION_STATE_FULL`.
 
         Parameters
         ----------
         media_session_state_response : str, None
-            The output of :py:const:`androidtv.constants.CMD_MEDIA_SESSION_STATE_FULL`
+            The output of :py:const:`aio_androidtv.constants.CMD_MEDIA_SESSION_STATE_FULL`
 
         Returns
         -------
@@ -588,17 +588,17 @@ class BaseTV(object):
         return current_app, media_session_state
 
     async def _get_stream_music(self, stream_music_raw=None):
-        """Get the ``STREAM_MUSIC`` block from the output of the command :py:const:`androidtv.constants.CMD_STREAM_MUSIC`.
+        """Get the ``STREAM_MUSIC`` block from the output of the command :py:const:`aio_androidtv.constants.CMD_STREAM_MUSIC`.
 
         Parameters
         ----------
         stream_music_raw : str, None
-            The output of the command :py:const:`androidtv.constants.CMD_STREAM_MUSIC`
+            The output of the command :py:const:`aio_androidtv.constants.CMD_STREAM_MUSIC`
 
         Returns
         -------
         str, None
-            The ``STREAM_MUSIC`` block from the output of :py:const:`androidtv.constants.CMD_STREAM_MUSIC`, or ``None`` if it could not be determined
+            The ``STREAM_MUSIC`` block from the output of :py:const:`aio_androidtv.constants.CMD_STREAM_MUSIC`, or ``None`` if it could not be determined
 
         """
         if not stream_music_raw:
@@ -639,12 +639,12 @@ class BaseTV(object):
 
     @staticmethod
     def _media_session_state(media_session_state_response, current_app):
-        """Get the state from the output of :py:const:`androidtv.constants.CMD_MEDIA_SESSION_STATE`.
+        """Get the state from the output of :py:const:`aio_androidtv.constants.CMD_MEDIA_SESSION_STATE`.
 
         Parameters
         ----------
         media_session_state_response : str, None
-            The output of :py:const:`androidtv.constants.CMD_MEDIA_SESSION_STATE`
+            The output of :py:const:`aio_androidtv.constants.CMD_MEDIA_SESSION_STATE`
         current_app : str, None
             The current app, or ``None`` if it could not be determined
 
@@ -665,12 +665,12 @@ class BaseTV(object):
 
     @staticmethod
     def _running_apps(running_apps_response):
-        """Get the running apps from the output of :py:const:`androidtv.constants.CMD_RUNNING_APPS`.
+        """Get the running apps from the output of :py:const:`aio_androidtv.constants.CMD_RUNNING_APPS`.
 
         Parameters
         ----------
         running_apps_response : str, None
-            The output of :py:const:`androidtv.constants.CMD_RUNNING_APPS`
+            The output of :py:const:`aio_androidtv.constants.CMD_RUNNING_APPS`
 
         Returns
         -------
@@ -741,12 +741,12 @@ class BaseTV(object):
 
     @staticmethod
     def _wake_lock_size(wake_lock_size_response):
-        """Get the size of the current wake lock from the output of :py:const:`androidtv.constants.CMD_WAKE_LOCK_SIZE`.
+        """Get the size of the current wake lock from the output of :py:const:`aio_androidtv.constants.CMD_WAKE_LOCK_SIZE`.
 
         Parameters
         ----------
         wake_lock_size_response : str, None
-            The output of :py:const:`androidtv.constants.CMD_WAKE_LOCK_SIZE`
+            The output of :py:const:`aio_androidtv.constants.CMD_WAKE_LOCK_SIZE`
 
         Returns
         -------
@@ -1182,17 +1182,17 @@ def state_detection_rules_validator(rules, exc=KeyError):
     * ``rule`` is a string or a dictionary
     * If ``rule`` is a string:
 
-        * Check that ``rule`` is in :py:const:`~androidtv.constants.VALID_STATES` or :py:const:`~androidtv.constants.VALID_STATE_PROPERTIES`
+        * Check that ``rule`` is in :py:const:`~aio_androidtv.constants.VALID_STATES` or :py:const:`~aio_androidtv.constants.VALID_STATE_PROPERTIES`
 
     * If ``rule`` is a dictionary:
 
-        * Check that each key is in :py:const:`~androidtv.constants.VALID_STATES`
+        * Check that each key is in :py:const:`~aio_androidtv.constants.VALID_STATES`
         * Check that each value is a dictionary
 
-            * Check that each key is in :py:const:`~androidtv.constants.VALID_PROPERTIES`
-            * Check that each value is of the right type, according to :py:const:`~androidtv.constants.VALID_PROPERTIES_TYPES`
+            * Check that each key is in :py:const:`~aio_androidtv.constants.VALID_PROPERTIES`
+            * Check that each value is of the right type, according to :py:const:`~aio_androidtv.constants.VALID_PROPERTIES_TYPES`
 
-    See :class:`~androidtv.basetv.BaseTV` for more info about the ``state_detection_rules`` parameter.
+    See :class:`~aio_androidtv.basetv.BaseTV` for more info about the ``state_detection_rules`` parameter.
 
     Parameters
     ----------

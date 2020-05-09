@@ -28,7 +28,7 @@ class FireTV(BaseTV):
     adb_server_port : int
         The port for the ADB server
     state_detection_rules : dict, None
-        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
+        A dictionary of rules for determining the state (see :class:`~aio_androidtv.basetv.BaseTV`)
 
     """
 
@@ -48,7 +48,7 @@ class FireTV(BaseTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.firetv.FireTV.running_apps` property
+            Whether or not to get the :meth:`~aio_androidtv.firetv.FireTV.running_apps` property
 
         Returns
         -------
@@ -212,15 +212,15 @@ class FireTV(BaseTV):
 
         This will send one of the following ADB commands:
 
-        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS`
-        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS`
-        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS`
-        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS`
+        * :py:const:`aio_androidtv.constants.CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS`
+        * :py:const:`aio_androidtv.constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS`
+        * :py:const:`aio_androidtv.constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS`
+        * :py:const:`aio_androidtv.constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS`
 
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.firetv.FireTV.running_apps` property
+            Whether or not to get the :meth:`~aio_androidtv.firetv.FireTV.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
@@ -296,7 +296,7 @@ class FireTV(BaseTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.firetv.FireTV.running_apps` property
+            Whether or not to get the :meth:`~aio_androidtv.firetv.FireTV.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 

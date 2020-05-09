@@ -28,7 +28,7 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
     adb_server_port : int
         The port for the ADB server
     state_detection_rules : dict, None
-        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
+        A dictionary of rules for determining the state (see :class:`~aio_androidtv.basetv.BaseTV`)
     device_class : str
         The type of device: ``'auto'`` (detect whether it is an Android TV or Fire TV device), ``'androidtv'``, or ``'firetv'```
     auth_timeout_s : float
@@ -77,7 +77,7 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
 def ha_state_detection_rules_validator(exc):
     """Validate the rules (i.e., the ``state_detection_rules`` value) for a given app ID (i.e., a key in ``state_detection_rules``).
 
-    See :class:`~androidtv.basetv.BaseTV` for more info about the ``state_detection_rules`` parameter.
+    See :class:`~aio_androidtv.basetv.BaseTV` for more info about the ``state_detection_rules`` parameter.
 
     Parameters
     ----------
@@ -87,11 +87,11 @@ def ha_state_detection_rules_validator(exc):
     Returns
     -------
     wrapped_state_detection_rules_validator : function
-        A function that is the same as :func:`~androidtv.basetv.state_detection_rules_validator`, but with the ``exc`` argument provided
+        A function that is the same as :func:`~aio_androidtv.basetv.state_detection_rules_validator`, but with the ``exc`` argument provided
 
     """
     def wrapped_state_detection_rules_validator(rules):
-        """Run :func:`~androidtv.basetv.state_detection_rules_validator` using the ``exc`` parameter from the parent function."""
+        """Run :func:`~aio_androidtv.basetv.state_detection_rules_validator` using the ``exc`` parameter from the parent function."""
         return state_detection_rules_validator(rules, exc)
 
     return wrapped_state_detection_rules_validator

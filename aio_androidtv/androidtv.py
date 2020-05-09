@@ -28,7 +28,7 @@ class AndroidTV(BaseTV):
     adb_server_port : int
         The port for the ADB server
     state_detection_rules : dict, None
-        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
+        A dictionary of rules for determining the state (see :class:`~aio_androidtv.basetv.BaseTV`)
 
     """
 
@@ -48,7 +48,7 @@ class AndroidTV(BaseTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.androidtv.AndroidTV.running_apps` property
+            Whether or not to get the :meth:`~aio_androidtv.androidtv.AndroidTV.running_apps` property
 
         Returns
         -------
@@ -186,13 +186,13 @@ class AndroidTV(BaseTV):
 
         This will send one of the following ADB commands:
 
-        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_LAZY`
-        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY`
+        * :py:const:`aio_androidtv.constants.CMD_ANDROIDTV_PROPERTIES_LAZY`
+        * :py:const:`aio_androidtv.constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY`
 
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.androidtv.AndroidTV.running_apps` property
+            Whether or not to get the :meth:`~aio_androidtv.androidtv.AndroidTV.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
@@ -300,7 +300,7 @@ class AndroidTV(BaseTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.androidtv.AndroidTV.running_apps` property
+            Whether or not to get the :meth:`~aio_androidtv.androidtv.AndroidTV.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
