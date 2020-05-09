@@ -112,21 +112,16 @@ class ADBDevice(MediaPlayerDevice):
         self.turn_off_command = turn_off_command
 
         # ADB exceptions to catch
-        if not self.aftv.adb_server_ip:
-            # Using "adb_shell" (Python ADB implementation)
-            self.exceptions = (
-                AttributeError,
-                BrokenPipeError,
-                TypeError,
-                ValueError,
-                InvalidChecksumError,
-                InvalidCommandError,
-                InvalidResponseError,
-                TcpTimeoutException,
-            )
-        else:
-            # Using "pure-python-adb" (communicate with ADB server)
-            self.exceptions = (ConnectionResetError, RuntimeError)
+        self.exceptions = (
+            AttributeError,
+            BrokenPipeError,
+            TypeError,
+            ValueError,
+            InvalidChecksumError,
+            InvalidCommandError,
+            InvalidResponseError,
+            TcpTimeoutException,
+        )
 
         # Property attributes
         self._adb_response = None
@@ -294,11 +289,6 @@ class AndroidTVDevice(ADBDevice):
             # Try to connect
             self._available = await self.aftv.adb_connect(always_log_errors=False)
 
-            # To be safe, wait until the next update to run ADB commands if
-            # using the Python ADB implementation.
-            if not self.aftv.adb_server_ip:
-                return
-
         # If the ADB connection is not intact, don't update.
         if not self._available:
             return
@@ -370,11 +360,6 @@ class FireTVDevice(ADBDevice):
         if not self._available:
             # Try to connect
             self._available = await self.aftv.adb_connect(always_log_errors=False)
-
-            # To be safe, wait until the next update to run ADB commands if
-            # using the Python ADB implementation.
-            if not self.aftv.adb_server_ip:
-                return
 
         # If the ADB connection is not intact, don't update.
         if not self._available:

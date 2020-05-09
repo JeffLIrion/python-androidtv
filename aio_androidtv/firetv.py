@@ -23,10 +23,6 @@ class FireTV(BaseTV):
         The device port to which we are connecting (default is 5555)
     adbkey : str
         The path to the ``adbkey`` file for ADB authentication
-    adb_server_ip : str
-        The IP address of the ADB server
-    adb_server_port : int
-        The port for the ADB server
     state_detection_rules : dict, None
         A dictionary of rules for determining the state (see :class:`~aio_androidtv.basetv.BaseTV`)
 
@@ -34,8 +30,8 @@ class FireTV(BaseTV):
 
     DEVICE_CLASS = 'firetv'
 
-    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
-        BaseTV.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+    def __init__(self, host, port=5555, adbkey='', state_detection_rules=None):
+        BaseTV.__init__(self, host, port, adbkey, state_detection_rules)
 
     # ======================================================================= #
     #                                                                         #

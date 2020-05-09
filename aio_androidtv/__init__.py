@@ -12,7 +12,7 @@ from .firetv import FireTV
 __version__ = '0.0.1'
 
 
-async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, device_class='auto', auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S):
+async def setup(host, port=5555, adbkey='', state_detection_rules=None, device_class='auto', auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S):
     """Connect to a device and determine whether it's an Android TV or an Amazon Fire TV.
 
     Parameters
@@ -41,13 +41,13 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
 
     """
     if device_class == 'androidtv':
-        atv = AndroidTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+        atv = AndroidTV(host, port, adbkey, state_detection_rules)
         await atv.adb_connect(auth_timeout_s=auth_timeout_s)
         atv.device_properties = await atv.get_device_properties()
         return atv
 
     if device_class == 'firetv':
-        ftv = FireTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+        ftv = FireTV(host, port, adbkey, state_detection_rules)
         await ftv.adb_connect(auth_timeout_s=auth_timeout_s)
         ftv.device_properties = await ftv.get_device_properties()
         return ftv
@@ -55,7 +55,7 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
     if device_class != 'auto':
         raise ValueError("`device_class` must be 'androidtv', 'firetv', or 'auto'.")
 
-    aftv = BaseTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+    aftv = BaseTV(host, port, adbkey, state_detection_rules)
 
     # establish the ADB connection
     await aftv.adb_connect(auth_timeout_s=auth_timeout_s)

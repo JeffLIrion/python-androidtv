@@ -440,17 +440,17 @@ class TestBaseTVPython(unittest.TestCase):
             BaseTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES5)
 
             # Make sure that an error is raised when the state detection rules are invalid
-            self.assertRaises(TypeError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID1)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID2)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID3)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID4)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID5)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID6)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID7)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID8)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID9)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID10)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID11)
+            self.assertRaises(TypeError, BaseTV, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID1)
+            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID2)
+            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID3)
+            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID4)
+            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID5)
+            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID6)
+            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID7)
+            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID8)
+            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID9)
+            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID10)
+            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID11)
 
     @awaiter
     async def test_wake_lock_size(self):
