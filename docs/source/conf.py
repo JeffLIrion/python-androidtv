@@ -138,7 +138,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'aio_androidtv.tex', 'aio_androidtv Documentation',
+    (master_doc, 'aio-androidtv.tex', 'aio-androidtv Documentation',
      'Jeff Irion', 'manual'),
 ]
 
@@ -148,7 +148,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'aio_androidtv', 'aio_androidtv Documentation',
+    (master_doc, 'aio-androidtv', 'aio-androidtv Documentation',
      [author], 1)
 ]
 
@@ -159,8 +159,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'aio_androidtv', 'aio_androidtv Documentation',
-     author, 'aio_androidtv', 'One line description of project.',
+    (master_doc, 'aio-androidtv', 'aio-androidtv Documentation',
+     author, 'aio-androidtv', 'One line description of project.',
      'Miscellaneous'),
 ]
 

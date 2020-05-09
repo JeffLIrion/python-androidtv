@@ -1,7 +1,7 @@
-androidtv
-=========
+aio_androidtv
+=============
 
 .. toctree::
    :maxdepth: 4
 
-   androidtv
+   aio_androidtv

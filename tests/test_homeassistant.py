@@ -497,7 +497,8 @@ class TestFireTVPythonImplementation(TestAndroidTVPythonImplementation):
 class TestADBCommandAndFileSync(unittest.TestCase):
     """Test ADB and FileSync services."""
 
-    def test_adb_command(self):
+    @awaiter
+    async def test_adb_command(self):
         """Test sending a command via the `androidtv.adb_command` service."""
         patch_key = "server"
         command = "test command"
@@ -509,13 +510,14 @@ class TestADBCommandAndFileSync(unittest.TestCase):
             )
             self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
 
-        with patch("androidtv.basetv.BaseTV.adb_shell", return_value=response) as patch_shell:
-            self.aftv.adb_command(command)
+        with patch("aio_androidtv.basetv.BaseTV.adb_shell", return_value=response) as patch_shell:
+            await self.aftv.adb_command(command)
 
             patch_shell.assert_called_with(command)
             assert self.aftv._adb_response == response
 
-    def test_adb_command_key(self):
+    @awaiter
+    async def test_adb_command_key(self):
         """Test sending a key command via the `androidtv.adb_command` service."""
         patch_key = "server"
         command = "HOME"
@@ -527,13 +529,14 @@ class TestADBCommandAndFileSync(unittest.TestCase):
             )
             self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
 
-        with patch("androidtv.basetv.BaseTV.adb_shell", return_value=response) as patch_shell:
+        with patch("aio_androidtv.basetv.BaseTV.adb_shell", return_value=response) as patch_shell:
             self.aftv.adb_command(command)
 
             patch_shell.assert_called_with("input keyevent {}".format(self.aftv._keys[command]))
             assert self.aftv._adb_response is None
 
-    def test_adb_command_get_properties(self):
+    @awaiter
+    async def test_adb_command_get_properties(self):
         """Test sending the "GET_PROPERTIES" command via the `androidtv.adb_command` service."""
         patch_key = "server"
         command = "GET_PROPERTIES"
@@ -545,13 +548,14 @@ class TestADBCommandAndFileSync(unittest.TestCase):
             )
             self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
 
-        with patch("androidtv.androidtv.AndroidTV.get_properties_dict", return_value=response) as patch_get_props:
+        with patch("aio_androidtv.androidtv.AndroidTV.get_properties_dict", return_value=response) as patch_get_props:
             self.aftv.adb_command(command)
 
             assert patch_get_props.called
             assert self.aftv._adb_response == str(response)
 
-    def test_update_lock_not_acquired(self):
+    @awaiter
+    async def test_update_lock_not_acquired(self):
         """Test that the state does not get updated when a `LockNotAcquiredException` is raised."""
         patch_key = "server"
 
@@ -565,7 +569,7 @@ class TestADBCommandAndFileSync(unittest.TestCase):
             self.aftv.update()
             assert self.aftv.state == STATE_OFF
 
-        with patch("androidtv.androidtv.AndroidTV.update", side_effect=LockNotAcquiredException):
+        with patch("aio_androidtv.androidtv.AndroidTV.update", side_effect=LockNotAcquiredException):
             with patchers.patch_shell("1")[patch_key]:
                 self.aftv.update()
                 assert self.aftv.state == STATE_OFF
