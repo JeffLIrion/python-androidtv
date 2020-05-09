@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, '..')
 
-from adb_shell.exceptions import (
+from aio_adb_shell.exceptions import (
     InvalidChecksumError,
     InvalidCommandError,
     InvalidResponseError,
