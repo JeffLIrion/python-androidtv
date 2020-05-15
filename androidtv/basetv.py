@@ -1188,7 +1188,7 @@ class BaseTV(object):
         Parameters
         ----------
         timeout_s : int
-            The timeout in seconds to wait for a events
+            The timeout in seconds to wait for events
 
         Returns
         -------
