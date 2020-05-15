@@ -447,6 +447,13 @@ class TestBaseTVPython(unittest.TestCase):
         with patchers.patch_shell('INVALID')[self.PATCH_KEY]:
             self.assertIsNone(self.btv.wake_lock_size())
 
+    def test_get_sendevent(self):
+        """Check that the ``get_sendevent`` method works correctly.
+
+        """
+        with patchers.patch_shell("add device 1: /dev/input/event4\r\n  name:     \"Amazon Fire TV Remote\"\r\nadd device 2: /dev/input/event3\r\n  name:     \"kcmouse\"\r\ncould not get driver version for /dev/input/mouse0, Not a typewriter\r\nadd device 3: /dev/input/event2\r\n  name:     \"amazon_touch\"\r\nadd device 4: /dev/input/event1\r\n  name:     \"hdmipower\"\r\nadd device 5: /dev/input/event0\r\n  name:     \"mtk-kpd\"\r\ncould not get driver version for /dev/input/mice, Not a typewriter\r\n/dev/input/event4: 0004 0004 00070051\r\n/dev/input/event4: 0001 006c 00000001\r\n/dev/input/event4: 0000 0000 00000000\r\n/dev/input/event4: 0004 0004 00070051\r\n/dev/input/event4: 0001 006c 00000000\r\n/dev/input/event4: 0000 0000 00000000\r\nyour command was interrupted")[self.PATCH_KEY]:
+            self.assertEqual(self.btv.get_sendevent(), "sendevent /dev/input/event4 4 4 458833 && sendevent /dev/input/event4 1 108 1 && sendevent /dev/input/event4 0 0 0 && sendevent /dev/input/event4 4 4 458833 && sendevent /dev/input/event4 1 108 0 && sendevent /dev/input/event4 0 0 0")
+
 
 class TestHAStateDetectionRulesValidator(unittest.TestCase):
     def test_ha_state_detection_rules_validator(self):

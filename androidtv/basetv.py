@@ -1172,6 +1172,53 @@ class BaseTV(object):
         # return the new volume level
         return max(current_volume - 1, 0.) / self.max_volume
 
+    # ======================================================================= #
+    #                                                                         #
+    #                          Miscellaneous methods                          #
+    #                                                                         #
+    # ======================================================================= #
+    def get_sendevent(self, timeout_s=8):
+        """Capture an event (e.g., a button press) via ``getevent`` and convert it into ``sendevent`` commands.
+
+        For more info, see:
+
+        * http://ktnr74.blogspot.com/2013/06/emulating-touchscreen-interaction-with.html?m=1
+        * https://qatesttech.wordpress.com/2012/06/21/turning-the-output-from-getevent-into-something-something-that-can-be-used/
+
+        Parameters
+        ----------
+        timeout_s : int
+            The timeout in seconds to wait for events
+
+        Returns
+        -------
+        str
+            The events converted to ``sendevent`` commands
+
+        """
+        getevent = self.adb_shell("( getevent ) & pid=$!; ( sleep {} && kill -HUP $pid ) 2>/dev/null & watcher=$!; if wait $pid 2>/dev/null; then echo 'your command finished'; kill -HUP -P $watcher; wait $watcher; else echo 'your command was interrupted'; fi".format(timeout_s))
+
+        return " && ".join([self._parse_getevent_line(line) for line in getevent.splitlines() if line.startswith("/") and ":" in line])
+
+    @staticmethod
+    def _parse_getevent_line(line):
+        """Parse a line of the output received in ``get_sendevent``.
+
+        Parameters
+        ----------
+        line : str
+            A line of output from ``get_sendevent``
+
+        Returns
+        -------
+        str
+            The properly formatted ``sendevent`` command
+
+        """
+        device_name, event_info = line.split(":", 1)
+        integers = [int(x, 16) for x in event_info.strip().split()[:3]]
+        return "sendevent {} {} {} {}".format(device_name, *integers)
+
 
 # ======================================================================= #
 #                                                                         #
