@@ -1177,7 +1177,7 @@ class BaseTV(object):
     #                          Miscellaneous methods                          #
     #                                                                         #
     # ======================================================================= #
-    def get_sendevent(self, timeout_s=8):
+    def learn_sendevent(self, timeout_s=8):
         """Capture an event (e.g., a button press) via ``getevent`` and convert it into ``sendevent`` commands.
 
         For more info, see:
@@ -1202,12 +1202,12 @@ class BaseTV(object):
 
     @staticmethod
     def _parse_getevent_line(line):
-        """Parse a line of the output received in ``get_sendevent``.
+        """Parse a line of the output received in ``learn_sendevent``.
 
         Parameters
         ----------
         line : str
-            A line of output from ``get_sendevent``
+            A line of output from ``learn_sendevent``
 
         Returns
         -------
