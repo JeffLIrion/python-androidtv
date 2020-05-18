@@ -651,4 +651,4 @@ class TestADBCommandAndFileSync(unittest.TestCase):
 
         with patchers.patch_shell("1")[patch_key]:
             self.aftv.update()
-            assert self.aftv.state == STATE_IDLE
+            assert self.aftv.state == STATE_STANDBY
