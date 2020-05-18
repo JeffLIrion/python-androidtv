@@ -39,7 +39,7 @@ GET_PROPERTIES_DICT2 = {'screen_on': True,
                         'current_app': None,
                         'media_session_state': None,
                         'running_apps': None}
-STATE2 = (constants.STATE_IDLE, None, None)
+STATE2 = (constants.STATE_STANDBY, None, None)
 
 GET_PROPERTIES_OUTPUT3 = """11Wake Locks: size=2
 com.amazon.tv.launcher
@@ -52,7 +52,7 @@ GET_PROPERTIES_DICT3 = {'screen_on': True,
                         'current_app': 'com.amazon.tv.launcher',
                         'media_session_state': None,
                         'running_apps': ['com.amazon.device.controllermanager', 'com.amazon.device.controllermanager:BluetoothReceiver']}
-STATE3 = (constants.STATE_STANDBY, 'com.amazon.tv.launcher', ['com.amazon.device.controllermanager', 'com.amazon.device.controllermanager:BluetoothReceiver'])
+STATE3 = (constants.STATE_IDLE, 'com.amazon.tv.launcher', ['com.amazon.device.controllermanager', 'com.amazon.device.controllermanager:BluetoothReceiver'])
 
 GET_PROPERTIES_OUTPUT3A = GET_PROPERTIES_OUTPUT3[0]
 GET_PROPERTIES_OUTPUT3B = GET_PROPERTIES_OUTPUT3[:2]
@@ -299,7 +299,7 @@ class TestFireTVPython(unittest.TestCase):
 
             self.ftv._state_detection_rules = STATE_DETECTION_RULES5
             state = self.ftv.update()
-            self.assertEqual(state[0], constants.STATE_STANDBY)
+            self.assertEqual(state[0], constants.STATE_IDLE)
 
     def assertUpdate(self, get_properties, update):
         """Check that the results of the `update` method are as expected.
@@ -316,10 +316,10 @@ class TestFireTVPython(unittest.TestCase):
                           (constants.STATE_OFF, None, None))
 
         self.assertUpdate([True, False, -1, None, None, None],
-                          (constants.STATE_IDLE, None, None))
+                          (constants.STATE_STANDBY, None, None))
 
         self.assertUpdate([True, True, 1, "com.amazon.tv.launcher", None, None],
-                          (constants.STATE_STANDBY, "com.amazon.tv.launcher", ["com.amazon.tv.launcher"]))
+                          (constants.STATE_IDLE, "com.amazon.tv.launcher", ["com.amazon.tv.launcher"]))
 
         # Amazon Video
         self.assertUpdate([True, True, 1, constants.APP_AMAZON_VIDEO, 3, [constants.APP_AMAZON_VIDEO]],
@@ -329,7 +329,7 @@ class TestFireTVPython(unittest.TestCase):
                           (constants.STATE_PAUSED, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
 
         self.assertUpdate([True, True, 1, constants.APP_AMAZON_VIDEO, 1, [constants.APP_AMAZON_VIDEO]],
-                          (constants.STATE_STANDBY, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
+                          (constants.STATE_IDLE, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
 
         # Amazon Video with custom state detection rules
         self.ftv._state_detection_rules = {constants.APP_AMAZON_VIDEO: ['media_session_state']}
@@ -341,18 +341,18 @@ class TestFireTVPython(unittest.TestCase):
                           (constants.STATE_PLAYING, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
 
         self.assertUpdate([True, True, 5, constants.APP_AMAZON_VIDEO, 1, [constants.APP_AMAZON_VIDEO]],
-                          (constants.STATE_STANDBY, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
+                          (constants.STATE_IDLE, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
 
         self.ftv._state_detection_rules = {constants.APP_AMAZON_VIDEO: [{'standby': {'media_session_state': 2}}]}
         self.assertUpdate([True, True, 2, constants.APP_AMAZON_VIDEO, None, [constants.APP_AMAZON_VIDEO]],
-                          (constants.STATE_STANDBY, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
+                          (constants.STATE_IDLE, constants.APP_AMAZON_VIDEO, [constants.APP_AMAZON_VIDEO]))
 
         # Firefox
         self.assertUpdate([True, True, 3, constants.APP_FIREFOX, 3, [constants.APP_FIREFOX]],
                           (constants.STATE_PLAYING, constants.APP_FIREFOX, [constants.APP_FIREFOX]))
 
         self.assertUpdate([True, True, 1, constants.APP_FIREFOX, 3, [constants.APP_FIREFOX]],
-                          (constants.STATE_STANDBY, constants.APP_FIREFOX, [constants.APP_FIREFOX]))
+                          (constants.STATE_IDLE, constants.APP_FIREFOX, [constants.APP_FIREFOX]))
 
         # Hulu
         self.assertUpdate([True, True, 4, constants.APP_HULU, 3, [constants.APP_HULU]],
@@ -362,7 +362,7 @@ class TestFireTVPython(unittest.TestCase):
                           (constants.STATE_PAUSED, constants.APP_HULU, [constants.APP_HULU]))
 
         self.assertUpdate([True, True, 1, constants.APP_HULU, 3, [constants.APP_HULU]],
-                          (constants.STATE_STANDBY, constants.APP_HULU, [constants.APP_HULU]))
+                          (constants.STATE_IDLE, constants.APP_HULU, [constants.APP_HULU]))
 
         # Jellyfin
         self.assertUpdate([True, True, 2, constants.APP_JELLYFIN_TV, 3, [constants.APP_JELLYFIN_TV]],
@@ -379,7 +379,7 @@ class TestFireTVPython(unittest.TestCase):
                           (constants.STATE_PAUSED, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
 
         self.assertUpdate([True, True, 1, constants.APP_NETFLIX, 1, [constants.APP_NETFLIX]],
-                          (constants.STATE_STANDBY, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
+                          (constants.STATE_IDLE, constants.APP_NETFLIX, [constants.APP_NETFLIX]))
 
         # Plex
         self.assertUpdate([True, True, 1, constants.APP_PLEX, 3, [constants.APP_PLEX]],
@@ -389,7 +389,7 @@ class TestFireTVPython(unittest.TestCase):
                           (constants.STATE_PAUSED, constants.APP_PLEX, [constants.APP_PLEX]))
 
         self.assertUpdate([True, True, 1, constants.APP_PLEX, 1, [constants.APP_PLEX]],
-                          (constants.STATE_STANDBY, constants.APP_PLEX, [constants.APP_PLEX]))
+                          (constants.STATE_IDLE, constants.APP_PLEX, [constants.APP_PLEX]))
 
         # Sport 1
         self.assertUpdate([True, True, 3, constants.APP_SPORT1, 3, [constants.APP_SPORT1]],
@@ -399,7 +399,7 @@ class TestFireTVPython(unittest.TestCase):
                           (constants.STATE_PAUSED, constants.APP_SPORT1, [constants.APP_SPORT1]))
 
         self.assertUpdate([True, True, 1, constants.APP_SPORT1, 3, [constants.APP_SPORT1]],
-                          (constants.STATE_STANDBY, constants.APP_SPORT1, [constants.APP_SPORT1]))
+                          (constants.STATE_IDLE, constants.APP_SPORT1, [constants.APP_SPORT1]))
 
         # Spotify
         self.assertUpdate([True, True, 1, constants.APP_SPOTIFY, 3, [constants.APP_SPOTIFY]],
@@ -409,7 +409,7 @@ class TestFireTVPython(unittest.TestCase):
                           (constants.STATE_PAUSED, constants.APP_SPOTIFY, [constants.APP_SPOTIFY]))
 
         self.assertUpdate([True, True, 1, constants.APP_SPOTIFY, 1, [constants.APP_SPOTIFY]],
-                          (constants.STATE_STANDBY, constants.APP_SPOTIFY, [constants.APP_SPOTIFY]))
+                          (constants.STATE_IDLE, constants.APP_SPOTIFY, [constants.APP_SPOTIFY]))
 
         # Twitch
         self.assertUpdate([True, True, 2, constants.APP_TWITCH, 3, [constants.APP_TWITCH]],
@@ -422,7 +422,7 @@ class TestFireTVPython(unittest.TestCase):
                           (constants.STATE_PLAYING, constants.APP_TWITCH, [constants.APP_TWITCH]))
 
         self.assertUpdate([True, True, 1, constants.APP_TWITCH, 1, [constants.APP_TWITCH]],
-                          (constants.STATE_STANDBY, constants.APP_TWITCH, [constants.APP_TWITCH]))
+                          (constants.STATE_IDLE, constants.APP_TWITCH, [constants.APP_TWITCH]))
 
         # Waipu TV
         self.assertUpdate([True, True, 3, constants.APP_WAIPU_TV, 1, [constants.APP_WAIPU_TV]],
@@ -432,7 +432,7 @@ class TestFireTVPython(unittest.TestCase):
                           (constants.STATE_PAUSED, constants.APP_WAIPU_TV, [constants.APP_WAIPU_TV]))
 
         self.assertUpdate([True, True, 1, constants.APP_WAIPU_TV, 1, [constants.APP_WAIPU_TV]],
-                          (constants.STATE_STANDBY, constants.APP_WAIPU_TV, [constants.APP_WAIPU_TV]))
+                          (constants.STATE_IDLE, constants.APP_WAIPU_TV, [constants.APP_WAIPU_TV]))
 
         # Unknown app
         self.assertUpdate([True, True, 1, 'unknown', 3, ['unknown']],
@@ -442,7 +442,7 @@ class TestFireTVPython(unittest.TestCase):
                           (constants.STATE_PAUSED, 'unknown', ['unknown']))
 
         self.assertUpdate([True, True, 1, 'unknown', 1, ['unknown']],
-                          (constants.STATE_STANDBY, 'unknown', ['unknown']))
+                          (constants.STATE_IDLE, 'unknown', ['unknown']))
 
         self.assertUpdate([True, True, 1, 'unknown', None, ['unknown']],
                           (constants.STATE_PLAYING, 'unknown', ['unknown']))
