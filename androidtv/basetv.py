@@ -20,14 +20,14 @@ class BaseTV(object):
 
     .. code-block:: python
 
-       state_detection_rules = {'com.amazon.tv.launcher': ['standby'],
+       state_detection_rules = {'com.amazon.tv.launcher': ['idle'],
                                 'com.netflix.ninja': ['media_session_state'],
                                 'com.ellation.vrv': ['audio_state'],
                                 'com.hulu.plus': [{'playing': {'wake_lock_size' : 4}},
                                                   {'paused': {'wake_lock_size': 2}}],
                                 'com.plexapp.android': [{'paused': {'media_session_state': 3, 'wake_lock_size': 1}},
                                                         {'playing': {'media_session_state': 3}},
-                                                        'standby']}
+                                                        'idle']}
 
     The keys are app IDs, and the values are lists of rules that are evaluated in order.
 
@@ -40,7 +40,7 @@ class BaseTV(object):
 
     **Valid rules:**
 
-    * ``'standby'``, ``'playing'``, ``'paused'``, ``'idle'``, or ``'off'`` = always report the specified state when this app is open
+    * ``'idle'``, ``'playing'``, ``'paused'``, ``'standby'``, or ``'off'`` = always report the specified state when this app is open
     * ``'media_session_state'`` = try to use the :meth:`media_session_state` property to determine the state
     * ``'audio_state'`` = try to use the :meth:`audio_state` property to determine the state
     * ``{'<VALID_STATE>': {'<PROPERTY1>': VALUE1, '<PROPERTY2>': VALUE2, ...}}`` = check if each of the properties is equal to the specified value, and if so return the state
@@ -302,7 +302,7 @@ class BaseTV(object):
                 if media_session_state == 3:
                     return constants.STATE_PLAYING
                 if media_session_state is not None:
-                    return constants.STATE_STANDBY
+                    return constants.STATE_IDLE
 
             # Use the `audio_state` property
             if rule == 'audio_state' and audio_state in constants.VALID_STATES:
