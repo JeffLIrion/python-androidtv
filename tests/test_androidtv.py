@@ -279,8 +279,8 @@ STATE_PLEX_PAUSED = (constants.STATE_PAUSED, 'com.plexapp.android', ['com.plexap
 
 STATE_DETECTION_RULES1 = {'com.amazon.tv.launcher': ['off']}
 STATE_DETECTION_RULES2 = {'com.amazon.tv.launcher': ['media_session_state', 'off']}
-STATE_DETECTION_RULES3 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_size': 2}}]}
-STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_size': 1}}, 'paused']}
+STATE_DETECTION_RULES3 = {'com.amazon.tv.launcher': [{'idle': {'wake_lock_size': 2}}]}
+STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'idle': {'wake_lock_size': 1}}, 'paused']}
 STATE_DETECTION_RULES5 = {'com.amazon.tv.launcher': ['audio_state']}
 
 
@@ -665,7 +665,7 @@ class TestAndroidTVPython(unittest.TestCase):
 
             self.atv._state_detection_rules = STATE_DETECTION_RULES3
             state = self.atv.update()
-            self.assertEqual(state[0], constants.STATE_STANDBY)
+            self.assertEqual(state[0], constants.STATE_IDLE)
 
             self.atv._state_detection_rules = STATE_DETECTION_RULES4
             state = self.atv.update()
