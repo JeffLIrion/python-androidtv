@@ -106,8 +106,8 @@ def patch_connect(success):
         raise OSError
 
     if success:
-        return {"python": patch("{}.AdbDeviceTcpFake.connect".format(__name__), connect_success_python), "server": patch("androidtv.adb_manager.Client", ClientFakeSuccess)}
-    return {"python": patch("{}.AdbDeviceTcpFake.connect".format(__name__), connect_fail_python), "server": patch("androidtv.adb_manager.Client", ClientFakeFail)}
+        return {"python": patch("{}.AdbDeviceTcpFake.connect".format(__name__), connect_success_python), "server": patch("androidtv.adb_manager_sync.Client", ClientFakeSuccess)}
+    return {"python": patch("{}.AdbDeviceTcpFake.connect".format(__name__), connect_fail_python), "server": patch("androidtv.adb_manager_sync.Client", ClientFakeFail)}
 
 
 def patch_shell(response=None, error=False):
@@ -137,7 +137,7 @@ PATCH_PUSH = {"python": patch("{}.AdbDeviceTcpFake.push".format(__name__)), "ser
 
 PATCH_PULL = {"python": patch("{}.AdbDeviceTcpFake.pull".format(__name__)), "server": patch("{}.DeviceFake.pull".format(__name__))}
 
-PATCH_ADB_DEVICE_TCP = patch("androidtv.adb_manager.AdbDeviceTcp", AdbDeviceTcpFake)
+PATCH_ADB_DEVICE_TCP = patch("androidtv.adb_manager_sync.AdbDeviceTcp", AdbDeviceTcpFake)
 
 
 class CustomException(Exception):

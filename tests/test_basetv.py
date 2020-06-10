@@ -10,7 +10,7 @@ except ImportError:
 sys.path.insert(0, '..')
 
 from androidtv import constants, ha_state_detection_rules_validator
-from androidtv.basetv import BaseTV
+from androidtv.basetv.basetv_sync import BaseTVSync
 from . import patchers
 
 
@@ -82,13 +82,13 @@ STATE_DETECTION_RULES_INVALID11 = {'com.amazon.tv.launcher': [{'standby': {'audi
 PNG_IMAGE = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\n\x00\x00\x00\n\x08\x06\x00\x00\x00\x8d2\xcf\xbd\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00\tpHYs\x00\x00\x0fa\x00\x00\x0fa\x01\xa8?\xa7i\x00\x00\x00\x0eIDAT\x18\x95c`\x18\x05\x83\x13\x00\x00\x01\x9a\x00\x01\x16\xca\xd3i\x00\x00\x00\x00IEND\xaeB`\x82'
 
 
-class TestBaseTVPython(unittest.TestCase):
+class TestBaseTVSyncPython(unittest.TestCase):
     PATCH_KEY = 'python'
     ADB_ATTR = '_adb'
 
     def setUp(self):
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.btv = BaseTV('HOST', 5555)
+            self.btv = BaseTVSync('HOST', 5555)
             self.btv.adb_connect()
 
     def test_available(self):
@@ -416,24 +416,24 @@ class TestBaseTVPython(unittest.TestCase):
         """
         with patchers.patch_connect(True)['python'], patchers.patch_shell('')['python']:
             # Make sure that no error is raised when the state detection rules are valid
-            BaseTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES1)
-            BaseTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES2)
-            BaseTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES3)
-            BaseTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES4)
-            BaseTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES5)
+            BaseTVSync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES1)
+            BaseTVSync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES2)
+            BaseTVSync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES3)
+            BaseTVSync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES4)
+            BaseTVSync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES5)
 
             # Make sure that an error is raised when the state detection rules are invalid
-            self.assertRaises(TypeError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID1)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID2)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID3)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID4)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID5)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID6)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID7)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID8)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID9)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID10)
-            self.assertRaises(KeyError, BaseTV, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID11)
+            self.assertRaises(TypeError, BaseTVSync, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID1)
+            self.assertRaises(KeyError, BaseTVSync, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID2)
+            self.assertRaises(KeyError, BaseTVSync, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID3)
+            self.assertRaises(KeyError, BaseTVSync, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID4)
+            self.assertRaises(KeyError, BaseTVSync, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID5)
+            self.assertRaises(KeyError, BaseTVSync, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID6)
+            self.assertRaises(KeyError, BaseTVSync, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID7)
+            self.assertRaises(KeyError, BaseTVSync, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID8)
+            self.assertRaises(KeyError, BaseTVSync, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID9)
+            self.assertRaises(KeyError, BaseTVSync, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID10)
+            self.assertRaises(KeyError, BaseTVSync, 'HOST', 5555, '', '', 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID11)
 
     def test_wake_lock_size(self):
         """Check that the ``wake_lock_size`` property works correctly.

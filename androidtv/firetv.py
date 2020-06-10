@@ -6,13 +6,13 @@ ADB Debugging must be enabled.
 
 import logging
 
-from .basetv import BaseTV
+from .basetv.basetv_sync import BaseTVSync
 from . import constants
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class FireTV(BaseTV):
+class FireTV(BaseTVSync):
     """Representation of an Amazon Fire TV device.
 
     Parameters
@@ -35,7 +35,7 @@ class FireTV(BaseTV):
     DEVICE_CLASS = 'firetv'
 
     def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
-        BaseTV.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+        BaseTVSync.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
 
     # ======================================================================= #
     #                                                                         #

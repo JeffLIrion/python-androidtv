@@ -588,7 +588,7 @@ class TestADBCommandAndFileSync(unittest.TestCase):
             )
             self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
 
-        with patch("androidtv.basetv.BaseTV.adb_shell", return_value=response) as patch_shell:
+        with patch("androidtv.basetv.basetv_sync.BaseTVSync.adb_shell", return_value=response) as patch_shell:
             self.aftv.adb_command(command)
 
             patch_shell.assert_called_with(command)
@@ -606,7 +606,7 @@ class TestADBCommandAndFileSync(unittest.TestCase):
             )
             self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
 
-        with patch("androidtv.basetv.BaseTV.adb_shell", return_value=response) as patch_shell:
+        with patch("androidtv.basetv.basetv_sync.BaseTVSync.adb_shell", return_value=response) as patch_shell:
             self.aftv.adb_command(command)
 
             patch_shell.assert_called_with("input keyevent {}".format(self.aftv._keys[command]))

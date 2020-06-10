@@ -4,7 +4,8 @@ ADB Debugging must be enabled.
 """
 
 from .androidtv import AndroidTV
-from .basetv import BaseTV, state_detection_rules_validator
+from .basetv.basetv import state_detection_rules_validator
+from .basetv.basetv_sync import BaseTVSync
 from .constants import DEFAULT_AUTH_TIMEOUT_S
 from .firetv import FireTV
 
@@ -55,7 +56,7 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
     if device_class != 'auto':
         raise ValueError("`device_class` must be 'androidtv', 'firetv', or 'auto'.")
 
-    aftv = BaseTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+    aftv = BaseTVSync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
 
     # establish the ADB connection
     aftv.adb_connect(auth_timeout_s=auth_timeout_s)
