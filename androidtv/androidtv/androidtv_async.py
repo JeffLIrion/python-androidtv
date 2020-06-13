@@ -13,7 +13,7 @@ from .. import constants
 _LOGGER = logging.getLogger(__name__)
 
 
-class AndroidTV(BaseTVAsync, BaseAndroidTV):
+class AndroidTVAsync(BaseTVAsync, BaseAndroidTV):
     """Representation of an Android TV device.
 
     Parameters
