@@ -774,6 +774,6 @@ class BaseTVSync(BaseTV):
             The events converted to ``sendevent`` commands
 
         """
-        getevent = self.adb_shell("( getevent ) & pid=$!; ( sleep {} && kill -HUP $pid ) 2>/dev/null & watcher=$!; if wait $pid 2>/dev/null; then echo 'your command finished'; kill -HUP -P $watcher; wait $watcher; else echo 'your command was interrupted'; fi".format(timeout_s))
+        getevent = self._adb.shell("( getevent ) & pid=$!; ( sleep {} && kill -HUP $pid ) 2>/dev/null & watcher=$!; if wait $pid 2>/dev/null; then echo 'your command finished'; kill -HUP -P $watcher; wait $watcher; else echo 'your command was interrupted'; fi".format(timeout_s))
 
         return " && ".join([self._parse_getevent_line(line) for line in getevent.splitlines() if line.startswith("/") and ":" in line])
