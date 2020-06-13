@@ -13,7 +13,7 @@ setup(
     license='MIT',
     author='Jeff Irion',
     author_email='jefflirion@users.noreply.github.com',
-    packages=['androidtv'],
+    packages=['androidtv', 'androidtv.basetv', 'androidtv.androidtv', 'androidtv.firetv'],
     install_requires=['adb-shell>=0.1.3', 'pure-python-adb>=0.2.2.dev0'],
     classifiers=[
         'License :: OSI Approved :: MIT License',
