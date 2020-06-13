@@ -624,7 +624,7 @@ class TestADBCommandAndFileSync(unittest.TestCase):
             )
             self.aftv = AndroidTVDevice(aftv, "Fake Android TV", {}, True, None, None)
 
-        with patch("androidtv.androidtv.AndroidTV.get_properties_dict", return_value=response) as patch_get_props:
+        with patch("androidtv.androidtv.androidtv_sync.AndroidTVSync.get_properties_dict", return_value=response) as patch_get_props:
             self.aftv.adb_command(command)
 
             assert patch_get_props.called
@@ -644,7 +644,7 @@ class TestADBCommandAndFileSync(unittest.TestCase):
             self.aftv.update()
             assert self.aftv.state == STATE_OFF
 
-        with patch("androidtv.androidtv.AndroidTV.update", side_effect=LockNotAcquiredException):
+        with patch("androidtv.androidtv.androidtv_sync.AndroidTVSync.update", side_effect=LockNotAcquiredException):
             with patchers.patch_shell("1")[patch_key]:
                 self.aftv.update()
                 assert self.aftv.state == STATE_OFF

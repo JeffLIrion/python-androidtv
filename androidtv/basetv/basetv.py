@@ -275,6 +275,8 @@ class BaseTV(object):
         if not stream_music:
             return None
 
+        print(stream_music)
+        print(type(stream_music))
         matches = re.findall(constants.DEVICE_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
         if matches:
             return matches[0]

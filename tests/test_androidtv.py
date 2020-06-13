@@ -12,7 +12,7 @@ except ImportError:
 sys.path.insert(0, '..')
 
 from androidtv import constants
-from androidtv.androidtv import AndroidTV
+from androidtv.androidtv.androidtv_sync import AndroidTVSync
 from . import patchers
 
 
@@ -284,17 +284,17 @@ STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'idle': {'wake_lock_size':
 STATE_DETECTION_RULES5 = {'com.amazon.tv.launcher': ['audio_state']}
 
 
-class TestAndroidTVPython(unittest.TestCase):
+class TestAndroidTVSyncPython(unittest.TestCase):
     PATCH_KEY = 'python'
     ADB_ATTR = '_adb'
 
     def setUp(self):
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.atv = AndroidTV('HOST', 5555)
+            self.atv = AndroidTVSync('HOST', 5555)
             self.atv.adb_connect()
 
     def test_turn_on_off(self):
-        """Test that the ``AndroidTV.turn_on`` and ``AndroidTV.turn_off`` methods work correctly.
+        """Test that the ``AndroidTVSync.turn_on`` and ``AndroidTVSync.turn_off`` methods work correctly.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
@@ -685,7 +685,7 @@ class TestAndroidTVPython(unittest.TestCase):
         """Check that the results of the `update` method are as expected.
 
         """
-        with patch('androidtv.androidtv.AndroidTV.get_properties', return_value=get_properties):
+        with patch('androidtv.androidtv.androidtv_sync.AndroidTVSync.get_properties', return_value=get_properties):
             self.assertTupleEqual(self.atv.update(), update)
 
     def test_state_detection(self):
@@ -804,13 +804,13 @@ class TestAndroidTVPython(unittest.TestCase):
                           (constants.STATE_IDLE, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
 
 
-class TestAndroidTVServer(TestAndroidTVPython):
+class TestAndroidTVSyncServer(TestAndroidTVSyncPython):
     PATCH_KEY = 'server'
     ADB_ATTR = '_adb_device'
 
     def setUp(self):
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.atv = AndroidTV('HOST', 5555, adb_server_ip='ADB_SERVER_IP')
+            self.atv = AndroidTVSync('HOST', 5555, adb_server_ip='ADB_SERVER_IP')
             self.atv.adb_connect()
 
 
@@ -821,11 +821,11 @@ class TestStateDetectionRulesValidator(unittest.TestCase):
         """
         with patchers.patch_connect(True)['python'], patchers.patch_shell('')['python']:
             # Make sure that no error is raised when the state detection rules are valid
-            AndroidTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES1)
-            AndroidTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES2)
-            AndroidTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES3)
-            AndroidTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES4)
-            AndroidTV('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES5)
+            AndroidTVSync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES1)
+            AndroidTVSync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES2)
+            AndroidTVSync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES3)
+            AndroidTVSync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES4)
+            AndroidTVSync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES5)
 
 
 if __name__ == "__main__":
