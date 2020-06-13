@@ -5,7 +5,6 @@ ADB Debugging must be enabled.
 
 
 import logging
-import re
 
 from .basetv import BaseTV
 from .. import constants
@@ -334,14 +333,7 @@ class BaseTVSync(BaseTV):
         if not stream_music_raw:
             stream_music_raw = self._adb.shell(constants.CMD_STREAM_MUSIC)
 
-        if not stream_music_raw:
-            return None
-
-        matches = re.findall(constants.STREAM_MUSIC_REGEX_PATTERN, stream_music_raw, re.DOTALL | re.MULTILINE)
-        if matches:
-            return matches[0]
-
-        return None
+        return self._parse_stream_music(stream_music_raw)
 
     # ======================================================================= #
     #                                                                         #
