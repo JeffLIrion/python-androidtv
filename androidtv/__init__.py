@@ -3,11 +3,11 @@
 ADB Debugging must be enabled.
 """
 
-from .androidtv import AndroidTV
+from .androidtv.androidtv_sync import AndroidTVSync
 from .basetv.basetv import state_detection_rules_validator
 from .basetv.basetv_sync import BaseTVSync
 from .constants import DEFAULT_AUTH_TIMEOUT_S
-from .firetv import FireTV
+from .firetv.firetv_sync import FireTVSync
 
 
 __version__ = '0.0.43'
@@ -37,18 +37,18 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
 
     Returns
     -------
-    aftv : AndroidTV, FireTV
+    aftv : AndroidTVSync, FireTVSync
         The representation of the device
 
     """
     if device_class == 'androidtv':
-        atv = AndroidTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+        atv = AndroidTVSync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
         atv.adb_connect(auth_timeout_s=auth_timeout_s)
         atv.device_properties = atv.get_device_properties()
         return atv
 
     if device_class == 'firetv':
-        ftv = FireTV(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+        ftv = FireTVSync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
         ftv.adb_connect(auth_timeout_s=auth_timeout_s)
         ftv.device_properties = ftv.get_device_properties()
         return ftv
@@ -66,11 +66,11 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
 
     # Fire TV
     if aftv.device_properties.get('manufacturer') == 'Amazon':
-        aftv.__class__ = FireTV
+        aftv.__class__ = FireTVSync
 
     # Android TV
     else:
-        aftv.__class__ = AndroidTV
+        aftv.__class__ = AndroidTVSync
 
     return aftv
 

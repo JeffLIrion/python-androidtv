@@ -9,7 +9,7 @@ import re
 
 from .basetv import BaseTV
 from .. import constants
-from ..adb_manager_async import ADBPythonAsync, ADBServerAsync
+from ..adb_manager.adb_manager_async import ADBPythonAsync, ADBServerAsync
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -163,7 +163,7 @@ class BaseTVAsync(BaseTV):
             Whether or not the connection was successfully established and the device is available
 
         """
-        if isinstance(self._adb, ADBPython):
+        if isinstance(self._adb, ADBPythonAsync):
             return await self._adb.connect(always_log_errors, auth_timeout_s)
         return await self._adb.connect(always_log_errors)
 

@@ -405,6 +405,30 @@ class BaseTV(object):
         return None
 
     @staticmethod
+    async def _parse_stream_music(stream_music_raw):
+        """Parse the output of the command :py:const:`aio_androidtv.constants.CMD_STREAM_MUSIC`.
+
+        Parameters
+        ----------
+        stream_music_raw : str, None
+            The output of the command :py:const:`aio_androidtv.constants.CMD_STREAM_MUSIC`
+
+        Returns
+        -------
+        str, None
+            The ``STREAM_MUSIC`` block from the output of :py:const:`aio_androidtv.constants.CMD_STREAM_MUSIC`, or ``None`` if it could not be determined
+
+        """
+        if not stream_music_raw:
+            return None
+
+        matches = re.findall(constants.STREAM_MUSIC_REGEX_PATTERN, stream_music_raw, re.DOTALL | re.MULTILINE)
+        if matches:
+            return matches[0]
+
+        return None
+
+    @staticmethod
     def _running_apps(running_apps_response):
         """Get the running apps from the output of :py:const:`androidtv.constants.CMD_RUNNING_APPS`.
 

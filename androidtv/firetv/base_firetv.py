@@ -6,7 +6,7 @@ ADB Debugging must be enabled.
 
 import logging
 
-from ..basetv.basetv_sync import BaseTVSync
+from ..basetv.basetv import BaseTV
 from .. import constants
 
 _LOGGER = logging.getLogger(__name__)

@@ -274,7 +274,7 @@ class BaseAndroidTV(BaseTV):
         stream_music_raw = "\n".join(lines[3:])
 
         # the "STREAM_MUSIC" block from `adb shell dumpsys audio`
-        stream_music = self._get_stream_music(stream_music_raw)
+        stream_music = self._parse_stream_music(stream_music_raw)
 
         # `audio_output_device` property
         audio_output_device = self._audio_output_device(stream_music)

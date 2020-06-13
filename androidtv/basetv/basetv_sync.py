@@ -9,7 +9,7 @@ import re
 
 from .basetv import BaseTV
 from .. import constants
-from ..adb_manager_sync import ADBPythonSync, ADBServerSync
+from ..adb_manager.adb_manager_sync import ADBPythonSync, ADBServerSync
 
 _LOGGER = logging.getLogger(__name__)
 
