@@ -10,17 +10,18 @@ python-androidtv
 
 Documentation for this package can be found at `https://androidtv.readthedocs.io <https://androidtv.readthedocs.io>`_.
 
-``androidtv`` is a Python 3 package that provides state information and control of Android TV and Fire TV devices via ADB.  This package is used by the `Android TV <https://www.home-assistant.io/components/androidtv/>`_ integration in Home Assistant.
+``androidtv`` is a Python package that provides state information and control of Android TV and Fire TV devices via ADB.  This package is used by the `Android TV <https://www.home-assistant.io/components/androidtv/>`_ integration in Home Assistant.
 
 
 Installation
 ------------
 
-Be sure you install into a Python 3.x environment.
-
 .. code-block:: bash
 
    pip install androidtv
+
+
+To utilize the async version of this code, you must install into a Python 3.7+ environment.
 
 
 ADB Intents and Commands
