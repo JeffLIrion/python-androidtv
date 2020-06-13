@@ -275,8 +275,6 @@ class BaseTV(object):
         if not stream_music:
             return None
 
-        print(stream_music)
-        print(type(stream_music))
         matches = re.findall(constants.DEVICE_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
         if matches:
             return matches[0]
@@ -407,7 +405,7 @@ class BaseTV(object):
         return None
 
     @staticmethod
-    async def _parse_stream_music(stream_music_raw):
+    def _parse_stream_music(stream_music_raw):
         """Parse the output of the command :py:const:`aio_androidtv.constants.CMD_STREAM_MUSIC`.
 
         Parameters
