@@ -6,13 +6,14 @@ ADB Debugging must be enabled.
 
 import logging
 
-from .basetv.basetv_sync import BaseTVSync
-from . import constants
+from .base_firetv import BaseFireTV
+from ..basetv.basetv_sync import BaseTVSync
+from .. import constants
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class FireTV(BaseTVSync):
+class FireTVSync(BaseTVSync, BaseFireTV):
     """Representation of an Amazon Fire TV device.
 
     Parameters
@@ -31,8 +32,6 @@ class FireTV(BaseTVSync):
         A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
 
     """
-
-    DEVICE_CLASS = 'firetv'
 
     def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
         BaseTVSync.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
@@ -63,144 +62,7 @@ class FireTV(BaseTVSync):
         # Get the properties needed for the update
         screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
 
-        # Check if device is unavailable
-        if screen_on is None:
-            state = None
-            current_app = None
-            running_apps = None
-
-        # Check if device is off
-        elif not screen_on:
-            state = constants.STATE_OFF
-            current_app = None
-            running_apps = None
-
-        # Check if screen saver is on
-        elif not awake:
-            state = constants.STATE_STANDBY
-            current_app = None
-            running_apps = None
-
-        else:
-            # Get the running apps
-            if not running_apps and current_app:
-                running_apps = [current_app]
-
-            # Determine the state using custom rules
-            state = self._custom_state_detection(current_app=current_app, media_session_state=media_session_state, wake_lock_size=wake_lock_size)
-            if state:
-                return state, current_app, running_apps
-
-            # Determine the state based on the `current_app`
-            if current_app in [constants.APP_FIRETV_PACKAGE_LAUNCHER, constants.APP_FIRETV_PACKAGE_SETTINGS, None]:
-                state = constants.STATE_IDLE
-
-            # Amazon Video
-            elif current_app == constants.APP_AMAZON_VIDEO:
-                if media_session_state == 2:
-                    state = constants.STATE_PAUSED
-                elif media_session_state == 3:
-                    state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_IDLE
-
-            # Firefox
-            elif current_app == constants.APP_FIREFOX:
-                if wake_lock_size == 3:
-                    state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_IDLE
-
-            # Hulu
-            elif current_app == constants.APP_HULU:
-                if wake_lock_size == 4:
-                    state = constants.STATE_PLAYING
-                elif wake_lock_size == 2:
-                    state = constants.STATE_PAUSED
-                else:
-                    state = constants.STATE_IDLE
-
-            # Jellyfin
-            elif current_app == constants.APP_JELLYFIN_TV:
-                if wake_lock_size == 2:
-                    state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_PAUSED
-
-            # Netflix
-            elif current_app == constants.APP_NETFLIX:
-                if media_session_state == 2:
-                    state = constants.STATE_PAUSED
-                elif media_session_state == 3:
-                    state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_IDLE
-
-            # Plex
-            elif current_app == constants.APP_PLEX:
-                if media_session_state == 3:
-                    if wake_lock_size == 2:
-                        state = constants.STATE_PAUSED
-                    else:
-                        state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_IDLE
-
-            # Sport 1
-            elif current_app == constants.APP_SPORT1:
-                if wake_lock_size == 2:
-                    state = constants.STATE_PAUSED
-                elif wake_lock_size == 3:
-                    state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_IDLE
-
-            # Spotify
-            elif current_app == constants.APP_SPOTIFY:
-                if media_session_state == 2:
-                    state = constants.STATE_PAUSED
-                elif media_session_state == 3:
-                    state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_IDLE
-
-            # Twitch
-            elif current_app == constants.APP_TWITCH:
-                if wake_lock_size == 2:
-                    state = constants.STATE_PAUSED
-                elif media_session_state == 3:
-                    state = constants.STATE_PLAYING
-                elif media_session_state == 4:
-                    state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_IDLE
-
-            # Waipu TV
-            elif current_app == constants.APP_WAIPU_TV:
-                if wake_lock_size == 2:
-                    state = constants.STATE_PAUSED
-                elif wake_lock_size == 3:
-                    state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_IDLE
-
-            # Get the state from `media_session_state`
-            elif media_session_state:
-                if media_session_state == 2:
-                    state = constants.STATE_PAUSED
-                elif media_session_state == 3:
-                    state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_IDLE
-
-            # Get the state from `wake_lock_size`
-            else:
-                if wake_lock_size == 1:
-                    state = constants.STATE_PLAYING
-                else:
-                    state = constants.STATE_PAUSED
-
-        return state, current_app, running_apps
+        return self._update(screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps)
 
     # ======================================================================= #
     #                                                                         #
@@ -252,43 +114,7 @@ class FireTV(BaseTVSync):
                 output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
         _LOGGER.debug("Fire TV %s:%d `get_properties` response: %s", self.host, self.port, output)
 
-        # ADB command was unsuccessful
-        if output is None:
-            return None, None, None, None, None, None
-
-        # `screen_on` property
-        if not output:
-            return False, False, -1, None, None, None
-        screen_on = output[0] == '1'
-
-        # `awake` property
-        if len(output) < 2:
-            return screen_on, False, -1, None, None, None
-        awake = output[1] == '1'
-
-        lines = output.strip().splitlines()
-
-        # `wake_lock_size` property
-        if len(lines[0]) < 3:
-            return screen_on, awake, -1, None, None, None
-        wake_lock_size = self._wake_lock_size(lines[0])
-
-        # `current_app` property
-        if len(lines) < 2:
-            return screen_on, awake, wake_lock_size, None, None, None
-        current_app = self._current_app(lines[1])
-
-        # `media_session_state` property
-        if len(lines) < 3:
-            return screen_on, awake, wake_lock_size, current_app, None, None
-        media_session_state = self._media_session_state(lines[2], current_app)
-
-        # `running_apps` property
-        if not get_running_apps or len(lines) < 4:
-            return screen_on, awake, wake_lock_size, current_app, media_session_state, None
-        running_apps = self._running_apps(lines[3:])
-
-        return screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps
+        return self._get_properties(output, get_running_apps)
 
     def get_properties_dict(self, get_running_apps=True, lazy=True):
         """Get the properties needed for Home Assistant updates and return them as a dictionary.
