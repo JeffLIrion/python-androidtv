@@ -9,8 +9,8 @@ import asyncio
 from contextlib import asynccontextmanager
 import logging
 
-from aio_adb_shell.adb_device import AdbDeviceTcp
-from aio_adb_shell.auth.sign_pythonrsa import PythonRSASigner
+from aio_adb_shell.adb_device import AdbDeviceTcp as AdbDeviceTcpAsync  # TODO: import from adb-shell
+from adb_shell.auth.sign_pythonrsa import PythonRSASigner
 from ppadb.client import Client
 
 from ..constants import DEFAULT_AUTH_TIMEOUT_S
@@ -77,7 +77,7 @@ class ADBPythonAsync(object):
         self.host = host
         self.port = int(port)
         self.adbkey = adbkey
-        self._adb = AdbDeviceTcp(host=self.host, port=self.port, default_timeout_s=9., banner=b'aio-androidtv')
+        self._adb = AdbDeviceTcpAsync(host=self.host, port=self.port, default_timeout_s=9., banner=b'androidtv')
 
         # keep track of whether the ADB connection is intact
         self._available = False
