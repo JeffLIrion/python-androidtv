@@ -9,7 +9,7 @@ import asyncio
 from contextlib import asynccontextmanager
 import logging
 
-from aio_adb_shell.adb_device import AdbDeviceTcp as AdbDeviceTcpAsync  # TODO: import from adb-shell
+from adb_shell.adb_device_async import AdbDeviceTcpAsync
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
 from ppadb.client import Client
 
