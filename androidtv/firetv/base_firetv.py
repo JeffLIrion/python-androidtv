@@ -12,7 +12,7 @@ from .. import constants
 _LOGGER = logging.getLogger(__name__)
 
 
-class BaseFireTV(BaseTV):
+class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
     """Representation of an Amazon Fire TV device.
 
     Parameters

@@ -33,7 +33,7 @@ class FireTVSync(BaseTVSync, BaseFireTV):
 
     """
 
-    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
+    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):  # pylint: disable=super-init-not-called
         BaseTVSync.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
 
     # ======================================================================= #

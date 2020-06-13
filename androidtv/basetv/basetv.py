@@ -12,7 +12,7 @@ from .. import constants
 _LOGGER = logging.getLogger(__name__)
 
 
-class BaseTV(object):
+class BaseTV(object):  # pylint: disable=too-few-public-methods
     """Base class for representing an Android TV / Fire TV device.
 
     The ``state_detection_rules`` parameter is of the format:

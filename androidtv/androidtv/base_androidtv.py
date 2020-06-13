@@ -12,7 +12,7 @@ from .. import constants
 _LOGGER = logging.getLogger(__name__)
 
 
-class BaseAndroidTV(BaseTV):
+class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
     """Representation of an Android TV device.
 
     Parameters
