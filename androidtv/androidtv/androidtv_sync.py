@@ -41,13 +41,15 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
     #                          Home Assistant Update                          #
     #                                                                         #
     # ======================================================================= #
-    def update(self, get_running_apps=True):
+    def update(self, get_running_apps=True, lazy=True):
         """Get the info needed for a Home Assistant update.
 
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.androidtv.AndroidTV.running_apps` property
+            Whether or not to get the :meth:`~androidtv.androidtv.AndroidTVSync.running_apps` property
+        lazy : bool
+            Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
         Returns
         -------
@@ -66,7 +68,7 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
+        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
         return self._update(screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps)
 
