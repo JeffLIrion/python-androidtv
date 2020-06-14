@@ -80,8 +80,10 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
 
         This will send one of the following ADB commands:
 
-        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_LAZY`
-        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY`
+        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_LAZY_RUNNING_APPS`
+        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_LAZY_NO_RUNNING_APPS`
+        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_RUNNING_APPS`
+        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS``
 
         Parameters
         ----------
