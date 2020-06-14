@@ -14,17 +14,14 @@ from adb_shell.adb_device_async import AdbDeviceTcpAsync
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
 from ppadb.client import Client
 
-from ..constants import DEFAULT_AUTH_TIMEOUT_S
+from ..constants import DEFAULT_ADB_TIMEOUT_S, DEFAULT_AUTH_TIMEOUT_S, DEFAULT_LOCK_TIMEOUT_S
 from ..exceptions import LockNotAcquiredException
 
 _LOGGER = logging.getLogger(__name__)
 
-#: Default timeout for acquiring the async lock that protects ADB commands
-DEFAULT_TIMEOUT = 3.0
-
 
 @asynccontextmanager
-async def _acquire(lock, timeout=DEFAULT_TIMEOUT):
+async def _acquire(lock, timeout=DEFAULT_LOCK_TIMEOUT_S):
     """Handle acquisition and release of an ``asyncio.Lock`` object with a timeout.
 
     Parameters
@@ -78,7 +75,7 @@ class ADBPythonAsync(object):
         self.host = host
         self.port = int(port)
         self.adbkey = adbkey
-        self._adb = AdbDeviceTcpAsync(host=self.host, port=self.port, default_timeout_s=9., banner=b'androidtv')
+        self._adb = AdbDeviceTcpAsync(host=self.host, port=self.port, default_timeout_s=DEFAULT_ADB_TIMEOUT_S, banner=b'androidtv')
 
         # keep track of whether the ADB connection is intact
         self._available = False

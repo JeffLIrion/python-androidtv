@@ -15,13 +15,13 @@ from adb_shell.adb_device import AdbDeviceTcp
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
 from ppadb.client import Client
 
-from ..constants import DEFAULT_AUTH_TIMEOUT_S
+from ..constants import DEFAULT_ADB_TIMEOUT_S, DEFAULT_AUTH_TIMEOUT_S, DEFAULT_LOCK_TIMEOUT_S
 from ..exceptions import LockNotAcquiredException
 
 _LOGGER = logging.getLogger(__name__)
 
 #: Use a timeout for the ADB threading lock if it is supported
-LOCK_KWARGS = {'timeout': 3} if sys.version_info[0] > 2 and sys.version_info[1] > 1 else {}
+LOCK_KWARGS = {'timeout': DEFAULT_LOCK_TIMEOUT_S} if sys.version_info[0] > 2 and sys.version_info[1] > 1 else {}
 
 if sys.version_info[0] == 2:  # pragma: no cover
     FileNotFoundError = IOError  # pylint: disable=redefined-builtin
@@ -75,7 +75,7 @@ class ADBPythonSync(object):
         self.host = host
         self.port = int(port)
         self.adbkey = adbkey
-        self._adb = AdbDeviceTcp(host=self.host, port=self.port, default_timeout_s=9.)
+        self._adb = AdbDeviceTcp(host=self.host, port=self.port, default_timeout_s=DEFAULT_ADB_TIMEOUT_S)
 
         # keep track of whether the ADB connection is intact
         self._available = False

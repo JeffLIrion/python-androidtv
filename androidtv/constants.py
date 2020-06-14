@@ -320,5 +320,11 @@ MUTED_REGEX_PATTERN = r"Muted: (.*?)\W"
 STREAM_MUSIC_REGEX_PATTERN = "STREAM_MUSIC(.*?)- STREAM"
 VOLUME_REGEX_PATTERN = r"\): (\d{1,})"
 
-#: Default authentication timeout (in s) for :meth:`adb_shell.tcp_handle.TcpHandle.connect`
-DEFAULT_AUTH_TIMEOUT_S = 0.1
+#: Default authentication timeout (in s) for :meth:`adb_shell.handle.tcp_handle.TcpHandle.connect` and :meth:`adb_shell.handle.tcp_handle_async.TcpHandleAsync.connect`
+DEFAULT_AUTH_TIMEOUT_S = 10.0
+
+#: Default timeout (in s) for :class:`adb_shell.handle.tcp_handle.TcpHandle` and :class:`adb_shell.handle.tcp_handle_async.TcpHandleAsync`
+DEFAULT_ADB_TIMEOUT_S = 9.0
+
+#: Default timeout for acquiring the async lock that protects ADB commands
+DEFAULT_LOCK_TIMEOUT_S = 3.0
