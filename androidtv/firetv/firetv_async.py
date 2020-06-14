@@ -41,13 +41,15 @@ class FireTVAsync(BaseTVAsync, BaseFireTV):
     #                          Home Assistant Update                          #
     #                                                                         #
     # ======================================================================= #
-    async def update(self, get_running_apps=True):
+    async def update(self, get_running_apps=True, lazy=True):
         """Get the info needed for a Home Assistant update.
 
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :meth:`~aio_androidtv.firetv.FireTV.running_apps` property
+            Whether or not to get the :meth:`~androidtv.firetv.firetv_sync.FireTVSync.running_apps` property
+        lazy : bool
+            Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
         Returns
         -------
@@ -60,7 +62,7 @@ class FireTVAsync(BaseTVAsync, BaseFireTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = await self.get_properties(get_running_apps=get_running_apps, lazy=True)
+        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = await self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
         return self._update(screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps)
 
