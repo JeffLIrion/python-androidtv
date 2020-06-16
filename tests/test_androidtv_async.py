@@ -695,7 +695,7 @@ class TestAndroidTVAsyncPython(unittest.TestCase):
         """Check that the results of the `update` method are as expected.
 
         """
-        with patch('androidtv.androidtv.androidtv_async.AndroidTVAsync.get_properties', return_value=get_properties, new_callable=async_patchers.AsyncMock):
+        with async_patchers.async_patch('androidtv.androidtv.androidtv_async.AndroidTVAsync.get_properties', return_value=get_properties):
             self.assertTupleEqual(await self.atv.update(), update)
 
     @awaiter

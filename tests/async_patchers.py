@@ -21,6 +21,10 @@ CLIENT_FAKE_FAIL = "ClientFakeFail"
 DEVICE_FAKE = "DeviceFake"
 
 
+def async_patch(*args, **kwargs):
+    return patch(*args, new_callable=AsyncMock, **kwargs)
+
+
 class AdbDeviceTcpAsyncFake(object):
     """A fake of the `adb_shell.adb_device_async.AdbDeviceTcpAsync` class."""
 
@@ -151,9 +155,9 @@ def patch_shell(response=None, error=False):
     return {KEY_PYTHON: patch("{}.{}.shell".format(__name__, ADB_DEVICE_FAKE), shell_fail_python), KEY_SERVER: patch("{}.{}.shell".format(__name__, DEVICE_FAKE), shell_fail_server)}
 
 
-PATCH_PUSH = {KEY_PYTHON: patch("{}.{}.push".format(__name__, ADB_DEVICE_FAKE), new_callable=AsyncMock), KEY_SERVER: patch("{}.{}.push".format(__name__, DEVICE_FAKE))}
+PATCH_PUSH = {KEY_PYTHON: async_patch("{}.{}.push".format(__name__, ADB_DEVICE_FAKE)), KEY_SERVER: patch("{}.{}.push".format(__name__, DEVICE_FAKE))}
 
-PATCH_PULL = {KEY_PYTHON: patch("{}.{}.pull".format(__name__, ADB_DEVICE_FAKE), new_callable=AsyncMock), KEY_SERVER: patch("{}.{}.pull".format(__name__, DEVICE_FAKE))}
+PATCH_PULL = {KEY_PYTHON: async_patch("{}.{}.pull".format(__name__, ADB_DEVICE_FAKE)), KEY_SERVER: patch("{}.{}.pull".format(__name__, DEVICE_FAKE))}
 
 PATCH_ADB_DEVICE_TCP = patch("androidtv.adb_manager.adb_manager_async.AdbDeviceTcpAsync", AdbDeviceTcpAsyncFake)
 

@@ -308,7 +308,7 @@ class TestFireTVAsyncPython(unittest.TestCase):
         """Check that the results of the `update` method are as expected.
 
         """
-        with patch('androidtv.firetv.firetv_async.FireTVAsync.get_properties', return_value=get_properties, new_callable=async_patchers.AsyncMock):
+        with async_patchers.async_patch('androidtv.firetv.firetv_async.FireTVAsync.get_properties', return_value=get_properties):
             self.assertTupleEqual(await self.ftv.update(), update)
 
     @awaiter
