@@ -75,7 +75,7 @@ class ADBPythonSync(object):
         self.host = host
         self.port = int(port)
         self.adbkey = adbkey
-        self._adb = AdbDeviceTcp(host=self.host, port=self.port, default_timeout_s=DEFAULT_ADB_TIMEOUT_S)
+        self._adb = AdbDeviceTcp(host=self.host, port=self.port, default_transport_timeout_s=DEFAULT_ADB_TIMEOUT_S)
 
         # keep track of whether the ADB connection is intact
         self._available = False
