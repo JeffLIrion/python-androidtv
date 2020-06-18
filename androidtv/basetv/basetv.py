@@ -219,7 +219,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         Parameters
         ----------
         conditions : dict
-            A dictionary of conditions to be checked (see the ``state_detection_rules`` parameter in :class:`~androidtv.basetv.BaseTV`)
+            A dictionary of conditions to be checked (see the ``state_detection_rules`` parameter in :class:`~androidtv.basetv.basetv.BaseTV`)
         media_session_state : int, None
             The :meth:`media_session_state` property
         wake_lock_size : int, None
@@ -406,17 +406,17 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
     @staticmethod
     def _parse_stream_music(stream_music_raw):
-        """Parse the output of the command :py:const:`aio_androidtv.constants.CMD_STREAM_MUSIC`.
+        """Parse the output of the command :py:const:`androidtv.constants.CMD_STREAM_MUSIC`.
 
         Parameters
         ----------
         stream_music_raw : str, None
-            The output of the command :py:const:`aio_androidtv.constants.CMD_STREAM_MUSIC`
+            The output of the command :py:const:`androidtv.constants.CMD_STREAM_MUSIC`
 
         Returns
         -------
         str, None
-            The ``STREAM_MUSIC`` block from the output of :py:const:`aio_androidtv.constants.CMD_STREAM_MUSIC`, or ``None`` if it could not be determined
+            The ``STREAM_MUSIC`` block from the output of :py:const:`androidtv.constants.CMD_STREAM_MUSIC`, or ``None`` if it could not be determined
 
         """
         if not stream_music_raw:
@@ -569,7 +569,7 @@ def state_detection_rules_validator(rules, exc=KeyError):
             * Check that each key is in :py:const:`~androidtv.constants.VALID_PROPERTIES`
             * Check that each value is of the right type, according to :py:const:`~androidtv.constants.VALID_PROPERTIES_TYPES`
 
-    See :class:`~androidtv.basetv.BaseTV` for more info about the ``state_detection_rules`` parameter.
+    See :class:`~androidtv.basetv.basetv.BaseTV` for more info about the ``state_detection_rules`` parameter.
 
     Parameters
     ----------

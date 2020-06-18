@@ -31,7 +31,7 @@ class BaseTVAsync(BaseTV):
 
     The keys are app IDs, and the values are lists of rules that are evaluated in order.
 
-    :py:const:`~aio_androidtv.constants.VALID_STATES`
+    :py:const:`~androidtv.constants.VALID_STATES`
 
     .. code-block:: python
 
@@ -84,7 +84,7 @@ class BaseTVAsync(BaseTV):
     async def adb_shell(self, cmd):
         """Send an ADB command.
 
-        This calls :py:meth:`aio_androidtv.adb_manager.ADBPython.shell` or :py:meth:`aio_androidtv.adb_manager.ADBServer.shell`,
+        This calls :py:meth:`androidtv.adb_manager.adb_manager_async.ADBPythonAsync.shell` or :py:meth:`androidtv.adb_manager.adb_manager_async.ADBServerAsync.shell`,
         depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
 
         Parameters
@@ -103,7 +103,7 @@ class BaseTVAsync(BaseTV):
     async def adb_pull(self, local_path, device_path):
         """Pull a file from the device.
 
-        This calls :py:meth:`aio_androidtv.adb_manager.ADBPython.pull` or :py:meth:`aio_androidtv.adb_manager.ADBServer.pull`,
+        This calls :py:meth:`androidtv.adb_manager.adb_manager_async.ADBPythonAsync.pull` or :py:meth:`androidtv.adb_manager.adb_manager_async.ADBServerAsync.pull`,
         depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
 
         Parameters
@@ -119,7 +119,7 @@ class BaseTVAsync(BaseTV):
     async def adb_push(self, local_path, device_path):
         """Push a file to the device.
 
-        This calls :py:meth:`aio_androidtv.adb_manager.ADBPython.push` or :py:meth:`aio_androidtv.adb_manager.ADBServer.push`,
+        This calls :py:meth:`androidtv.adb_manager.adb_manager_async.ADBPythonAsync.push` or :py:meth:`androidtv.adb_manager.adb_manager_async.ADBServerAsync.push`,
         depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
 
         Parameters
@@ -135,7 +135,7 @@ class BaseTVAsync(BaseTV):
     async def adb_screencap(self):
         """Take a screencap.
 
-        This calls :py:meth:`aio_androidtv.adb_manager.ADBPython.screencap` or :py:meth:`aio_androidtv.adb_manager.ADBServer.screencap`,
+        This calls :py:meth:`androidtv.adb_manager.adb_manager_async.ADBPythonAsync.screencap` or :py:meth:`androidtv.adb_manager.adb_manager_async.ADBServerAsync.screencap`,
         depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
 
         Returns
@@ -169,8 +169,8 @@ class BaseTVAsync(BaseTV):
     async def adb_close(self):
         """Close the ADB connection.
 
-        This only works for the Python ADB implementation (see :meth:`aio_androidtv.adb_manager.ADBPython.close`).
-        For the ADB server approach, this doesn't do anything (see :meth:`aio_androidtv.adb_manager.ADBServer.close`).
+        This only works for the Python ADB implementation (see :meth:`androidtv.adb_manager.adb_manager_async.ADBPython.close`).
+        For the ADB server approach, this doesn't do anything (see :meth:`androidtv.adb_manager.adb_manager_async.ADBServer.close`).
 
         """
         await self._adb.close()
@@ -222,7 +222,7 @@ class BaseTVAsync(BaseTV):
         Returns
         -------
         str, None
-            The audio state, as determined from the ADB shell command :py:const:`aio_androidtv.constants.CMD_AUDIO_STATE`, or ``None`` if it could not be determined
+            The audio state, as determined from the ADB shell command :py:const:`androidtv.constants.CMD_AUDIO_STATE`, or ``None`` if it could not be determined
 
         """
         audio_state_response = await self._adb.shell(constants.CMD_AUDIO_STATE)
@@ -337,17 +337,17 @@ class BaseTVAsync(BaseTV):
     #                                                                         #
     # ======================================================================= #
     async def _get_stream_music(self, stream_music_raw=None):
-        """Get the ``STREAM_MUSIC`` block from the output of the command :py:const:`aio_androidtv.constants.CMD_STREAM_MUSIC`.
+        """Get the ``STREAM_MUSIC`` block from the output of the command :py:const:`androidtv.constants.CMD_STREAM_MUSIC`.
 
         Parameters
         ----------
         stream_music_raw : str, None
-            The output of the command :py:const:`aio_androidtv.constants.CMD_STREAM_MUSIC`
+            The output of the command :py:const:`androidtv.constants.CMD_STREAM_MUSIC`
 
         Returns
         -------
         str, None
-            The ``STREAM_MUSIC`` block from the output of :py:const:`aio_androidtv.constants.CMD_STREAM_MUSIC`, or ``None`` if it could not be determined
+            The ``STREAM_MUSIC`` block from the output of :py:const:`androidtv.constants.CMD_STREAM_MUSIC`, or ``None`` if it could not be determined
 
         """
         if not stream_music_raw:

@@ -29,7 +29,7 @@ class AndroidTVAsync(BaseTVAsync, BaseAndroidTV):
     adb_server_port : int
         The port for the ADB server
     state_detection_rules : dict, None
-        A dictionary of rules for determining the state (see :class:`~aio_androidtv.basetv.BaseTV`)
+        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.basetv.BaseTV`)
 
     """
 
@@ -47,7 +47,7 @@ class AndroidTVAsync(BaseTVAsync, BaseAndroidTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.androidtv.AndroidTVAsync.running_apps` property
+            Whether or not to get the :meth:`~androidtv.androidtv.androidtv_async.AndroidTVAsync.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
@@ -90,7 +90,7 @@ class AndroidTVAsync(BaseTVAsync, BaseAndroidTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :meth:`~aio_androidtv.androidtv.AndroidTV.running_apps` property
+            Whether or not to get the :meth:`~androidtv.androidtv.androidtv_async.AndroidTVAsync.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
@@ -138,7 +138,7 @@ class AndroidTVAsync(BaseTVAsync, BaseAndroidTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :meth:`~aio_androidtv.androidtv.AndroidTV.running_apps` property
+            Whether or not to get the :meth:`~androidtv.androidtv.androidtv_async.AndroidTVAsync.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 

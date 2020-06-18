@@ -28,7 +28,7 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
     adb_server_port : int
         The port for the ADB server
     state_detection_rules : dict, None
-        A dictionary of rules for determining the state (see :class:`~aio_androidtv.basetv.BaseTV`)
+        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.basetv.BaseTV`)
     device_class : str
         The type of device: ``'auto'`` (detect whether it is an Android TV or Fire TV device), ``'androidtv'``, or ``'firetv'```
     auth_timeout_s : float

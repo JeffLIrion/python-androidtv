@@ -29,7 +29,7 @@ class FireTVSync(BaseTVSync, BaseFireTV):
     adb_server_port : int
         The port for the ADB server
     state_detection_rules : dict, None
-        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
+        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.basetv.BaseTV`)
 
     """
 
@@ -84,7 +84,7 @@ class FireTVSync(BaseTVSync, BaseFireTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.firetv.FireTV.running_apps` property
+            Whether or not to get the :meth:`~androidtv.firetv.firetv_sync.FireTVSync.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 
@@ -124,7 +124,7 @@ class FireTVSync(BaseTVSync, BaseFireTV):
         Parameters
         ----------
         get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.firetv.FireTV.running_apps` property
+            Whether or not to get the :meth:`~androidtv.firetv.firetv_sync.FireTVSync.running_apps` property
         lazy : bool
             Whether or not to continue retrieving properties if the device is off or the screensaver is running
 

@@ -28,7 +28,7 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
     adb_server_port : int
         The port for the ADB server
     state_detection_rules : dict, None
-        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
+        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.basetv.BaseTV`)
 
     """
 
@@ -229,7 +229,7 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
         output : str, None
             The output of the ADB command used to retrieve the properties
         get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.firetv.FireTV.running_apps` property
+            Whether or not to get the ``running_apps`` property
 
         Returns
         -------
