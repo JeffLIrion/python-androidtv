@@ -1,16 +1,24 @@
 androidtv package
 =================
 
-Submodules
-----------
+Subpackages
+-----------
 
 .. toctree::
 
    androidtv.adb_manager
    androidtv.androidtv
    androidtv.basetv
-   androidtv.constants
    androidtv.firetv
+
+Submodules
+----------
+
+.. toctree::
+
+   androidtv.constants
+   androidtv.exceptions
+   androidtv.setup_async
 
 Module contents
 ---------------
