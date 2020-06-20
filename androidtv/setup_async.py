@@ -33,7 +33,7 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
 
     Returns
     -------
-    aftv : AndroidTVAsync, FireTVAsync
+    AndroidTVAsync, FireTVAsync
         The representation of the device
 
     """
