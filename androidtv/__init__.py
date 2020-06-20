@@ -37,7 +37,7 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
 
     Returns
     -------
-    aftv : AndroidTVSync, FireTVSync
+    AndroidTVSync, FireTVSync
         The representation of the device
 
     """
