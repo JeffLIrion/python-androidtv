@@ -14,7 +14,7 @@ setup(
     author='Jeff Irion',
     author_email='jefflirion@users.noreply.github.com',
     packages=['androidtv'],
-    install_requires=['adb-shell>=0.1.3,<=0.1.5', 'pure-python-adb>=0.2.2.dev0'],
+    install_requires=['adb-shell>=0.1.3', 'pure-python-adb>=0.2.2.dev0'],
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
