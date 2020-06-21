@@ -84,7 +84,7 @@ class BaseTVSync(BaseTV):
     def adb_shell(self, cmd):
         """Send an ADB command.
 
-        This calls :py:meth:`androidtv.adb_manager.ADBPythonSync.shell` or :py:meth:`androidtv.adb_manager.ADBServerSync.shell`,
+        This calls :py:meth:`androidtv.adb_manager.adb_manager_sync.ADBPythonSync.shell` or :py:meth:`androidtv.adb_manager.adb_manager_sync.ADBServerSync.shell`,
         depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
 
         Parameters
@@ -103,7 +103,7 @@ class BaseTVSync(BaseTV):
     def adb_pull(self, local_path, device_path):
         """Pull a file from the device.
 
-        This calls :py:meth:`androidtv.adb_manager.ADBPythonSync.pull` or :py:meth:`androidtv.adb_manager.ADBServerSync.pull`,
+        This calls :py:meth:`androidtv.adb_manager.adb_manager_sync.ADBPythonSync.pull` or :py:meth:`androidtv.adb_manager.adb_manager_sync.ADBServerSync.pull`,
         depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
 
         Parameters
@@ -119,7 +119,7 @@ class BaseTVSync(BaseTV):
     def adb_push(self, local_path, device_path):
         """Push a file to the device.
 
-        This calls :py:meth:`androidtv.adb_manager.ADBPythonSync.push` or :py:meth:`androidtv.adb_manager.ADBServerSync.push`,
+        This calls :py:meth:`androidtv.adb_manager.adb_manager_sync.ADBPythonSync.push` or :py:meth:`androidtv.adb_manager.adb_manager_sync.ADBServerSync.push`,
         depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
 
         Parameters
@@ -135,7 +135,7 @@ class BaseTVSync(BaseTV):
     def adb_screencap(self):
         """Take a screencap.
 
-        This calls :py:meth:`androidtv.adb_manager.ADBPythonSync.screencap` or :py:meth:`androidtv.adb_manager.ADBServerSync.screencap`,
+        This calls :py:meth:`androidtv.adb_manager.adb_manager_sync.ADBPythonSync.screencap` or :py:meth:`androidtv.adb_manager.adb_manager_sync.ADBServerSync.screencap`,
         depending on whether the Python ADB implementation or an ADB server is used for communicating with the device.
 
         Returns
@@ -169,8 +169,8 @@ class BaseTVSync(BaseTV):
     def adb_close(self):
         """Close the ADB connection.
 
-        This only works for the Python ADB implementation (see :meth:`androidtv.adb_manager.ADBPythonSync.close`).
-        For the ADB server approach, this doesn't do anything (see :meth:`androidtv.adb_manager.ADBServerSync.close`).
+        This only works for the Python ADB implementation (see :meth:`androidtv.adb_manager.adb_manager_sync.ADBPythonSync.close`).
+        For the ADB server approach, this doesn't do anything (see :meth:`androidtv.adb_manager.adb_manager_sync.ADBServerSync.close`).
 
         """
         self._adb.close()
@@ -205,10 +205,12 @@ class BaseTVSync(BaseTV):
     # ======================================================================= #
     def audio_output_device(self):
         """Get the current audio playback device.
+
         Returns
         -------
         str, None
             The current audio playback device, or ``None`` if it could not be determined
+
         """
         stream_music = self._get_stream_music()
 
@@ -216,29 +218,35 @@ class BaseTVSync(BaseTV):
 
     def audio_state(self):
         """Check if audio is playing, paused, or idle.
+
         Returns
         -------
         str, None
             The audio state, as determined from the ADB shell command :py:const:`androidtv.constants.CMD_AUDIO_STATE`, or ``None`` if it could not be determined
+
         """
         audio_state_response = self._adb.shell(constants.CMD_AUDIO_STATE)
         return self._audio_state(audio_state_response)
 
     def awake(self):
         """Check if the device is awake (screensaver is not running).
+
         Returns
         -------
         bool
             Whether or not the device is awake (screensaver is not running)
+
         """
         return self._adb.shell(constants.CMD_AWAKE + constants.CMD_SUCCESS1_FAILURE0) == '1'
 
     def current_app(self):
         """Return the current app.
+
         Returns
         -------
         str, None
             The ID of the current app, or ``None`` if it could not be determined
+
         """
         current_app_response = self._adb.shell(constants.CMD_CURRENT_APP)
 
@@ -246,10 +254,12 @@ class BaseTVSync(BaseTV):
 
     def is_volume_muted(self):
         """Whether or not the volume is muted.
+
         Returns
         -------
         bool, None
             Whether or not the volume is muted, or ``None`` if it could not be determined
+
         """
         stream_music = self._get_stream_music()
 
@@ -257,10 +267,12 @@ class BaseTVSync(BaseTV):
 
     def media_session_state(self):
         """Get the state from the output of ``dumpsys media_session``.
+
         Returns
         -------
         int, None
             The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
+
         """
         media_session_state_response = self._adb.shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
 
@@ -270,19 +282,23 @@ class BaseTVSync(BaseTV):
 
     def screen_on(self):
         """Check if the screen is on.
+
         Returns
         -------
         bool
             Whether or not the device is on
+
         """
         return self._adb.shell(constants.CMD_SCREEN_ON + constants.CMD_SUCCESS1_FAILURE0) == '1'
 
     def volume(self):
         """Get the absolute volume level.
+
         Returns
         -------
         int, None
             The absolute volume level, or ``None`` if it could not be determined
+
         """
         stream_music = self._get_stream_music()
         audio_output_device = self._audio_output_device(stream_music)
@@ -291,10 +307,12 @@ class BaseTVSync(BaseTV):
 
     def volume_level(self):
         """Get the relative volume level.
+
         Returns
         -------
         float, None
             The volume level (between 0 and 1), or ``None`` if it could not be determined
+
         """
         volume = self.volume()
 
@@ -302,10 +320,12 @@ class BaseTVSync(BaseTV):
 
     def wake_lock_size(self):
         """Get the size of the current wake lock.
+
         Returns
         -------
         int, None
             The size of the current wake lock, or ``None`` if it could not be determined
+
         """
         wake_lock_size_response = self._adb.shell(constants.CMD_WAKE_LOCK_SIZE)
 
