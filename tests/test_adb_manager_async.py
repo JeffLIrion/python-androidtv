@@ -137,10 +137,11 @@ class TestADBPythonAsync(unittest.TestCase):
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
 
-        with async_patchers.PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION[self.PATCH_KEY]:
-            self.assertFalse(await self.adb.connect())
-            self.assertFalse(self.adb.available)
-            self.assertFalse(self.adb._available)
+        with async_patchers.patch_connect(True)[self.PATCH_KEY]:
+            with async_patchers.PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION[self.PATCH_KEY]:
+                self.assertFalse(await self.adb.connect())
+                self.assertFalse(self.adb.available)
+                self.assertFalse(self.adb._available)
 
     @awaiter
     async def test_connect_fail_lock(self):
@@ -333,10 +334,10 @@ class TestADBServerAsync(TestADBPythonAsync):
         with async_patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(await self.adb.connect())
 
-        with async_patchers.async_patch('{}.async_patchers.ClientAsyncFakeSuccess.device'.format(__name__), side_effect=RuntimeError):
-            self.assertFalse(await self.adb.connect())
-            self.assertFalse(self.adb.available)
-            self.assertFalse(self.adb._available)
+            with async_patchers.async_patch('{}.async_patchers.ClientAsyncFakeSuccess.device'.format(__name__), side_effect=RuntimeError):
+                self.assertFalse(await self.adb.connect())
+                self.assertFalse(self.adb.available)
+                self.assertFalse(self.adb._available)
 
 
 class TestADBPythonAsyncWithAuthentication(unittest.TestCase):

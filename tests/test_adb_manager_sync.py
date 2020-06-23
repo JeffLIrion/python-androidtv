@@ -121,10 +121,11 @@ class TestADBPythonSync(unittest.TestCase):
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
 
-        with patchers.PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION[self.PATCH_KEY]:
-            self.assertFalse(self.adb.connect())
-            self.assertFalse(self.adb.available)
-            self.assertFalse(self.adb._available)
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            with patchers.PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION[self.PATCH_KEY]:
+                self.assertFalse(self.adb.connect())
+                self.assertFalse(self.adb.available)
+                self.assertFalse(self.adb._available)
 
     def test_connect_fail_lock(self):
         """Test when the connect attempt fails due to the lock.
@@ -304,10 +305,10 @@ class TestADBServerSync(TestADBPythonSync):
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
 
-        with patch('{}.patchers.ClientFakeSuccess.device'.format(__name__), side_effect=RuntimeError):
-            self.assertFalse(self.adb.connect())
-            self.assertFalse(self.adb.available)
-            self.assertFalse(self.adb._available)
+            with patch('{}.patchers.ClientFakeSuccess.device'.format(__name__), side_effect=RuntimeError):
+                self.assertFalse(self.adb.connect())
+                self.assertFalse(self.adb.available)
+                self.assertFalse(self.adb._available)
 
 
 class TestADBPythonSyncWithAuthentication(unittest.TestCase):
