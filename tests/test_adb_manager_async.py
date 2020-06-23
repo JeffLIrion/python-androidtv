@@ -310,7 +310,7 @@ class TestADBPythonAsync(unittest.TestCase):
                     self.assertEqual(await self.adb.screencap(), PNG_IMAGE)
 
             else:
-                with patch.object(self.adb._adb_device, 'screencap', return_value=PNG_IMAGE):
+                with patch.object(self.adb._adb_device, 'screencap', return_value=PNG_IMAGE, new_callable=async_patchers.AsyncMock):
                     self.assertEqual(await self.adb.screencap(), PNG_IMAGE)
 
 
@@ -333,7 +333,7 @@ class TestADBServerAsync(TestADBPythonAsync):
         with async_patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(await self.adb.connect())
 
-        with patch('{}.async_patchers.ClientFakeSuccess.devices'.format(__name__), side_effect=RuntimeError):
+        with async_patchers.async_patch('{}.async_patchers.ClientAsyncFakeSuccess.device'.format(__name__), side_effect=RuntimeError):
             self.assertFalse(await self.adb.connect())
             self.assertFalse(self.adb.available)
             self.assertFalse(self.adb._available)

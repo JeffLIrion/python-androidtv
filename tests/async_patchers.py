@@ -16,9 +16,9 @@ KEY_PYTHON = "python"
 KEY_SERVER = "server"
 
 ADB_DEVICE_TCP_ASYNC_FAKE = "AdbDeviceTcpAsyncFake"
-CLIENT_FAKE_SUCCESS = "ClientFakeSuccess"
-CLIENT_FAKE_FAIL = "ClientFakeFail"
-DEVICE_FAKE = "DeviceFake"
+CLIENT_ASYNC_FAKE_SUCCESS = "ClientAsyncFakeSuccess"
+CLIENT_ASYNC_FAKE_FAIL = "ClientAsyncFakeFail"
+DEVICE_ASYNC_FAKE = "DeviceAsyncFake"
 
 
 def async_patch(*args, **kwargs):
@@ -51,62 +51,50 @@ class AdbDeviceTcpAsyncFake(object):
         return None
 
 
-class ClientFakeSuccess(object):
+class ClientAsyncFakeSuccess(object):
     """A fake of the `ppadb.client.Client` class when the connection and shell commands succeed."""
 
     def __init__(self, host="127.0.0.1", port=5037):
-        """Initialize a `ClientFakeSuccess` instance."""
+        """Initialize a `ClientAsyncFakeSuccess` instance."""
         self._devices = []
 
-    def devices(self):
-        """Get a list of the connected devices."""
-        return self._devices
-
-    def device(self, serial):
-        """Mock the `Client.device` method when the device is connected via ADB."""
-        device = DeviceFake(serial)
+    async def device(self, serial):
+        """Mock the `ClientAsync.device` method when the device is connected via ADB."""
+        device = DeviceAsyncFake(serial)
         self._devices.append(device)
         return device
 
 
-class ClientFakeFail(object):
+class ClientAsyncFakeFail(object):
     """A fake of the `ppadb.client.Client` class when the connection and shell commands fail."""
 
     def __init__(self, host="127.0.0.1", port=5037):
-        """Initialize a `ClientFakeFail` instance."""
+        """Initialize a `ClientAsyncFakeFail` instance."""
         self._devices = []
 
-    def devices(self):
-        """Get a list of the connected devices."""
-        return self._devices
-
-    def device(self, serial):
-        """Mock the `Client.device` method when the device is not connected via ADB."""
+    async def device(self, serial):
+        """Mock the `ClientAsync.device` method when the device is not connected via ADB."""
         self._devices = []
 
 
-class DeviceFake(object):
+class DeviceAsyncFake(object):
     """A fake of the `ppadb.device.Device` class."""
 
     def __init__(self, host):
-        """Initialize a `DeviceFake` instance."""
+        """Initialize a `DeviceAsyncFake` instance."""
         self.host = host
 
-    def get_serial_no(self):
-        """Get the serial number for the device (IP:PORT)."""
-        return self.host
-
-    def push(self, *args, **kwargs):
+    async def push(self, *args, **kwargs):
         """Push a file to the device."""
 
-    def pull(self, *args, **kwargs):
+    async def pull(self, *args, **kwargs):
         """Pull a file from the device."""
 
-    def shell(self, cmd):
+    async def shell(self, cmd):
         """Send an ADB shell command."""
         raise NotImplementedError
 
-    def screencap(self):
+    async def screencap(self):
         """Take a screencap."""
         raise NotImplementedError
 
@@ -123,20 +111,15 @@ def patch_connect(success):
         raise OSError
 
     if success:
-        return {KEY_PYTHON: patch("{}.{}.connect".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE), connect_success_python), KEY_SERVER: patch("androidtv.adb_manager.adb_manager_async.Client", ClientFakeSuccess)}
-    return {KEY_PYTHON: patch("{}.{}.connect".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE), connect_fail_python), KEY_SERVER: patch("androidtv.adb_manager.adb_manager_async.Client", ClientFakeFail)}
+        return {KEY_PYTHON: patch("{}.{}.connect".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE), connect_success_python), KEY_SERVER: patch("androidtv.adb_manager.adb_manager_async.ClientAsync", ClientAsyncFakeSuccess)}
+    return {KEY_PYTHON: patch("{}.{}.connect".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE), connect_fail_python), KEY_SERVER: patch("androidtv.adb_manager.adb_manager_async.ClientAsync", ClientAsyncFakeFail)}
 
 
 def patch_shell(response=None, error=False):
-    """Mock the `AdbDeviceTcpAsyncFake.shell` and `DeviceFake.shell` methods."""
+    """Mock the `AdbDeviceTcpAsyncFake.shell` and `DeviceAsyncFake.shell` methods."""
 
     async def shell_success(self, cmd, *args, **kwargs):
-        """Mock the `AdbDeviceTcpAsyncFake.shell` and `DeviceFake.shell` methods when they are successful."""
-        self.shell_cmd = cmd
-        return response
-
-    def delete_shell_success(self, cmd, *args, **kwargs):
-        """Mock the `AdbDeviceTcpAsyncFake.shell` and `DeviceFake.shell` methods when they are successful."""
+        """Mock the `AdbDeviceTcpAsyncFake.shell` and `DeviceAsyncFake.shell` methods when they are successful."""
         self.shell_cmd = cmd
         return response
 
@@ -145,19 +128,19 @@ def patch_shell(response=None, error=False):
         self.shell_cmd = cmd
         raise AttributeError
 
-    def shell_fail_server(self, cmd):
-        """Mock the `DeviceFake.shell` method when it fails."""
+    async def shell_fail_server(self, cmd):
+        """Mock the `DeviceAsyncFake.shell` method when it fails."""
         self.shell_cmd = cmd
         raise ConnectionResetError
 
     if not error:
-        return {KEY_PYTHON: patch("{}.{}.shell".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE), shell_success), KEY_SERVER: patch("{}.{}.shell".format(__name__, DEVICE_FAKE), delete_shell_success)}
-    return {KEY_PYTHON: patch("{}.{}.shell".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE), shell_fail_python), KEY_SERVER: patch("{}.{}.shell".format(__name__, DEVICE_FAKE), shell_fail_server)}
+        return {KEY_PYTHON: patch("{}.{}.shell".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE), shell_success), KEY_SERVER: patch("{}.{}.shell".format(__name__, DEVICE_ASYNC_FAKE), shell_success)}
+    return {KEY_PYTHON: patch("{}.{}.shell".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE), shell_fail_python), KEY_SERVER: patch("{}.{}.shell".format(__name__, DEVICE_ASYNC_FAKE), shell_fail_server)}
 
 
-PATCH_PUSH = {KEY_PYTHON: async_patch("{}.{}.push".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE)), KEY_SERVER: patch("{}.{}.push".format(__name__, DEVICE_FAKE))}
+PATCH_PUSH = {KEY_PYTHON: async_patch("{}.{}.push".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE)), KEY_SERVER: async_patch("{}.{}.push".format(__name__, DEVICE_ASYNC_FAKE))}
 
-PATCH_PULL = {KEY_PYTHON: async_patch("{}.{}.pull".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE)), KEY_SERVER: patch("{}.{}.pull".format(__name__, DEVICE_FAKE))}
+PATCH_PULL = {KEY_PYTHON: async_patch("{}.{}.pull".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE)), KEY_SERVER: async_patch("{}.{}.pull".format(__name__, DEVICE_ASYNC_FAKE))}
 
 PATCH_ADB_DEVICE_TCP = patch("androidtv.adb_manager.adb_manager_async.AdbDeviceTcpAsync", AdbDeviceTcpAsyncFake)
 
@@ -166,4 +149,4 @@ class CustomException(Exception):
     """A custom exception type."""
 
 
-PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION = {KEY_PYTHON: patch("{}.{}.connect".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE), side_effect=CustomException), KEY_SERVER: patch("{}.{}.devices".format(__name__, CLIENT_FAKE_SUCCESS), side_effect=CustomException)}
+PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION = {KEY_PYTHON: async_patch("{}.{}.connect".format(__name__, ADB_DEVICE_TCP_ASYNC_FAKE), side_effect=CustomException), KEY_SERVER: async_patch("{}.{}.device".format(__name__, CLIENT_ASYNC_FAKE_SUCCESS), side_effect=CustomException)}

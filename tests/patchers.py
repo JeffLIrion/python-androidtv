@@ -41,10 +41,6 @@ class ClientFakeSuccess(object):
         """Initialize a `ClientFakeSuccess` instance."""
         self._devices = []
 
-    def devices(self):
-        """Get a list of the connected devices."""
-        return self._devices
-
     def device(self, serial):
         """Mock the `Client.device` method when the device is connected via ADB."""
         device = DeviceFake(serial)
@@ -59,10 +55,6 @@ class ClientFakeFail(object):
         """Initialize a `ClientFakeFail` instance."""
         self._devices = []
 
-    def devices(self):
-        """Get a list of the connected devices."""
-        return self._devices
-
     def device(self, serial):
         """Mock the `Client.device` method when the device is not connected via ADB."""
         self._devices = []
@@ -74,10 +66,6 @@ class DeviceFake(object):
     def __init__(self, host):
         """Initialize a `DeviceFake` instance."""
         self.host = host
-
-    def get_serial_no(self):
-        """Get the serial number for the device (IP:PORT)."""
-        return self.host
 
     def push(self, *args, **kwargs):
         """Push a file to the device."""
@@ -144,4 +132,4 @@ class CustomException(Exception):
     """A custom exception type."""
 
 
-PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION = {"python": patch("{}.AdbDeviceTcpFake.connect".format(__name__), side_effect=CustomException), "server": patch("{}.ClientFakeSuccess.devices".format(__name__), side_effect=CustomException)}
+PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION = {"python": patch("{}.AdbDeviceTcpFake.connect".format(__name__), side_effect=CustomException), "server": patch("{}.ClientFakeSuccess.device".format(__name__), side_effect=CustomException)}

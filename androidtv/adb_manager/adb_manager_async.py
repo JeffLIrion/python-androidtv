@@ -20,6 +20,39 @@ from ..exceptions import LockNotAcquiredException
 _LOGGER = logging.getLogger(__name__)
 
 
+class DeviceAsync:  # pragma: no cover
+    """A fake ``DeviceAsync`` class."""
+    def __init__(self, device):
+        self._device = device
+
+    async def pull(self, device_path, local_path):
+        """Download a file."""
+        return self._device.pull(device_path, local_path)
+
+    async def push(self, local_path, device_path):
+        """Upload a file."""
+        return self._device.push(local_path, device_path)
+
+    async def screencap(self):
+        """Take a screencap."""
+        return self._device.screencap()
+
+    async def shell(self, cmd):
+        """Send a shell command."""
+        return self._device.shell(cmd)
+
+
+# pylint: disable=too-few-public-methods
+class ClientAsync:  # pragma: no cover
+    """A fake ``ClientAsync`` class."""
+    def __init__(self, host, port):
+        self._client = Client(host, port)
+
+    async def device(self, serial):
+        """Get a fake ``DeviceAsync`` instance."""
+        return DeviceAsync(self._client.device(serial))
+
+
 @asynccontextmanager
 async def _acquire(lock, timeout=DEFAULT_LOCK_TIMEOUT_S):
     """Handle acquisition and release of an ``asyncio.Lock`` object with a timeout.
@@ -327,8 +360,8 @@ class ADBServerAsync(object):
             async with _acquire(self._adb_lock):
                 # Catch exceptions
                 try:
-                    self._adb_client = Client(host=self.adb_server_ip, port=self.adb_server_port)
-                    self._adb_device = self._adb_client.device('{}:{}'.format(self.host, self.port))
+                    self._adb_client = ClientAsync(host=self.adb_server_ip, port=self.adb_server_port)
+                    self._adb_device = await self._adb_client.device('{}:{}'.format(self.host, self.port))
 
                     # ADB connection successfully established
                     if self._adb_device:
@@ -380,7 +413,7 @@ class ADBServerAsync(object):
 
         async with _acquire(self._adb_lock):
             _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: pull(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
-            self._adb_device.pull(device_path, local_path)
+            await self._adb_device.pull(device_path, local_path)
             return
 
     async def push(self, local_path, device_path):
@@ -400,7 +433,7 @@ class ADBServerAsync(object):
 
         async with _acquire(self._adb_lock):
             _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
-            self._adb_device.push(local_path, device_path)
+            await self._adb_device.push(local_path, device_path)
             return
 
     async def screencap(self):
@@ -418,7 +451,7 @@ class ADBServerAsync(object):
 
         async with _acquire(self._adb_lock):
             _LOGGER.debug("Taking screencap from %s:%d via ADB server %s:%d", self.host, self.port, self.adb_server_ip, self.adb_server_port)
-            return self._adb_device.screencap()
+            return await self._adb_device.screencap()
 
     async def shell(self, cmd):
         """Send an ADB command using an ADB server.
@@ -440,4 +473,4 @@ class ADBServerAsync(object):
 
         async with _acquire(self._adb_lock):
             _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, cmd)
-            return self._adb_device.shell(cmd)
+            return await self._adb_device.shell(cmd)
