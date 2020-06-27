@@ -12,8 +12,8 @@ except ImportError:
 sys.path.insert(0, '..')
 
 from androidtv import setup
-from androidtv.androidtv import AndroidTV
-from androidtv.firetv import FireTV
+from androidtv.androidtv.androidtv_sync import AndroidTVSync
+from androidtv.firetv.firetv_sync import FireTVSync
 from . import patchers
 
 
@@ -47,22 +47,22 @@ class TestSetup(unittest.TestCase):
 
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
             ftv = setup('HOST', 5555)
-            self.assertIsInstance(ftv, FireTV)
+            self.assertIsInstance(ftv, FireTVSync)
             self.assertDictEqual(ftv.device_properties, DEVICE_PROPERTIES_DICT1)
 
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
             atv = setup('HOST', 5555)
-            self.assertIsInstance(atv, AndroidTV)
+            self.assertIsInstance(atv, AndroidTVSync)
             self.assertDictEqual(atv.device_properties, DEVICE_PROPERTIES_DICT2)
 
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
             ftv = setup('HOST', 5555, device_class='androidtv')
-            self.assertIsInstance(ftv, AndroidTV)
+            self.assertIsInstance(ftv, AndroidTVSync)
             self.assertDictEqual(ftv.device_properties, DEVICE_PROPERTIES_DICT1)
 
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
             atv = setup('HOST', 5555, device_class='firetv')
-            self.assertIsInstance(atv, FireTV)
+            self.assertIsInstance(atv, FireTVSync)
             self.assertDictEqual(atv.device_properties, DEVICE_PROPERTIES_DICT2)
 
 

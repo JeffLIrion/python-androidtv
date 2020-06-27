@@ -1,7 +1,7 @@
 """Classes to manage ADB connections.
 
-* :py:class:`ADBPython` utilizes a Python implementation of the ADB protocol.
-* :py:class:`ADBServer` utilizes an ADB server to communicate with the device.
+* :py:class:`ADBPythonSync` utilizes a Python implementation of the ADB protocol.
+* :py:class:`ADBServerSync` utilizes an ADB server to communicate with the device.
 
 """
 
@@ -15,13 +15,13 @@ from adb_shell.adb_device import AdbDeviceTcp
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
 from ppadb.client import Client
 
-from .constants import DEFAULT_AUTH_TIMEOUT_S
-from .exceptions import LockNotAcquiredException
+from ..constants import DEFAULT_ADB_TIMEOUT_S, DEFAULT_AUTH_TIMEOUT_S, DEFAULT_LOCK_TIMEOUT_S
+from ..exceptions import LockNotAcquiredException
 
 _LOGGER = logging.getLogger(__name__)
 
 #: Use a timeout for the ADB threading lock if it is supported
-LOCK_KWARGS = {'timeout': 3} if sys.version_info[0] > 2 and sys.version_info[1] > 1 else {}
+LOCK_KWARGS = {'timeout': DEFAULT_LOCK_TIMEOUT_S} if sys.version_info[0] > 2 and sys.version_info[1] > 1 else {}
 
 if sys.version_info[0] == 2:  # pragma: no cover
     FileNotFoundError = IOError  # pylint: disable=redefined-builtin
@@ -58,7 +58,7 @@ def _acquire(lock):
             lock.release()
 
 
-class ADBPython(object):
+class ADBPythonSync(object):
     """A manager for ADB connections that uses a Python implementation of the ADB protocol.
 
     Parameters
@@ -75,7 +75,7 @@ class ADBPython(object):
         self.host = host
         self.port = int(port)
         self.adbkey = adbkey
-        self._adb = AdbDeviceTcp(host=self.host, port=self.port, default_timeout_s=9.)
+        self._adb = AdbDeviceTcp(host=self.host, port=self.port, default_transport_timeout_s=DEFAULT_ADB_TIMEOUT_S)
 
         # keep track of whether the ADB connection is intact
         self._available = False
@@ -256,7 +256,7 @@ class ADBPython(object):
             return self._adb.shell(cmd)
 
 
-class ADBServer(object):
+class ADBServerSync(object):
     """A manager for ADB connections that uses an ADB server.
 
     Parameters

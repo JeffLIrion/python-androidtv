@@ -12,7 +12,7 @@ except ImportError:
 sys.path.insert(0, '..')
 
 from androidtv import constants, ha_state_detection_rules_validator
-from androidtv.firetv import FireTV
+from androidtv.firetv.firetv_sync import FireTVSync
 from . import patchers
 
 
@@ -128,17 +128,17 @@ STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_siz
 STATE_DETECTION_RULES5 = {'com.amazon.tv.launcher': ['audio_state']}
 
 
-class TestFireTVPython(unittest.TestCase):
+class TestFireTVSyncPython(unittest.TestCase):
     ADB_ATTR = '_adb'
     PATCH_KEY = 'python'
 
     def setUp(self):
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.ftv = FireTV('HOST', 5555)
+            self.ftv = FireTVSync('HOST', 5555)
             self.ftv.adb_connect()
 
     def test_turn_on_off(self):
-        """Test that the ``FireTV.turn_on`` and ``FireTV.turn_off`` methods work correctly.
+        """Test that the ``FireTVSync.turn_on`` and ``FireTVSync.turn_off`` methods work correctly.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
@@ -163,7 +163,7 @@ class TestFireTVPython(unittest.TestCase):
             self.assertDictEqual(result, {})
 
     def test_launch_app_stop_app(self):
-        """Test that the ``FireTV.launch_app`` and ``FireTV.stop_app`` methods work correctly.
+        """Test that the ``FireTVSync.launch_app`` and ``FireTVSync.stop_app`` methods work correctly.
 
         """
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
@@ -305,7 +305,7 @@ class TestFireTVPython(unittest.TestCase):
         """Check that the results of the `update` method are as expected.
 
         """
-        with patch('androidtv.firetv.FireTV.get_properties', return_value=get_properties):
+        with patch('androidtv.firetv.firetv_sync.FireTVSync.get_properties', return_value=get_properties):
             self.assertTupleEqual(self.ftv.update(), update)
 
     def test_state_detection(self):
@@ -451,13 +451,13 @@ class TestFireTVPython(unittest.TestCase):
                           (constants.STATE_PAUSED, 'unknown', ['unknown']))
 
 
-class TestFireTVServer(TestFireTVPython):
+class TestFireTVSyncServer(TestFireTVSyncPython):
     ADB_ATTR = '_adb_device'
     PATCH_KEY = 'server'
 
     def setUp(self):
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
-            self.ftv = FireTV('HOST', 5555, adb_server_ip='ADB_SERVER_PORT')
+            self.ftv = FireTVSync('HOST', 5555, adb_server_ip='ADB_SERVER_PORT')
             self.ftv.adb_connect()
 
 

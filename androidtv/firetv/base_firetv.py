@@ -6,13 +6,13 @@ ADB Debugging must be enabled.
 
 import logging
 
-from .basetv import BaseTV
-from . import constants
+from ..basetv.basetv import BaseTV
+from .. import constants
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class FireTV(BaseTV):
+class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
     """Representation of an Amazon Fire TV device.
 
     Parameters
@@ -28,27 +28,37 @@ class FireTV(BaseTV):
     adb_server_port : int
         The port for the ADB server
     state_detection_rules : dict, None
-        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.BaseTV`)
+        A dictionary of rules for determining the state (see :class:`~androidtv.basetv.basetv.BaseTV`)
 
     """
 
     DEVICE_CLASS = 'firetv'
 
     def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
-        BaseTV.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+        BaseTV.__init__(self, None, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
 
     # ======================================================================= #
     #                                                                         #
     #                          Home Assistant Update                          #
     #                                                                         #
     # ======================================================================= #
-    def update(self, get_running_apps=True):
+    def _update(self, screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps):
         """Get the info needed for a Home Assistant update.
 
         Parameters
         ----------
-        get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.firetv.FireTV.running_apps` property
+        screen_on : bool, None
+            Whether or not the device is on, or ``None`` if it was not determined
+        awake : bool, None
+            Whether or not the device is awake (screensaver is not running), or ``None`` if it was not determined
+        wake_lock_size : int, None
+            The size of the current wake lock, or ``None`` if it was not determined
+        current_app : str, None
+            The current app property, or ``None`` if it was not determined
+        media_session_state : int, None
+            The state from the output of ``dumpsys media_session``, or ``None`` if it was not determined
+        running_apps : list, None
+            A list of the running apps, or ``None`` if it was not determined
 
         Returns
         -------
@@ -60,9 +70,6 @@ class FireTV(BaseTV):
             A list of the running apps if ``get_running_apps`` is True, otherwise the list ``[current_app]``
 
         """
-        # Get the properties needed for the update
-        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=True)
-
         # Check if device is unavailable
         if screen_on is None:
             state = None
@@ -207,7 +214,7 @@ class FireTV(BaseTV):
     #                               Properties                                #
     #                                                                         #
     # ======================================================================= #
-    def get_properties(self, get_running_apps=True, lazy=False):
+    def _get_properties(self, output, get_running_apps=True):
         """Get the properties needed for Home Assistant updates.
 
         This will send one of the following ADB commands:
@@ -219,10 +226,10 @@ class FireTV(BaseTV):
 
         Parameters
         ----------
+        output : str, None
+            The output of the ADB command used to retrieve the properties
         get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.firetv.FireTV.running_apps` property
-        lazy : bool
-            Whether or not to continue retrieving properties if the device is off or the screensaver is running
+            Whether or not to get the ``running_apps`` property
 
         Returns
         -------
@@ -240,18 +247,6 @@ class FireTV(BaseTV):
             A list of the running apps, or ``None`` if it was not determined
 
         """
-        if lazy:
-            if get_running_apps:
-                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS)
-            else:
-                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS)
-        else:
-            if get_running_apps:
-                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
-            else:
-                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
-        _LOGGER.debug("Fire TV %s:%d `get_properties` response: %s", self.host, self.port, output)
-
         # ADB command was unsuccessful
         if output is None:
             return None, None, None, None, None, None
@@ -289,55 +284,3 @@ class FireTV(BaseTV):
         running_apps = self._running_apps(lines[3:])
 
         return screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps
-
-    def get_properties_dict(self, get_running_apps=True, lazy=True):
-        """Get the properties needed for Home Assistant updates and return them as a dictionary.
-
-        Parameters
-        ----------
-        get_running_apps : bool
-            Whether or not to get the :meth:`~androidtv.firetv.FireTV.running_apps` property
-        lazy : bool
-            Whether or not to continue retrieving properties if the device is off or the screensaver is running
-
-        Returns
-        -------
-        dict
-             A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'current_app'``,
-             ``'media_session_state'``, and ``'running_apps'``
-
-        """
-        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
-
-        return {'screen_on': screen_on,
-                'awake': awake,
-                'wake_lock_size': wake_lock_size,
-                'current_app': current_app,
-                'media_session_state': media_session_state,
-                'running_apps': running_apps}
-
-    def running_apps(self):
-        """Return a list of running user applications.
-
-        Returns
-        -------
-        list
-            A list of the running apps
-
-        """
-        running_apps_response = self._adb.shell(constants.CMD_FIRETV_RUNNING_APPS)
-
-        return self._running_apps(running_apps_response)
-
-    # ======================================================================= #
-    #                                                                         #
-    #                           turn on/off methods                           #
-    #                                                                         #
-    # ======================================================================= #
-    def turn_on(self):
-        """Send ``POWER`` and ``HOME`` actions if the device is off."""
-        self._adb.shell(constants.CMD_SCREEN_ON + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME))
-
-    def turn_off(self):
-        """Send ``SLEEP`` action if the device is not off."""
-        self._adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_SLEEP))

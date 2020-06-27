@@ -1,4 +1,4 @@
-"""Constants used in the :class:`~androidtv.basetv.BaseTV`, :class:`~androidtv.androidtv.AndroidTV`, and :class:`~androidtv.firetv.FireTV` classes.
+"""Constants used throughout the code.
 
 **Links**
 
@@ -55,28 +55,28 @@ CMD_STREAM_MUSIC = r"dumpsys audio | grep '\- STREAM_MUSIC:' -A 12"
 #: Get the wake lock size
 CMD_WAKE_LOCK_SIZE = "dumpsys power | grep Locks | grep 'size='"
 
-#: Get the properties for an :py:class:`~androidtv.androidtv.AndroidTV` device (``lazy=True, get_running_apps=True``); see :py:meth:`androidtv.androidtv.AndroidTV.get_properties`
+#: Get the properties for an Android TV device (``lazy=True, get_running_apps=True``); see :py:meth:`androidtv.androidtv.androidtv_sync.AndroidTVSync.get_properties` and :py:meth:`androidtv.androidtv.androidtv_async.AndroidTVAsync.get_properties`
 CMD_ANDROIDTV_PROPERTIES_LAZY_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1 + " && " + CMD_AWAKE + CMD_SUCCESS1 + " && (" + CMD_AUDIO_STATE + ") && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_STREAM_MUSIC + " && " + CMD_ANDROIDTV_RUNNING_APPS
 
-#: Get the properties for an :py:class:`~androidtv.androidtv.AndroidTV` device (``lazy=True, get_running_apps=False``); see :py:meth:`androidtv.androidtv.AndroidTV.get_properties`
+#: Get the properties for an Android TV device (``lazy=True, get_running_apps=False``); see :py:meth:`androidtv.androidtv.androidtv_sync.AndroidTVSync.get_properties` and :py:meth:`androidtv.androidtv.androidtv_async.AndroidTVAsync.get_properties`
 CMD_ANDROIDTV_PROPERTIES_LAZY_NO_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1 + " && " + CMD_AWAKE + CMD_SUCCESS1 + " && (" + CMD_AUDIO_STATE + ") && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_STREAM_MUSIC
 
-#: Get the properties for an :py:class:`~androidtv.androidtv.AndroidTV` device (``lazy=False, get_running_apps=True``); see :py:meth:`androidtv.androidtv.AndroidTV.get_properties`
+#: Get the properties for an Android TV device (``lazy=False, get_running_apps=True``); see :py:meth:`androidtv.androidtv.androidtv_sync.AndroidTVSync.get_properties` and :py:meth:`androidtv.androidtv.androidtv_async.AndroidTVAsync.get_properties`
 CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1_FAILURE0 + " && " + CMD_AWAKE + CMD_SUCCESS1_FAILURE0 + " && (" + CMD_AUDIO_STATE + ") && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_STREAM_MUSIC + " && " + CMD_ANDROIDTV_RUNNING_APPS
 
-#: Get the properties for an :py:class:`~androidtv.androidtv.AndroidTV` device (``lazy=False, get_running_apps=False``); see :py:meth:`androidtv.androidtv.AndroidTV.get_properties`
+#: Get the properties for an Android TV device (``lazy=False, get_running_apps=False``); see :py:meth:`androidtv.androidtv.androidtv_sync.AndroidTVSync.get_properties` and :py:meth:`androidtv.androidtv.androidtv_async.AndroidTVAsync.get_properties`
 CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1_FAILURE0 + " && " + CMD_AWAKE + CMD_SUCCESS1_FAILURE0 + " && (" + CMD_AUDIO_STATE + ") && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_STREAM_MUSIC
 
-#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=True, get_running_apps=True``); see :py:meth:`androidtv.firetv.FireTV.get_properties`
+#: Get the properties for a Fire TV device (``lazy=True, get_running_apps=True``); see :py:meth:`androidtv.firetv.firetv_sync.FireTVSync.get_properties` and :py:meth:`androidtv.firetv.firetv_async.FireTVAsync.get_properties`
 CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1 + " && " + CMD_AWAKE + CMD_SUCCESS1 + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_FIRETV_RUNNING_APPS
 
-#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=True, get_running_apps=False``); see :py:meth:`androidtv.firetv.FireTV.get_properties`
+#: Get the properties for a Fire TV device (``lazy=True, get_running_apps=False``); see :py:meth:`androidtv.firetv.firetv_sync.FireTVSync.get_properties` and :py:meth:`androidtv.firetv.firetv_async.FireTVAsync.get_properties`
 CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1 + " && " + CMD_AWAKE + CMD_SUCCESS1 + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo)"
 
-#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=False, get_running_apps=True``); see :py:meth:`androidtv.firetv.FireTV.get_properties`
+#: Get the properties for a Fire TV device (``lazy=False, get_running_apps=True``); see :py:meth:`androidtv.firetv.firetv_sync.FireTVSync.get_properties` and :py:meth:`androidtv.firetv.firetv_async.FireTVAsync.get_properties`
 CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1_FAILURE0 + " && " + CMD_AWAKE + CMD_SUCCESS1_FAILURE0 + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo) && " + CMD_FIRETV_RUNNING_APPS
 
-#: Get the properties for a :py:class:`~androidtv.firetv.FireTV` device (``lazy=False, get_running_apps=False``); see :py:meth:`androidtv.firetv.FireTV.get_properties`
+#: Get the properties for a Fire TV device (``lazy=False, get_running_apps=False``); see :py:meth:`androidtv.firetv.firetv_sync.FireTVSync.get_properties` and :py:meth:`androidtv.firetv.firetv_async.FireTVAsync.get_properties`
 CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS = CMD_SCREEN_ON + CMD_SUCCESS1_FAILURE0 + " && " + CMD_AWAKE + CMD_SUCCESS1_FAILURE0 + " && " + CMD_WAKE_LOCK_SIZE + " && " + CMD_CURRENT_APP + " && (" + CMD_MEDIA_SESSION_STATE + " || echo)"
 
 # `getprop` commands
@@ -258,7 +258,7 @@ VALID_PROPERTIES_TYPES = {"audio_state": str,
                           "wake_lock_size": int}
 
 # https://developer.android.com/reference/android/media/session/PlaybackState.html
-#: States for the :attr:`~androidtv.basetv.BaseTV.media_session_state` property
+#: States for the :attr:`~androidtv.basetv.basetv.BaseTV.media_session_state` property
 MEDIA_SESSION_STATES = {0: None,
                         1: STATE_STOPPED,
                         2: STATE_PAUSED,
@@ -320,5 +320,11 @@ MUTED_REGEX_PATTERN = r"Muted: (.*?)\W"
 STREAM_MUSIC_REGEX_PATTERN = "STREAM_MUSIC(.*?)- STREAM"
 VOLUME_REGEX_PATTERN = r"\): (\d{1,})"
 
-#: Default authentication timeout (in s) for :meth:`adb_shell.tcp_handle.TcpHandle.connect`
-DEFAULT_AUTH_TIMEOUT_S = 0.1
+#: Default authentication timeout (in s) for :meth:`adb_shell.handle.tcp_handle.TcpHandle.connect` and :meth:`adb_shell.handle.tcp_handle_async.TcpHandleAsync.connect`
+DEFAULT_AUTH_TIMEOUT_S = 10.0
+
+#: Default timeout (in s) for :class:`adb_shell.handle.tcp_handle.TcpHandle` and :class:`adb_shell.handle.tcp_handle_async.TcpHandleAsync`
+DEFAULT_ADB_TIMEOUT_S = 9.0
+
+#: Default timeout for acquiring the lock that protects ADB commands
+DEFAULT_LOCK_TIMEOUT_S = 3.0

@@ -41,10 +41,6 @@ class ClientFakeSuccess(object):
         """Initialize a `ClientFakeSuccess` instance."""
         self._devices = []
 
-    def devices(self):
-        """Get a list of the connected devices."""
-        return self._devices
-
     def device(self, serial):
         """Mock the `Client.device` method when the device is connected via ADB."""
         device = DeviceFake(serial)
@@ -59,10 +55,6 @@ class ClientFakeFail(object):
         """Initialize a `ClientFakeFail` instance."""
         self._devices = []
 
-    def devices(self):
-        """Get a list of the connected devices."""
-        return self._devices
-
     def device(self, serial):
         """Mock the `Client.device` method when the device is not connected via ADB."""
         self._devices = []
@@ -74,10 +66,6 @@ class DeviceFake(object):
     def __init__(self, host):
         """Initialize a `DeviceFake` instance."""
         self.host = host
-
-    def get_serial_no(self):
-        """Get the serial number for the device (IP:PORT)."""
-        return self.host
 
     def push(self, *args, **kwargs):
         """Push a file to the device."""
@@ -106,8 +94,8 @@ def patch_connect(success):
         raise OSError
 
     if success:
-        return {"python": patch("{}.AdbDeviceTcpFake.connect".format(__name__), connect_success_python), "server": patch("androidtv.adb_manager.Client", ClientFakeSuccess)}
-    return {"python": patch("{}.AdbDeviceTcpFake.connect".format(__name__), connect_fail_python), "server": patch("androidtv.adb_manager.Client", ClientFakeFail)}
+        return {"python": patch("{}.AdbDeviceTcpFake.connect".format(__name__), connect_success_python), "server": patch("androidtv.adb_manager.adb_manager_sync.Client", ClientFakeSuccess)}
+    return {"python": patch("{}.AdbDeviceTcpFake.connect".format(__name__), connect_fail_python), "server": patch("androidtv.adb_manager.adb_manager_sync.Client", ClientFakeFail)}
 
 
 def patch_shell(response=None, error=False):
@@ -137,11 +125,11 @@ PATCH_PUSH = {"python": patch("{}.AdbDeviceTcpFake.push".format(__name__)), "ser
 
 PATCH_PULL = {"python": patch("{}.AdbDeviceTcpFake.pull".format(__name__)), "server": patch("{}.DeviceFake.pull".format(__name__))}
 
-PATCH_ADB_DEVICE_TCP = patch("androidtv.adb_manager.AdbDeviceTcp", AdbDeviceTcpFake)
+PATCH_ADB_DEVICE_TCP = patch("androidtv.adb_manager.adb_manager_sync.AdbDeviceTcp", AdbDeviceTcpFake)
 
 
 class CustomException(Exception):
     """A custom exception type."""
 
 
-PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION = {"python": patch("{}.AdbDeviceTcpFake.connect".format(__name__), side_effect=CustomException), "server": patch("{}.ClientFakeSuccess.devices".format(__name__), side_effect=CustomException)}
+PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION = {"python": patch("{}.AdbDeviceTcpFake.connect".format(__name__), side_effect=CustomException), "server": patch("{}.ClientFakeSuccess.device".format(__name__), side_effect=CustomException)}

@@ -9,7 +9,7 @@ except ImportError:
 
 sys.path.insert(0, '..')
 
-from androidtv.adb_manager import _acquire, ADBPython, ADBServer
+from androidtv.adb_manager.adb_manager_sync import _acquire, ADBPythonSync, ADBServerSync
 from androidtv.exceptions import LockNotAcquiredException
 from . import patchers
 
@@ -73,17 +73,17 @@ class LockedLock(FakeLock):
         self._acquired = False
 
 
-class TestADBPython(unittest.TestCase):
-    """Test the `ADBPython` class."""
+class TestADBPythonSync(unittest.TestCase):
+    """Test the `ADBPythonSync` class."""
 
     PATCH_KEY = 'python'
 
     def setUp(self):
-        """Create an `ADBPython` instance.
+        """Create an `ADBPythonSync` instance.
 
         """
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.adb = ADBPython('HOST', 5555)
+            self.adb = ADBPythonSync('HOST', 5555)
 
     def test_locked_lock(self):
         """Test that the ``FakeLock`` class works as expected.
@@ -121,10 +121,11 @@ class TestADBPython(unittest.TestCase):
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
 
-        with patchers.PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION[self.PATCH_KEY]:
-            self.assertFalse(self.adb.connect())
-            self.assertFalse(self.adb.available)
-            self.assertFalse(self.adb._available)
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            with patchers.PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION[self.PATCH_KEY]:
+                self.assertFalse(self.adb.connect())
+                self.assertFalse(self.adb.available)
+                self.assertFalse(self.adb._available)
 
     def test_connect_fail_lock(self):
         """Test when the connect attempt fails due to the lock.
@@ -275,7 +276,7 @@ class TestADBPython(unittest.TestCase):
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(PNG_IMAGE)[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
 
-            if isinstance(self.adb, ADBPython):
+            if isinstance(self.adb, ADBPythonSync):
                 self.assertEqual(self.adb.screencap(), PNG_IMAGE)
 
                 with patchers.patch_shell(PNG_IMAGE_NEEDS_REPLACING)[self.PATCH_KEY]:
@@ -286,16 +287,16 @@ class TestADBPython(unittest.TestCase):
                     self.assertEqual(self.adb.screencap(), PNG_IMAGE)
 
 
-class TestADBServer(TestADBPython):
-    """Test the `ADBServer` class."""
+class TestADBServerSync(TestADBPythonSync):
+    """Test the `ADBServerSync` class."""
 
     PATCH_KEY = 'server'
 
     def setUp(self):
-        """Create an `ADBServer` instance.
+        """Create an `ADBServerSync` instance.
 
         """
-        self.adb = ADBServer('HOST', 5555, 'ADB_SERVER_IP')
+        self.adb = ADBServerSync('HOST', 5555, 'ADB_SERVER_IP')
 
     def test_connect_fail_server(self):
         """Test that the ``connect`` method works correctly.
@@ -304,29 +305,29 @@ class TestADBServer(TestADBPython):
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
 
-        with patch('{}.patchers.ClientFakeSuccess.devices'.format(__name__), side_effect=RuntimeError):
-            self.assertFalse(self.adb.connect())
-            self.assertFalse(self.adb.available)
-            self.assertFalse(self.adb._available)
+            with patch('{}.patchers.ClientFakeSuccess.device'.format(__name__), side_effect=RuntimeError):
+                self.assertFalse(self.adb.connect())
+                self.assertFalse(self.adb.available)
+                self.assertFalse(self.adb._available)
 
 
-class TestADBPythonWithAuthentication(unittest.TestCase):
-    """Test the `ADBPython` class."""
+class TestADBPythonSyncWithAuthentication(unittest.TestCase):
+    """Test the `ADBPythonSync` class."""
 
     PATCH_KEY = 'python'
 
     def setUp(self):
-        """Create an `ADBPython` instance.
+        """Create an `ADBPythonSync` instance.
 
         """
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.adb = ADBPython('HOST', 5555, 'adbkey')
+            self.adb = ADBPythonSync('HOST', 5555, 'adbkey')
 
     def test_connect_success_with_priv_key(self):
         """Test when the connect attempt is successful when using a private key.
 
         """
-        with patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.open', open_priv), patch('androidtv.adb_manager.PythonRSASigner', return_value=None):
+        with patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.adb_manager_sync.open', open_priv), patch('androidtv.adb_manager.adb_manager_sync.PythonRSASigner', return_value=None):
             self.assertTrue(self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
@@ -335,23 +336,23 @@ class TestADBPythonWithAuthentication(unittest.TestCase):
         """Test when the connect attempt is successful when using private and public keys.
 
         """
-        with patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.open', open_priv_pub), patch('androidtv.adb_manager.PythonRSASigner', return_value=None):
+        with patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.adb_manager_sync.open', open_priv_pub), patch('androidtv.adb_manager.adb_manager_sync.PythonRSASigner', return_value=None):
             self.assertTrue(self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
 
 
-class TestADBPythonClose(unittest.TestCase):
-    """Test the `ADBPython.close` method."""
+class TestADBPythonSyncClose(unittest.TestCase):
+    """Test the `ADBPythonSync.close` method."""
 
     PATCH_KEY = 'python'
 
     def test_close(self):
-        """Test the `ADBPython.close` method.
+        """Test the `ADBPythonSync.close` method.
 
         """
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.adb = ADBPython('HOST', 5555)
+            self.adb = ADBPythonSync('HOST', 5555)
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
