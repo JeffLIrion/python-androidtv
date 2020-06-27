@@ -250,7 +250,7 @@ class TestADBPythonSync(unittest.TestCase):
     def test_adb_screencap_fail_unavailable(self):
         """Test when an ADB screencap command fails because the connection is unavailable.
 
-        """        
+        """
         self.assertFalse(self.adb.available)
         self.assertIsNone(self.adb.screencap())
 
@@ -327,10 +327,17 @@ class TestADBPythonSyncWithAuthentication(unittest.TestCase):
         """Test when the connect attempt is successful when using a private key.
 
         """
-        with patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.adb_manager_sync.open', open_priv), patch('androidtv.adb_manager.adb_manager_sync.PythonRSASigner', return_value=None):
+        with patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.adb_manager_sync.open', open_priv), patch('androidtv.adb_manager.adb_manager_sync.PythonRSASigner', return_value="TEST"):
             self.assertTrue(self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
+
+        with patchers.patch_connect(True)[self.PATCH_KEY]:
+            with patch('androidtv.adb_manager.adb_manager_sync.open') as patch_open:
+                self.assertTrue(self.adb.connect())
+                self.assertTrue(self.adb.available)
+                self.assertTrue(self.adb._available)
+                assert not patch_open.called
 
     def test_connect_success_with_priv_pub_key(self):
         """Test when the connect attempt is successful when using private and public keys.

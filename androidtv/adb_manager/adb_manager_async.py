@@ -102,13 +102,16 @@ class ADBPythonAsync(object):
         The device port to which we are connecting (default is 5555)
     adbkey : str
         The path to the ``adbkey`` file for ADB authentication
+    signer : PythonRSASigner, None
+        The signer for the ADB keys, as loaded by :meth:`ADBPythonAsync.load_adbkey`
 
     """
-    def __init__(self, host, port, adbkey=''):
+    def __init__(self, host, port, adbkey='', signer=None):
         self.host = host
         self.port = int(port)
         self.adbkey = adbkey
         self._adb = AdbDeviceTcpAsync(host=self.host, port=self.port, default_transport_timeout_s=DEFAULT_ADB_TIMEOUT_S, banner=b'androidtv')
+        self._signer = signer
 
         # keep track of whether the ADB connection is intact
         self._available = False
@@ -156,20 +159,10 @@ class ADBPythonAsync(object):
                 try:
                     # Connect with authentication
                     if self.adbkey:
-                        # private key
-                        with open(self.adbkey) as f:
-                            priv = f.read()
+                        if not self._signer:
+                            self._signer = await self.load_adbkey(self.adbkey)
 
-                        # public key
-                        try:
-                            with open(self.adbkey + '.pub') as f:
-                                pub = f.read()
-                        except FileNotFoundError:
-                            pub = ''
-
-                        signer = PythonRSASigner(pub, priv)
-
-                        await self._adb.connect(rsa_keys=[signer], auth_timeout_s=auth_timeout_s)
+                        await self._adb.connect(rsa_keys=[self._signer], auth_timeout_s=auth_timeout_s)
 
                     # Connect without authentication
                     else:
@@ -205,6 +198,36 @@ class ADBPythonAsync(object):
             await self.close()
             self._available = False
             return False
+
+    @staticmethod
+    async def load_adbkey(adbkey):
+        """Load the ADB keys.
+
+        TODO: Make this real async.
+
+        Parameters
+        ----------
+        adbkey : str
+            The path to the ``adbkey`` file for ADB authentication
+
+        Returns
+        -------
+        PythonRSASigner
+            The ``PythonRSASigner`` with the key files loaded
+
+        """
+        # private key
+        with open(adbkey) as f:
+            priv = f.read()
+
+        # public key
+        try:
+            with open(adbkey + '.pub') as f:
+                pub = f.read()
+        except FileNotFoundError:
+            pub = ''
+
+        return PythonRSASigner(pub, priv)
 
     async def pull(self, local_path, device_path):
         """Pull a file from the device using the Python ADB implementation.

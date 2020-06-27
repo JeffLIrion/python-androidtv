@@ -62,14 +62,16 @@ class BaseTVAsync(BaseTV):
         The port for the ADB server
     state_detection_rules : dict, None
         A dictionary of rules for determining the state (see above)
+    signer : PythonRSASigner, None
+        The signer for the ADB keys, as loaded by :meth:`androidtv.adb_manager.adb_manager_async.ADBPythonAsync.load_adbkey`
 
     """
 
-    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
+    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, signer=None):
         # the handler for ADB commands
         if not adb_server_ip:
             # python-adb
-            adb = ADBPythonAsync(host, port, adbkey)
+            adb = ADBPythonAsync(host, port, adbkey, signer)
         else:
             # pure-python-adb
             adb = ADBServerAsync(host, port, adb_server_ip, adb_server_port)
