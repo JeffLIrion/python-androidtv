@@ -12,6 +12,7 @@ import logging
 
 from adb_shell.adb_device_async import AdbDeviceTcpAsync
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
+import aiofiles
 from ppadb.client import Client
 
 from ..constants import DEFAULT_ADB_TIMEOUT_S, DEFAULT_AUTH_TIMEOUT_S, DEFAULT_LOCK_TIMEOUT_S
@@ -203,8 +204,6 @@ class ADBPythonAsync(object):
     async def load_adbkey(adbkey):
         """Load the ADB keys.
 
-        TODO: Make this real async.
-
         Parameters
         ----------
         adbkey : str
@@ -217,13 +216,13 @@ class ADBPythonAsync(object):
 
         """
         # private key
-        with open(adbkey) as f:
-            priv = f.read()
+        async with aiofiles.open(adbkey) as f:
+            priv = await f.read()
 
         # public key
         try:
-            with open(adbkey + '.pub') as f:
-                pub = f.read()
+            async with aiofiles.open(adbkey + '.pub') as f:
+                pub = await f.read()
         except FileNotFoundError:
             pub = ''
 
