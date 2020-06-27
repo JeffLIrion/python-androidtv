@@ -203,7 +203,7 @@ class ADBPythonAsync(object):
     async def load_adbkey(adbkey):
         """Load the ADB keys.
 
-        TODO: Make this
+        TODO: Make this real async.
 
         Parameters
         ----------
