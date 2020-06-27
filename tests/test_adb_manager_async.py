@@ -357,10 +357,17 @@ class TestADBPythonAsyncWithAuthentication(unittest.TestCase):
         """Test when the connect attempt is successful when using a private key.
 
         """
-        with async_patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.adb_manager_async.open', open_priv), patch('androidtv.adb_manager.adb_manager_async.PythonRSASigner', return_value=None):
+        with async_patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.adb_manager_async.open', open_priv), patch('androidtv.adb_manager.adb_manager_async.PythonRSASigner', return_value="TEST"):
             self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
+
+        with async_patchers.patch_connect(True)[self.PATCH_KEY]:
+            with patch('androidtv.adb_manager.adb_manager_async.open') as patch_open:
+                self.assertTrue(await self.adb.connect())
+                self.assertTrue(self.adb.available)
+                self.assertTrue(self.adb._available)
+                assert not patch_open.called
 
     @awaiter
     async def test_connect_success_with_priv_pub_key(self):
