@@ -70,7 +70,7 @@ class ADBPythonSync(object):
     adbkey : str
         The path to the ``adbkey`` file for ADB authentication
     signer : PythonRSASigner, None
-        The signer for the ADB keys, as loaded by :meth:`ADBPythonSync.loadadbkey`
+        The signer for the ADB keys, as loaded by :meth:`ADBPythonSync.load_adbkey`
 
     """
     def __init__(self, host, port, adbkey='', signer=None):

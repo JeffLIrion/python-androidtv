@@ -63,7 +63,7 @@ class BaseTVSync(BaseTV):
     state_detection_rules : dict, None
         A dictionary of rules for determining the state (see above)
     signer : PythonRSASigner, None
-        The signer for the ADB keys, as loaded by :meth:`androidtv.adb_manager.adb_manager_sync.ADBPythonSync.loadadbkey`
+        The signer for the ADB keys, as loaded by :meth:`androidtv.adb_manager.adb_manager_sync.ADBPythonSync.load_adbkey`
 
     """
 

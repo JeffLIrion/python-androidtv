@@ -35,7 +35,7 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
     auth_timeout_s : float
         Authentication timeout (in seconds)
     signer : PythonRSASigner, None
-        The signer for the ADB keys, as loaded by :meth:`androidtv.adb_manager.adb_manager_sync.ADBPythonSync.loadadbkey`
+        The signer for the ADB keys, as loaded by :meth:`androidtv.adb_manager.adb_manager_sync.ADBPythonSync.load_adbkey`
 
     Returns
     -------
