@@ -30,11 +30,13 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
         The port for the ADB server
     state_detection_rules : dict, None
         A dictionary of rules for determining the state (see :class:`~androidtv.basetv.basetv.BaseTV`)
+    signer : PythonRSASigner, None
+        The signer for the ADB keys, as loaded by :meth:`androidtv.adb_manager.adb_manager_sync.ADBPythonSync.loadadbkey`
 
     """
 
-    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):  # pylint: disable=super-init-not-called
-        BaseTVSync.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, signer=None):  # pylint: disable=super-init-not-called
+        BaseTVSync.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
 
     # ======================================================================= #
     #                                                                         #
