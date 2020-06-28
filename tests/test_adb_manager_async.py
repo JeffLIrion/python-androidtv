@@ -1,5 +1,5 @@
 import asyncio
-from contextlib import contextmanager
+from contextlib import asynccontextmanager
 import sys
 import unittest
 from unittest.mock import patch
@@ -15,13 +15,13 @@ from .async_wrapper import awaiter
 
 class Read(object):
     """Mock an opened file that can be read."""
-    def read(self):
+    async def read(self):
         return ''
 
 
 class ReadFail(object):
     """Mock an opened file that cannot be read."""
-    def read(self):
+    async def read(self):
         raise FileNotFoundError
 
 
@@ -29,8 +29,8 @@ PNG_IMAGE = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\n\x00\x00\x00\n\x0
 
 PNG_IMAGE_NEEDS_REPLACING = PNG_IMAGE[:5] + b'\r' + PNG_IMAGE[5:]
 
-@contextmanager
-def open_priv(infile):
+@asynccontextmanager
+async def open_priv(infile):
     """A patch that will read the private key but not the public key."""
     try:
         if infile == 'adbkey':
@@ -41,8 +41,8 @@ def open_priv(infile):
         pass
 
 
-@contextmanager
-def open_priv_pub(infile):
+@asynccontextmanager
+async def open_priv_pub(infile):
     try:
         yield Read()
     finally:
@@ -357,13 +357,13 @@ class TestADBPythonAsyncWithAuthentication(unittest.TestCase):
         """Test when the connect attempt is successful when using a private key.
 
         """
-        with async_patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.adb_manager_async.open', open_priv), patch('androidtv.adb_manager.adb_manager_async.PythonRSASigner', return_value="TEST"):
+        with async_patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.adb_manager_async.aiofiles.open', open_priv), patch('androidtv.adb_manager.adb_manager_async.PythonRSASigner', return_value="TEST"):
             self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
 
         with async_patchers.patch_connect(True)[self.PATCH_KEY]:
-            with patch('androidtv.adb_manager.adb_manager_async.open') as patch_open:
+            with patch('androidtv.adb_manager.adb_manager_async.aiofiles.open') as patch_open:
                 self.assertTrue(await self.adb.connect())
                 self.assertTrue(self.adb.available)
                 self.assertTrue(self.adb._available)
@@ -374,7 +374,7 @@ class TestADBPythonAsyncWithAuthentication(unittest.TestCase):
         """Test when the connect attempt is successful when using private and public keys.
 
         """
-        with async_patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.adb_manager_async.open', open_priv_pub), patch('androidtv.adb_manager.adb_manager_async.PythonRSASigner', return_value=None):
+        with async_patchers.patch_connect(True)[self.PATCH_KEY], patch('androidtv.adb_manager.adb_manager_async.aiofiles.open', open_priv_pub), patch('androidtv.adb_manager.adb_manager_async.PythonRSASigner', return_value=None):
             self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
             self.assertTrue(self.adb._available)
