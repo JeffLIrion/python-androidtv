@@ -16,12 +16,16 @@ Documentation for this package can be found at `https://androidtv.readthedocs.io
 Installation
 ------------
 
-.. code-block:: bash
+.. code-block::
 
    pip install androidtv
 
 
-To utilize the async version of this code, you must install into a Python 3.7+ environment.
+To utilize the async version of this code, you must install into a Python 3.7+ environment via:
+
+.. code-block::
+
+   pip install androidtv[async]
 
 
 ADB Intents and Commands
