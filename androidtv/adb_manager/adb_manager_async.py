@@ -21,37 +21,37 @@ from ..exceptions import LockNotAcquiredException
 _LOGGER = logging.getLogger(__name__)
 
 
-class DeviceAsync:  # pragma: no cover
+class DeviceAsync:
     """A fake ``DeviceAsync`` class."""
     def __init__(self, device):
         self._device = device
 
     async def pull(self, device_path, local_path):
         """Download a file."""
-        return self._device.pull(device_path, local_path)
+        return await asyncio.get_running_loop().run_in_executor(None, self._device.pull, device_path, local_path)
 
     async def push(self, local_path, device_path):
         """Upload a file."""
-        return self._device.push(local_path, device_path)
+        return await asyncio.get_running_loop().run_in_executor(None, self._device.push, local_path, device_path)
 
     async def screencap(self):
         """Take a screencap."""
-        return self._device.screencap()
+        return await asyncio.get_running_loop().run_in_executor(None, self._device.screencap)
 
     async def shell(self, cmd):
         """Send a shell command."""
-        return self._device.shell(cmd)
+        return await asyncio.get_running_loop().run_in_executor(None, self._device.shell, cmd)
 
 
 # pylint: disable=too-few-public-methods
-class ClientAsync:  # pragma: no cover
+class ClientAsync:
     """A fake ``ClientAsync`` class."""
     def __init__(self, host, port):
         self._client = Client(host, port)
 
     async def device(self, serial):
         """Get a fake ``DeviceAsync`` instance."""
-        return DeviceAsync(self._client.device(serial))
+        return DeviceAsync(await asyncio.get_running_loop().run_in_executor(None, self._client.device, serial))
 
 
 @asynccontextmanager

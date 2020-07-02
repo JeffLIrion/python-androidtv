@@ -305,7 +305,7 @@ class TestADBServerSync(TestADBPythonSync):
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
 
-            with patch('{}.patchers.ClientFakeSuccess.device'.format(__name__), side_effect=RuntimeError):
+            with patchers.PATCH_ADB_SERVER_RUNTIME_ERROR:
                 self.assertFalse(self.adb.connect())
                 self.assertFalse(self.adb.available)
                 self.assertFalse(self.adb._available)
