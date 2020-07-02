@@ -144,6 +144,8 @@ PATCH_PULL = {KEY_PYTHON: async_patch("{}.{}.pull".format(__name__, ADB_DEVICE_T
 
 PATCH_ADB_DEVICE_TCP = patch("androidtv.adb_manager.adb_manager_async.AdbDeviceTcpAsync", AdbDeviceTcpAsyncFake)
 
+PATCH_ADB_SERVER_RUNTIME_ERROR = async_patch("{}.{}.device".format(__name__, CLIENT_ASYNC_FAKE_SUCCESS), side_effect=RuntimeError)
+
 
 class CustomException(Exception):
     """A custom exception type."""

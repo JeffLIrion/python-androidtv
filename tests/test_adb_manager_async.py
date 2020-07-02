@@ -334,7 +334,7 @@ class TestADBServerAsync(TestADBPythonAsync):
         with async_patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(await self.adb.connect())
 
-            with async_patchers.async_patch('{}.async_patchers.ClientAsyncFakeSuccess.device'.format(__name__), side_effect=RuntimeError):
+            with async_patchers.PATCH_ADB_SERVER_RUNTIME_ERROR:
                 self.assertFalse(await self.adb.connect())
                 self.assertFalse(self.adb.available)
                 self.assertFalse(self.adb._available)
