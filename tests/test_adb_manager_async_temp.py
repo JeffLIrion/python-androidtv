@@ -11,10 +11,14 @@ from . import patchers
 
 
 class TestAsyncClientDevice(unittest.TestCase):
-    """Test"""
+    """Test the ``ClientAsync`` and ``DeviceAsync`` classes defined in ``adb_manager_async.py``.
+
+    This file can be removed once true async support for using an ADB server is available.
+
+    """
 
     @awaiter
-    async def test_stuff(self):
+    async def test_async_client_device(self):
         with patch("androidtv.adb_manager.adb_manager_async.Client", patchers.ClientFakeSuccess):
             client = ClientAsync("host", "port")
 
