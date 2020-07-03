@@ -7,6 +7,9 @@ python-androidtv
 .. image:: https://coveralls.io/repos/github/JeffLIrion/python-androidtv/badge.svg
    :target: https://coveralls.io/github/JeffLIrion/python-androidtv
    :alt: Coverage Status
+.. image:: https://pepy.tech/badge/androidtv
+   :target: https://pepy.tech/project/androidtv
+   :alt: Downloads
 
 Documentation for this package can be found at `https://androidtv.readthedocs.io <https://androidtv.readthedocs.io>`_.
 
