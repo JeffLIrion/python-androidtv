@@ -51,7 +51,10 @@ class ClientAsync:
 
     async def device(self, serial):
         """Get a fake ``DeviceAsync`` instance."""
-        return DeviceAsync(await asyncio.get_running_loop().run_in_executor(None, self._client.device, serial))
+        dev = await asyncio.get_running_loop().run_in_executor(None, self._client.device, serial)
+        if dev:
+            return DeviceAsync(dev)
+        return None
 
 
 @asynccontextmanager
