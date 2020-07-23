@@ -35,3 +35,12 @@ class TestAsyncClientDevice(unittest.TestCase):
 
             with patch("{}.DeviceFake.screencap".format(patchers.__name__)):
                 await device.screencap()
+
+    @awaiter
+    async def test_async_client_device_fail(self):
+        with patch("androidtv.adb_manager.adb_manager_async.Client", patchers.ClientFakeFail):
+            client = ClientAsync("host", "port")
+
+            device = await client.device("serial")
+
+            self.assertFalse(device)
