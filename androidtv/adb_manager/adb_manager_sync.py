@@ -250,7 +250,7 @@ class ADBPythonSync(object):
         with _acquire(self._adb_lock):
             _LOGGER.debug("Taking screencap from %s:%d via adb-shell", self.host, self.port)
             result = self._adb.shell("screencap -p", decode=False)
-            if result[5:6] == b"\r":
+            if result and result[5:6] == b"\r":
                 return result.replace(b"\r\n", b"\n")
             return result
 
