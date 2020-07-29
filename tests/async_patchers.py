@@ -146,6 +146,8 @@ PATCH_ADB_DEVICE_TCP = patch("androidtv.adb_manager.adb_manager_async.AdbDeviceT
 
 PATCH_ADB_SERVER_RUNTIME_ERROR = async_patch("{}.{}.device".format(__name__, CLIENT_ASYNC_FAKE_SUCCESS), side_effect=RuntimeError)
 
+PATCH_ADB_SERVER_SCREENCAP_INDEX_ERROR = patch("{}.{}.screencap".format(__name__, DEVICE_ASYNC_FAKE), side_effect=IndexError)
+
 
 class CustomException(Exception):
     """A custom exception type."""

@@ -466,8 +466,8 @@ class ADBServerAsync(object):
 
         Returns
         -------
-        bytes
-            The screencap as a binary .png image
+        bytes, None
+            The screencap as a binary .png image, or ``None`` if there was an ``IndexError`` exception
 
         """
         if not self.available:
@@ -476,7 +476,10 @@ class ADBServerAsync(object):
 
         async with _acquire(self._adb_lock):
             _LOGGER.debug("Taking screencap from %s:%d via ADB server %s:%d", self.host, self.port, self.adb_server_ip, self.adb_server_port)
-            return await self._adb_device.screencap()
+            try:
+                return await self._adb_device.screencap()
+            except IndexError:
+                return None
 
     async def shell(self, cmd):
         """Send an ADB command using an ADB server.
