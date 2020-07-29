@@ -114,7 +114,7 @@ class ADBPythonAsync(object):
         self.host = host
         self.port = int(port)
         self.adbkey = adbkey
-        self._adb = AdbDeviceTcpAsync(host=self.host, port=self.port, default_transport_timeout_s=DEFAULT_ADB_TIMEOUT_S, banner=b'androidtv')
+        self._adb = AdbDeviceTcpAsync(host=self.host, port=self.port, default_transport_timeout_s=DEFAULT_ADB_TIMEOUT_S)
         self._signer = signer
 
         # keep track of whether the ADB connection is intact
