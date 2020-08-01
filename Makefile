@@ -8,8 +8,8 @@ release:
 
 .PHONY: docs
 docs:
-	@cd docs/source && rm -f androidtv*.rst
-	@cd docs && sphinx-apidoc -f -e -o source/ ../androidtv/
+	@cd docs/source && rm -f androidtv_dev*.rst
+	@cd docs && sphinx-apidoc -f -e -o source/ ../androidtv_dev/
 	@cd docs && make html && make html
 
 SYNCTESTS := $(shell cd tests && ls test*.py | grep -v async)
@@ -21,16 +21,16 @@ test:
 
 .PHONY: coverage
 coverage:
-	coverage run --source androidtv -m unittest discover -s tests/ -t . && coverage html && coverage report -m
+	coverage run --source androidtv_dev -m unittest discover -s tests/ -t . && coverage html && coverage report -m
 
 .PHONY: tdd
 tdd:
-	coverage run --source androidtv -m unittest discover -s tests/ -t . && coverage report -m
+	coverage run --source androidtv_dev -m unittest discover -s tests/ -t . && coverage report -m
 
 .PHONY: lint
 lint:
-	flake8 androidtv/ && pylint androidtv/
+	flake8 androidtv_dev/ && pylint androidtv_dev/
 
 .PHONY: alltests
 alltests:
-	flake8 androidtv/ && pylint androidtv/ && coverage run --source androidtv -m unittest discover -s tests/ -t . && coverage report -m
+	flake8 androidtv_dev/ && pylint androidtv_dev/ && coverage run --source androidtv_dev -m unittest discover -s tests/ -t . && coverage report -m
