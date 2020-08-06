@@ -13,48 +13,12 @@ import logging
 from adb_shell.adb_device_async import AdbDeviceTcpAsync
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
 import aiofiles
-from ppadb.client import Client
+from ppadb.client_async import ClientAsync
 
 from ..constants import DEFAULT_ADB_TIMEOUT_S, DEFAULT_AUTH_TIMEOUT_S, DEFAULT_LOCK_TIMEOUT_S
 from ..exceptions import LockNotAcquiredException
 
 _LOGGER = logging.getLogger(__name__)
-
-
-class DeviceAsync:
-    """A fake ``DeviceAsync`` class."""
-    def __init__(self, device):
-        self._device = device
-
-    async def pull(self, device_path, local_path):
-        """Download a file."""
-        return await asyncio.get_running_loop().run_in_executor(None, self._device.pull, device_path, local_path)
-
-    async def push(self, local_path, device_path):
-        """Upload a file."""
-        return await asyncio.get_running_loop().run_in_executor(None, self._device.push, local_path, device_path)
-
-    async def screencap(self):
-        """Take a screencap."""
-        return await asyncio.get_running_loop().run_in_executor(None, self._device.screencap)
-
-    async def shell(self, cmd):
-        """Send a shell command."""
-        return await asyncio.get_running_loop().run_in_executor(None, self._device.shell, cmd)
-
-
-# pylint: disable=too-few-public-methods
-class ClientAsync:
-    """A fake ``ClientAsync`` class."""
-    def __init__(self, host, port):
-        self._client = Client(host, port)
-
-    async def device(self, serial):
-        """Get a fake ``DeviceAsync`` instance."""
-        dev = await asyncio.get_running_loop().run_in_executor(None, self._client.device, serial)
-        if dev:
-            return DeviceAsync(dev)
-        return None
 
 
 @asynccontextmanager
@@ -476,10 +440,7 @@ class ADBServerAsync(object):
 
         async with _acquire(self._adb_lock):
             _LOGGER.debug("Taking screencap from %s:%d via ADB server %s:%d", self.host, self.port, self.adb_server_ip, self.adb_server_port)
-            try:
-                return await self._adb_device.screencap()
-            except IndexError:
-                return None
+            return await self._adb_device.screencap()
 
     async def shell(self, cmd):
         """Send an ADB command using an ADB server.
