@@ -476,10 +476,7 @@ class ADBServerAsync(object):
 
         async with _acquire(self._adb_lock):
             _LOGGER.debug("Taking screencap from %s:%d via ADB server %s:%d", self.host, self.port, self.adb_server_ip, self.adb_server_port)
-            try:
-                return await self._adb_device.screencap()
-            except IndexError:
-                return None
+            return await self._adb_device.screencap()
 
     async def shell(self, cmd):
         """Send an ADB command using an ADB server.

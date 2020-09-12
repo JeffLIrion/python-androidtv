@@ -310,16 +310,6 @@ class TestADBServerSync(TestADBPythonSync):
                 self.assertFalse(self.adb.available)
                 self.assertFalse(self.adb._available)
 
-    def test_screencap_index_error(self):
-        """Test when pure-python-adb gets an ``IndexError``.
-
-        """        
-        with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.assertTrue(self.adb.connect())
-
-            with patchers.PATCH_ADB_SERVER_SCREENCAP_INDEX_ERROR:
-                self.assertIsNone(self.adb.screencap())
-
 
 class TestADBPythonSyncWithAuthentication(unittest.TestCase):
     """Test the `ADBPythonSync` class."""

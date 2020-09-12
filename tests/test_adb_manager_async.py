@@ -339,17 +339,6 @@ class TestADBServerAsync(TestADBPythonAsync):
                 self.assertFalse(self.adb.available)
                 self.assertFalse(self.adb._available)
 
-    @awaiter
-    async def test_screencap_index_error(self):
-        """Test when pure-python-adb gets an ``IndexError``.
-
-        """        
-        with async_patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.assertTrue(await self.adb.connect())
-
-            with async_patchers.PATCH_ADB_SERVER_SCREENCAP_INDEX_ERROR:
-                self.assertIsNone(await self.adb.screencap())
-
 
 class TestADBPythonAsyncWithAuthentication(unittest.TestCase):
     """Test the `ADBPythonAsync` class."""
