@@ -87,8 +87,8 @@ async def _acquire(lock, timeout=DEFAULT_LOCK_TIMEOUT_S):
                 raise LockNotAcquiredException
             yield acquired
 
-        except asyncio.TimeoutError:
-            raise LockNotAcquiredException
+        except asyncio.TimeoutError as exc:
+            raise LockNotAcquiredException from exc
 
     finally:
         if acquired:
