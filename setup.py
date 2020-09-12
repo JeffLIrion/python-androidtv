@@ -14,7 +14,7 @@ setup(
     author='Jeff Irion',
     author_email='jefflirion@users.noreply.github.com',
     packages=['androidtv', 'androidtv.adb_manager', 'androidtv.basetv', 'androidtv.androidtv', 'androidtv.firetv'],
-    install_requires=['adb-shell>=0.2.1', 'pure-python-adb>=0.3.0.dev0'],
+    install_requires=['adb-shell>=0.2.1', 'pure-python-adb>=0.2.2.dev0'],
     extras_require={'async': ['aiofiles>=0.4.0']},
     classifiers=[
         'License :: OSI Approved :: MIT License',
