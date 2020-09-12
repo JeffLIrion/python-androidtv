@@ -22,7 +22,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class DeviceAsync:
-    """A fake ``DeviceAsync`` class."""
+    """An async wrapper for the pure-python-adb ``Device`` class."""
     def __init__(self, device):
         self._device = device
 
@@ -45,12 +45,12 @@ class DeviceAsync:
 
 # pylint: disable=too-few-public-methods
 class ClientAsync:
-    """A fake ``ClientAsync`` class."""
+    """An async wrapper for the pure-python-adb ``Client`` class."""
     def __init__(self, host, port):
         self._client = Client(host, port)
 
     async def device(self, serial):
-        """Get a fake ``DeviceAsync`` instance."""
+        """Get a ``DeviceAsync`` instance."""
         dev = await asyncio.get_running_loop().run_in_executor(None, self._client.device, serial)
         if dev:
             return DeviceAsync(dev)
