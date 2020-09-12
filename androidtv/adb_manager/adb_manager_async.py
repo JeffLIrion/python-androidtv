@@ -13,12 +13,48 @@ import logging
 from adb_shell.adb_device_async import AdbDeviceTcpAsync
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
 import aiofiles
-from ppadb.client_async import ClientAsync
+from ppadb.client import Client
 
 from ..constants import DEFAULT_ADB_TIMEOUT_S, DEFAULT_AUTH_TIMEOUT_S, DEFAULT_LOCK_TIMEOUT_S
 from ..exceptions import LockNotAcquiredException
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class DeviceAsync:
+    """An async wrapper for the pure-python-adb ``Device`` class."""
+    def __init__(self, device):
+        self._device = device
+
+    async def pull(self, device_path, local_path):
+        """Download a file."""
+        return await asyncio.get_running_loop().run_in_executor(None, self._device.pull, device_path, local_path)
+
+    async def push(self, local_path, device_path):
+        """Upload a file."""
+        return await asyncio.get_running_loop().run_in_executor(None, self._device.push, local_path, device_path)
+
+    async def screencap(self):
+        """Take a screencap."""
+        return await asyncio.get_running_loop().run_in_executor(None, self._device.screencap)
+
+    async def shell(self, cmd):
+        """Send a shell command."""
+        return await asyncio.get_running_loop().run_in_executor(None, self._device.shell, cmd)
+
+
+# pylint: disable=too-few-public-methods
+class ClientAsync:
+    """An async wrapper for the pure-python-adb ``Client`` class."""
+    def __init__(self, host, port):
+        self._client = Client(host, port)
+
+    async def device(self, serial):
+        """Get a ``DeviceAsync`` instance."""
+        dev = await asyncio.get_running_loop().run_in_executor(None, self._client.device, serial)
+        if dev:
+            return DeviceAsync(dev)
+        return None
 
 
 @asynccontextmanager
@@ -51,8 +87,8 @@ async def _acquire(lock, timeout=DEFAULT_LOCK_TIMEOUT_S):
                 raise LockNotAcquiredException
             yield acquired
 
-        except asyncio.TimeoutError:
-            raise LockNotAcquiredException
+        except asyncio.TimeoutError as exc:
+            raise LockNotAcquiredException from exc
 
     finally:
         if acquired:
