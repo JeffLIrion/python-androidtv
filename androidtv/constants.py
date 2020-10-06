@@ -269,7 +269,7 @@ MEDIA_SESSION_STATES = {0: None,
 
 # Apps
 APP_AMAZON_VIDEO = 'com.amazon.avod'
-APP_AMAZON_VIDEO2 = 'com.amazon.amazonvideo.livingroom.nvidia'
+APP_AMZ_VIDEO = 'com.amazon.avod.thirdpartyclient'
 APP_ATV_LAUNCHER = 'com.google.android.tvlauncher'
 APP_BELL_FIBE = 'com.quickplay.android.bellmediaplayer'
 APP_ES_FILE_EXPLORER = 'com.estrongs.android.pop'
@@ -296,13 +296,13 @@ APP_SPORT1 = 'de.sport1.firetv.video'
 APP_SPOTIFY = 'com.spotify.tv.android'
 APP_TVHEADEND = 'de.cyberdream.dreamepg.tvh.tv.player'
 APP_TWITCH = 'tv.twitch.android.viewer'
-APP_TWITCH2 = 'tv.twitch.android.app'
+APP_TWITCH_APP = 'tv.twitch.android.app'
 APP_VLC = 'org.videolan.vlc'
 APP_VRV = 'com.ellation.vrv'
 APP_WAIPU_TV = 'de.exaring.waipu.firetv.live'
 APP_YOUTUBE = 'com.google.android.youtube.tv'
 APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
-        APP_AMAZON_VIDEO2: 'Amazon Video',
+        APP_AMZ_VIDEO: 'Amz Video',
         APP_ATV_LAUNCHER: 'Android TV Launcher',
         APP_BELL_FIBE: 'Bell Fibe',
         APP_ES_FILE_EXPLORER: 'ES File Explorer',
@@ -327,7 +327,7 @@ APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_SPOTIFY: 'Spotify',
         APP_TVHEADEND: 'DreamPLayer TVHeadend',
         APP_TWITCH: 'Twitch',
-        APP_TWITCH2: 'Twitch',
+        APP_TWITCH_APP: 'Twitch App',
         APP_VLC: 'VLC',
         APP_VRV: 'VRV',
         APP_WAIPU_TV: 'Waipu TV',
