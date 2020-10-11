@@ -269,41 +269,65 @@ MEDIA_SESSION_STATES = {0: None,
 
 # Apps
 APP_AMAZON_VIDEO = 'com.amazon.avod'
+APP_AMZ_VIDEO = 'com.amazon.avod.thirdpartyclient'
 APP_ATV_LAUNCHER = 'com.google.android.tvlauncher'
 APP_BELL_FIBE = 'com.quickplay.android.bellmediaplayer'
+APP_ES_FILE_EXPLORER = 'com.estrongs.android.pop'
 APP_FIREFOX = 'org.mozilla.tv.firefox'
 APP_FIRETV_PACKAGE_LAUNCHER = "com.amazon.tv.launcher"
 APP_FIRETV_PACKAGE_SETTINGS = "com.amazon.tv.settings"
+APP_FRANCE_TV = 'fr.francetv.pluzz'
 APP_GOOGLE_CAST = 'com.google.android.apps.mediashell'
 APP_HBO_GO = 'eu.hbogo.androidtv.production'
 APP_HULU = 'com.hulu.plus'
+APP_IPTV_SMARTERS_PRO = 'com.nst.iptvsmarterstvbox'
 APP_JELLYFIN_TV = 'org.jellyfin.androidtv'
 APP_KODI = 'org.xbmc.kodi'
+APP_MOLOTOV = 'tv.molotov.app'
 APP_NETFLIX = 'com.netflix.ninja'
+APP_OCS = 'com.orange.ocsgo'
+APP_PLAY_GAMES = 'com.google.android.games'
+APP_PLAY_MUSIC = 'com.google.android.music'
+APP_PLAY_STORE = 'com.android.vending'
+APP_PLAY_VIDEOS = 'com.android.videos'
 APP_PLEX = 'com.plexapp.android'
+APP_PRIME_VIDEO = 'com.amazon.amazonvideo.livingroom'
 APP_SPORT1 = 'de.sport1.firetv.video'
 APP_SPOTIFY = 'com.spotify.tv.android'
 APP_TVHEADEND = 'de.cyberdream.dreamepg.tvh.tv.player'
 APP_TWITCH = 'tv.twitch.android.viewer'
+APP_TWITCH_APP = 'tv.twitch.android.app'
 APP_VLC = 'org.videolan.vlc'
 APP_VRV = 'com.ellation.vrv'
 APP_WAIPU_TV = 'de.exaring.waipu.firetv.live'
 APP_YOUTUBE = 'com.google.android.youtube.tv'
 APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
+        APP_AMZ_VIDEO: 'Amz Video',
         APP_ATV_LAUNCHER: 'Android TV Launcher',
         APP_BELL_FIBE: 'Bell Fibe',
+        APP_ES_FILE_EXPLORER: 'ES File Explorer',
         APP_FIREFOX: 'Firefox',
+        APP_FRANCE_TV: 'France TV',
         APP_GOOGLE_CAST: 'Google Cast',
         APP_HBO_GO: 'HBO GO',
         APP_HULU: 'Hulu',
+        APP_IPTV_SMARTERS_PRO: 'IPTV Smarters Pro',
         APP_JELLYFIN_TV: 'Jellyfin',
         APP_KODI: 'Kodi',
+        APP_MOLOTOV: 'Molotov',
         APP_NETFLIX: 'Netflix',
+        APP_OCS: 'OCS',
+        APP_PLAY_GAMES: 'Play Games',
+        APP_PLAY_MUSIC: 'Play Music',
+        APP_PLAY_STORE: 'Play Store',
+        APP_PLAY_VIDEOS: 'Play Videos',
         APP_PLEX: 'Plex',
+        APP_PRIME_VIDEO: 'Prime Video',
         APP_SPORT1: 'Sport 1',
         APP_SPOTIFY: 'Spotify',
         APP_TVHEADEND: 'DreamPLayer TVHeadend',
         APP_TWITCH: 'Twitch',
+        APP_TWITCH_APP: 'Twitch App',
         APP_VLC: 'VLC',
         APP_VRV: 'VRV',
         APP_WAIPU_TV: 'Waipu TV',
