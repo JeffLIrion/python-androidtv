@@ -122,14 +122,14 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
         """
         if lazy:
             if get_running_apps:
-                output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_LAZY_RUNNING_APPS)
+                output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_LAZY_RUNNING_APPS if not self._is_google_tv else constants.CMD_GOOGLE_TV_PROPERTIES_LAZY_RUNNING_APPS)
             else:
-                output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_LAZY_NO_RUNNING_APPS)
+                output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_LAZY_NO_RUNNING_APPS if not self._is_google_tv else constants.CMD_GOOGLE_TV_PROPERTIES_LAZY_NO_RUNNING_APPS)
         else:
             if get_running_apps:
-                output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
+                output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_RUNNING_APPS if not self._is_google_tv else constants.CMD_GOOGLE_TV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
             else:
-                output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
+                output = self._adb.shell(constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS if not self._is_google_tv else constants.CMD_GOOGLE_TV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
         _LOGGER.debug("Android TV %s:%d `get_properties` response: %s", self.host, self.port, output)
 
         return self._get_properties(output, get_running_apps)

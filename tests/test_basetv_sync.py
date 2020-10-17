@@ -52,6 +52,15 @@ Device "wlan0" does not exist.
     link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
 """
 
+# Source: https://community.home-assistant.io/t/new-chromecast-w-android-tv-integration-only-showing-as-off-or-idle/234424/15
+DEVICE_PROPERTIES_GOOGLE_TV = """Google
+Chromecast
+SERIALNO
+10
+    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
+Device "eth0" does not exist.
+"""
+
 DEVICE_PROPERTIES_DICT3 = {'manufacturer': 'Not Amazon',
                            'model': 'AFTT',
                            'serialno': 'SERIALNO',
@@ -323,6 +332,10 @@ class TestBaseTVSyncPython(unittest.TestCase):
         with patchers.patch_shell('')[self.PATCH_KEY]:
             device_properties = self.btv.get_device_properties()
             self.assertDictEqual({}, device_properties)
+
+        with patchers.patch_shell(DEVICE_PROPERTIES_GOOGLE_TV)[self.PATCH_KEY]:
+            device_properties = self.btv.get_device_properties()
+            self.assertTrue(self.btv._is_google_tv)
 
     def test_awake(self):
         """Check that the ``awake`` property works correctly.

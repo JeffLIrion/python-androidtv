@@ -213,6 +213,38 @@ GET_PROPERTIES_DICT_NONE = {'screen_on': None,
                             'running_apps': None}
 STATE_NONE = (None, None, None, None, None, None)
 
+# Source: https://community.home-assistant.io/t/new-chromecast-w-android-tv-integration-only-showing-as-off-or-idle/234424/17
+GET_PROPERTIES_OUTPUT_GOOGLE_TV = """111Wake Locks: size=4
+com.google.android.youtube.tv
+      state=PlaybackState {state=3, position=610102, buffered position=0, speed=1.0, updated=234649304, actions=379, custom actions=[], active item id=-1, error=null}
+- STREAM_MUSIC:
+   Muted: false
+   Min: 0
+   Max: 25
+   streamVolume:25
+   Current: 4 (headset): 10, 8 (headphone): 10, 400 (hdmi): 25, 4000000 (usb_headset): 6, 40000000 (default): 20
+   Devices: hdmi
+- STREAM_ALARM:
+   Muted: false
+   Min: 1
+   Max: 7
+   streamVolume:6
+u0_a38       16522 16265 1348552  89960 0                   0 S com.android.systemui
+u0_a56       16765 16265 1343904  94124 0                   0 S com.google.android.inputmethod.latin
+u0_a42       16783 16265 1302956  67868 0                   0 S com.google.android.tv.remote.service
+"""
+
+GET_PROPERTIES_DICT_GOOGLE_TV = {'screen_on': True,
+                                 'awake': True,
+                                 'audio_state': constants.STATE_PAUSED,
+                                 'wake_lock_size': 4,
+                                 'current_app': 'com.google.android.youtube.tv',
+                                 'media_session_state': 3,
+                                 'audio_output_device': 'hdmi',
+                                 'is_volume_muted': False,
+                                 'volume': 25,
+                                 'running_apps': ['com.android.systemui', 'com.google.android.inputmethod.latin', 'com.google.android.tv.remote.service']}
+
 # https://community.home-assistant.io/t/testers-needed-custom-state-detection-rules-for-android-tv-fire-tv/129493/6?u=jefflirion
 STATE_DETECTION_RULES_PLEX = {'com.plexapp.android': [{'playing': {'media_session_state': 3,
                                                                    'wake_lock_size': 3}},
@@ -626,6 +658,10 @@ class TestAndroidTVSyncPython(unittest.TestCase):
             true_properties['running_apps'] = RUNNING_APPS_LIST
             properties = self.atv.get_properties_dict(get_running_apps=True, lazy=False)
             self.assertEqual(properties, true_properties)
+
+        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_GOOGLE_TV)[self.PATCH_KEY]:
+            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            self.assertEqual(properties, GET_PROPERTIES_DICT_GOOGLE_TV)
 
     def test_update(self):
         """Check that the ``update`` method works correctly.
