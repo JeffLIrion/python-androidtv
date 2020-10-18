@@ -75,6 +75,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         self.adb_server_port = adb_server_port
         self._state_detection_rules = state_detection_rules
         self.device_properties = {}
+        self._is_google_tv = False
 
         # make sure the rules are valid
         if self._state_detection_rules:
@@ -132,6 +133,10 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             return {}
 
         manufacturer, model, serialno, version, mac_wlan0_output, mac_eth0_output = lines
+
+        # Is this a Google Chromecast Android TV?
+        if "Google" in manufacturer and "Chromecast" in model:
+            self._is_google_tv = True
 
         if not serialno.strip():
             _LOGGER.warning("Could not obtain serialno for %s:%d, got: '%s'", self.host, self.port, serialno)

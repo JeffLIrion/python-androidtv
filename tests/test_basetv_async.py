@@ -58,6 +58,15 @@ DEVICE_PROPERTIES_DICT3 = {'manufacturer': 'Not Amazon',
                            'wifimac': None,
                            'ethmac': 'ab:cd:ef:gh:ij:kl'}
 
+# Source: https://community.home-assistant.io/t/new-chromecast-w-android-tv-integration-only-showing-as-off-or-idle/234424/15
+DEVICE_PROPERTIES_GOOGLE_TV = """Google
+Chromecast
+SERIALNO
+10
+    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
+Device "eth0" does not exist.
+"""
+
 MEDIA_SESSION_STATE_OUTPUT = "com.amazon.tv.launcher\nstate=PlaybackState {state=2, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}"
 
 STATE_DETECTION_RULES1 = {'com.amazon.tv.launcher': ['off']}
@@ -329,6 +338,10 @@ class TestBaseTVAsyncPython(unittest.TestCase):
         with async_patchers.patch_shell('')[self.PATCH_KEY]:
             device_properties = await self.btv.get_device_properties()
             self.assertDictEqual({}, device_properties)
+
+        with async_patchers.patch_shell(DEVICE_PROPERTIES_GOOGLE_TV)[self.PATCH_KEY]:
+            device_properties = await self.btv.get_device_properties()
+            self.assertTrue(self.btv._is_google_tv)
 
     @awaiter
     async def test_awake(self):
