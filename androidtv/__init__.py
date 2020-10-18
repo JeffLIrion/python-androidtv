@@ -10,7 +10,7 @@ from .constants import DEFAULT_AUTH_TIMEOUT_S
 from .firetv.firetv_sync import FireTVSync
 
 
-__version__ = '0.0.50'
+__version__ = '0.0.51'
 
 
 def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, device_class='auto', auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S, signer=None):
