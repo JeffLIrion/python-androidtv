@@ -283,18 +283,27 @@ MEDIA_SESSION_STATES = {0: None,
 
 
 # Apps
+APP_AE_TV = 'com.aetn.aetv.watch'
 APP_AMAZON_VIDEO = 'com.amazon.avod'
 APP_AMZ_VIDEO = 'com.amazon.avod.thirdpartyclient'
+APP_APPLE_TV = 'com.apple.atve.amazon.appletv'
 APP_ATV_LAUNCHER = 'com.google.android.tvlauncher'
 APP_BELL_FIBE = 'com.quickplay.android.bellmediaplayer'
+APP_COMEDY_CENTRAL = 'com.vmn.android.comedycentral'
+APP_DISNEY_PLUS = 'com.disney.disneyplus'
 APP_ES_FILE_EXPLORER = 'com.estrongs.android.pop'
+APP_FAWESOME = 'com.future.moviesByFawesomeAndroidTV'
 APP_FIREFOX = 'org.mozilla.tv.firefox'
-APP_FIRETV_PACKAGE_LAUNCHER = "com.amazon.tv.launcher"
-APP_FIRETV_PACKAGE_SETTINGS = "com.amazon.tv.settings"
+APP_FIRETV_PACKAGE_LAUNCHER = 'com.amazon.tv.launcher'
+APP_FIRETV_PACKAGE_SETTINGS = 'com.amazon.tv.settings'
+APP_FIRETV_STORE = 'com.amazon.venezia'
+APP_FOOD_NETWORK_GO = 'tv.accedo.foodnetwork'
 APP_FRANCE_TV = 'fr.francetv.pluzz'
 APP_GOOGLE_CAST = 'com.google.android.apps.mediashell'
 APP_HBO_GO = 'eu.hbogo.androidtv.production'
+APP_HBO_GO_2 = 'com.HBO'
 APP_HULU = 'com.hulu.plus'
+APP_IMDB_TV = 'com.amazon.imdb.tv.android.app'
 APP_IPTV_SMARTERS_PRO = 'com.nst.iptvsmarterstvbox'
 APP_JELLYFIN_TV = 'org.jellyfin.androidtv'
 APP_KODI = 'org.xbmc.kodi'
@@ -307,25 +316,40 @@ APP_PLAY_STORE = 'com.android.vending'
 APP_PLAY_VIDEOS = 'com.android.videos'
 APP_PLEX = 'com.plexapp.android'
 APP_PRIME_VIDEO = 'com.amazon.amazonvideo.livingroom'
+APP_PRIME_VIDEO_2 = 'com.amazon.firebat'
 APP_SPORT1 = 'de.sport1.firetv.video'
 APP_SPOTIFY = 'com.spotify.tv.android'
+APP_STEAM_LINK = 'com.valvesoftware.steamlink'
+APP_SYFY = 'com.amazon.webapps.nbc.syfy'
 APP_TVHEADEND = 'de.cyberdream.dreamepg.tvh.tv.player'
 APP_TWITCH = 'tv.twitch.android.viewer'
 APP_TWITCH_APP = 'tv.twitch.android.app'
+APP_VH1 = 'com.mtvn.vh1android'
 APP_VLC = 'org.videolan.vlc'
 APP_VRV = 'com.ellation.vrv'
 APP_WAIPU_TV = 'de.exaring.waipu.firetv.live'
+APP_WATCH_TNT = 'com.turner.tnt.android.networkapp'
 APP_YOUTUBE = 'com.google.android.youtube.tv'
-APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
+APP_YOUTUBE_2 = 'com.amazon.firetv.youtube'
+APPS = {APP_AE_TV: 'A&E',
+        APP_AMAZON_VIDEO: 'Amazon Video',
         APP_AMZ_VIDEO: 'Amz Video',
+        APP_APPLE_TV: 'Apple TV',
         APP_ATV_LAUNCHER: 'Android TV Launcher',
         APP_BELL_FIBE: 'Bell Fibe',
+        APP_COMEDY_CENTRAL: 'Comedy Central',
+        APP_DISNEY_PLUS: 'Disney+',
         APP_ES_FILE_EXPLORER: 'ES File Explorer',
+        APP_FAWESOME: 'Fawsome',
         APP_FIREFOX: 'Firefox',
+        APP_FIRETV_STORE: 'FireTV Store',
+        APP_FOOD_NETWORK_GO: 'Food Network GO',
         APP_FRANCE_TV: 'France TV',
         APP_GOOGLE_CAST: 'Google Cast',
         APP_HBO_GO: 'HBO GO',
+        APP_HBO_GO_2: 'HBO GO (2)',
         APP_HULU: 'Hulu',
+        APP_IMDB_TV: 'IMDb TV',
         APP_IPTV_SMARTERS_PRO: 'IPTV Smarters Pro',
         APP_JELLYFIN_TV: 'Jellyfin',
         APP_KODI: 'Kodi',
@@ -338,15 +362,21 @@ APPS = {APP_AMAZON_VIDEO: 'Amazon Video',
         APP_PLAY_VIDEOS: 'Play Videos',
         APP_PLEX: 'Plex',
         APP_PRIME_VIDEO: 'Prime Video',
+        APP_PRIME_VIDEO_2: 'Prime Video (2)',
         APP_SPORT1: 'Sport 1',
         APP_SPOTIFY: 'Spotify',
+        APP_STEAM_LINK: 'Steam Link',
+        APP_SYFY: 'Syfy',
         APP_TVHEADEND: 'DreamPLayer TVHeadend',
         APP_TWITCH: 'Twitch',
         APP_TWITCH_APP: 'Twitch App',
+        APP_VH1: 'VH1',
         APP_VLC: 'VLC',
         APP_VRV: 'VRV',
         APP_WAIPU_TV: 'Waipu TV',
-        APP_YOUTUBE: 'YouTube'}
+        APP_WATCH_TNT: 'Watch TNT',
+        APP_YOUTUBE: 'YouTube',
+        APP_YOUTUBE_2: 'YouTube (FireTV)'}
 
 
 # Regular expressions
