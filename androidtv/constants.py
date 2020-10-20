@@ -332,7 +332,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_FRANCE_TV: 'France TV',
         APP_GOOGLE_CAST: 'Google Cast',
         APP_HBO_GO: 'HBO GO',
-        APP_HBO_GO_2: 'HBO GO',
+        APP_HBO_GO_2: 'HBO GO (2)',
         APP_HULU: 'Hulu',
         APP_IMDB_TV: 'IMDb TV',
         APP_IPTV_SMARTERS_PRO: 'IPTV Smarters Pro',
@@ -347,7 +347,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_PLAY_VIDEOS: 'Play Videos',
         APP_PLEX: 'Plex',
         APP_PRIME_VIDEO: 'Prime Video',
-        APP_PRIME_VIDEO_2: 'Prime Video',
+        APP_PRIME_VIDEO_2: 'Prime Video (2)',
         APP_SPORT1: 'Sport 1',
         APP_SPOTIFY: 'Spotify',
         APP_STEAM_LINK: 'Steam Link',
@@ -361,7 +361,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_WAIPU_TV: 'Waipu TV',
         APP_WATCH_TNT: 'Watch TNT',
         APP_YOUTUBE: 'YouTube',
-        APP_YOUTUBE_2: 'YouTube'}
+        APP_YOUTUBE_2: 'YouTube (FireTV)'}
 
 
 # Regular expressions
