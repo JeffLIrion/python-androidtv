@@ -317,9 +317,9 @@ APP_WATCH_TNT = 'com.turner.tnt.android.networkapp'
 APP_YOUTUBE = 'com.google.android.youtube.tv'
 APP_YOUTUBE_2 = 'com.amazon.firetv.youtube'
 APPS = {APP_AE_TV: 'A&E',
-        APP_APPLE_TV: 'Apple TV',
         APP_AMAZON_VIDEO: 'Amazon Video',
         APP_AMZ_VIDEO: 'Amz Video',
+        APP_APPLE_TV: 'Apple TV',
         APP_ATV_LAUNCHER: 'Android TV Launcher',
         APP_BELL_FIBE: 'Bell Fibe',
         APP_COMEDY_CENTRAL: 'Comedy Central',
