@@ -351,7 +351,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_SPORT1: 'Sport 1',
         APP_SPOTIFY: 'Spotify',
         APP_STEAM_LINK: 'Steam Link',
-        APP_SYFY: 'Syfy'
+        APP_SYFY: 'Syfy',
         APP_TVHEADEND: 'DreamPLayer TVHeadend',
         APP_TWITCH: 'Twitch',
         APP_TWITCH_APP: 'Twitch App',
