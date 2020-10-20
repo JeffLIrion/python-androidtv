@@ -305,6 +305,7 @@ APP_PRIME_VIDEO_2 = 'com.amazon.firebat'
 APP_SPORT1 = 'de.sport1.firetv.video'
 APP_SPOTIFY = 'com.spotify.tv.android'
 APP_STEAM_LINK = 'com.valvesoftware.steamlink'
+APP_SYFY = 'com.amazon.webapps.nbc.syfy'
 APP_TVHEADEND = 'de.cyberdream.dreamepg.tvh.tv.player'
 APP_TWITCH = 'tv.twitch.android.viewer'
 APP_TWITCH_APP = 'tv.twitch.android.app'
@@ -350,6 +351,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_SPORT1: 'Sport 1',
         APP_SPOTIFY: 'Spotify',
         APP_STEAM_LINK: 'Steam Link',
+        APP_SYFY: 'Syfy'
         APP_TVHEADEND: 'DreamPLayer TVHeadend',
         APP_TWITCH: 'Twitch',
         APP_TWITCH_APP: 'Twitch App',
