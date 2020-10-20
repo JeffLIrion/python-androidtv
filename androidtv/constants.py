@@ -269,9 +269,9 @@ MEDIA_SESSION_STATES = {0: None,
 
 # Apps
 APP_AE_TV = 'com.aetn.aetv.watch'
-APP_APPLE_TV = 'com.apple.atve.amazon.appletv'
 APP_AMAZON_VIDEO = 'com.amazon.avod'
 APP_AMZ_VIDEO = 'com.amazon.avod.thirdpartyclient'
+APP_APPLE_TV = 'com.apple.atve.amazon.appletv'
 APP_ATV_LAUNCHER = 'com.google.android.tvlauncher'
 APP_BELL_FIBE = 'com.quickplay.android.bellmediaplayer'
 APP_COMEDY_CENTRAL = 'com.vmn.android.comedycentral'
