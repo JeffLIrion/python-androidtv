@@ -173,7 +173,7 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
             A list of the running apps
 
         """
-        running_apps_response = self._adb.shell(constants.CMD_ANDROIDTV_RUNNING_APPS)
+        running_apps_response = self._adb.shell(constants.CMD_RUNNING_APPS_ANDROIDTV)
 
         return self._running_apps(running_apps_response)
 

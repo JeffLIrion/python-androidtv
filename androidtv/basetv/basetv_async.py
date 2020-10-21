@@ -254,6 +254,17 @@ class BaseTVAsync(BaseTV):
 
         return self._current_app(current_app_response)
 
+    async def get_hdmi_input(self):
+        """Get the HDMI input from the output of :py:const:`androidtv.constants.CMD_HDMI_INPUT`.
+
+        Returns
+        -------
+        str, None
+            The HDMI input, or ``None`` if it could not be determined
+
+        """
+        return self._get_hdmi_input(await self._adb.shell(constants.CMD_HDMI_INPUT))
+
     async def is_volume_muted(self):
         """Whether or not the volume is muted.
 
