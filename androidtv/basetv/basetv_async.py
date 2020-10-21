@@ -414,7 +414,7 @@ class BaseTVAsync(BaseTV):
             The ID of the app that will be launched
 
         """
-        await self._adb.shell(constants.CMD_LAUNCH_APP.format(app))
+        await self._adb.shell(constants.CMD_LAUNCH_APP.format(app) if not self._is_google_tv else constants.CMD_LAUNCH_APP_GOOGLE_TV.format(app))
 
     async def stop_app(self, app):
         """Stop an app.
