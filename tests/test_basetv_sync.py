@@ -464,6 +464,16 @@ class TestBaseTVSyncPython(unittest.TestCase):
         with patchers.patch_shell('INVALID')[self.PATCH_KEY]:
             self.assertIsNone(self.btv.wake_lock_size())
 
+    def test_get_hdmi_input(self):
+        """Check that the ``get_hdmi_input`` function works correctly.
+
+        """
+        with patchers.patch_shell("HDMI2")[self.PATCH_KEY]:
+            self.assertEqual(self.btv.get_hdmi_input(), "HDMI2")
+
+        with patchers.patch_shell("")[self.PATCH_KEY]:
+            self.assertIsNone(self.btv.get_hdmi_input(), None)
+
     def test_learn_sendevent(self):
         """Check that the ``learn_sendevent`` method works correctly.
 

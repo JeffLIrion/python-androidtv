@@ -478,6 +478,17 @@ class TestBaseTVAsyncPython(unittest.TestCase):
             self.assertIsNone(await self.btv.wake_lock_size())
 
     @awaiter
+    async def test_get_hdmi_input(self):
+        """Check that the ``get_hdmi_input`` function works correctly.
+
+        """
+        with async_patchers.patch_shell("HDMI2")[self.PATCH_KEY]:
+            self.assertEqual(await self.btv.get_hdmi_input(), "HDMI2")
+
+        with async_patchers.patch_shell("")[self.PATCH_KEY]:
+            self.assertIsNone(await self.btv.get_hdmi_input(), None)
+
+    @awaiter
     async def test_learn_sendevent(self):
         """Check that the ``learn_sendevent`` method works correctly.
 

@@ -155,7 +155,7 @@ class FireTVAsync(BaseTVAsync, BaseFireTV):
             A list of the running apps
 
         """
-        running_apps_response = await self._adb.shell(constants.CMD_FIRETV_RUNNING_APPS)
+        running_apps_response = await self._adb.shell(constants.CMD_RUNNING_APPS_FIRETV)
 
         return self._running_apps(running_apps_response)
 

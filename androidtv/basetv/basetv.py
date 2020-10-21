@@ -360,6 +360,23 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         return current_app, media_session_state
 
     @staticmethod
+    def _get_hdmi_input(hdmi_response):
+        """Get the HDMI input from the output of :py:const:`androidtv.constants.CMD_HDMI_INPUT`.
+
+        Parameters
+        ----------
+        hdmi_response : str, None
+            The output of :py:const:`androidtv.constants.CMD_HDMI_INPUT`
+
+        Returns
+        -------
+        str, None
+            The HDMI input, or ``None`` if it could not be determined
+
+        """
+        return hdmi_response if hdmi_response else None
+
+    @staticmethod
     def _is_volume_muted(stream_music):
         """Determine whether or not the volume is muted from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
 
