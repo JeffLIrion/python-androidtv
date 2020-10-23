@@ -314,6 +314,7 @@ class AndroidTVDevice(ADBDevice):
             _,
             self._is_volume_muted,
             self._volume_level,
+            _
         ) = self.aftv.update(self._get_sources)
 
         self._state = ANDROIDTV_STATES.get(state)
@@ -384,7 +385,7 @@ class FireTVDevice(ADBDevice):
             return
 
         # Get the `state`, `current_app`, and `running_apps`.
-        state, self._current_app, running_apps = self.aftv.update(self._get_sources)
+        state, self._current_app, running_apps, _ = self.aftv.update(self._get_sources)
 
         self._state = ANDROIDTV_STATES.get(state)
         if self._state is None:
