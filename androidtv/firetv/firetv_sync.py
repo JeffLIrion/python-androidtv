@@ -61,12 +61,14 @@ class FireTVSync(BaseTVSync, BaseFireTV):
             The current running app
         running_apps : list
             A list of the running apps if ``get_running_apps`` is True, otherwise the list ``[current_app]``
+        hdmi_input : str, None
+            The HDMI input, or ``None`` if it could not be determined
 
         """
         # Get the properties needed for the update
-        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps, hdmi_input = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
-        return self._update(screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps)
+        return self._update(screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps, hdmi_input)
 
     # ======================================================================= #
     #                                                                         #
@@ -104,6 +106,8 @@ class FireTVSync(BaseTVSync, BaseFireTV):
             The state from the output of ``dumpsys media_session``, or ``None`` if it was not determined
         running_apps : list, None
             A list of the running apps, or ``None`` if it was not determined
+        hdmi_input : str, None
+            The HDMI input, or ``None`` if it could not be determined
 
         """
         if lazy:
@@ -134,17 +138,18 @@ class FireTVSync(BaseTVSync, BaseFireTV):
         -------
         dict
              A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'current_app'``,
-             ``'media_session_state'``, and ``'running_apps'``
+             ``'media_session_state'``, ``'running_apps'``, and ``'hdmi_input'``
 
         """
-        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps, hdmi_input = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
         return {'screen_on': screen_on,
                 'awake': awake,
                 'wake_lock_size': wake_lock_size,
                 'current_app': current_app,
                 'media_session_state': media_session_state,
-                'running_apps': running_apps}
+                'running_apps': running_apps,
+                'hdmi_input': hdmi_input}
 
     def running_apps(self):
         """Return a list of running user applications.
