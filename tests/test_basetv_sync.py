@@ -478,7 +478,10 @@ class TestBaseTVSyncPython(unittest.TestCase):
             self.assertEqual(self.btv.get_hdmi_input(), "HDMI2")
 
         with patchers.patch_shell("")[self.PATCH_KEY]:
-            self.assertIsNone(self.btv.get_hdmi_input(), None)
+            self.assertIsNone(self.btv.get_hdmi_input())
+
+        with patchers.patch_shell("\r\n")[self.PATCH_KEY]:
+            self.assertIsNone(self.btv.get_hdmi_input())
 
     def test_learn_sendevent(self):
         """Check that the ``learn_sendevent`` method works correctly.
