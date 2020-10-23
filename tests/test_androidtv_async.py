@@ -13,6 +13,8 @@ from . import async_patchers
 from .async_wrapper import awaiter
 
 
+HDMI_INPUT_EMPTY = "\n"
+
 STREAM_MUSIC_EMPTY = "- STREAM_MUSIC:\n \n- STREAM"
 
 STREAM_MUSIC_OFF = """- STREAM_MUSIC:
@@ -72,7 +74,8 @@ GET_PROPERTIES_DICT1 = {'screen_on': False,
                         'audio_output_device': None,
                         'is_volume_muted': None,
                         'volume': None,
-                        'running_apps': None}
+                        'running_apps': None,
+                        'hdmi_input': None}
 STATE1 = (constants.STATE_OFF, None, None, None, None, None)
 
 GET_PROPERTIES_OUTPUT2 = "1"
@@ -85,13 +88,14 @@ GET_PROPERTIES_DICT2 = {'screen_on': True,
                         'audio_output_device': None,
                         'is_volume_muted': None,
                         'volume': None,
-                        'running_apps': None}
+                        'running_apps': None,
+                        'hdmi_input': None}
 STATE2 = (constants.STATE_STANDBY, None, None, None, None, None)
 
 GET_PROPERTIES_OUTPUT3 = """110Wake Locks: size=2
 com.amazon.tv.launcher
 
-""" + STREAM_MUSIC_ON
+""" + HDMI_INPUT_EMPTY + STREAM_MUSIC_ON
 GET_PROPERTIES_DICT3 = {'screen_on': True,
                         'awake': True,
                         'audio_state': constants.STATE_IDLE,
@@ -101,7 +105,8 @@ GET_PROPERTIES_DICT3 = {'screen_on': True,
                         'audio_output_device': 'hmdi_arc',
                         'is_volume_muted': False,
                         'volume': 22,
-                        'running_apps': None}
+                        'running_apps': None,
+                        'hdmi_input': None}
 STATE3 = (constants.STATE_PLAYING, 'com.amazon.tv.launcher', ['com.amazon.tv.launcher'], 'hmdi_arc', False, (22 / 60.))
 
 GET_PROPERTIES_OUTPUT3A = GET_PROPERTIES_OUTPUT3[:1]
@@ -121,7 +126,8 @@ GET_PROPERTIES_DICT3A = {'screen_on': True,
                          'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
-                         'running_apps': None}
+                         'running_apps': None,
+                         'hdmi_input': None}
 GET_PROPERTIES_DICT3B = {'screen_on': True,
                          'awake': True,
                          'audio_state': None,
@@ -131,7 +137,8 @@ GET_PROPERTIES_DICT3B = {'screen_on': True,
                          'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
-                         'running_apps': None}
+                         'running_apps': None,
+                         'hdmi_input': None}
 GET_PROPERTIES_DICT3C = {'screen_on': True,
                          'awake': True,
                          'audio_state': constants.STATE_IDLE,
@@ -141,7 +148,8 @@ GET_PROPERTIES_DICT3C = {'screen_on': True,
                          'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
-                         'running_apps': None}
+                         'running_apps': None,
+                         'hdmi_input': None}
 GET_PROPERTIES_DICT3D = {'screen_on': True,
                          'awake': True,
                          'audio_state': constants.STATE_IDLE,
@@ -151,7 +159,8 @@ GET_PROPERTIES_DICT3D = {'screen_on': True,
                          'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
-                         'running_apps': None}
+                         'running_apps': None,
+                         'hdmi_input': None}
 GET_PROPERTIES_DICT3E = {'screen_on': True,
                          'awake': True,
                          'audio_state': constants.STATE_IDLE,
@@ -161,7 +170,8 @@ GET_PROPERTIES_DICT3E = {'screen_on': True,
                          'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
-                         'running_apps': None}
+                         'running_apps': None,
+                         'hdmi_input': None}
 GET_PROPERTIES_DICT3F = {'screen_on': True,
                          'awake': True,
                          'audio_state': constants.STATE_IDLE,
@@ -171,7 +181,8 @@ GET_PROPERTIES_DICT3F = {'screen_on': True,
                          'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
-                         'running_apps': None}
+                         'running_apps': None,
+                         'hdmi_input': None}
 GET_PROPERTIES_DICT3G = {'screen_on': True,
                          'awake': True,
                          'audio_state': constants.STATE_IDLE,
@@ -181,7 +192,8 @@ GET_PROPERTIES_DICT3G = {'screen_on': True,
                          'audio_output_device': None,
                          'is_volume_muted': None,
                          'volume': None,
-                         'running_apps': None}
+                         'running_apps': None,
+                         'hdmi_input': None}
 
 GET_PROPERTIES_OUTPUT4 = """111Wake Locks: size=2
 com.amazon.tv.launcher
@@ -196,7 +208,8 @@ GET_PROPERTIES_DICT4 = {'screen_on': True,
                         'audio_output_device': None,
                         'is_volume_muted': None,
                         'volume': None,
-                        'running_apps': None}
+                        'running_apps': None,
+                        'hdmi_input': None}
 
 GET_PROPERTIES_DICT_NONE = {'screen_on': None,
                             'awake': None,
@@ -207,7 +220,8 @@ GET_PROPERTIES_DICT_NONE = {'screen_on': None,
                             'audio_output_device': None,
                             'is_volume_muted': None,
                             'volume': None,
-                            'running_apps': None}
+                            'running_apps': None,
+                            'hdmi_input': None}
 STATE_NONE = (None, None, None, None, None, None)
 
 # https://community.home-assistant.io/t/testers-needed-custom-state-detection-rules-for-android-tv-fire-tv/129493/6?u=jefflirion
@@ -221,7 +235,7 @@ STATE_DETECTION_RULES_PLEX = {'com.plexapp.android': [{'playing': {'media_sessio
 GET_PROPERTIES_OUTPUT_PLEX_IDLE = """110Wake Locks: size=1
 com.plexapp.android
 
-""" + STREAM_MUSIC_ON
+""" + HDMI_INPUT_EMPTY + STREAM_MUSIC_ON
 
 GET_PROPERTIES_DICT_PLEX_IDLE = {'screen_on': True,
                                     'awake': True,
@@ -232,7 +246,8 @@ GET_PROPERTIES_DICT_PLEX_IDLE = {'screen_on': True,
                                     'audio_output_device': 'hmdi_arc',
                                     'is_volume_muted': False,
                                     'volume': 22,
-                                    'running_apps': None}
+                                    'running_apps': None,
+                                    'hdmi_input': None}
 
 STATE_PLEX_IDLE = (constants.STATE_PLAYING, 'com.plexapp.android', ['com.plexapp.android'], 'hmdi_arc', False, 22/60.)
 
@@ -240,7 +255,7 @@ STATE_PLEX_IDLE = (constants.STATE_PLAYING, 'com.plexapp.android', ['com.plexapp
 GET_PROPERTIES_OUTPUT_PLEX_PLAYING = """110Wake Locks: size=3
 com.plexapp.android
 state=3
-""" + STREAM_MUSIC_ON
+""" + HDMI_INPUT_EMPTY + STREAM_MUSIC_ON
 
 GET_PROPERTIES_DICT_PLEX_PLAYING = {'screen_on': True,
                                     'awake': True,
@@ -251,7 +266,8 @@ GET_PROPERTIES_DICT_PLEX_PLAYING = {'screen_on': True,
                                     'audio_output_device': 'hmdi_arc',
                                     'is_volume_muted': False,
                                     'volume': 22,
-                                    'running_apps': None}
+                                    'running_apps': None,
+                                    'hdmi_input': None}
 
 STATE_PLEX_PLAYING = (constants.STATE_PLAYING, 'com.plexapp.android', ['com.plexapp.android'], 'hmdi_arc', False, 22/60.)
 
@@ -259,7 +275,7 @@ STATE_PLEX_PLAYING = (constants.STATE_PLAYING, 'com.plexapp.android', ['com.plex
 GET_PROPERTIES_OUTPUT_PLEX_PAUSED = """110Wake Locks: size=1
 com.plexapp.android
 state=3
-""" + STREAM_MUSIC_ON
+""" + HDMI_INPUT_EMPTY + STREAM_MUSIC_ON
 
 GET_PROPERTIES_DICT_PLEX_PAUSED = {'screen_on': True,
                                    'awake': True,
@@ -270,7 +286,8 @@ GET_PROPERTIES_DICT_PLEX_PAUSED = {'screen_on': True,
                                    'audio_output_device': 'hmdi_arc',
                                    'is_volume_muted': False,
                                    'volume': 22,
-                                   'running_apps': None}
+                                   'running_apps': None,
+                                   'hdmi_input': None}
 
 STATE_PLEX_PAUSED = (constants.STATE_PAUSED, 'com.plexapp.android', ['com.plexapp.android'], 'hmdi_arc', False, 22/60.)
 

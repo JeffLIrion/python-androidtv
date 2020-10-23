@@ -278,11 +278,11 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
         hdmi_input = self._get_hdmi_input(lines[3])
 
         # "STREAM_MUSIC" block
-        if len(lines) < 4:
+        if len(lines) < 5:
             return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, None, None, None, None, hdmi_input
 
         # reconstruct the output of `constants.CMD_STREAM_MUSIC`
-        stream_music_raw = "\n".join(lines[3:])
+        stream_music_raw = "\n".join(lines[4:])
 
         # the "STREAM_MUSIC" block from `adb shell dumpsys audio`
         stream_music = self._parse_stream_music(stream_music_raw)
@@ -297,8 +297,8 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
         is_volume_muted = self._is_volume_muted(stream_music)
 
         # `running_apps` property
-        if not get_running_apps or len(lines) < 16:
+        if not get_running_apps or len(lines) < 17:
             return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, None, hdmi_input
-        running_apps = self._running_apps(lines[15:])
+        running_apps = self._running_apps(lines[16:])
 
         return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps, hdmi_input
