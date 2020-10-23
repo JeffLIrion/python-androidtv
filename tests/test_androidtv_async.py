@@ -115,7 +115,7 @@ GET_PROPERTIES_OUTPUT3C = GET_PROPERTIES_OUTPUT3[:3]
 GET_PROPERTIES_OUTPUT3D = GET_PROPERTIES_OUTPUT3.splitlines()[0]
 GET_PROPERTIES_OUTPUT3E = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:2])
 GET_PROPERTIES_OUTPUT3F = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:3])
-GET_PROPERTIES_OUTPUT3G = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:4])
+GET_PROPERTIES_OUTPUT3G = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:4]) + "HDMI"
 
 GET_PROPERTIES_DICT3A = {'screen_on': True,
                          'awake': False,
@@ -193,7 +193,7 @@ GET_PROPERTIES_DICT3G = {'screen_on': True,
                          'is_volume_muted': None,
                          'volume': None,
                          'running_apps': None,
-                         'hdmi_input': None}
+                         'hdmi_input': 'HDMI'}
 
 GET_PROPERTIES_OUTPUT4 = """111Wake Locks: size=2
 com.amazon.tv.launcher
@@ -608,6 +608,10 @@ class TestAndroidTVAsyncPython(unittest.TestCase):
         with async_patchers.patch_shell(GET_PROPERTIES_OUTPUT3F)[self.PATCH_KEY]:
             properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
             self.assertEqual(properties, GET_PROPERTIES_DICT3F)
+
+        with async_patchers.patch_shell(GET_PROPERTIES_OUTPUT3G)[self.PATCH_KEY]:
+            properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
+            self.assertEqual(properties, GET_PROPERTIES_DICT3G)
 
         with async_patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
             properties = await self.atv.get_properties_dict(get_running_apps=True, lazy=True)
