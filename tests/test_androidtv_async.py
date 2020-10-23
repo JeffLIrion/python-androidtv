@@ -76,7 +76,7 @@ GET_PROPERTIES_DICT1 = {'screen_on': False,
                         'volume': None,
                         'running_apps': None,
                         'hdmi_input': None}
-STATE1 = (constants.STATE_OFF, None, None, None, None, None)
+STATE1 = (constants.STATE_OFF, None, None, None, None, None, None)
 
 GET_PROPERTIES_OUTPUT2 = "1"
 GET_PROPERTIES_DICT2 = {'screen_on': True,
@@ -90,7 +90,7 @@ GET_PROPERTIES_DICT2 = {'screen_on': True,
                         'volume': None,
                         'running_apps': None,
                         'hdmi_input': None}
-STATE2 = (constants.STATE_STANDBY, None, None, None, None, None)
+STATE2 = (constants.STATE_STANDBY, None, None, None, None, None, None)
 
 GET_PROPERTIES_OUTPUT3 = """110Wake Locks: size=2
 com.amazon.tv.launcher
@@ -107,7 +107,7 @@ GET_PROPERTIES_DICT3 = {'screen_on': True,
                         'volume': 22,
                         'running_apps': None,
                         'hdmi_input': None}
-STATE3 = (constants.STATE_PLAYING, 'com.amazon.tv.launcher', ['com.amazon.tv.launcher'], 'hmdi_arc', False, (22 / 60.))
+STATE3 = (constants.STATE_PLAYING, 'com.amazon.tv.launcher', ['com.amazon.tv.launcher'], 'hmdi_arc', False, (22 / 60.), None)
 
 GET_PROPERTIES_OUTPUT3A = GET_PROPERTIES_OUTPUT3[:1]
 GET_PROPERTIES_OUTPUT3B = GET_PROPERTIES_OUTPUT3[:2]
@@ -222,7 +222,7 @@ GET_PROPERTIES_DICT_NONE = {'screen_on': None,
                             'volume': None,
                             'running_apps': None,
                             'hdmi_input': None}
-STATE_NONE = (None, None, None, None, None, None)
+STATE_NONE = (None, None, None, None, None, None, None)
 
 # https://community.home-assistant.io/t/testers-needed-custom-state-detection-rules-for-android-tv-fire-tv/129493/6?u=jefflirion
 STATE_DETECTION_RULES_PLEX = {'com.plexapp.android': [{'playing': {'media_session_state': 3,
@@ -721,115 +721,115 @@ class TestAndroidTVAsyncPython(unittest.TestCase):
 
         """
         self.atv.max_volume = 60.
-        await self.assertUpdate([False, False, None, -1, None, None, None, None, None, None],
-                                (constants.STATE_OFF, None, None, None, None, None))
+        await self.assertUpdate([False, False, None, -1, None, None, None, None, None, None, None],
+                                (constants.STATE_OFF, None, None, None, None, None, None))
 
-        await self.assertUpdate([True, False, None, -1, None, None, None, None, None, None],
-                                (constants.STATE_STANDBY, None, None, None, None, None))
+        await self.assertUpdate([True, False, None, -1, None, None, None, None, None, None, None],
+                                (constants.STATE_STANDBY, None, None, None, None, None, None))
 
         # ATV Launcher
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_IDLE, constants.APP_ATV_LAUNCHER, [constants.APP_ATV_LAUNCHER], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_IDLE, constants.APP_ATV_LAUNCHER, [constants.APP_ATV_LAUNCHER], 'hmdi_arc', False, 0.5, None))
 
         # ATV Launcher with custom state detection
         self.atv._state_detection_rules = {constants.APP_ATV_LAUNCHER: [{'idle': {'audio_state': 'idle'}}]}
-        await self.assertUpdate([True, True, constants.STATE_PAUSED, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_IDLE, constants.APP_ATV_LAUNCHER, [constants.APP_ATV_LAUNCHER], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_PAUSED, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_IDLE, constants.APP_ATV_LAUNCHER, [constants.APP_ATV_LAUNCHER], 'hmdi_arc', False, 0.5, None))
 
         self.atv._state_detection_rules = {constants.APP_ATV_LAUNCHER: [{'idle': {'INVALID': 'idle'}}]}
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_IDLE, constants.APP_ATV_LAUNCHER, [constants.APP_ATV_LAUNCHER], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_ATV_LAUNCHER, 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_IDLE, constants.APP_ATV_LAUNCHER, [constants.APP_ATV_LAUNCHER], 'hmdi_arc', False, 0.5, None))
 
         self.atv._state_detection_rules = None
 
         # Bell Fibe
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_BELL_FIBE, 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_IDLE, constants.APP_BELL_FIBE, [constants.APP_BELL_FIBE], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_BELL_FIBE, 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_IDLE, constants.APP_BELL_FIBE, [constants.APP_BELL_FIBE], 'hmdi_arc', False, 0.5, None))
 
         # Netflix
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 2, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PAUSED, constants.APP_NETFLIX, [constants.APP_NETFLIX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 2, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PAUSED, constants.APP_NETFLIX, [constants.APP_NETFLIX], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PLAYING, constants.APP_NETFLIX, [constants.APP_NETFLIX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PLAYING, constants.APP_NETFLIX, [constants.APP_NETFLIX], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 4, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_IDLE, constants.APP_NETFLIX, [constants.APP_NETFLIX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_NETFLIX, 4, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_IDLE, constants.APP_NETFLIX, [constants.APP_NETFLIX], 'hmdi_arc', False, 0.5, None))
 
         # Plex
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_PLEX, 4, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_IDLE, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_PLEX, 4, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_IDLE, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 3, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 3, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 4, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 4, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 5, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 5, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 7, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 7, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PLAYING, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 1, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PAUSED, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 1, constants.APP_PLEX, 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PAUSED, constants.APP_PLEX, [constants.APP_PLEX], 'hmdi_arc', False, 0.5, None))
 
         # TVheadend
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 5, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PAUSED, constants.APP_TVHEADEND, [constants.APP_TVHEADEND], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 5, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PAUSED, constants.APP_TVHEADEND, [constants.APP_TVHEADEND], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PLAYING, constants.APP_TVHEADEND, [constants.APP_TVHEADEND], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PLAYING, constants.APP_TVHEADEND, [constants.APP_TVHEADEND], 'hmdi_arc', False, 0.5, None))
         
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 1, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_IDLE, constants.APP_TVHEADEND, [constants.APP_TVHEADEND], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 1, constants.APP_TVHEADEND, 4, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_IDLE, constants.APP_TVHEADEND, [constants.APP_TVHEADEND], 'hmdi_arc', False, 0.5, None))
 
         # VLC
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 2, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PAUSED, constants.APP_VLC, [constants.APP_VLC], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 2, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PAUSED, constants.APP_VLC, [constants.APP_VLC], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PLAYING, constants.APP_VLC, [constants.APP_VLC], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PLAYING, constants.APP_VLC, [constants.APP_VLC], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 4, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_IDLE, constants.APP_VLC, [constants.APP_VLC], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 6, constants.APP_VLC, 4, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_IDLE, constants.APP_VLC, [constants.APP_VLC], 'hmdi_arc', False, 0.5, None))
 
         # VRV
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_VRV, 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_IDLE, constants.APP_VRV, [constants.APP_VRV], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_VRV, 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_IDLE, constants.APP_VRV, [constants.APP_VRV], 'hmdi_arc', False, 0.5, None))
 
         # YouTube
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 2, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PAUSED, constants.APP_YOUTUBE, [constants.APP_YOUTUBE], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 2, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PAUSED, constants.APP_YOUTUBE, [constants.APP_YOUTUBE], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PLAYING, constants.APP_YOUTUBE, [constants.APP_YOUTUBE], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PLAYING, constants.APP_YOUTUBE, [constants.APP_YOUTUBE], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 4, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_IDLE, constants.APP_YOUTUBE, [constants.APP_YOUTUBE], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, constants.APP_YOUTUBE, 4, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_IDLE, constants.APP_YOUTUBE, [constants.APP_YOUTUBE], 'hmdi_arc', False, 0.5, None))
 
         # Unknown app
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 2, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PAUSED, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 2, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PAUSED, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 3, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PLAYING, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 3, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PLAYING, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 4, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_IDLE, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', 4, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_IDLE, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_PLAYING, 2, 'unknown', None, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PLAYING, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_PLAYING, 2, 'unknown', None, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PLAYING, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 1, 'unknown', None, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PAUSED, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 1, 'unknown', None, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PAUSED, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', None, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_PLAYING, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 2, 'unknown', None, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_PLAYING, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5, None))
 
-        await self.assertUpdate([True, True, constants.STATE_IDLE, 3, 'unknown', None, 'hmdi_arc', False, 30, None],
-                                (constants.STATE_IDLE, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5))
+        await self.assertUpdate([True, True, constants.STATE_IDLE, 3, 'unknown', None, 'hmdi_arc', False, 30, None, None],
+                                (constants.STATE_IDLE, 'unknown', ['unknown'], 'hmdi_arc', False, 0.5, None))
 
 
 class TestAndroidTVAsyncServer(TestAndroidTVAsyncPython):
