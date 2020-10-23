@@ -497,6 +497,9 @@ class TestBaseTVAsyncPython(unittest.TestCase):
         with async_patchers.patch_shell("\r\n")[self.PATCH_KEY]:
             self.assertIsNone(await self.btv.get_hdmi_input())
 
+        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
+            self.assertIsNone(await self.btv.get_hdmi_input())
+
     @awaiter
     async def test_learn_sendevent(self):
         """Check that the ``learn_sendevent`` method works correctly.
