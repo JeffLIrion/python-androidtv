@@ -374,7 +374,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The HDMI input, or ``None`` if it could not be determined
 
         """
-        return hdmi_response if hdmi_response else None
+        return hdmi_response.strip() if hdmi_response and hdmi_response.strip() else None
 
     @staticmethod
     def _is_volume_muted(stream_music):
