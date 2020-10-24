@@ -61,6 +61,7 @@ GET_PROPERTIES_OUTPUT3B = GET_PROPERTIES_OUTPUT3[:2]
 GET_PROPERTIES_OUTPUT3C = GET_PROPERTIES_OUTPUT3.splitlines()[0]
 GET_PROPERTIES_OUTPUT3D = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:2])
 GET_PROPERTIES_OUTPUT3E = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:3])
+GET_PROPERTIES_OUTPUT3F = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:4]) + "HDMI"
 
 GET_PROPERTIES_DICT3A = {'screen_on': True,
                          'awake': False,
@@ -97,6 +98,13 @@ GET_PROPERTIES_DICT3E = {'screen_on': True,
                          'media_session_state': None,
                          'running_apps': None,
                          'hdmi_input': None}
+GET_PROPERTIES_DICT3F = {'screen_on': True,
+                         'awake': True,
+                         'wake_lock_size': 2,
+                         'current_app': 'com.amazon.tv.launcher',
+                         'media_session_state': None,
+                         'running_apps': None,
+                         'hdmi_input': 'HDMI'}
 
 GET_PROPERTIES_OUTPUT4 = """11Wake Locks: size=2
 com.amazon.tv.launcher
@@ -253,6 +261,10 @@ class TestFireTVAsyncPython(unittest.TestCase):
         with async_patchers.patch_shell(GET_PROPERTIES_OUTPUT3E)[self.PATCH_KEY]:
             properties = await self.ftv.get_properties_dict(lazy=False, get_running_apps=False)
             self.assertDictEqual(properties, GET_PROPERTIES_DICT3E)
+
+        with async_patchers.patch_shell(GET_PROPERTIES_OUTPUT3F)[self.PATCH_KEY]:
+            properties = await self.ftv.get_properties_dict(lazy=True)
+            self.assertDictEqual(properties, GET_PROPERTIES_DICT3F)
 
         with async_patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
             properties = await self.ftv.get_properties_dict(lazy=True)
