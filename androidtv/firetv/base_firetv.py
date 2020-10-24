@@ -294,4 +294,4 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
             return screen_on, awake, wake_lock_size, current_app, media_session_state, None, hdmi_input
         running_apps = self._running_apps(lines[4:])
 
-        return screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps
+        return screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps, hdmi_input
