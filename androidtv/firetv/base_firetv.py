@@ -42,7 +42,7 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
     #                          Home Assistant Update                          #
     #                                                                         #
     # ======================================================================= #
-    def _update(self, screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps):
+    def _update(self, screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps, hdmi_input):
         """Get the info needed for a Home Assistant update.
 
         Parameters
@@ -59,6 +59,8 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
             The state from the output of ``dumpsys media_session``, or ``None`` if it was not determined
         running_apps : list, None
             A list of the running apps, or ``None`` if it was not determined
+        hdmi_input : str, None
+            The HDMI input, or ``None`` if it could not be determined
 
         Returns
         -------
@@ -68,6 +70,8 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
             The current running app
         running_apps : list
             A list of the running apps if ``get_running_apps`` is True, otherwise the list ``[current_app]``
+        hdmi_input : str, None
+            The HDMI input, or ``None`` if it could not be determined
 
         """
         # Check if device is unavailable
@@ -96,7 +100,7 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
             # Determine the state using custom rules
             state = self._custom_state_detection(current_app=current_app, media_session_state=media_session_state, wake_lock_size=wake_lock_size)
             if state:
-                return state, current_app, running_apps
+                return state, current_app, running_apps, hdmi_input
 
             # Determine the state based on the `current_app`
             if current_app in [constants.APP_FIRETV_PACKAGE_LAUNCHER, constants.APP_FIRETV_PACKAGE_SETTINGS, None]:
@@ -207,7 +211,7 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
                 else:
                     state = constants.STATE_PAUSED
 
-        return state, current_app, running_apps
+        return state, current_app, running_apps, hdmi_input
 
     # ======================================================================= #
     #                                                                         #
@@ -245,42 +249,49 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
             The state from the output of ``dumpsys media_session``, or ``None`` if it was not determined
         running_apps : list, None
             A list of the running apps, or ``None`` if it was not determined
+        hdmi_input : str, None
+            The HDMI input, or ``None`` if it could not be determined
 
         """
         # ADB command was unsuccessful
         if output is None:
-            return None, None, None, None, None, None
+            return None, None, None, None, None, None, None
 
         # `screen_on` property
         if not output:
-            return False, False, -1, None, None, None
+            return False, False, -1, None, None, None, None
         screen_on = output[0] == '1'
 
         # `awake` property
         if len(output) < 2:
-            return screen_on, False, -1, None, None, None
+            return screen_on, False, -1, None, None, None, None
         awake = output[1] == '1'
 
         lines = output.strip().splitlines()
 
         # `wake_lock_size` property
         if len(lines[0]) < 3:
-            return screen_on, awake, -1, None, None, None
+            return screen_on, awake, -1, None, None, None, None
         wake_lock_size = self._wake_lock_size(lines[0])
 
         # `current_app` property
         if len(lines) < 2:
-            return screen_on, awake, wake_lock_size, None, None, None
+            return screen_on, awake, wake_lock_size, None, None, None, None
         current_app = self._current_app(lines[1])
 
         # `media_session_state` property
         if len(lines) < 3:
-            return screen_on, awake, wake_lock_size, current_app, None, None
+            return screen_on, awake, wake_lock_size, current_app, None, None, None
         media_session_state = self._media_session_state(lines[2], current_app)
 
-        # `running_apps` property
-        if not get_running_apps or len(lines) < 4:
-            return screen_on, awake, wake_lock_size, current_app, media_session_state, None
-        running_apps = self._running_apps(lines[3:])
+        # HDMI input property
+        if len(lines) < 4:
+            return screen_on, awake, wake_lock_size, current_app, media_session_state, None, None
+        hdmi_input = self._get_hdmi_input(lines[3])
 
-        return screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps
+        # `running_apps` property
+        if not get_running_apps or len(lines) < 5:
+            return screen_on, awake, wake_lock_size, current_app, media_session_state, None, hdmi_input
+        running_apps = self._running_apps(lines[4:])
+
+        return screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps, hdmi_input

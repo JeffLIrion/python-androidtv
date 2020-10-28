@@ -485,8 +485,20 @@ class TestBaseTVAsyncPython(unittest.TestCase):
         with async_patchers.patch_shell("HDMI2")[self.PATCH_KEY]:
             self.assertEqual(await self.btv.get_hdmi_input(), "HDMI2")
 
+        with async_patchers.patch_shell("HDMI2\n")[self.PATCH_KEY]:
+            self.assertEqual(await self.btv.get_hdmi_input(), "HDMI2")
+
+        with async_patchers.patch_shell("HDMI2\r\n")[self.PATCH_KEY]:
+            self.assertEqual(await self.btv.get_hdmi_input(), "HDMI2")
+
         with async_patchers.patch_shell("")[self.PATCH_KEY]:
-            self.assertIsNone(await self.btv.get_hdmi_input(), None)
+            self.assertIsNone(await self.btv.get_hdmi_input())
+
+        with async_patchers.patch_shell("\r\n")[self.PATCH_KEY]:
+            self.assertIsNone(await self.btv.get_hdmi_input())
+
+        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
+            self.assertIsNone(await self.btv.get_hdmi_input())
 
     @awaiter
     async def test_learn_sendevent(self):

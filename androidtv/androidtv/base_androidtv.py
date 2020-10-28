@@ -42,7 +42,7 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
     #                          Home Assistant Update                          #
     #                                                                         #
     # ======================================================================= #
-    def _update(self, screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps):
+    def _update(self, screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps, hdmi_input):
         """Get the info needed for a Home Assistant update.
 
         Parameters
@@ -67,6 +67,8 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
             The absolute volume level, or ``None`` if it was not determined
         running_apps : list, None
             A list of the running apps, or ``None`` if it was not determined
+        hdmi_input : str, None
+            The HDMI input, or ``None`` if it could not be determined
 
         Returns
         -------
@@ -82,6 +84,8 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
             Whether or not the volume is muted
         volume_level : float
             The volume level (between 0 and 1)
+        hdmi_input : str, None
+            The HDMI input, or ``None`` if it could not be determined
 
         """
         # Get the volume (between 0 and 1)
@@ -107,7 +111,7 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
             # Determine the state using custom rules
             state = self._custom_state_detection(current_app=current_app, media_session_state=media_session_state, wake_lock_size=wake_lock_size, audio_state=audio_state)
             if state:
-                return state, current_app, running_apps, audio_output_device, is_volume_muted, volume_level
+                return state, current_app, running_apps, audio_output_device, is_volume_muted, volume_level, hdmi_input
 
             # ATV Launcher
             if current_app in [constants.APP_ATV_LAUNCHER, None]:
@@ -189,7 +193,7 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
                 else:
                     state = constants.STATE_IDLE
 
-        return state, current_app, running_apps, audio_output_device, is_volume_muted, volume_level
+        return state, current_app, running_apps, audio_output_device, is_volume_muted, volume_level, hdmi_input
 
     # ======================================================================= #
     #                                                                         #
@@ -228,50 +232,57 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
             The absolute volume level, or ``None`` if it was not determined
         running_apps : list, None
             A list of the running apps, or ``None`` if it was not determined
+        hdmi_input : str, None
+            The HDMI input, or ``None`` if it could not be determined
 
         """
         # ADB command was unsuccessful
         if output is None:
-            return None, None, None, None, None, None, None, None, None, None
+            return None, None, None, None, None, None, None, None, None, None, None
 
         # `screen_on` property
         if not output:
-            return False, False, None, -1, None, None, None, None, None, None
+            return False, False, None, -1, None, None, None, None, None, None, None
         screen_on = output[0] == '1'
 
         # `awake` property
         if len(output) < 2:
-            return screen_on, False, None, -1, None, None, None, None, None, None
+            return screen_on, False, None, -1, None, None, None, None, None, None, None
         awake = output[1] == '1'
 
         # `audio_state` property
         if len(output) < 3:
-            return screen_on, awake, None, -1, None, None, None, None, None, None
+            return screen_on, awake, None, -1, None, None, None, None, None, None, None
         audio_state = self._audio_state(output[2])
 
         lines = output.strip().splitlines()
 
         # `wake_lock_size` property
         if len(lines[0]) < 4:
-            return screen_on, awake, audio_state, -1, None, None, None, None, None, None
+            return screen_on, awake, audio_state, -1, None, None, None, None, None, None, None
         wake_lock_size = self._wake_lock_size(lines[0])
 
         # `current_app` property
         if len(lines) < 2:
-            return screen_on, awake, audio_state, wake_lock_size, None, None, None, None, None, None
+            return screen_on, awake, audio_state, wake_lock_size, None, None, None, None, None, None, None
         current_app = self._current_app(lines[1])
 
         # `media_session_state` property
         if len(lines) < 3:
-            return screen_on, awake, audio_state, wake_lock_size, current_app, None, None, None, None, None
+            return screen_on, awake, audio_state, wake_lock_size, current_app, None, None, None, None, None, None
         media_session_state = self._media_session_state(lines[2], current_app)
 
-        # "STREAM_MUSIC" block
+        # HDMI input property
         if len(lines) < 4:
-            return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, None, None, None, None
+            return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, None, None, None, None, None
+        hdmi_input = self._get_hdmi_input(lines[3])
+
+        # "STREAM_MUSIC" block
+        if len(lines) < 5:
+            return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, None, None, None, None, hdmi_input
 
         # reconstruct the output of `constants.CMD_STREAM_MUSIC`
-        stream_music_raw = "\n".join(lines[3:])
+        stream_music_raw = "\n".join(lines[4:])
 
         # the "STREAM_MUSIC" block from `adb shell dumpsys audio`
         stream_music = self._parse_stream_music(stream_music_raw)
@@ -286,8 +297,8 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
         is_volume_muted = self._is_volume_muted(stream_music)
 
         # `running_apps` property
-        if not get_running_apps or len(lines) < 16:
-            return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, None
-        running_apps = self._running_apps(lines[15:])
+        if not get_running_apps or len(lines) < 17:
+            return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, None, hdmi_input
+        running_apps = self._running_apps(lines[16:])
 
-        return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps
+        return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps, hdmi_input

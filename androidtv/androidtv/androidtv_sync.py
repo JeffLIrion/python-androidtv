@@ -67,12 +67,14 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
             Whether or not the volume is muted
         volume_level : float
             The volume level (between 0 and 1)
+        hdmi_input : str, None
+            The HDMI input, or ``None`` if it could not be determined
 
         """
         # Get the properties needed for the update
-        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps, hdmi_input = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
-        return self._update(screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps)
+        return self._update(screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps, hdmi_input)
 
     # ======================================================================= #
     #                                                                         #
@@ -118,6 +120,8 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
             The absolute volume level, or ``None`` if it was not determined
         running_apps : list, None
             A list of the running apps, or ``None`` if it was not determined
+        hdmi_input : str, None
+            The HDMI input, or ``None`` if it could not be determined
 
         """
         if lazy:
@@ -148,10 +152,10 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
         -------
         dict
             A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'current_app'``,
-            ``'media_session_state'``, ``'audio_state'``, ``'audio_output_device'``, ``'is_volume_muted'``, ``'volume'``, and ``'running_apps'``
+            ``'media_session_state'``, ``'audio_state'``, ``'audio_output_device'``, ``'is_volume_muted'``, ``'volume'``, ``'running_apps'``, and ``'hdmi_input'``
 
         """
-        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps, hdmi_input = self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
         return {'screen_on': screen_on,
                 'awake': awake,
@@ -162,7 +166,8 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
                 'audio_output_device': audio_output_device,
                 'is_volume_muted': is_volume_muted,
                 'volume': volume,
-                'running_apps': running_apps}
+                'running_apps': running_apps,
+                'hdmi_input': hdmi_input}
 
     def running_apps(self):
         """Return a list of running user applications.

@@ -70,9 +70,9 @@ class AndroidTVAsync(BaseTVAsync, BaseAndroidTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps = await self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps, hdmi_input = await self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
-        return self._update(screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps)
+        return self._update(screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps, hdmi_input)
 
     # ======================================================================= #
     #                                                                         #
@@ -118,6 +118,8 @@ class AndroidTVAsync(BaseTVAsync, BaseAndroidTV):
             The absolute volume level, or ``None`` if it was not determined
         running_apps : list, None
             A list of the running apps, or ``None`` if it was not determined
+        hdmi_input : str, None
+            The HDMI input, or ``None`` if it could not be determined
 
         """
         if lazy:
@@ -148,10 +150,10 @@ class AndroidTVAsync(BaseTVAsync, BaseAndroidTV):
         -------
         dict
             A dictionary with keys ``'screen_on'``, ``'awake'``, ``'wake_lock_size'``, ``'current_app'``,
-            ``'media_session_state'``, ``'audio_state'``, ``'audio_output_device'``, ``'is_volume_muted'``, ``'volume'``, and ``'running_apps'``
+            ``'media_session_state'``, ``'audio_state'``, ``'audio_output_device'``, ``'is_volume_muted'``, ``'volume'``, ``'running_apps'``, and ``'hdmi_input'``
 
         """
-        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps = await self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps, hdmi_input = await self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
         return {'screen_on': screen_on,
                 'awake': awake,
@@ -162,7 +164,8 @@ class AndroidTVAsync(BaseTVAsync, BaseAndroidTV):
                 'audio_output_device': audio_output_device,
                 'is_volume_muted': is_volume_muted,
                 'volume': volume,
-                'running_apps': running_apps}
+                'running_apps': running_apps,
+                'hdmi_input': hdmi_input}
 
     async def running_apps(self):
         """Return a list of running user applications.
