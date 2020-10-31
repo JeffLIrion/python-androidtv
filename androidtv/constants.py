@@ -323,6 +323,7 @@ APP_PLAY_VIDEOS = 'com.android.videos'
 APP_PLEX = 'com.plexapp.android'
 APP_PRIME_VIDEO = 'com.amazon.amazonvideo.livingroom'
 APP_PRIME_VIDEO_2 = 'com.amazon.firebat'
+APP_SMART_YOUTUBE_TV = 'com.liskovsoft.videomanager'
 APP_SPORT1 = 'de.sport1.firetv.video'
 APP_SPOTIFY = 'com.spotify.tv.android'
 APP_STEAM_LINK = 'com.valvesoftware.steamlink'
@@ -337,6 +338,7 @@ APP_WAIPU_TV = 'de.exaring.waipu.firetv.live'
 APP_WATCH_TNT = 'com.turner.tnt.android.networkapp'
 APP_YOUTUBE = 'com.google.android.youtube.tv'
 APP_YOUTUBE_2 = 'com.amazon.firetv.youtube'
+APP_ZIGGO_GO_TV = 'com.ziggo.tv'
 APPS = {APP_AE_TV: 'A&E',
         APP_AMAZON_VIDEO: 'Amazon Video',
         APP_AMZ_VIDEO: 'Amz Video',
@@ -369,6 +371,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_PLEX: 'Plex',
         APP_PRIME_VIDEO: 'Prime Video',
         APP_PRIME_VIDEO_2: 'Prime Video (2)',
+        APP_SMART_YOUTUBE_TV: 'Smart YouTube TV',
         APP_SPORT1: 'Sport 1',
         APP_SPOTIFY: 'Spotify',
         APP_STEAM_LINK: 'Steam Link',
@@ -382,7 +385,8 @@ APPS = {APP_AE_TV: 'A&E',
         APP_WAIPU_TV: 'Waipu TV',
         APP_WATCH_TNT: 'Watch TNT',
         APP_YOUTUBE: 'YouTube',
-        APP_YOUTUBE_2: 'YouTube (FireTV)'}
+        APP_YOUTUBE_2: 'YouTube (FireTV)',
+        APP_ZIGGO_GO_TV: 'Ziggo GO TV'}
 
 
 # Regular expressions
