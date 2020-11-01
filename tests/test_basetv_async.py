@@ -329,28 +329,9 @@ class TestBaseTVAsyncPython(unittest.TestCase):
 
         """
         with async_patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            device_properties = await self.btv.get_device_properties()
-            self.assertDictEqual(DEVICE_PROPERTIES_DICT1, device_properties)
-
-        with async_patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            device_properties = await self.btv.get_device_properties()
-            self.assertDictEqual(DEVICE_PROPERTIES_DICT2, device_properties)
-
-        with async_patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
-            device_properties = await self.btv.get_device_properties()
-            self.assertDictEqual(DEVICE_PROPERTIES_DICT3, device_properties)
-
-        with async_patchers.patch_shell('manufacturer')[self.PATCH_KEY]:
-            device_properties = await self.btv.get_device_properties()
-            self.assertDictEqual({}, device_properties)
-
-        with async_patchers.patch_shell('')[self.PATCH_KEY]:
-            device_properties = await self.btv.get_device_properties()
-            self.assertDictEqual({}, device_properties)
-
-        with async_patchers.patch_shell(DEVICE_PROPERTIES_GOOGLE_TV)[self.PATCH_KEY]:
-            device_properties = await self.btv.get_device_properties()
-            self.assertTrue(self.btv._is_google_tv)
+            with patch("androidtv.basetv.basetv.BaseTV._parse_device_properties") as pdp:
+                await self.btv.get_device_properties()
+                assert pdp.called
 
     @awaiter
     async def test_get_installed_apps(self):
