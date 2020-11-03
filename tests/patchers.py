@@ -1,7 +1,5 @@
 """Define patches used for androidtv tests."""
 
-import copy
-
 try:
     # Python3
     from unittest.mock import patch
