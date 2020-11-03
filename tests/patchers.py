@@ -1,5 +1,7 @@
 """Define patches used for androidtv tests."""
 
+import copy
+
 try:
     # Python3
     from unittest.mock import patch
@@ -143,3 +145,21 @@ class CustomException(Exception):
 
 
 PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION = {KEY_PYTHON: patch("{}.{}.connect".format(__name__, ADB_DEVICE_TCP_FAKE), side_effect=CustomException), KEY_SERVER: patch("{}.{}.device".format(__name__, CLIENT_FAKE_SUCCESS), side_effect=CustomException)}
+
+
+def patch_calls(obj, wraps):
+    """Patch a method call without changing its behavior.
+
+    Parameters
+    ----------
+    obj
+        The object whose method will be patched (i.e., `self`)
+    wraps
+        The method that is being patched (i.e., `self.method`)
+
+    Returns
+    -------
+    The patched method
+
+    """
+    return patch.object(type(obj), wraps.__name__.split()[-1], wraps=wraps)
