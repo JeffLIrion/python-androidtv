@@ -7,41 +7,12 @@ from unittest.mock import patch
 sys.path.insert(0, '..')
 
 import androidtv
-from androidtv import constants, ha_state_detection_rules_validator
+from androidtv import constants
 from androidtv.basetv.basetv_async import BaseTVAsync
 
 from . import async_patchers
 from .async_wrapper import awaiter
 from .patchers import patch_calls
-
-INSTALLED_APPS_OUTPUT_1 = """package:org.example.app
-package:org.example.launcher
-"""
-
-INSTALLED_APPS_LIST = [
-    "org.example.app",
-    "org.example.launcher",
-]
-
-MEDIA_SESSION_STATE_OUTPUT = "com.amazon.tv.launcher\nstate=PlaybackState {state=2, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}"
-
-STATE_DETECTION_RULES1 = {'com.amazon.tv.launcher': ['off']}
-STATE_DETECTION_RULES2 = {'com.amazon.tv.launcher': ['media_session_state', 'off']}
-STATE_DETECTION_RULES3 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_size': 2}}]}
-STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_size': 1}}, 'paused']}
-STATE_DETECTION_RULES5 = {'com.amazon.tv.launcher': ['audio_state']}
-
-STATE_DETECTION_RULES_INVALID1 = {123: ['media_session_state']}
-STATE_DETECTION_RULES_INVALID2 = {'com.amazon.tv.launcher': [123]}
-STATE_DETECTION_RULES_INVALID3 = {'com.amazon.tv.launcher': ['INVALID']}
-STATE_DETECTION_RULES_INVALID4 = {'com.amazon.tv.launcher': [{'INVALID': {'wake_lock_size': 2}}]}
-STATE_DETECTION_RULES_INVALID5 = {'com.amazon.tv.launcher': [{'standby': 'INVALID'}]}
-STATE_DETECTION_RULES_INVALID6 = {'com.amazon.tv.launcher': [{'standby': {'INVALID': 2}}]}
-STATE_DETECTION_RULES_INVALID7 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_size': 'INVALID'}}]}
-STATE_DETECTION_RULES_INVALID8 = {'com.amazon.tv.launcher': [{'standby': {'media_session_state': 'INVALID'}}]}
-STATE_DETECTION_RULES_INVALID9 = {'com.amazon.tv.launcher': [{'standby': {'audio_state': 123}}]}
-STATE_DETECTION_RULES_INVALID10 = {'com.amazon.tv.launcher': [{'standby': {'media_session_state': 'INVALID'}}]}
-STATE_DETECTION_RULES_INVALID11 = {'com.amazon.tv.launcher': [{'standby': {'audio_state': 123}}]}
 
 PNG_IMAGE = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\n\x00\x00\x00\n\x08\x06\x00\x00\x00\x8d2\xcf\xbd\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00\tpHYs\x00\x00\x0fa\x00\x00\x0fa\x01\xa8?\xa7i\x00\x00\x00\x0eIDAT\x18\x95c`\x18\x05\x83\x13\x00\x00\x01\x9a\x00\x01\x16\xca\xd3i\x00\x00\x00\x00IEND\xaeB`\x82'
 
@@ -279,19 +250,6 @@ class TestBaseTVAsyncPython(unittest.TestCase):
             with patch_calls(self.btv, self.btv._parse_device_properties) as patched:
                 await self.btv.get_device_properties()
                 assert patched.called
-
-    @awaiter
-    async def test_get_installed_apps(self):
-        """"Check that `get_installed_apps` works correctly.
-
-        """
-        with async_patchers.patch_shell(INSTALLED_APPS_OUTPUT_1)[self.PATCH_KEY]:
-            installed_apps = await self.btv.get_installed_apps()
-            self.assertListEqual(INSTALLED_APPS_LIST, installed_apps)
-
-        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            installed_apps = await self.btv.get_installed_apps()
-            self.assertEqual(None, installed_apps)
 
     @awaiter
     async def test_awake(self):
