@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, '..')
 
-from androidtv import constants, ha_state_detection_rules_validator
+from androidtv import constants
 from androidtv.firetv.firetv_async import FireTVAsync
 
 from . import async_patchers
