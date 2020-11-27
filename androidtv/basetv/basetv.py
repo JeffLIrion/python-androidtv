@@ -472,6 +472,29 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         return None
 
+    @staticmethod
+    def _installed_apps(installed_apps_response):
+        """Get the installed apps output of :py:const:`androidtv.constants.CMD_INSTALLED_APPS`.
+
+        Parameters
+        ----------
+        installed_apps_response : str, None
+            The output of :py:const:`androidtv.constants.CMD_INSTALLED_APPS`
+
+        Returns
+        -------
+        list, None
+            A list of the installed apps, or ``None`` if it could not be determined
+
+        """
+
+        if installed_apps_response:
+            if isinstance(installed_apps_response, list):
+                return [line.strip() for line in installed_apps_response if line.strip()]
+            return [line.strip() for line in installed_apps_response.splitlines() if line.strip()]
+
+        return None
+
     def _volume(self, stream_music, audio_output_device):
         """Get the absolute volume level from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
 

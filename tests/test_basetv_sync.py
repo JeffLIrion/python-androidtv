@@ -61,6 +61,16 @@ SERIALNO
 Device "eth0" does not exist.
 """
 
+INSTALLED_APPS_OUTPUT = """
+org.example.app
+org.example.launcher
+"""
+
+INSTALLED_APPS_LIST = [
+    "org.example.app",
+    "org.example.launcher",
+]
+
 DEVICE_PROPERTIES_DICT3 = {'manufacturer': 'Not Amazon',
                            'model': 'AFTT',
                            'serialno': 'SERIALNO',
@@ -336,6 +346,14 @@ class TestBaseTVSyncPython(unittest.TestCase):
         with patchers.patch_shell(DEVICE_PROPERTIES_GOOGLE_TV)[self.PATCH_KEY]:
             device_properties = self.btv.get_device_properties()
             self.assertTrue(self.btv._is_google_tv)
+
+    def test_installed_apps(self):
+        """"Check that `installed_apps` works correctly.
+
+        """
+        with patchers.patch_shell(INSTALLED_APPS_OUTPUT)[self.PATCH_KEY]:
+            installed_apps = self.btv.installed_apps()
+            self.assertListEqual(INSTALLED_APPS_LIST, installed_apps)
 
     def test_awake(self):
         """Check that the ``awake`` property works correctly.

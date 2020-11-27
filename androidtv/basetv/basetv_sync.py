@@ -200,6 +200,18 @@ class BaseTVSync(BaseTV):
 
         return self._parse_device_properties(properties)
 
+    def installed_apps(self):
+        """Return a list of installed applications.
+
+        Returns
+        -------
+        list
+            A list of the installed apps
+
+        """
+        installed_apps_response = self._adb.shell(constants.CMD_INSTALLED_APPS)
+        return self._installed_apps(installed_apps_response)
+
     # ======================================================================= #
     #                                                                         #
     #                               Properties                                #
