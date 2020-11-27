@@ -18,8 +18,6 @@ jobs:
         python-version: ['2.7', '3.5', '3.6', '3.7', '3.8']
 
     steps:
-    - env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -38,6 +36,8 @@ jobs:
         if python --version 2>&1 | grep -q "Python 2" || python --version 2>&1 | grep -q "Python 3.5" || python --version 2>&1 | grep -q "Python 3.6"; then flake8 androidtv/ --exclude="androidtv/setup_async.py,androidtv/basetv/basetv_async.py,androidtv/androidtv/androidtv_async.py,androidtv/firetv/firetv_async.py,androidtv/adb_manager/adb_manager_async.py" && pylint --ignore="setup_async.py,basetv_async.py,androidtv_async.py,firetv_async.py,adb_manager_async.py" androidtv/; fi
         if python --version 2>&1 | grep -q "Python 3.7" || python --version 2>&1 | grep -q "Python 3.8" || python --version 2>&1 | grep -q "Python 3.9"; then flake8 androidtv/ && pylint androidtv/; fi
     - name: Test with unittest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         if python --version 2>&1 | grep -q "Python 2" || python --version 2>&1 | grep -q "Python 3.5" || python --version 2>&1 | grep -q "Python 3.6" ; then for synctest in $(cd tests && ls test*.py | grep -v async); do python -m unittest discover -s tests/ -t . -p "$synctest" || exit 1; done; fi
         if python --version 2>&1 | grep -q "Python 3.7" || python --version 2>&1 | grep -q "Python 3.8" || python --version 2>&1 | grep -q "Python 3.9"; then coverage run --source androidtv -m unittest discover -s tests/ -t . && coverage report -m && coveralls; fi
