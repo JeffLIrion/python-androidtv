@@ -67,9 +67,8 @@ SERIALNO
 Device "eth0" does not exist.
 """
 
-INSTALLED_APPS_OUTPUT = """
-org.example.app
-org.example.launcher
+INSTALLED_APPS_OUTPUT = """package:org.example.app
+package:org.example.launcher
 """
 
 INSTALLED_APPS_LIST = [
