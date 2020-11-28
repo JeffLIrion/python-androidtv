@@ -67,9 +67,14 @@ SERIALNO
 Device "eth0" does not exist.
 """
 
-INSTALLED_APPS_OUTPUT = """package:org.example.app
+INSTALLED_APPS_OUTPUT_1 = """package:org.example.app
 package:org.example.launcher
 """
+
+INSTALLED_APPS_OUTPUT_2 = [
+    "package:org.example.app",
+    "package:org.example.launcher"
+]
 
 INSTALLED_APPS_LIST = [
     "org.example.app",
@@ -357,9 +362,17 @@ class TestBaseTVAsyncPython(unittest.TestCase):
         """"Check that `installed_apps` works correctly.
 
         """
-        with async_patchers.patch_shell(INSTALLED_APPS_OUTPUT)[self.PATCH_KEY]:
-            installed_apps = await self.btv.installed_apps()
+        with async_patchers.patch_shell(INSTALLED_APPS_OUTPUT_1)[self.PATCH_KEY]:
+            installed_apps = await self.btv.get_installed_apps()
             self.assertListEqual(INSTALLED_APPS_LIST, installed_apps)
+
+        with async_patchers.patch_shell(INSTALLED_APPS_OUTPUT_2)[self.PATCH_KEY]:
+            installed_apps = await self.btv.get_installed_apps()
+            self.assertListEqual(INSTALLED_APPS_LIST, installed_apps)
+
+        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
+            installed_apps = await self.btv.get_installed_apps()
+            self.assertEqual(None, installed_apps)
 
     @awaiter
     async def test_awake(self):

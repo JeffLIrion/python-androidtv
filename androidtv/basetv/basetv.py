@@ -75,6 +75,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         self.adb_server_port = adb_server_port
         self._state_detection_rules = state_detection_rules
         self.device_properties = {}
+        self.installed_apps = []
         self._is_google_tv = False
 
         # make sure the rules are valid

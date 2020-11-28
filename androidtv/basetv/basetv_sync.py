@@ -200,7 +200,7 @@ class BaseTVSync(BaseTV):
 
         return self._parse_device_properties(properties)
 
-    def installed_apps(self):
+    def get_installed_apps(self):
         """Return a list of installed applications.
 
         Returns

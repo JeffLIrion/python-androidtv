@@ -200,7 +200,7 @@ class BaseTVAsync(BaseTV):
 
         return self._parse_device_properties(properties)
 
-    async def installed_apps(self):
+    async def get_installed_apps(self):
         """Return a list of installed applications
 
         Returns
