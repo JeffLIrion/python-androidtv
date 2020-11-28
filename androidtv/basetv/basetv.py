@@ -490,8 +490,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         """
 
         if installed_apps_response is not None:
-            if isinstance(installed_apps_response, list):
-                return [line.strip().rsplit("package:", 1)[-1] for line in installed_apps_response if line.strip()]
             return [line.strip().rsplit("package:", 1)[-1] for line in installed_apps_response.splitlines() if line.strip()]
 
         return None

@@ -71,11 +71,6 @@ INSTALLED_APPS_OUTPUT_1 = """package:org.example.app
 package:org.example.launcher
 """
 
-INSTALLED_APPS_OUTPUT_2 = [
-    "package:org.example.app",
-    "package:org.example.launcher"
-]
-
 INSTALLED_APPS_LIST = [
     "org.example.app",
     "org.example.launcher",
@@ -363,10 +358,6 @@ class TestBaseTVAsyncPython(unittest.TestCase):
 
         """
         with async_patchers.patch_shell(INSTALLED_APPS_OUTPUT_1)[self.PATCH_KEY]:
-            installed_apps = await self.btv.get_installed_apps()
-            self.assertListEqual(INSTALLED_APPS_LIST, installed_apps)
-
-        with async_patchers.patch_shell(INSTALLED_APPS_OUTPUT_2)[self.PATCH_KEY]:
             installed_apps = await self.btv.get_installed_apps()
             self.assertListEqual(INSTALLED_APPS_LIST, installed_apps)
 
