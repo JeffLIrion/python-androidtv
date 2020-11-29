@@ -475,7 +475,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
     @staticmethod
     def _installed_apps(installed_apps_response):
-        """Get the installed apps output of :py:const:`androidtv.constants.CMD_INSTALLED_APPS`.
+        """Get the installed apps from the output of :py:const:`androidtv.constants.CMD_INSTALLED_APPS`.
 
         Parameters
         ----------
@@ -488,7 +488,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             A list of the installed apps, or ``None`` if it could not be determined
 
         """
-
         if installed_apps_response is not None:
             return [line.strip().rsplit("package:", 1)[-1] for line in installed_apps_response.splitlines() if line.strip()]
 
