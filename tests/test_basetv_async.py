@@ -6,95 +6,13 @@ from unittest.mock import patch
 
 sys.path.insert(0, '..')
 
-from androidtv import constants, ha_state_detection_rules_validator
+import androidtv
+from androidtv import constants
 from androidtv.basetv.basetv_async import BaseTVAsync
 
 from . import async_patchers
 from .async_wrapper import awaiter
-
-
-DEVICE_PROPERTIES_OUTPUT1 = """Amazon
-AFTT
-SERIALNO
-5.1.1
-    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
-Device "eth0" does not exist.
-"""
-
-DEVICE_PROPERTIES_DICT1 = {'manufacturer': 'Amazon',
-                           'model': 'AFTT',
-                           'serialno': 'SERIALNO',
-                           'sw_version': '5.1.1',
-                           'wifimac': 'ab:cd:ef:gh:ij:kl',
-                           'ethmac': None}
-
-DEVICE_PROPERTIES_OUTPUT2 = """Amazon
-AFTT
- 
-5.1.1
-    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
-Device "eth0" does not exist.
-"""
-
-DEVICE_PROPERTIES_DICT2 = {'manufacturer': 'Amazon',
-                           'model': 'AFTT',
-                           'serialno': None,
-                           'sw_version': '5.1.1',
-                           'wifimac': 'ab:cd:ef:gh:ij:kl',
-                           'ethmac': None}
-
-DEVICE_PROPERTIES_OUTPUT3 = """Not Amazon
-AFTT
-SERIALNO
-5.1.1
-Device "wlan0" does not exist.
-    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
-"""
-
-DEVICE_PROPERTIES_DICT3 = {'manufacturer': 'Not Amazon',
-                           'model': 'AFTT',
-                           'serialno': 'SERIALNO',
-                           'sw_version': '5.1.1',
-                           'wifimac': None,
-                           'ethmac': 'ab:cd:ef:gh:ij:kl'}
-
-# Source: https://community.home-assistant.io/t/new-chromecast-w-android-tv-integration-only-showing-as-off-or-idle/234424/15
-DEVICE_PROPERTIES_GOOGLE_TV = """Google
-Chromecast
-SERIALNO
-10
-    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
-Device "eth0" does not exist.
-"""
-
-INSTALLED_APPS_OUTPUT_1 = """package:org.example.app
-package:org.example.launcher
-"""
-
-INSTALLED_APPS_LIST = [
-    "org.example.app",
-    "org.example.launcher",
-]
-
-MEDIA_SESSION_STATE_OUTPUT = "com.amazon.tv.launcher\nstate=PlaybackState {state=2, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}"
-
-STATE_DETECTION_RULES1 = {'com.amazon.tv.launcher': ['off']}
-STATE_DETECTION_RULES2 = {'com.amazon.tv.launcher': ['media_session_state', 'off']}
-STATE_DETECTION_RULES3 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_size': 2}}]}
-STATE_DETECTION_RULES4 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_size': 1}}, 'paused']}
-STATE_DETECTION_RULES5 = {'com.amazon.tv.launcher': ['audio_state']}
-
-STATE_DETECTION_RULES_INVALID1 = {123: ['media_session_state']}
-STATE_DETECTION_RULES_INVALID2 = {'com.amazon.tv.launcher': [123]}
-STATE_DETECTION_RULES_INVALID3 = {'com.amazon.tv.launcher': ['INVALID']}
-STATE_DETECTION_RULES_INVALID4 = {'com.amazon.tv.launcher': [{'INVALID': {'wake_lock_size': 2}}]}
-STATE_DETECTION_RULES_INVALID5 = {'com.amazon.tv.launcher': [{'standby': 'INVALID'}]}
-STATE_DETECTION_RULES_INVALID6 = {'com.amazon.tv.launcher': [{'standby': {'INVALID': 2}}]}
-STATE_DETECTION_RULES_INVALID7 = {'com.amazon.tv.launcher': [{'standby': {'wake_lock_size': 'INVALID'}}]}
-STATE_DETECTION_RULES_INVALID8 = {'com.amazon.tv.launcher': [{'standby': {'media_session_state': 'INVALID'}}]}
-STATE_DETECTION_RULES_INVALID9 = {'com.amazon.tv.launcher': [{'standby': {'audio_state': 123}}]}
-STATE_DETECTION_RULES_INVALID10 = {'com.amazon.tv.launcher': [{'standby': {'media_session_state': 'INVALID'}}]}
-STATE_DETECTION_RULES_INVALID11 = {'com.amazon.tv.launcher': [{'standby': {'audio_state': 123}}]}
+from .patchers import patch_calls
 
 PNG_IMAGE = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\n\x00\x00\x00\n\x08\x06\x00\x00\x00\x8d2\xcf\xbd\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00\tpHYs\x00\x00\x0fa\x00\x00\x0fa\x01\xa8?\xa7i\x00\x00\x00\x0eIDAT\x18\x95c`\x18\x05\x83\x13\x00\x00\x01\x9a\x00\x01\x16\xca\xd3i\x00\x00\x00\x00IEND\xaeB`\x82'
 
@@ -328,42 +246,10 @@ class TestBaseTVAsyncPython(unittest.TestCase):
         """Check that ``get_device_properties`` works correctly.
 
         """
-        with async_patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            device_properties = await self.btv.get_device_properties()
-            self.assertDictEqual(DEVICE_PROPERTIES_DICT1, device_properties)
-
-        with async_patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            device_properties = await self.btv.get_device_properties()
-            self.assertDictEqual(DEVICE_PROPERTIES_DICT2, device_properties)
-
-        with async_patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
-            device_properties = await self.btv.get_device_properties()
-            self.assertDictEqual(DEVICE_PROPERTIES_DICT3, device_properties)
-
-        with async_patchers.patch_shell('manufacturer')[self.PATCH_KEY]:
-            device_properties = await self.btv.get_device_properties()
-            self.assertDictEqual({}, device_properties)
-
-        with async_patchers.patch_shell('')[self.PATCH_KEY]:
-            device_properties = await self.btv.get_device_properties()
-            self.assertDictEqual({}, device_properties)
-
-        with async_patchers.patch_shell(DEVICE_PROPERTIES_GOOGLE_TV)[self.PATCH_KEY]:
-            device_properties = await self.btv.get_device_properties()
-            self.assertTrue(self.btv._is_google_tv)
-
-    @awaiter
-    async def test_get_installed_apps(self):
-        """"Check that `get_installed_apps` works correctly.
-
-        """
-        with async_patchers.patch_shell(INSTALLED_APPS_OUTPUT_1)[self.PATCH_KEY]:
-            installed_apps = await self.btv.get_installed_apps()
-            self.assertListEqual(INSTALLED_APPS_LIST, installed_apps)
-
-        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            installed_apps = await self.btv.get_installed_apps()
-            self.assertEqual(None, installed_apps)
+        with async_patchers.patch_shell("")[self.PATCH_KEY]:
+            with patch_calls(self.btv, self.btv._parse_device_properties) as patched:
+                await self.btv.get_device_properties()
+                assert patched.called
 
     @awaiter
     async def test_awake(self):
@@ -385,20 +271,9 @@ class TestBaseTVAsyncPython(unittest.TestCase):
 
         """
         with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            audio_state = await self.btv.audio_state()
-            self.assertIsNone(audio_state, None)
-
-        with async_patchers.patch_shell('0')[self.PATCH_KEY]:
-            audio_state = await self.btv.audio_state()
-            self.assertEqual(audio_state, constants.STATE_IDLE)
-
-        with async_patchers.patch_shell('1')[self.PATCH_KEY]:
-            audio_state = await self.btv.audio_state()
-            self.assertEqual(audio_state, constants.STATE_PAUSED)
-
-        with async_patchers.patch_shell('2')[self.PATCH_KEY]:
-            audio_state = await self.btv.audio_state()
-            self.assertEqual(audio_state, constants.STATE_PLAYING)
+            with patch_calls(self.btv, self.btv._audio_state) as patched:
+                await self.btv.audio_state()
+                assert patched.called
 
     @awaiter
     async def test_current_app(self):
@@ -406,16 +281,19 @@ class TestBaseTVAsyncPython(unittest.TestCase):
 
         """
         with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            current_app = await self.btv.current_app()
-            self.assertIsNone(current_app, None)
+            with patch_calls(self.btv, self.btv._current_app) as patched:
+                await self.btv.current_app()
+                assert patched.called
 
-        with async_patchers.patch_shell('')[self.PATCH_KEY]:
-            current_app = await self.btv.current_app()
-            self.assertIsNone(current_app, None)
+    @awaiter
+    async def test_get_installed_apps(self):
+        """"Check that `get_installed_apps` works correctly.
 
-        with async_patchers.patch_shell('com.amazon.tv.launcher')[self.PATCH_KEY]:
-            current_app = await self.btv.current_app()
-            self.assertEqual(current_app, "com.amazon.tv.launcher")
+        """
+        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
+            with patch_calls(self.btv, self.btv._installed_apps) as patched:
+                await self.btv.get_installed_apps()
+                assert patched.called
 
     @awaiter
     async def test_media_session_state(self):
@@ -423,24 +301,9 @@ class TestBaseTVAsyncPython(unittest.TestCase):
 
         """
         with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            media_session_state = await self.btv.media_session_state()
-            self.assertIsNone(media_session_state, None)
-
-        with async_patchers.patch_shell('')[self.PATCH_KEY]:
-            media_session_state = await self.btv.media_session_state()
-            self.assertIsNone(media_session_state, None)
-
-        with async_patchers.patch_shell('unknown.app\n ')[self.PATCH_KEY]:
-            media_session_state = await self.btv.media_session_state()
-            self.assertIsNone(media_session_state, None)
-
-        with async_patchers.patch_shell('2')[self.PATCH_KEY]:
-            media_session_state = await self.btv.media_session_state()
-            self.assertIsNone(media_session_state, None)
-
-        with async_patchers.patch_shell(MEDIA_SESSION_STATE_OUTPUT)[self.PATCH_KEY]:
-            media_session_state = await self.btv.media_session_state()
-            self.assertEqual(media_session_state, 2)
+            with patch_calls(self.btv, self.btv._current_app_media_session_state) as patched:
+                await self.btv.media_session_state()
+                assert patched.called
 
     @awaiter
     async def test_screen_on(self):
@@ -457,47 +320,14 @@ class TestBaseTVAsyncPython(unittest.TestCase):
             self.assertTrue(await self.btv.screen_on())
 
     @awaiter
-    async def test_state_detection_rules_validator(self):
-        """Check that the ``state_detection_rules_validator`` function works correctly.
-
-        """
-        with async_patchers.patch_connect(True)['python'], async_patchers.patch_shell('')['python']:
-            # Make sure that no error is raised when the state detection rules are valid
-            BaseTVAsync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES1)
-            BaseTVAsync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES2)
-            BaseTVAsync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES3)
-            BaseTVAsync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES4)
-            BaseTVAsync('HOST', 5555, state_detection_rules=STATE_DETECTION_RULES5)
-
-            # Make sure that an error is raised when the state detection rules are invalid
-            self.assertRaises(TypeError, BaseTVAsync, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID1)
-            self.assertRaises(KeyError, BaseTVAsync, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID2)
-            self.assertRaises(KeyError, BaseTVAsync, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID3)
-            self.assertRaises(KeyError, BaseTVAsync, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID4)
-            self.assertRaises(KeyError, BaseTVAsync, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID5)
-            self.assertRaises(KeyError, BaseTVAsync, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID6)
-            self.assertRaises(KeyError, BaseTVAsync, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID7)
-            self.assertRaises(KeyError, BaseTVAsync, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID8)
-            self.assertRaises(KeyError, BaseTVAsync, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID9)
-            self.assertRaises(KeyError, BaseTVAsync, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID10)
-            self.assertRaises(KeyError, BaseTVAsync, 'HOST', 5555, '', state_detection_rules=STATE_DETECTION_RULES_INVALID11)
-
-    @awaiter
     async def test_wake_lock_size(self):
         """Check that the ``wake_lock_size`` property works correctly.
 
         """
         with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.assertIsNone(await self.btv.wake_lock_size())
-
-        with async_patchers.patch_shell('')[self.PATCH_KEY]:
-            self.assertIsNone(await self.btv.wake_lock_size())
-
-        with async_patchers.patch_shell('Wake Locks: size=2')[self.PATCH_KEY]:
-            self.assertEqual(await self.btv.wake_lock_size(), 2)
-
-        with async_patchers.patch_shell('INVALID')[self.PATCH_KEY]:
-            self.assertIsNone(await self.btv.wake_lock_size())
+            with patch_calls(self.btv, self.btv._wake_lock_size) as patched:
+                await self.btv.wake_lock_size()
+                assert patched.called
 
     @awaiter
     async def test_get_hdmi_input(self):
@@ -505,22 +335,9 @@ class TestBaseTVAsyncPython(unittest.TestCase):
 
         """
         with async_patchers.patch_shell("HDMI2")[self.PATCH_KEY]:
-            self.assertEqual(await self.btv.get_hdmi_input(), "HDMI2")
-
-        with async_patchers.patch_shell("HDMI2\n")[self.PATCH_KEY]:
-            self.assertEqual(await self.btv.get_hdmi_input(), "HDMI2")
-
-        with async_patchers.patch_shell("HDMI2\r\n")[self.PATCH_KEY]:
-            self.assertEqual(await self.btv.get_hdmi_input(), "HDMI2")
-
-        with async_patchers.patch_shell("")[self.PATCH_KEY]:
-            self.assertIsNone(await self.btv.get_hdmi_input())
-
-        with async_patchers.patch_shell("\r\n")[self.PATCH_KEY]:
-            self.assertIsNone(await self.btv.get_hdmi_input())
-
-        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.assertIsNone(await self.btv.get_hdmi_input())
+            with patch_calls(self.btv, self.btv._get_hdmi_input) as patched:
+                await self.btv.get_hdmi_input()
+                assert patched.called
 
     @awaiter
     async def test_learn_sendevent(self):
@@ -532,16 +349,6 @@ class TestBaseTVAsyncPython(unittest.TestCase):
 
         with async_patchers.patch_shell("This is not a valid response")[self.PATCH_KEY]:
             self.assertEqual(await self.btv.learn_sendevent(), "")
-
-
-class TestHAStateDetectionRulesValidator(unittest.TestCase):
-    def test_ha_state_detection_rules_validator(self):
-        """Check that ``ha_state_detection_rules_validator()`` works correctly.
-
-        """
-        with self.assertRaises(AssertionError):
-            for app_id, rules in STATE_DETECTION_RULES_INVALID2.items():
-                ha_state_detection_rules_validator(AssertionError)(rules)
 
 
 if __name__ == "__main__":
