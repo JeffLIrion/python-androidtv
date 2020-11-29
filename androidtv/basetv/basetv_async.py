@@ -200,18 +200,6 @@ class BaseTVAsync(BaseTV):
 
         return self._parse_device_properties(properties)
 
-    async def get_installed_apps(self):
-        """Return a list of installed applications
-
-        Returns
-        -------
-        list
-            A list of the installed apps
-
-        """
-        installed_apps_response = await self._adb.shell(constants.CMD_INSTALLED_APPS)
-        return self._installed_apps(installed_apps_response)
-
     # ======================================================================= #
     #                                                                         #
     #                               Properties                                #
@@ -276,6 +264,18 @@ class BaseTVAsync(BaseTV):
 
         """
         return self._get_hdmi_input(await self._adb.shell(constants.CMD_HDMI_INPUT))
+
+    async def get_installed_apps(self):
+        """Return a list of installed applications.
+
+        Returns
+        -------
+        list, None
+            A list of the installed apps, or ``None`` if it could not be determined
+
+        """
+        installed_apps_response = await self._adb.shell(constants.CMD_INSTALLED_APPS)
+        return self._installed_apps(installed_apps_response)
 
     async def is_volume_muted(self):
         """Whether or not the volume is muted.
