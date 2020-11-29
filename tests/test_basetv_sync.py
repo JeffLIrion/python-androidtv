@@ -346,8 +346,8 @@ class TestBaseTVSyncPython(unittest.TestCase):
             device_properties = self.btv.get_device_properties()
             self.assertTrue(self.btv._is_google_tv)
 
-    def test_installed_apps(self):
-        """"Check that `installed_apps` works correctly.
+    def test_get_installed_apps(self):
+        """"Check that `get_installed_apps` works correctly.
 
         """
         with patchers.patch_shell(INSTALLED_APPS_OUTPUT_1)[self.PATCH_KEY]:
