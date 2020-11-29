@@ -286,6 +286,16 @@ class TestBaseTVAsyncPython(unittest.TestCase):
                 assert patched.called
 
     @awaiter
+    async def test_get_installed_apps(self):
+        """"Check that `get_installed_apps` works correctly.
+
+        """
+        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
+            with patch_calls(self.btv, self.btv._installed_apps) as patched:
+                await self.btv.get_installed_apps()
+                assert patched.called
+
+    @awaiter
     async def test_media_session_state(self):
         """Check that the ``media_session_state`` property works correctly.
 
