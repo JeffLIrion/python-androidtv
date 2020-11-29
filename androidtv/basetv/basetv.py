@@ -378,6 +378,26 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         return hdmi_response.strip() if hdmi_response and hdmi_response.strip() else None
 
     @staticmethod
+    def _installed_apps(installed_apps_response):
+        """Get the installed apps from the output of :py:const:`androidtv.constants.CMD_INSTALLED_APPS`.
+
+        Parameters
+        ----------
+        installed_apps_response : str, None
+            The output of :py:const:`androidtv.constants.CMD_INSTALLED_APPS`
+
+        Returns
+        -------
+        list, None
+            A list of the installed apps, or ``None`` if it could not be determined
+
+        """
+        if installed_apps_response is not None:
+            return [line.strip().rsplit("package:", 1)[-1] for line in installed_apps_response.splitlines() if line.strip()]
+
+        return None
+
+    @staticmethod
     def _is_volume_muted(stream_music):
         """Determine whether or not the volume is muted from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
 
@@ -470,26 +490,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             if isinstance(running_apps_response, list):
                 return [line.strip().rsplit(' ', 1)[-1] for line in running_apps_response if line.strip()]
             return [line.strip().rsplit(' ', 1)[-1] for line in running_apps_response.splitlines() if line.strip()]
-
-        return None
-
-    @staticmethod
-    def _installed_apps(installed_apps_response):
-        """Get the installed apps from the output of :py:const:`androidtv.constants.CMD_INSTALLED_APPS`.
-
-        Parameters
-        ----------
-        installed_apps_response : str, None
-            The output of :py:const:`androidtv.constants.CMD_INSTALLED_APPS`
-
-        Returns
-        -------
-        list, None
-            A list of the installed apps, or ``None`` if it could not be determined
-
-        """
-        if installed_apps_response is not None:
-            return [line.strip().rsplit("package:", 1)[-1] for line in installed_apps_response.splitlines() if line.strip()]
 
         return None
 
