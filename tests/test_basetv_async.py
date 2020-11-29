@@ -353,8 +353,8 @@ class TestBaseTVAsyncPython(unittest.TestCase):
             self.assertTrue(self.btv._is_google_tv)
 
     @awaiter
-    async def test_installed_apps(self):
-        """"Check that `installed_apps` works correctly.
+    async def test_get_installed_apps(self):
+        """"Check that `get_installed_apps` works correctly.
 
         """
         with async_patchers.patch_shell(INSTALLED_APPS_OUTPUT_1)[self.PATCH_KEY]:
