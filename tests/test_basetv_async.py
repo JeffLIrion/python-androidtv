@@ -67,6 +67,15 @@ SERIALNO
 Device "eth0" does not exist.
 """
 
+INSTALLED_APPS_OUTPUT_1 = """package:org.example.app
+package:org.example.launcher
+"""
+
+INSTALLED_APPS_LIST = [
+    "org.example.app",
+    "org.example.launcher",
+]
+
 MEDIA_SESSION_STATE_OUTPUT = "com.amazon.tv.launcher\nstate=PlaybackState {state=2, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}"
 
 STATE_DETECTION_RULES1 = {'com.amazon.tv.launcher': ['off']}
@@ -342,6 +351,19 @@ class TestBaseTVAsyncPython(unittest.TestCase):
         with async_patchers.patch_shell(DEVICE_PROPERTIES_GOOGLE_TV)[self.PATCH_KEY]:
             device_properties = await self.btv.get_device_properties()
             self.assertTrue(self.btv._is_google_tv)
+
+    @awaiter
+    async def test_get_installed_apps(self):
+        """"Check that `get_installed_apps` works correctly.
+
+        """
+        with async_patchers.patch_shell(INSTALLED_APPS_OUTPUT_1)[self.PATCH_KEY]:
+            installed_apps = await self.btv.get_installed_apps()
+            self.assertListEqual(INSTALLED_APPS_LIST, installed_apps)
+
+        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
+            installed_apps = await self.btv.get_installed_apps()
+            self.assertEqual(None, installed_apps)
 
     @awaiter
     async def test_awake(self):

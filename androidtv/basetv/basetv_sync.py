@@ -265,6 +265,18 @@ class BaseTVSync(BaseTV):
         """
         return self._get_hdmi_input(self._adb.shell(constants.CMD_HDMI_INPUT))
 
+    def get_installed_apps(self):
+        """Return a list of installed applications.
+
+        Returns
+        -------
+        list, None
+            A list of the installed apps, or ``None`` if it could not be determined
+
+        """
+        installed_apps_response = self._adb.shell(constants.CMD_INSTALLED_APPS)
+        return self._installed_apps(installed_apps_response)
+
     def is_volume_muted(self):
         """Whether or not the volume is muted.
 

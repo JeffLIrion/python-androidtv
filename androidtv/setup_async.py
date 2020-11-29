@@ -43,12 +43,14 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
         atv = AndroidTVAsync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
         await atv.adb_connect(auth_timeout_s=auth_timeout_s)
         atv.device_properties = await atv.get_device_properties()
+        atv.installed_apps = await atv.get_installed_apps()
         return atv
 
     if device_class == 'firetv':
         ftv = FireTVAsync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
         await ftv.adb_connect(auth_timeout_s=auth_timeout_s)
         ftv.device_properties = await ftv.get_device_properties()
+        ftv.installed_apps = await ftv.get_installed_apps()
         return ftv
 
     if device_class != 'auto':
