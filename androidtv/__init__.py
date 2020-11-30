@@ -47,12 +47,14 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
         atv = AndroidTVSync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
         atv.adb_connect(auth_timeout_s=auth_timeout_s)
         atv.device_properties = atv.get_device_properties()
+        atv.installed_apps = atv.get_installed_apps()
         return atv
 
     if device_class == 'firetv':
         ftv = FireTVSync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
         ftv.adb_connect(auth_timeout_s=auth_timeout_s)
         ftv.device_properties = ftv.get_device_properties()
+        ftv.installed_apps = ftv.get_installed_apps()
         return ftv
 
     if device_class != 'auto':
@@ -65,6 +67,9 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
 
     # get device properties
     aftv.device_properties = aftv.get_device_properties()
+
+    # get the installed apps
+    aftv.installed_apps = aftv.get_installed_apps()
 
     # Fire TV
     if aftv.device_properties.get('manufacturer') == 'Amazon':
