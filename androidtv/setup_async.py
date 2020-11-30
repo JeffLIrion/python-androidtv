@@ -64,6 +64,9 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
     # get device properties
     aftv.device_properties = await aftv.get_device_properties()
 
+    # get the installed apps
+    aftv.installed_apps = await aftv.get_installed_apps()
+
     # Fire TV
     if aftv.device_properties.get('manufacturer') == 'Amazon':
         aftv.__class__ = FireTVAsync
