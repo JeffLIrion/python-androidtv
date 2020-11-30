@@ -69,7 +69,7 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
     aftv.device_properties = aftv.get_device_properties()
 
     # get the installed apps
-    aftv.installed_apps = await aftv.get_installed_apps()
+    aftv.installed_apps = aftv.get_installed_apps()
 
     # Fire TV
     if aftv.device_properties.get('manufacturer') == 'Amazon':
