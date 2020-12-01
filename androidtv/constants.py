@@ -309,6 +309,7 @@ APP_FIRETV_STORE = 'com.amazon.venezia'
 APP_FOOD_NETWORK_GO = 'tv.accedo.foodnetwork'
 APP_FRANCE_TV = 'fr.francetv.pluzz'
 APP_GOOGLE_CAST = 'com.google.android.apps.mediashell'
+APP_GOOGLE_TV_LAUNCHER = 'com.google.android.apps.tv.launcherx'
 APP_HBO_GO = 'eu.hbogo.androidtv.production'
 APP_HBO_GO_2 = 'com.HBO'
 APP_HULU = 'com.hulu.plus'
@@ -341,6 +342,7 @@ APP_WAIPU_TV = 'de.exaring.waipu.firetv.live'
 APP_WATCH_TNT = 'com.turner.tnt.android.networkapp'
 APP_YOUTUBE = 'com.google.android.youtube.tv'
 APP_YOUTUBE_2 = 'com.amazon.firetv.youtube'
+APP_YOUTUBE_TV = 'com.google.android.youtube.tvunplugged'
 APP_ZIGGO_GO_TV = 'com.ziggo.tv'
 APPS = {APP_AE_TV: 'A&E',
         APP_AMAZON_VIDEO: 'Amazon Video',
@@ -357,6 +359,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_FOOD_NETWORK_GO: 'Food Network GO',
         APP_FRANCE_TV: 'France TV',
         APP_GOOGLE_CAST: 'Google Cast',
+        APP_GOOGLE_TV_LAUNCHER: 'Google TV Launcher',
         APP_HBO_GO: 'HBO GO',
         APP_HBO_GO_2: 'HBO GO (2)',
         APP_HULU: 'Hulu',
@@ -389,6 +392,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_WATCH_TNT: 'Watch TNT',
         APP_YOUTUBE: 'YouTube',
         APP_YOUTUBE_2: 'YouTube (FireTV)',
+        APP_YOUTUBE_TV: 'YouTube TV',
         APP_ZIGGO_GO_TV: 'Ziggo GO TV'}
 
 
