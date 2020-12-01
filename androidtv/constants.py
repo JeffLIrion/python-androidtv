@@ -359,7 +359,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_FOOD_NETWORK_GO: 'Food Network GO',
         APP_FRANCE_TV: 'France TV',
         APP_GOOGLE_CAST: 'Google Cast',
-        APP_GOOGLE_TV_LAUNCHER: 'Google TV Launcher'
+        APP_GOOGLE_TV_LAUNCHER: 'Google TV Launcher',
         APP_HBO_GO: 'HBO GO',
         APP_HBO_GO_2: 'HBO GO (2)',
         APP_HULU: 'Hulu',
