@@ -100,7 +100,7 @@ class BaseTVAsync(BaseTV):
             The response from the device, if there is a response
 
         """
-        return await self._adb.shell(cmd)
+        return await self._adb.shell(self._remove_adb_shell_prefix(cmd))
 
     async def adb_pull(self, local_path, device_path):
         """Pull a file from the device.

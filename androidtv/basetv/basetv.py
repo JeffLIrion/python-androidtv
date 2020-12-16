@@ -105,6 +105,23 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         """
         return self._adb.available
 
+    @staticmethod
+    def _remove_adb_shell_prefix(cmd):
+        """Remove the 'adb shell ' prefix from ``cmd``, if present.
+
+        Parameters
+        ----------
+        cmd : str
+            The ADB shell command
+
+        Returns
+        -------
+        str
+            ``cmd`` with the 'adb shell ' prefix removed, if it was present
+
+        """
+        return cmd[len("adb shell "):] if cmd.startswith("adb shell ") else cmd
+
     # ======================================================================= #
     #                                                                         #
     #                        Home Assistant device info                       #
