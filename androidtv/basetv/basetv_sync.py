@@ -251,7 +251,7 @@ class BaseTVSync(BaseTV):
             The ID of the current app, or ``None`` if it could not be determined
 
         """
-        current_app_response = self._adb.shell(constants.CMD_CURRENT_APP)
+        current_app_response = self._adb.shell(self._cmd_current_app)
 
         return self._current_app(current_app_response)
 
@@ -428,7 +428,7 @@ class BaseTVSync(BaseTV):
             The ID of the app that will be launched
 
         """
-        self._adb.shell(constants.CMD_LAUNCH_APP.format(app) if not self._is_google_tv else constants.CMD_LAUNCH_APP_GOOGLE_TV.format(app))
+        self._adb.shell(self._cmd_launch_app.format(app))
 
     def stop_app(self, app):
         """Stop an app.

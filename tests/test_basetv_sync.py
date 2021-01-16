@@ -10,6 +10,7 @@ except ImportError:
 sys.path.insert(0, '..')
 
 from androidtv import constants, ha_state_detection_rules_validator
+from androidtv.androidtv.androidtv_sync import AndroidTVSync
 from androidtv.basetv.basetv_sync import BaseTVSync
 from . import patchers
 
@@ -343,8 +344,9 @@ class TestBaseTVSyncPython(unittest.TestCase):
             self.assertDictEqual({}, device_properties)
 
         with patchers.patch_shell(DEVICE_PROPERTIES_GOOGLE_TV)[self.PATCH_KEY]:
+            self.btv.__class__ = AndroidTVSync
             device_properties = self.btv.get_device_properties()
-            self.assertTrue(self.btv._is_google_tv)
+            self.assertEqual(self.btv.device_properties["manufacturer"], "Google")
 
     def test_get_installed_apps(self):
         """"Check that `get_installed_apps` works correctly.
