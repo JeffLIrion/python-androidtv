@@ -101,7 +101,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         This is implemented in the `BaseAndroidTV` and `BaseFireTV` classes.
 
         """
-        # pass
 
     # ======================================================================= #
     #                                                                         #
