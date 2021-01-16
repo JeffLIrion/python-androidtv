@@ -144,11 +144,13 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         _LOGGER.debug("%s:%d `get_device_properties` response: %s", self.host, self.port, properties)
 
         if not properties:
-            return {}
+            self.device_properties = {}
+            return
 
         lines = properties.strip().splitlines()
         if len(lines) != 6:
-            return {}
+            self.device_properties = {}
+            return
 
         manufacturer, model, serialno, version, mac_wlan0_output, mac_eth0_output = lines
 
@@ -172,12 +174,12 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         else:
             ethmac = None
 
-        return {'manufacturer': manufacturer,
-                'model': model,
-                'serialno': serialno,
-                'sw_version': version,
-                'wifimac': wifimac,
-                'ethmac': ethmac}
+        self.device_properties = {'manufacturer': manufacturer,
+                                  'model': model,
+                                  'serialno': serialno,
+                                  'sw_version': version,
+                                  'wifimac': wifimac,
+                                  'ethmac': ethmac}
 
     # ======================================================================= #
     #                                                                         #
@@ -395,7 +397,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         return hdmi_response.strip() if hdmi_response and hdmi_response.strip() else None
 
     @staticmethod
-    def _installed_apps(installed_apps_response):
+    def _get_installed_apps(installed_apps_response):
         """Get the installed apps from the output of :py:const:`androidtv.constants.CMD_INSTALLED_APPS`.
 
         Parameters

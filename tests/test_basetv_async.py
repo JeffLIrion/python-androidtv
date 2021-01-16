@@ -291,7 +291,7 @@ class TestBaseTVAsyncPython(unittest.TestCase):
 
         """
         with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            with patch_calls(self.btv, self.btv._installed_apps) as patched:
+            with patch_calls(self.btv, self.btv._get_installed_apps) as patched:
                 await self.btv.get_installed_apps()
                 assert patched.called
 
