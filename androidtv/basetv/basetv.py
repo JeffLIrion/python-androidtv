@@ -135,10 +135,8 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         properties : str, None
             The output of the ADB command that retrieves the device properties
 
-        Returns
-        -------
-        dict
-            A dictionary with keys ``'wifimac'``, ``'ethmac'``, ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
+        This method fills in the ``device_properties`` attribute, which is a dictionary with keys
+        ``'wifimac'``, ``'ethmac'``, ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
 
         """
         _LOGGER.debug("%s:%d `get_device_properties` response: %s", self.host, self.port, properties)
