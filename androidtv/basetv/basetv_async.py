@@ -198,7 +198,8 @@ class BaseTVAsync(BaseTV):
                                            constants.CMD_MAC_WLAN0 + " && " +
                                            constants.CMD_MAC_ETH0)
 
-        return self._parse_device_properties(properties)
+        self._parse_device_properties(properties)
+        return self.device_properties
 
     # ======================================================================= #
     #                                                                         #
@@ -275,7 +276,8 @@ class BaseTVAsync(BaseTV):
 
         """
         installed_apps_response = await self._adb.shell(constants.CMD_INSTALLED_APPS)
-        return self._installed_apps(installed_apps_response)
+        self.installed_apps = self._get_installed_apps(installed_apps_response)
+        return self.installed_apps
 
     async def is_volume_muted(self):
         """Whether or not the volume is muted.
