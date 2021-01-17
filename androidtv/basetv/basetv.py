@@ -76,7 +76,14 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         self._state_detection_rules = state_detection_rules
         self.device_properties = {}
         self.installed_apps = []
-        self._is_google_tv = False
+
+        # commands that can vary based on the device
+        self._cmd_get_properties_lazy_running_apps = ""
+        self._cmd_get_properties_lazy_no_running_apps = ""
+        self._cmd_get_properties_not_lazy_running_apps = ""
+        self._cmd_get_properties_not_lazy_no_running_apps = ""
+        self._cmd_current_app = ""
+        self._cmd_launch_app = ""
 
         # make sure the rules are valid
         if self._state_detection_rules:
@@ -87,6 +94,13 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         # the max volume level (determined when first getting the volume level)
         self.max_volume = None
+
+    def _fill_in_commands(self):
+        """Fill in commands that are specific to the device.
+
+        This is implemented in the `BaseAndroidTV` and `BaseFireTV` classes.
+
+        """
 
     # ======================================================================= #
     #                                                                         #
@@ -152,10 +166,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         manufacturer, model, serialno, version, mac_wlan0_output, mac_eth0_output = lines
 
-        # Is this a Google Chromecast Android TV?
-        if "Google" in manufacturer and "Chromecast" in model:
-            self._is_google_tv = True
-
         if not serialno.strip():
             _LOGGER.warning("Could not obtain serialno for %s:%d, got: '%s'", self.host, self.port, serialno)
             serialno = None
@@ -178,6 +188,8 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
                                   'sw_version': version,
                                   'wifimac': wifimac,
                                   'ethmac': ethmac}
+
+        self._fill_in_commands()
 
     # ======================================================================= #
     #                                                                         #

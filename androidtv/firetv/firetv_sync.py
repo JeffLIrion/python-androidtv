@@ -38,6 +38,9 @@ class FireTVSync(BaseTVSync, BaseFireTV):
     def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, signer=None):  # pylint: disable=super-init-not-called
         BaseTVSync.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
 
+        # fill in commands that can vary based on the device
+        BaseFireTV._fill_in_commands(self)
+
     # ======================================================================= #
     #                                                                         #
     #                          Home Assistant Update                          #
@@ -112,14 +115,14 @@ class FireTVSync(BaseTVSync, BaseFireTV):
         """
         if lazy:
             if get_running_apps:
-                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS)
+                output = self._adb.shell(self._cmd_get_properties_lazy_running_apps)
             else:
-                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS)
+                output = self._adb.shell(self._cmd_get_properties_lazy_no_running_apps)
         else:
             if get_running_apps:
-                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
+                output = self._adb.shell(self._cmd_get_properties_not_lazy_running_apps)
             else:
-                output = self._adb.shell(constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
+                output = self._adb.shell(self._cmd_get_properties_not_lazy_no_running_apps)
         _LOGGER.debug("Fire TV %s:%d `get_properties` response: %s", self.host, self.port, output)
 
         return self._get_properties(output, get_running_apps)

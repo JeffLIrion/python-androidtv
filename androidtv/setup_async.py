@@ -75,4 +75,7 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
     else:
         aftv.__class__ = AndroidTVAsync
 
+    # Fill in commands that are specific to the device
+    aftv._fill_in_commands()  # pylint: disable=protected-access
+
     return aftv
