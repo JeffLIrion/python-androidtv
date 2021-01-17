@@ -65,6 +65,7 @@ class TestAndroidTVAsyncPython(unittest.TestCase):
         with async_patchers.PATCH_ADB_DEVICE_TCP, async_patchers.patch_connect(True)[self.PATCH_KEY], async_patchers.patch_shell('')[self.PATCH_KEY]:
             self.atv = AndroidTVAsync('HOST', 5555)
             await self.atv.adb_connect()
+            self.assertEqual(self.atv._cmd_get_properties_lazy_no_running_apps, constants.CMD_ANDROIDTV_PROPERTIES_LAZY_NO_RUNNING_APPS)
 
     @awaiter
     async def test_turn_on_off(self):

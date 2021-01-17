@@ -343,6 +343,7 @@ class TestAndroidTVSyncPython(unittest.TestCase):
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.atv = AndroidTVSync('HOST', 5555)
             self.atv.adb_connect()
+            self.assertEqual(self.atv._cmd_get_properties_lazy_no_running_apps, constants.CMD_ANDROIDTV_PROPERTIES_LAZY_NO_RUNNING_APPS)
 
     def test_turn_on_off(self):
         """Test that the ``AndroidTVSync.turn_on`` and ``AndroidTVSync.turn_off`` methods work correctly.

@@ -109,6 +109,7 @@ class TestBaseTVSyncPython(unittest.TestCase):
         with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell('')[self.PATCH_KEY]:
             self.btv = BaseTVSync('HOST', 5555)
             self.btv.adb_connect()
+            self.assertEqual(self.btv._cmd_launch_app, "")
 
     def test_available(self):
         """Test that the available property works correctly.
@@ -347,6 +348,7 @@ class TestBaseTVSyncPython(unittest.TestCase):
             self.btv.__class__ = AndroidTVSync
             device_properties = self.btv.get_device_properties()
             self.assertEqual(self.btv.device_properties["manufacturer"], "Google")
+            self.assertEqual(self.btv._cmd_get_properties_lazy_no_running_apps, constants.CMD_GOOGLE_TV_PROPERTIES_LAZY_NO_RUNNING_APPS)
 
     def test_get_installed_apps(self):
         """"Check that `get_installed_apps` works correctly.
