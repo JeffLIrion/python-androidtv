@@ -295,7 +295,7 @@ MEDIA_SESSION_STATES = {0: None,
 APP_AE_TV = 'com.aetn.aetv.watch'
 APP_AMAZON_VIDEO = 'com.amazon.avod'
 APP_AMZ_VIDEO = 'com.amazon.avod.thirdpartyclient'
-APP_APPLE_TV = 'com.apple.atve.amazon.appletv'
+APP_APPLE_TV_FIRETV = 'com.apple.atve.amazon.appletv'
 APP_ATV_LAUNCHER = 'com.google.android.tvlauncher'
 APP_BELL_FIBE = 'com.quickplay.android.bellmediaplayer'
 APP_COMEDY_CENTRAL = 'com.vmn.android.comedycentral'
@@ -326,28 +326,28 @@ APP_PLAY_STORE = 'com.android.vending'
 APP_PLAY_VIDEOS = 'com.android.videos'
 APP_PLEX = 'com.plexapp.android'
 APP_PRIME_VIDEO = 'com.amazon.amazonvideo.livingroom'
-APP_PRIME_VIDEO_2 = 'com.amazon.firebat'
+APP_PRIME_VIDEO_FIRETV = 'com.amazon.firebat'
 APP_SMART_YOUTUBE_TV = 'com.liskovsoft.videomanager'
 APP_SPORT1 = 'de.sport1.firetv.video'
 APP_SPOTIFY = 'com.spotify.tv.android'
 APP_STEAM_LINK = 'com.valvesoftware.steamlink'
 APP_SYFY = 'com.amazon.webapps.nbc.syfy'
 APP_TVHEADEND = 'de.cyberdream.dreamepg.tvh.tv.player'
-APP_TWITCH = 'tv.twitch.android.viewer'
-APP_TWITCH_APP = 'tv.twitch.android.app'
+APP_TWITCH = 'tv.twitch.android.app'
+APP_TWITCH_FIRETV = 'tv.twitch.android.viewer'
 APP_VH1 = 'com.mtvn.vh1android'
 APP_VLC = 'org.videolan.vlc'
 APP_VRV = 'com.ellation.vrv'
 APP_WAIPU_TV = 'de.exaring.waipu.firetv.live'
 APP_WATCH_TNT = 'com.turner.tnt.android.networkapp'
 APP_YOUTUBE = 'com.google.android.youtube.tv'
-APP_YOUTUBE_2 = 'com.amazon.firetv.youtube'
+APP_YOUTUBE_FIRETV = 'com.amazon.firetv.youtube'
 APP_YOUTUBE_TV = 'com.google.android.youtube.tvunplugged'
 APP_ZIGGO_GO_TV = 'com.ziggo.tv'
 APPS = {APP_AE_TV: 'A&E',
         APP_AMAZON_VIDEO: 'Amazon Video',
         APP_AMZ_VIDEO: 'Amz Video',
-        APP_APPLE_TV: 'Apple TV',
+        APP_APPLE_TV_FIRETV: 'Apple TV (FireTV)',
         APP_ATV_LAUNCHER: 'Android TV Launcher',
         APP_BELL_FIBE: 'Bell Fibe',
         APP_COMEDY_CENTRAL: 'Comedy Central',
@@ -376,7 +376,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_PLAY_VIDEOS: 'Play Movies & TV',
         APP_PLEX: 'Plex',
         APP_PRIME_VIDEO: 'Prime Video',
-        APP_PRIME_VIDEO_2: 'Prime Video (2)',
+        APP_PRIME_VIDEO_FIRETV: 'Prime Video (FireTV)',
         APP_SMART_YOUTUBE_TV: 'Smart YouTube TV',
         APP_SPORT1: 'Sport 1',
         APP_SPOTIFY: 'Spotify',
@@ -384,14 +384,14 @@ APPS = {APP_AE_TV: 'A&E',
         APP_SYFY: 'Syfy',
         APP_TVHEADEND: 'DreamPLayer TVHeadend',
         APP_TWITCH: 'Twitch',
-        APP_TWITCH_APP: 'Twitch App',
+        APP_TWITCH_FIRETV: 'Twitch (FireTV)',
         APP_VH1: 'VH1',
         APP_VLC: 'VLC',
         APP_VRV: 'VRV',
         APP_WAIPU_TV: 'Waipu TV',
         APP_WATCH_TNT: 'Watch TNT',
         APP_YOUTUBE: 'YouTube',
-        APP_YOUTUBE_2: 'YouTube (FireTV)',
+        APP_YOUTUBE_FIRETV: 'YouTube (FireTV)',
         APP_YOUTUBE_TV: 'YouTube TV',
         APP_ZIGGO_GO_TV: 'Ziggo GO TV'}
 

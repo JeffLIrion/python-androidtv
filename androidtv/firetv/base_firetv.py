@@ -185,7 +185,7 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
                     state = constants.STATE_IDLE
 
             # Twitch
-            elif current_app == constants.APP_TWITCH:
+            elif current_app == constants.APP_TWITCH_FIRETV:
                 if wake_lock_size == 2:
                     state = constants.STATE_PAUSED
                 elif media_session_state == 3:
