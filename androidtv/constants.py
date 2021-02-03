@@ -15,6 +15,8 @@ import re
 INTENT_LAUNCH = "android.intent.category.LAUNCHER"
 INTENT_HOME = "android.intent.category.HOME"
 
+# Specify application identifier as CURRENT_APP from dumpsys output previously assigned to CURRENT_APP
+VAR_CURRENT_APP_EXTRACTION = 'CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\\}*}'
 
 # echo '1' if the previous shell command was successful
 CMD_SUCCESS1 = r" && echo -e '1\c'"
@@ -28,20 +30,29 @@ CMD_AUDIO_STATE = r"dumpsys audio | grep paused | grep -qv 'Buffer Queue' && ech
 #: Determine whether the device is awake
 CMD_AWAKE = "dumpsys power | grep mWakefulness | grep -q Awake"
 
+#: Define current app
+CMD_DEFINE_CURRENT_APP = "CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && " + VAR_CURRENT_APP_EXTRACTION
+
 #: Get the current app
-CMD_CURRENT_APP = "CURRENT_APP=$(dumpsys window windows | grep mCurrentFocus) && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && echo $CURRENT_APP"
+CMD_CURRENT_APP = CMD_DEFINE_CURRENT_APP + ' && echo $CURRENT_APP'
+
+#: Define current app for a Google TV device
+CMD_DEFINE_CURRENT_APP_GOOGLE_TV = 'CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && ' + VAR_CURRENT_APP_EXTRACTION
 
 #: Get the current app for a Google TV device
-CMD_CURRENT_APP_GOOGLE_TV = "CURRENT_APP=$(dumpsys activity a . | grep -E 'mResumedActivity' | cut -d ' ' -f 8) && CURRENT_APP=${CURRENT_APP%%/*} && echo $CURRENT_APP"
+CMD_CURRENT_APP_GOOGLE_TV = CMD_DEFINE_CURRENT_APP_GOOGLE_TV + ' && echo $CURRENT_APP'
 
 #: Get the HDMI input
 CMD_HDMI_INPUT = "dumpsys activity starter | grep -o 'HDMIInputService\\/HW[0-9]' -m 1 | grep -o 'HW[0-9]'"
 
 #: Launch an app if it is not already the current app
-CMD_LAUNCH_APP = "CURRENT_APP=$(dumpsys window windows | grep mCurrentFocus) && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c " + INTENT_LAUNCH + " --pct-syskeys 0 1; fi"
+CMD_LAUNCH_APP_CONDITION = "if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c " + INTENT_LAUNCH + ' --pct-syskeys 0 1; fi'
 
-#: Launch an app if it is not already the current app (for Google TV devices)
-CMD_LAUNCH_APP_GOOGLE_TV = "CURRENT_APP=$(dumpsys activity a . | grep -E 'mResumedActivity' | cut -d ' ' -f 8) && CURRENT_APP=${{CURRENT_APP%%/*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c " + INTENT_LAUNCH + " --pct-syskeys 0 1; fi"
+#: Launch an app
+CMD_LAUNCH_APP = CMD_DEFINE_CURRENT_APP.replace('{', '{{').replace('}', '}}') + ' && ' + CMD_LAUNCH_APP_CONDITION
+
+#: Launch an app on a Google TV device
+CMD_LAUNCH_APP_GOOGLE_TV = CMD_DEFINE_CURRENT_APP_GOOGLE_TV.replace('{', '{{').replace('}', '}}') + ' && ' + CMD_LAUNCH_APP_CONDITION
 
 #: Get the state from ``dumpsys media_session``; this assumes that the variable ``CURRENT_APP`` has been defined
 CMD_MEDIA_SESSION_STATE = "dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'"
