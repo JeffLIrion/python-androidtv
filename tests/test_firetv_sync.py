@@ -440,17 +440,17 @@ class TestFireTVSyncPython(unittest.TestCase):
                           (constants.STATE_IDLE, constants.APP_SPOTIFY, [constants.APP_SPOTIFY], None))
 
         # Twitch
-        self.assertUpdate([True, True, 2, constants.APP_TWITCH, 3, [constants.APP_TWITCH], None],
-                          (constants.STATE_PAUSED, constants.APP_TWITCH, [constants.APP_TWITCH], None))
+        self.assertUpdate([True, True, 2, constants.APP_TWITCH_FIRETV, 3, [constants.APP_TWITCH_FIRETV], None],
+                          (constants.STATE_PAUSED, constants.APP_TWITCH_FIRETV, [constants.APP_TWITCH_FIRETV], None))
 
-        self.assertUpdate([True, True, 1, constants.APP_TWITCH, 3, [constants.APP_TWITCH], None],
-                          (constants.STATE_PLAYING, constants.APP_TWITCH, [constants.APP_TWITCH], None))
+        self.assertUpdate([True, True, 1, constants.APP_TWITCH_FIRETV, 3, [constants.APP_TWITCH_FIRETV], None],
+                          (constants.STATE_PLAYING, constants.APP_TWITCH_FIRETV, [constants.APP_TWITCH_FIRETV], None))
 
-        self.assertUpdate([True, True, 1, constants.APP_TWITCH, 4, [constants.APP_TWITCH], None],
-                          (constants.STATE_PLAYING, constants.APP_TWITCH, [constants.APP_TWITCH], None))
+        self.assertUpdate([True, True, 1, constants.APP_TWITCH_FIRETV, 4, [constants.APP_TWITCH_FIRETV], None],
+                          (constants.STATE_PLAYING, constants.APP_TWITCH_FIRETV, [constants.APP_TWITCH_FIRETV], None))
 
-        self.assertUpdate([True, True, 1, constants.APP_TWITCH, 1, [constants.APP_TWITCH], None],
-                          (constants.STATE_IDLE, constants.APP_TWITCH, [constants.APP_TWITCH], None))
+        self.assertUpdate([True, True, 1, constants.APP_TWITCH_FIRETV, 1, [constants.APP_TWITCH_FIRETV], None],
+                          (constants.STATE_IDLE, constants.APP_TWITCH_FIRETV, [constants.APP_TWITCH_FIRETV], None))
 
         # Waipu TV
         self.assertUpdate([True, True, 3, constants.APP_WAIPU_TV, 1, [constants.APP_WAIPU_TV], None],
