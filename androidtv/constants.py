@@ -352,7 +352,21 @@ APP_PLAY_VIDEOS = 'com.android.videos'
 APP_PLEX = 'com.plexapp.android'
 APP_PRIME_VIDEO = 'com.amazon.amazonvideo.livingroom'
 APP_PRIME_VIDEO_FIRETV = 'com.amazon.firebat'
+APP_SETTINGS = 'com.android.tv.settings'
 APP_SMART_YOUTUBE_TV = 'com.liskovsoft.videomanager'
+APP_SONY_ACTION_MENU = 'com.sony.dtv.scrums.action'
+APP_SONY_ALBUM = 'com.sony.dtv.osat.album'
+APP_SONY_BRAVIA_SYNC_MENU = 'com.sony.dtv.braviasyncmenu'
+APP_SONY_BRAVIA_TUTORIALS = 'com.sony.dtv.bravialifehack'
+APP_SONY_DISCOVER = 'com.sony.dtv.discovery'
+APP_SONY_HELP = 'com.sony.dtv.smarthelp'
+APP_SONY_INTERNET_BROWSER = 'com.vewd.core.integration.dia'
+APP_SONY_MUSIC = 'com.sony.dtv.osat.music'
+APP_SONY_SCREEN_MIRRORING = 'com.sony.dtv.networkapp.wifidirect'
+APP_SONY_SELECT = 'com.sony.dtv.sonyselect'
+APP_SONY_TIMERS = 'com.sony.dtv.timers'
+APP_SONY_TV = 'com.sony.dtv.tvx'
+APP_SONY_VIDEO = 'com.sony.dtv.osat.video'
 APP_SPORT1 = 'de.sport1.firetv.video'
 APP_SPOTIFY = 'com.spotify.tv.android'
 APP_STEAM_LINK = 'com.valvesoftware.steamlink'
@@ -425,7 +439,21 @@ APPS = {APP_AE_TV: 'A&E',
         APP_PLEX: 'Plex',
         APP_PRIME_VIDEO: 'Prime Video',
         APP_PRIME_VIDEO_FIRETV: 'Prime Video (FireTV)',
+        APP_SETTINGS: 'Settings',
         APP_SMART_YOUTUBE_TV: 'Smart YouTube TV',
+        APP_SONY_ACTION_MENU: 'Action Menu',
+        APP_SONY_ALBUM: 'Album',
+        APP_SONY_BRAVIA_SYNC_MENU: 'Sync Menu',
+        APP_SONY_BRAVIA_TUTORIALS: 'BRAVIA Tutorials',
+        APP_SONY_DISCOVER: 'Discover',
+        APP_SONY_HELP: 'Help',
+        APP_SONY_INTERNET_BROWSER: 'Internet Browser',
+        APP_SONY_MUSIC: 'Music',
+        APP_SONY_SCREEN_MIRRORING: 'Screen mirroring',
+        APP_SONY_SELECT: 'Sony Select',
+        APP_SONY_TIMERS: 'Timers',
+        APP_SONY_TV: 'TV',
+        APP_SONY_VIDEO: 'Video',
         APP_SPORT1: 'Sport 1',
         APP_SPOTIFY: 'Spotify',
         APP_STEAM_LINK: 'Steam Link',
