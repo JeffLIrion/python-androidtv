@@ -62,6 +62,14 @@ SERIALNO
 Device "eth0" does not exist.
 """
 
+DEVICE_PROPERTIES_SONY_TV = """Sony
+BRAVIA 4K GB
+SERIALNO
+8.0.0
+    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff
+    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
+"""
+
 INSTALLED_APPS_OUTPUT_1 = """package:org.example.app
 package:org.example.launcher
 """
@@ -349,6 +357,15 @@ class TestBaseTVSyncPython(unittest.TestCase):
             device_properties = self.btv.get_device_properties()
             self.assertEqual(self.btv.device_properties["manufacturer"], "Google")
             self.assertEqual(self.btv._cmd_get_properties_lazy_no_running_apps, constants.CMD_GOOGLE_TV_PROPERTIES_LAZY_NO_RUNNING_APPS)
+
+        with patchers.patch_shell(DEVICE_PROPERTIES_SONY_TV)[self.PATCH_KEY]:
+            self.btv.__class__ = AndroidTVSync
+            device_properties = self.btv.get_device_properties()
+            self.assertEqual(self.btv.device_properties['manufacturer'], 'Sony')
+            self.assertEqual(self.btv._cmd_get_properties_lazy_running_apps, constants.CMD_SONY_TV_PROPERTIES_LAZY_RUNNING_APPS)
+            self.assertEqual(self.btv._cmd_get_properties_lazy_no_running_apps, constants.CMD_SONY_TV_PROPERTIES_LAZY_NO_RUNNING_APPS)
+            self.assertEqual(self.btv._cmd_get_properties_not_lazy_running_apps, constants.CMD_SONY_TV_PROPERTIES_NOT_LAZY_RUNNING_APPS)
+            self.assertEqual(self.btv._cmd_get_properties_not_lazy_no_running_apps, constants.CMD_SONY_TV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS)
 
     def test_get_installed_apps(self):
         """"Check that `get_installed_apps` works correctly.
