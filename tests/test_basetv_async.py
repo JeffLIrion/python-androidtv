@@ -335,7 +335,7 @@ class TestBaseTVAsyncPython(unittest.TestCase):
         """Check that the ``get_hdmi_input`` function works correctly.
 
         """
-        with async_patchers.patch_shell("HDMI2")[self.PATCH_KEY]:
+        with async_patchers.patch_shell("HW2")[self.PATCH_KEY]:
             with patch_calls(self.btv, self.btv._get_hdmi_input) as patched:
                 await self.btv.get_hdmi_input()
                 assert patched.called
