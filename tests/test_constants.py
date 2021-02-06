@@ -184,6 +184,214 @@ class TestConstants(unittest.TestCase):
 
         self.assertEqual(hdmi_input, 'HW2')
 
+    def test_hdmi_input_sony_netflix(self):
+        dumpsys_output = """
+            ACTIVITY MANAGER ACTIVITIES (dumpsys activity starter)
+            ActivityStarter:
+              mCurrentUser=0
+              mLastStartReason=startActivityAsUser
+              mLastStartActivityTimeMs=6 Feb 2021 22:34:59
+              mLastStartActivityResult=2
+              mLastStartActivityRecord:
+               packageName=com.netflix.ninja processName=com.netflix.ninja
+               launchedFromUid=10162 launchedFromPackage=com.google.android.tvlauncher userId=0
+               app=ProcessRecord{8005dce 16003:com.netflix.ninja/u0a143}
+               Intent { act=android.intent.action.VIEW dat=http://www.netflix.com/home flg=0x10000020 pkg=com.netflix.ninja cmp=com.netflix.ninja/.MainActivity bnds=[140,476][300,636] (has extras) }
+               frontOfTask=true task=TaskRecord{5c24cd8 #2727 A=com.netflix.ninja U=0 StackId=1 sz=1}
+               taskAffinity=com.netflix.ninja
+               realActivity=com.netflix.ninja/.MainActivity
+               baseDir=/data/app/com.netflix.ninja-BRRRO8oABNAvcXQxHb4oBA==/base.apk
+               dataDir=/data/user/0/com.netflix.ninja
+               stateNotNeeded=false componentSpecified=true mActivityType=0
+               compat={320dpi always-compat} labelRes=0x7f0e001c icon=0x7f070175 theme=0x7f0f0139
+               mLastReportedConfigurations:
+                mGlobalConfig={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+                mOverrideConfig={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+               CurrentConfiguration={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+               taskDescription: iconFilename=null label="null" primaryColor=ff000000
+                backgroundColor=ff000000
+                statusBarColor=ff000000
+                navigationBarColor=ff000000
+               launchFailed=false launchCount=0 lastLaunchTime=-1d2h24m34s18ms
+               haveState=false icicle=null
+               state=RESUMED stopped=false delayedResume=false finishing=false
+               keysPaused=false inHistory=true visible=true sleeping=false idle=true mStartingWindowState=STARTING_WINDOW_REMOVED
+               fullscreen=true noDisplay=false immersive=false launchMode=2
+               frozenBeforeDestroy=false forceNewConfig=false
+               mActivityType=APPLICATION_ACTIVITY_TYPE
+               waitingVisible=false nowVisible=true lastVisibleTime=-25s492ms
+               connections=[ConnectionRecord{64e94 u0 CR com.netflix.ninja/.NetflixService:@a0a82e7}, ConnectionRecord{91d022a u0 com.google.android.apps.mediashell/.MediaShellCastReceiverService:@2400f15}]
+               resizeMode=RESIZE_MODE_UNRESIZEABLE
+               mLastReportedMultiWindowMode=false mLastReportedPictureInPictureMode=false
+              mLastHomeActivityStartResult=0
+              mLastHomeActivityStartRecord:
+               packageName=com.google.android.tvlauncher processName=com.google.android.tvlauncher
+               launchedFromUid=0 launchedFromPackage=null userId=0
+               app=ProcessRecord{8d5fa46 22638:com.google.android.tvlauncher/u0a162}
+               Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] flg=0x10800100 cmp=com.google.android.tvlauncher/.MainActivity }
+               frontOfTask=true task=TaskRecord{1142677 #2719 A=.TvLauncher U=0 StackId=0 sz=1}
+               taskAffinity=.TvLauncher
+               realActivity=com.google.android.tvlauncher/.MainActivity
+               baseDir=/data/app/com.google.android.tvlauncher-yGwF-XP6Zf5hV0DbQ9Z4gA==/base.apk
+               dataDir=/data/user/0/com.google.android.tvlauncher
+               stateNotNeeded=true componentSpecified=false mActivityType=1
+               compat={320dpi always-compat} labelRes=0x7f12002b icon=0x7f0f0000 theme=0x7f130007
+               mLastReportedConfigurations:
+                mGlobalConfig={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+                mOverrideConfig={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+               CurrentConfiguration={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+               taskDescription: iconFilename=null label="null" primaryColor=ff37474f
+                backgroundColor=ff303030
+                statusBarColor=ff263238
+                navigationBarColor=ff000000
+               launchFailed=false launchCount=0 lastLaunchTime=-4m48s633ms
+               haveState=true icicle=Bundle[mParcelledData.dataSize=1216]
+               state=STOPPED stopped=true delayedResume=false finishing=false
+               keysPaused=false inHistory=true visible=false sleeping=false idle=true mStartingWindowState=STARTING_WINDOW_REMOVED
+               fullscreen=true noDisplay=false immersive=false launchMode=2
+               frozenBeforeDestroy=false forceNewConfig=false
+               mActivityType=HOME_ACTIVITY_TYPE
+               waitingVisible=false nowVisible=false lastVisibleTime=-4m46s108ms
+               resizeMode=RESIZE_MODE_UNRESIZEABLE
+               mLastReportedMultiWindowMode=false mLastReportedPictureInPictureMode=false
+              mStartActivity:
+               packageName=com.netflix.ninja processName=com.netflix.ninja
+               launchedFromUid=10143 launchedFromPackage=com.netflix.ninja userId=0
+               app=null
+               Intent { flg=0x10420000 cmp=com.netflix.ninja/.MainActivity (has extras) }
+               frontOfTask=false task=TaskRecord{5c24cd8 #2727 A=com.netflix.ninja U=0 StackId=1 sz=1}
+               taskAffinity=com.netflix.ninja
+               realActivity=com.netflix.ninja/.MainActivity
+               baseDir=/data/app/com.netflix.ninja-BRRRO8oABNAvcXQxHb4oBA==/base.apk
+               dataDir=/data/user/0/com.netflix.ninja
+               stateNotNeeded=false componentSpecified=true mActivityType=0
+               compat=null labelRes=0x7f0e001c icon=0x7f070175 theme=0x7f0f0139
+               mLastReportedConfigurations:
+                mGlobalConfig={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+                mOverrideConfig={0.0 ?mcc?mnc ?localeList ?layoutDir ?swdp ?wdp ?hdp ?density ?lsize ?long ?ldr ?wideColorGamut ?orien ?uimode ?night ?touch ?keyb/?/? ?nav/?}
+               CurrentConfiguration={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+               launchFailed=false launchCount=0 lastLaunchTime=0
+               haveState=true icicle=null
+               state=INITIALIZING stopped=false delayedResume=false finishing=false
+               keysPaused=false inHistory=false visible=false sleeping=false idle=false mStartingWindowState=STARTING_WINDOW_NOT_SHOWN
+               fullscreen=true noDisplay=false immersive=false launchMode=2
+               frozenBeforeDestroy=false forceNewConfig=false
+               mActivityType=APPLICATION_ACTIVITY_TYPE
+               resizeMode=RESIZE_MODE_UNRESIZEABLE
+               mLastReportedMultiWindowMode=false mLastReportedPictureInPictureMode=false
+              mIntent=Intent { flg=0x10420000 cmp=com.netflix.ninja/.MainActivity (has extras) }
+              mLaunchSingleTop=false mLaunchSingleInstance=false mLaunchSingleTask=true mLaunchFlags=0x10020000 mDoResume=true mAddingToTask=false
+        """
+        hdmi_input = self._hdmi_input(dumpsys_output)
+
+        self.assertEqual(hdmi_input, '')
+
+    def test_hdmi_input_sony_non_hardware_definition(self):
+        dumpsys_output = """
+            ACTIVITY MANAGER ACTIVITIES (dumpsys activity starter)
+            ActivityStarter:
+              mCurrentUser=0
+              mLastStartReason=startActivityAsUser
+              mLastStartActivityTimeMs=6 Feb 2021 22:30:46
+              mLastStartActivityResult=2
+              mLastStartActivityRecord:
+               packageName=com.sony.dtv.tvx processName=com.sony.dtv.tvx
+               launchedFromUid=10134 launchedFromPackage=com.sony.dtv.tvx userId=0
+               app=ProcessRecord{edc6562 3904:com.sony.dtv.tvx/u0a134}
+               Intent { act=android.intent.action.VIEW dat=content://android.media.tv/passthrough/com.sony.dtv.tvinput.external%2F.ExternalTvInputService%2FHW2 flg=0x10040000 cmp=com.sony.dtv.tvx/.MainActivity (has extras) }
+               frontOfTask=true task=TaskRecord{9eecc8c #2830 A=com.sony.dtv.tvx U=0 StackId=1 sz=1}
+               taskAffinity=com.sony.dtv.tvx
+               realActivity=com.sony.dtv.tvx/.MainActivity
+               baseDir=/system/priv-app/Tvx/Tvx.apk
+               dataDir=/data/user/0/com.sony.dtv.tvx
+               stateNotNeeded=false componentSpecified=false mActivityType=0
+               compat={320dpi always-compat} labelRes=0x7f090048 icon=0x7f02006d theme=0x7f0b01c2
+               mLastReportedConfigurations:
+                mGlobalConfig={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+                mOverrideConfig={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+               CurrentConfiguration={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+               taskDescription: iconFilename=null label="null" primaryColor=ff8c0000
+                backgroundColor=ff303030
+                statusBarColor=ff000000
+                navigationBarColor=ff000000
+               launchFailed=false launchCount=0 lastLaunchTime=-2d11h49m7s584ms
+               haveState=false icicle=null
+               state=RESUMED stopped=false delayedResume=false finishing=false
+               keysPaused=false inHistory=true visible=true sleeping=false idle=true mStartingWindowState=STARTING_WINDOW_REMOVED
+               fullscreen=true noDisplay=false immersive=false launchMode=3
+               frozenBeforeDestroy=false forceNewConfig=false
+               mActivityType=APPLICATION_ACTIVITY_TYPE
+               waitingVisible=false nowVisible=true lastVisibleTime=-2m50s467ms
+               connections=[ConnectionRecord{fee4c3e u0 CR com.sony.dtv.osdplanevisibilitymanager/.OsdEnabler:@246a4f9}]
+               resizeMode=RESIZE_MODE_RESIZEABLE
+               mLastReportedMultiWindowMode=false mLastReportedPictureInPictureMode=false
+               supportsPictureInPicture=true
+               supportsPictureInPictureWhilePausing: true
+              mLastHomeActivityStartResult=0
+              mLastHomeActivityStartRecord:
+               packageName=com.google.android.tvlauncher processName=com.google.android.tvlauncher
+               launchedFromUid=0 launchedFromPackage=null userId=0
+               app=ProcessRecord{8d5fa46 22638:com.google.android.tvlauncher/u0a162}
+               Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] flg=0x10800100 cmp=com.google.android.tvlauncher/.MainActivity }
+               frontOfTask=true task=TaskRecord{1142677 #2719 A=.TvLauncher U=0 StackId=0 sz=1}
+               taskAffinity=.TvLauncher
+               realActivity=com.google.android.tvlauncher/.MainActivity
+               baseDir=/data/app/com.google.android.tvlauncher-yGwF-XP6Zf5hV0DbQ9Z4gA==/base.apk
+               dataDir=/data/user/0/com.google.android.tvlauncher
+               stateNotNeeded=true componentSpecified=false mActivityType=1
+               compat={320dpi always-compat} labelRes=0x7f12002b icon=0x7f0f0000 theme=0x7f130007
+               mLastReportedConfigurations:
+                mGlobalConfig={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+                mOverrideConfig={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+               CurrentConfiguration={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+               taskDescription: iconFilename=null label="null" primaryColor=ff37474f
+                backgroundColor=ff303030
+                statusBarColor=ff263238
+                navigationBarColor=ff000000
+               launchFailed=false launchCount=0 lastLaunchTime=-3m0s967ms
+               haveState=true icicle=Bundle[mParcelledData.dataSize=1216]
+               state=STOPPED stopped=true delayedResume=false finishing=false
+               keysPaused=false inHistory=true visible=false sleeping=false idle=true mStartingWindowState=STARTING_WINDOW_SHOWN
+               fullscreen=true noDisplay=false immersive=false launchMode=2
+               frozenBeforeDestroy=false forceNewConfig=false
+               mActivityType=HOME_ACTIVITY_TYPE
+               waitingVisible=false nowVisible=false lastVisibleTime=-2m58s442ms
+               resizeMode=RESIZE_MODE_UNRESIZEABLE
+               mLastReportedMultiWindowMode=false mLastReportedPictureInPictureMode=false
+              mStartActivity:
+               packageName=com.sony.dtv.tvx processName=com.sony.dtv.tvx
+               launchedFromUid=10134 launchedFromPackage=com.sony.dtv.tvx userId=0
+               app=null
+               Intent { act=android.intent.action.VIEW dat=content://android.media.tv/passthrough/com.sony.dtv.tvinput.external%2F.ExternalTvInputService%2FHDMI100004 flg=0x10400000 cmp=com.sony.dtv.tvx/.MainActivity (has extras) }
+               frontOfTask=false task=TaskRecord{9eecc8c #2830 A=com.sony.dtv.tvx U=0 StackId=1 sz=1}
+               taskAffinity=com.sony.dtv.tvx
+               realActivity=com.sony.dtv.tvx/.MainActivity
+               baseDir=/system/priv-app/Tvx/Tvx.apk
+               dataDir=/data/user/0/com.sony.dtv.tvx
+               stateNotNeeded=false componentSpecified=false mActivityType=0
+               compat=null labelRes=0x7f090048 icon=0x7f02006d theme=0x7f0b01c2
+               mLastReportedConfigurations:
+                mGlobalConfig={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+                mOverrideConfig={0.0 ?mcc?mnc ?localeList ?layoutDir ?swdp ?wdp ?hdp ?density ?lsize ?long ?ldr ?wideColorGamut ?orien ?uimode ?night ?touch ?keyb/?/? ?nav/?}
+               CurrentConfiguration={1.0 ?mcc?mnc [en_GB] ldltr sw540dp w960dp h540dp 320dpi lrg long hdr land television -touch -keyb/v/h dpad/v appBounds=Rect(0, 0 - 1920, 1080) s.3}
+               launchFailed=false launchCount=0 lastLaunchTime=0
+               haveState=true icicle=null
+               state=INITIALIZING stopped=false delayedResume=false finishing=false
+               keysPaused=false inHistory=false visible=false sleeping=false idle=false mStartingWindowState=STARTING_WINDOW_NOT_SHOWN
+               fullscreen=true noDisplay=false immersive=false launchMode=3
+               frozenBeforeDestroy=false forceNewConfig=false
+               mActivityType=APPLICATION_ACTIVITY_TYPE
+               resizeMode=RESIZE_MODE_RESIZEABLE
+               mLastReportedMultiWindowMode=false mLastReportedPictureInPictureMode=false
+               supportsPictureInPicture=true
+               supportsPictureInPictureWhilePausing: false
+              mIntent=Intent { act=android.intent.action.VIEW dat=content://android.media.tv/passthrough/com.sony.dtv.tvinput.external/.ExternalTvInputService/HDMI100004 flg=0x10400000 cmp=com.sony.dtv.tvx/.MainActivity (has extras) }
+              mLaunchSingleTop=false mLaunchSingleInstance=true mLaunchSingleTask=false mLaunchFlags=0x10000000 mDoResume=true mAddingToTask=false
+        """
+        hdmi_input = self._hdmi_input(dumpsys_output)
+
+        self.assertEqual(hdmi_input, '')
+
 
 if __name__ == "__main__":
     unittest.main()
