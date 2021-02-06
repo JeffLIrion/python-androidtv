@@ -20,8 +20,8 @@ class TestConstants(unittest.TestCase):
         return TestConstants._exec('CURRENT_APP="' + dumpsys_output + '" && ' + constants.VAR_CURRENT_APP_EXTRACTION + ' && echo $CURRENT_APP')
 
     @staticmethod
-    def _search_hdmi_input(dumpsys_output):
-        return TestConstants._exec('echo "' + dumpsys_output + '"' + constants.CMD_HDMI_INPUT_SEARCH)
+    def _hdmi_input(dumpsys_output):
+        return TestConstants._exec(constants.CMD_HDMI_INPUT.replace('dumpsys activity starter', 'echo "' + dumpsys_output + '"'))
 
     def test_apps(self):
         """Test that the values (i.e., app names) in the ``APPS`` dict are unique.
@@ -111,16 +111,16 @@ class TestConstants(unittest.TestCase):
 
         self.assertEqual(current_app, constants.APP_NETFLIX)
 
-    def test_hdmi_input_search(self):
+    def test_hdmi_input(self):
         dumpsys_output = """
              Intent { act=android.intent.action.VIEW dat=content://android.media.tv/passthrough/com.mediatek.tvinput%2F.hdmi.HDMIInputService%2FHW5 flg=0x10000000 cmp=org.droidtv.playtv/.PlayTvActivity (has extras) }
             mIntent=Intent { act=android.intent.action.VIEW dat=content://android.media.tv/passthrough/com.mediatek.tvinput/.hdmi.HDMIInputService/HW5 flg=0x10000000 cmp=org.droidtv.playtv/.PlayTvActivity (has extras) }
         """
-        hdmi_input = self._search_hdmi_input(dumpsys_output)
+        hdmi_input = self._hdmi_input(dumpsys_output)
 
         self.assertEqual(hdmi_input, 'HW5')
 
-    def test_hdmi_input_search_sony(self):
+    def test_hdmi_input_sony(self):
         dumpsys_output = """
             ACTIVITY MANAGER ACTIVITIES (dumpsys activity starter)
             ActivityStarter:
@@ -222,7 +222,7 @@ class TestConstants(unittest.TestCase):
               mIntent=Intent { act=android.intent.action.VIEW dat=content://android.media.tv/passthrough/com.sony.dtv.tvinput.external/.ExternalTvInputService/HW2 flg=0x10440000 cmp=com.sony.dtv.tvx/.MainActivity (has extras) }
               mLaunchSingleTop=false mLaunchSingleInstance=true mLaunchSingleTask=false mLaunchFlags=0x10040000 mDoResume=true mAddingToTask=false
         """
-        hdmi_input = self._search_hdmi_input(dumpsys_output)
+        hdmi_input = self._hdmi_input(dumpsys_output)
 
         self.assertEqual(hdmi_input, 'HW2')
 
