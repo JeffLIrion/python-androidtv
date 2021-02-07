@@ -28,7 +28,7 @@ CMD_AUDIO_STATE = r"dumpsys audio | grep paused | grep -qv 'Buffer Queue' && ech
 #: Determine whether the device is awake
 CMD_AWAKE = "dumpsys power | grep mWakefulness | grep -q Awake"
 
-#: Parse the current app from the dumpsys output and store it in the variable ``CURRENT_APP``
+#: Parse current application identifier from dumpsys output and assign it to ``CURRENT_APP`` variable (assumes dumpsys output is momentarily set to ``CURRENT_APP`` variable)
 CMD_PARSE_CURRENT_APP = 'CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\\}*}'
 
 #: Get the current app (but don't echo it)
