@@ -17,7 +17,7 @@ class TestConstants(unittest.TestCase):
 
     @staticmethod
     def _extract_current_app(dumpsys_output):
-        return TestConstants._exec('CURRENT_APP="' + dumpsys_output + '" && ' + constants.VAR_CURRENT_APP_EXTRACTION + ' && echo $CURRENT_APP')
+        return TestConstants._exec('CURRENT_APP="' + dumpsys_output + '" && ' + constants.CMD_PARSE_CURRENT_APP + ' && echo $CURRENT_APP')
 
     @staticmethod
     def _hdmi_input(dumpsys_output):
