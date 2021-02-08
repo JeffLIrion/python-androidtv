@@ -29,7 +29,7 @@ CMD_AUDIO_STATE = r"dumpsys audio | grep paused | grep -qv 'Buffer Queue' && ech
 CMD_AWAKE = "dumpsys power | grep mWakefulness | grep -q Awake"
 
 #: Parse current application identifier from dumpsys output and assign it to ``CURRENT_APP`` variable (assumes dumpsys output is momentarily set to ``CURRENT_APP`` variable)
-CMD_PARSE_CURRENT_APP = 'CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\\}*}'
+CMD_PARSE_CURRENT_APP = 'CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\\}*}'
 
 #: Assign focused application identifier to ``CURRENT_APP`` variable
 CMD_DEFINE_CURRENT_APP_VARIABLE = "CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && " + CMD_PARSE_CURRENT_APP
