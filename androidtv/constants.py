@@ -44,7 +44,7 @@ CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV = 'CURRENT_APP=$(dumpsys activity a . 
 CMD_CURRENT_APP_GOOGLE_TV = CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV + ' && echo $CURRENT_APP'
 
 #: Get the HDMI input
-CMD_HDMI_INPUT = "dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' | grep -o 'HW[0-9]'"
+CMD_HDMI_INPUT = "dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'"
 
 #: Launch an app if it is not already the current app (assumes the variable ``CURRENT_APP`` has already been set)
 CMD_LAUNCH_APP_CONDITION = "if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c " + INTENT_LAUNCH + " --pct-syskeys 0 1; fi"
