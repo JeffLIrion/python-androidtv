@@ -65,7 +65,7 @@ GET_PROPERTIES_OUTPUT3B = GET_PROPERTIES_OUTPUT3[:2]
 GET_PROPERTIES_OUTPUT3C = GET_PROPERTIES_OUTPUT3.splitlines()[0]
 GET_PROPERTIES_OUTPUT3D = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:2])
 GET_PROPERTIES_OUTPUT3E = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:3])
-GET_PROPERTIES_OUTPUT3F = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:4]) + "HDMI"
+GET_PROPERTIES_OUTPUT3F = '\n'.join(GET_PROPERTIES_OUTPUT3.splitlines()[:4]) + "HW2"
 
 GET_PROPERTIES_DICT3A = {'screen_on': True,
                          'awake': False,
@@ -108,7 +108,7 @@ GET_PROPERTIES_DICT3F = {'screen_on': True,
                          'current_app': 'com.amazon.tv.launcher',
                          'media_session_state': None,
                          'running_apps': None,
-                         'hdmi_input': 'HDMI'}
+                         'hdmi_input': 'HW2'}
 
 GET_PROPERTIES_OUTPUT4 = """11Wake Locks: size=2
 com.amazon.tv.launcher

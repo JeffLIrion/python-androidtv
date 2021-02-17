@@ -62,6 +62,23 @@ SERIALNO
 Device "eth0" does not exist.
 """
 
+DEVICE_PROPERTIES_OUTPUT_SONY_TV = """Sony
+BRAVIA 4K GB
+SERIALNO
+8.0.0
+    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff
+    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
+"""
+
+DEVICE_PROPERTIES_DICT_SONY_TV = {
+    'manufacturer': 'Sony',
+    'model': 'BRAVIA 4K GB',
+    'serialno': 'SERIALNO',
+    'sw_version': '8.0.0',
+    'wifimac': '11:22:33:44:55:66',
+    'ethmac': 'ab:cd:ef:gh:ij:kl'
+}
+
 INSTALLED_APPS_OUTPUT_1 = """package:org.example.app
 package:org.example.launcher
 """
@@ -350,6 +367,10 @@ class TestBaseTVSyncPython(unittest.TestCase):
             self.assertEqual(self.btv.device_properties["manufacturer"], "Google")
             self.assertEqual(self.btv._cmd_get_properties_lazy_no_running_apps, constants.CMD_GOOGLE_TV_PROPERTIES_LAZY_NO_RUNNING_APPS)
 
+        with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT_SONY_TV)[self.PATCH_KEY]:
+            device_properties = self.btv.get_device_properties()
+            self.assertDictEqual(DEVICE_PROPERTIES_DICT_SONY_TV, device_properties)
+
     def test_get_installed_apps(self):
         """"Check that `get_installed_apps` works correctly.
 
@@ -493,14 +514,14 @@ class TestBaseTVSyncPython(unittest.TestCase):
         """Check that the ``get_hdmi_input`` function works correctly.
 
         """
-        with patchers.patch_shell("HDMI2")[self.PATCH_KEY]:
-            self.assertEqual(self.btv.get_hdmi_input(), "HDMI2")
+        with patchers.patch_shell("HW2")[self.PATCH_KEY]:
+            self.assertEqual(self.btv.get_hdmi_input(), "HW2")
 
-        with patchers.patch_shell("HDMI2\n")[self.PATCH_KEY]:
-            self.assertEqual(self.btv.get_hdmi_input(), "HDMI2")
+        with patchers.patch_shell("HW2\n")[self.PATCH_KEY]:
+            self.assertEqual(self.btv.get_hdmi_input(), "HW2")
 
-        with patchers.patch_shell("HDMI2\r\n")[self.PATCH_KEY]:
-            self.assertEqual(self.btv.get_hdmi_input(), "HDMI2")
+        with patchers.patch_shell("HW2\r\n")[self.PATCH_KEY]:
+            self.assertEqual(self.btv.get_hdmi_input(), "HW2")
 
         with patchers.patch_shell("")[self.PATCH_KEY]:
             self.assertIsNone(self.btv.get_hdmi_input())
