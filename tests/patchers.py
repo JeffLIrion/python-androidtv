@@ -9,6 +9,7 @@ except ImportError:
 
 
 KEY_PYTHON = "python"
+KEY_PYTHON_USB = "python_usb"
 KEY_SERVER = "server"
 
 ADB_DEVICE_TCP_FAKE = "AdbDeviceTcpFake"
@@ -134,6 +135,8 @@ PATCH_PUSH = {KEY_PYTHON: patch("{}.{}.push".format(__name__, ADB_DEVICE_TCP_FAK
 PATCH_PULL = {KEY_PYTHON: patch("{}.{}.pull".format(__name__, ADB_DEVICE_TCP_FAKE)), KEY_SERVER: patch("{}.{}.pull".format(__name__, DEVICE_FAKE))}
 
 PATCH_ADB_DEVICE_TCP = patch("androidtv.adb_manager.adb_manager_sync.AdbDeviceTcp", AdbDeviceTcpFake)
+
+PATCH_ADB_DEVICE_USB = patch("androidtv.adb_manager.adb_manager_sync.AdbDeviceUsb", AdbDeviceTcpFake)
 
 PATCH_ADB_SERVER_RUNTIME_ERROR = patch("{}.{}.device".format(__name__, CLIENT_FAKE_SUCCESS), side_effect=RuntimeError)
 

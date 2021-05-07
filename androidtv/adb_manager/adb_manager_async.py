@@ -10,8 +10,10 @@ import asyncio
 from contextlib import asynccontextmanager
 import logging
 
+from adb_shell.adb_device import AdbDeviceUsb
 from adb_shell.adb_device_async import AdbDeviceTcpAsync
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
+from adb_shell.constants import DEFAULT_PUSH_MODE, DEFAULT_READ_TIMEOUT_S
 import aiofiles
 from ppadb.client import Client
 
@@ -19,6 +21,37 @@ from ..constants import DEFAULT_ADB_TIMEOUT_S, DEFAULT_AUTH_TIMEOUT_S, DEFAULT_L
 from ..exceptions import LockNotAcquiredException
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class AdbDeviceUsbAsync:
+    """An async wrapper for the adb-shell ``AdbDeviceUsb`` class."""
+    def __init__(self, serial=None, port_path=None, default_transport_timeout_s=None, banner=None):
+        self._adb = AdbDeviceUsb(serial, port_path, default_transport_timeout_s, banner)
+
+    @property
+    def available(self):
+        """Whether or not an ADB connection to the device has been established."""
+        return self._adb.available
+
+    async def close(self):
+        """Close the connection via the provided transport's ``close()`` method."""
+        await asyncio.get_running_loop().run_in_executor(None, self._adb.close)
+
+    async def connect(self, rsa_keys=None, transport_timeout_s=None, auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S, read_timeout_s=DEFAULT_READ_TIMEOUT_S, auth_callback=None):
+        """Establish an ADB connection to the device."""
+        return await asyncio.get_running_loop().run_in_executor(None, self._adb.connect, rsa_keys, transport_timeout_s, auth_timeout_s, read_timeout_s, auth_callback)
+
+    async def pull(self, device_path, local_path, progress_callback=None, transport_timeout_s=None, read_timeout_s=DEFAULT_READ_TIMEOUT_S):
+        """Pull a file from the device."""
+        await asyncio.get_running_loop().run_in_executor(None, self._adb.pull, device_path, local_path, progress_callback, transport_timeout_s, read_timeout_s)
+
+    async def push(self, local_path, device_path, st_mode=DEFAULT_PUSH_MODE, mtime=0, progress_callback=None, transport_timeout_s=None, read_timeout_s=DEFAULT_READ_TIMEOUT_S):
+        """Push a file or directory to the device."""
+        await asyncio.get_running_loop().run_in_executor(None, self._adb.push, local_path, device_path, st_mode, mtime, progress_callback, transport_timeout_s, read_timeout_s)
+
+    async def shell(self, command, transport_timeout_s=None, read_timeout_s=DEFAULT_READ_TIMEOUT_S, timeout_s=None, decode=True):
+        """Send an ADB shell command to the device."""
+        return await asyncio.get_running_loop().run_in_executor(None, self._adb.shell, command, transport_timeout_s, read_timeout_s, timeout_s, decode)
 
 
 class DeviceAsync:
@@ -114,7 +147,12 @@ class ADBPythonAsync(object):
         self.host = host
         self.port = int(port)
         self.adbkey = adbkey
-        self._adb = AdbDeviceTcpAsync(host=self.host, port=self.port, default_transport_timeout_s=DEFAULT_ADB_TIMEOUT_S)
+
+        if host:
+            self._adb = AdbDeviceTcpAsync(host=self.host, port=self.port, default_transport_timeout_s=DEFAULT_ADB_TIMEOUT_S)
+        else:
+            self._adb = AdbDeviceUsbAsync()
+
         self._signer = signer
 
         # keep track of whether the ADB connection is intact
