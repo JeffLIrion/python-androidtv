@@ -51,7 +51,7 @@ class TestAsyncClientDevice(unittest.TestCase):
 class TestAsyncUsb(unittest.TestCase):
     """Test the ``AdbDeviceUsbAsync`` class defined in ``adb_manager_async.py``.
 
-    These tests can be removed once true async support for using a USB connection available.
+    These tests can be removed once true async support for using a USB connection is available.
 
     """
 
@@ -64,39 +64,20 @@ class TestAsyncUsb(unittest.TestCase):
 
             with patch("androidtv.adb_manager.adb_manager_async.AdbDeviceUsb.connect") as connect:
                 await device.connect()
+                assert connect.called
 
             with patch("androidtv.adb_manager.adb_manager_async.AdbDeviceUsb.shell") as shell:
                 await device.shell("test")
+                assert shell.called
 
             with patch("androidtv.adb_manager.adb_manager_async.AdbDeviceUsb.push") as push:
                 await device.push("local_path", "device_path")
+                assert push.called
 
             with patch("androidtv.adb_manager.adb_manager_async.AdbDeviceUsb.pull") as pull:
                 await device.pull("device_path", "local_path")
+                assert pull.called
 
             with patch("androidtv.adb_manager.adb_manager_async.AdbDeviceUsb.close") as close:
                 await device.close()
-
-        '''with patch("androidtv.adb_manager.adb_manager_async.AdbDeviceUsb", patchers.AdbDeviceTcpFake):
-            device = AdbDeviceUsbAsync()
-
-            with patch("{}.DeviceFake.shell".format(patchers.__name__)):
-                await device.shell("test")
-
-            with patch("{}.DeviceFake.push".format(patchers.__name__)):
-                await device.push("local_path", "device_path")
-
-            with patch("{}.DeviceFake.pull".format(patchers.__name__)):
-                await device.pull("device_path", "local_path")
-
-            with patch("{}.DeviceFake.screencap".format(patchers.__name__)):
-                await device.screencap()'''
-
-    '''@awaiter
-    async def test_async_client_device_fail(self):
-        with patch("androidtv.adb_manager.adb_manager_async.Client", patchers.ClientFakeFail):
-            client = ClientAsync("host", "port")
-
-            device = await client.device("serial")
-
-            self.assertFalse(device)'''
+                assert close.called

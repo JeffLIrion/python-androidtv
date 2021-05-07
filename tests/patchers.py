@@ -9,7 +9,6 @@ except ImportError:
 
 
 KEY_PYTHON = "python"
-KEY_PYTHON_USB = "python_usb"
 KEY_SERVER = "server"
 
 ADB_DEVICE_TCP_FAKE = "AdbDeviceTcpFake"
