@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, '..')
 
-from adb_shell.transport.tcp_transport import TcpTransport
+from adb_shell.transport.usb_transport import UsbTransport
 
 from androidtv.adb_manager.adb_manager_async import AdbDeviceUsbAsync, ClientAsync
 
@@ -57,8 +57,7 @@ class TestAsyncUsb(unittest.TestCase):
 
     @awaiter
     async def test_async_usb(self):
-        # Patch a `UsbTransport` return value with a `TcpTransport` return value
-        with patch("adb_shell.adb_device.UsbTransport.find_adb", return_value=TcpTransport("HOST", 5555)):
+        with patch("adb_shell.adb_device.UsbTransport.find_adb", return_value=UsbTransport("device", "setting")):
             device = AdbDeviceUsbAsync()
 
             self.assertFalse(device.available)
