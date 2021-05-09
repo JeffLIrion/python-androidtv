@@ -41,7 +41,7 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
         """Fill in commands that are specific to Android TV devices."""
         # Is this a Google Chromecast Android TV?
         if "Google" in self.device_properties.get("manufacturer", "") and "Chromecast" in self.device_properties.get("model", ""):
-            self._cmd_get_properties_lazy_running_apps = constants.CMD_ANDROIDTV_PROPERTIES_LAZY_RUNNING_APPS
+            self._cmd_get_properties_lazy_running_apps = constants.CMD_GOOGLE_TV_PROPERTIES_LAZY_RUNNING_APPS
             self._cmd_get_properties_lazy_no_running_apps = constants.CMD_GOOGLE_TV_PROPERTIES_LAZY_NO_RUNNING_APPS
             self._cmd_get_properties_not_lazy_running_apps = constants.CMD_GOOGLE_TV_PROPERTIES_NOT_LAZY_RUNNING_APPS
             self._cmd_get_properties_not_lazy_no_running_apps = constants.CMD_GOOGLE_TV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS
