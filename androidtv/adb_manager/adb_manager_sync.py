@@ -129,11 +129,11 @@ class ADBPythonSync(object):
                         if not self._signer:
                             self._signer = self.load_adbkey(self.adbkey)
 
-                        self._adb.connect(rsa_keys=[self._signer], auth_timeout_s=auth_timeout_s)
+                        self._adb.connect(rsa_keys=[self._signer], transport_timeout_s=1.0, auth_timeout_s=auth_timeout_s)
 
                     # Connect without authentication
                     else:
-                        self._adb.connect(auth_timeout_s=auth_timeout_s)
+                        self._adb.connect(transport_timeout_s=1.0, auth_timeout_s=auth_timeout_s)
 
                     # ADB connection successfully established
                     _LOGGER.debug("ADB connection to %s:%d successfully established", self.host, self.port)
