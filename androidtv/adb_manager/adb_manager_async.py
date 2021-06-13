@@ -151,7 +151,7 @@ class ADBPythonAsync(object):
         if host:
             self._adb = AdbDeviceTcpAsync(host=self.host, port=self.port, default_transport_timeout_s=DEFAULT_ADB_TIMEOUT_S)
         else:
-            self._adb = AdbDeviceUsbAsync()
+            self._adb = AdbDeviceUsbAsync(default_transport_timeout_s=DEFAULT_ADB_TIMEOUT_S)
 
         self._signer = signer
 
