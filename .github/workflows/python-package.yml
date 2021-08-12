@@ -30,7 +30,7 @@ jobs:
         if python --version 2>&1 | grep -q "Python 2"; then pip install mock rsa==4.0; fi
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         pip install .
-        if python --version 2>&1 | grep -q "Python 3.7" || python --version 2>&1 | grep -q "Python 3.8" || python --version 2>&1 | grep -q "Python 3.9"; then pip install aiofiles; fi
+        if python --version 2>&1 | grep -q "Python 3.7" || python --version 2>&1 | grep -q "Python 3.8" || python --version 2>&1 | grep -q "Python 3.9"; then pip install aiofiles adb-shell[usb]; fi
     - name: Lint with pylint and flake8
       run: |
         if python --version 2>&1 | grep -q "Python 2" || python --version 2>&1 | grep -q "Python 3.5" || python --version 2>&1 | grep -q "Python 3.6"; then flake8 androidtv/ --exclude="androidtv/setup_async.py,androidtv/basetv/basetv_async.py,androidtv/androidtv/androidtv_async.py,androidtv/firetv/firetv_async.py,androidtv/adb_manager/adb_manager_async.py" && pylint --ignore="setup_async.py,basetv_async.py,androidtv_async.py,firetv_async.py,adb_manager_async.py" androidtv/; fi

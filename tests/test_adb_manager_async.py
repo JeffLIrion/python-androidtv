@@ -315,6 +315,18 @@ class TestADBPythonAsync(unittest.TestCase):
                     self.assertEqual(await self.adb.screencap(), PNG_IMAGE)
 
 
+class TestADBPythonUsbAsync(unittest.TestCase):
+    """Test the `ADBPythonAsync` class using a USB connection."""
+
+    def test_init(self):
+        """Create an `ADBPythonSync` instance with a USB connection.
+
+        """
+        with patch("androidtv.adb_manager.adb_manager_async.AdbDeviceUsbAsync") as patched:
+            ADBPythonAsync('', 5555)
+            assert patched.called
+
+
 class TestADBServerAsync(TestADBPythonAsync):
     """Test the `ADBServerAsync` class."""
 

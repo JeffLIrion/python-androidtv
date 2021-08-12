@@ -9,6 +9,7 @@ except ImportError:
 
 sys.path.insert(0, '..')
 
+from adb_shell.transport.tcp_transport import TcpTransport
 from androidtv.adb_manager.adb_manager_sync import _acquire, ADBPythonSync, ADBServerSync
 from androidtv.exceptions import LockNotAcquiredException
 from . import patchers
@@ -285,6 +286,18 @@ class TestADBPythonSync(unittest.TestCase):
             else:
                 with patch.object(self.adb._adb_device, 'screencap', return_value=PNG_IMAGE):
                     self.assertEqual(self.adb.screencap(), PNG_IMAGE)
+
+
+class TestADBPythonUsbSync(TestADBPythonSync):
+    """Test the `ADBPythonSync` class using a USB connection."""
+
+    def setUp(self):
+        """Create an `ADBPythonSync` instance with a USB connection.
+
+        """
+        # Patch the real `AdbDeviceUsb` with the fake `AdbDeviceTcpFake`
+        with patchers.PATCH_ADB_DEVICE_USB, patchers.patch_connect(True)[self.PATCH_KEY]:
+            self.adb = ADBPythonSync('', 5555)
 
 
 class TestADBServerSync(TestADBPythonSync):
