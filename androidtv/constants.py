@@ -344,6 +344,7 @@ APP_KODI = 'org.xbmc.kodi'
 APP_LIVE_CHANNELS = 'com.google.android.tv'
 APP_MIJN_RADIO = 'org.samsonsen.nederlandse.radio.holland.nl'
 APP_MOLOTOV = 'tv.molotov.app'
+APP_MRMC_LITE = 'tv.mrmc.mrmc.lite'
 APP_MX_PLAYER = 'com.mxtech.videoplayer.ad'
 APP_NETFLIX = 'com.netflix.ninja'
 APP_NLZIET = 'nl.nlziet'
@@ -435,6 +436,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_LIVE_CHANNELS: 'Live Channels',
         APP_MIJN_RADIO: 'Mijn Radio',
         APP_MOLOTOV: 'Molotov',
+        APP_MRMC_LITE: 'MrMC Lite',
         APP_MX_PLAYER: 'MX Player',
         APP_NETFLIX: 'Netflix',
         APP_NLZIET: 'NLZIET',
