@@ -419,7 +419,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_HAYSTACK_NEWS: 'Haystack News',
         APP_HBO_GO: 'HBO GO',
         APP_HBO_GO_2: 'HBO GO (2)',
-        APP_HOICHOI = 'Hoichoi'
+        APP_HOICHOI = 'Hoichoi',
         APP_HULU: 'Hulu',
         APP_IMDB_TV: 'IMDb TV',
         APP_IPTV: 'IPTV',
