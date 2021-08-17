@@ -405,7 +405,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_DAILYMOTION: 'Dailymotion',
         APP_DEEZER: 'Deezer',
         APP_DISNEY_PLUS: 'Disney+',
-        APP_DISNEY_PLUS_HOTSTAR = 'Disney+ Hotstar'
+        APP_DISNEY_PLUS_HOTSTAR = 'Disney+ Hotstar',
         APP_DS_PHOTO: 'DS photo',
         APP_DS_VIDEO: 'DS video',
         APP_ES_FILE_EXPLORER: 'ES File Explorer',
