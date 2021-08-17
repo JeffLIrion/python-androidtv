@@ -315,6 +315,7 @@ APP_COMEDY_CENTRAL = 'com.vmn.android.comedycentral'
 APP_DAILYMOTION = 'com.dailymotion.dailymotion'
 APP_DEEZER = 'deezer.android.tv'
 APP_DISNEY_PLUS = 'com.disney.disneyplus'
+APP_DISNEY_PLUS_HOTSTAR = 'in.startv.hotstar'
 APP_DS_PHOTO = 'com.synology.dsphoto'
 APP_DS_VIDEO = 'com.synology.dsvideo'
 APP_ES_FILE_EXPLORER = 'com.estrongs.android.pop'
@@ -404,6 +405,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_DAILYMOTION: 'Dailymotion',
         APP_DEEZER: 'Deezer',
         APP_DISNEY_PLUS: 'Disney+',
+        APP_DISNEY_PLUS_HOTSTAR: 'Disney+ Hotstar',
         APP_DS_PHOTO: 'DS photo',
         APP_DS_VIDEO: 'DS video',
         APP_ES_FILE_EXPLORER: 'ES File Explorer',
