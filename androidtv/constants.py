@@ -334,6 +334,7 @@ APP_HBO_GO = 'eu.hbogo.androidtv.production'
 APP_HBO_GO_2 = 'com.HBO'
 APP_HOICHOI = 'com.viewlift.hoichoi'
 APP_HULU = 'com.hulu.plus'
+APP_HUNGAMA_PLAY = 'com.hungama.movies.tv'
 APP_IMDB_TV = 'com.amazon.imdb.tv.android.app'
 APP_IPTV = 'ru.iptvremote.android.iptv'
 APP_IPTV_SMARTERS_PRO = 'com.nst.iptvsmarterstvbox'
@@ -423,6 +424,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_HBO_GO_2: 'HBO GO (2)',
         APP_HOICHOI: 'Hoichoi',
         APP_HULU: 'Hulu',
+        APP_HUNGAMA_PLAY: 'Hungama Play',
         APP_IMDB_TV: 'IMDb TV',
         APP_IPTV: 'IPTV',
         APP_IPTV_SMARTERS_PRO: 'IPTV Smarters Pro',
