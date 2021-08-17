@@ -331,6 +331,7 @@ APP_GOOGLE_TV_LAUNCHER = 'com.google.android.apps.tv.launcherx'
 APP_HAYSTACK_NEWS = 'com.haystack.android'
 APP_HBO_GO = 'eu.hbogo.androidtv.production'
 APP_HBO_GO_2 = 'com.HBO'
+APP_HOICHOI = 'com.viewlift.hoichoi'
 APP_HULU = 'com.hulu.plus'
 APP_IMDB_TV = 'com.amazon.imdb.tv.android.app'
 APP_IPTV = 'ru.iptvremote.android.iptv'
@@ -418,6 +419,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_HAYSTACK_NEWS: 'Haystack News',
         APP_HBO_GO: 'HBO GO',
         APP_HBO_GO_2: 'HBO GO (2)',
+        APP_HOICHOI = 'Hoichoi'
         APP_HULU: 'Hulu',
         APP_IMDB_TV: 'IMDb TV',
         APP_IPTV: 'IPTV',
