@@ -339,6 +339,7 @@ APP_IMDB_TV = 'com.amazon.imdb.tv.android.app'
 APP_IPTV = 'ru.iptvremote.android.iptv'
 APP_IPTV_SMARTERS_PRO = 'com.nst.iptvsmarterstvbox'
 APP_JELLYFIN_TV = 'org.jellyfin.androidtv'
+APP_JIO_CINEMA = 'com.jio.media.stb.ondemand'
 APP_KODI = 'org.xbmc.kodi'
 APP_LIVE_CHANNELS = 'com.google.android.tv'
 APP_MIJN_RADIO = 'org.samsonsen.nederlandse.radio.holland.nl'
@@ -429,6 +430,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_IPTV: 'IPTV',
         APP_IPTV_SMARTERS_PRO: 'IPTV Smarters Pro',
         APP_JELLYFIN_TV: 'Jellyfin',
+        APP_JIO_CINEMA: 'Jio Cinema',
         APP_KODI: 'Kodi',
         APP_LIVE_CHANNELS: 'Live Channels',
         APP_MIJN_RADIO: 'Mijn Radio',
