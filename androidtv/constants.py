@@ -308,6 +308,7 @@ APP_AE_TV = 'com.aetn.aetv.watch'
 APP_AMAZON_PRIME_VIDEO = 'com.amazon.avod.thirdpartyclient'
 APP_AMAZON_VIDEO = 'com.amazon.avod'
 APP_APPLE_TV = 'com.apple.atve.sony.appletv'
+APP_APPLE_TV_PLUS_ANDROIDTV = 'com.apple.atve.androidtv.appletv'
 APP_APPLE_TV_FIRETV = 'com.apple.atve.amazon.appletv'
 APP_ATV_LAUNCHER = 'com.google.android.tvlauncher'
 APP_BELL_FIBE = 'com.quickplay.android.bellmediaplayer'
@@ -397,6 +398,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_AMAZON_PRIME_VIDEO: 'Amazon Prime Video',
         APP_AMAZON_VIDEO: 'Amazon Video',
         APP_APPLE_TV: 'Apple TV',
+        APP_APPLE_TV_PLUS_ANDROIDTV = 'Apple TV+',
         APP_APPLE_TV_FIRETV: 'Apple TV (FireTV)',
         APP_ATV_LAUNCHER: 'Android TV Launcher',
         APP_BELL_FIBE: 'Bell Fibe',
