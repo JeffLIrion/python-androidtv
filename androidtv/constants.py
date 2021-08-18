@@ -316,6 +316,7 @@ APP_COMEDY_CENTRAL = 'com.vmn.android.comedycentral'
 APP_DAILYMOTION = 'com.dailymotion.dailymotion'
 APP_DEEZER = 'deezer.android.tv'
 APP_DISNEY_PLUS = 'com.disney.disneyplus'
+APP_DISNEY_PLUS_HOTSTAR = 'in.startv.hotstar'
 APP_DS_PHOTO = 'com.synology.dsphoto'
 APP_DS_VIDEO = 'com.synology.dsvideo'
 APP_ES_FILE_EXPLORER = 'com.estrongs.android.pop'
@@ -332,15 +333,19 @@ APP_GOOGLE_TV_LAUNCHER = 'com.google.android.apps.tv.launcherx'
 APP_HAYSTACK_NEWS = 'com.haystack.android'
 APP_HBO_GO = 'eu.hbogo.androidtv.production'
 APP_HBO_GO_2 = 'com.HBO'
+APP_HOICHOI = 'com.viewlift.hoichoi'
 APP_HULU = 'com.hulu.plus'
+APP_HUNGAMA_PLAY = 'com.hungama.movies.tv'
 APP_IMDB_TV = 'com.amazon.imdb.tv.android.app'
 APP_IPTV = 'ru.iptvremote.android.iptv'
 APP_IPTV_SMARTERS_PRO = 'com.nst.iptvsmarterstvbox'
 APP_JELLYFIN_TV = 'org.jellyfin.androidtv'
+APP_JIO_CINEMA = 'com.jio.media.stb.ondemand'
 APP_KODI = 'org.xbmc.kodi'
 APP_LIVE_CHANNELS = 'com.google.android.tv'
 APP_MIJN_RADIO = 'org.samsonsen.nederlandse.radio.holland.nl'
 APP_MOLOTOV = 'tv.molotov.app'
+APP_MRMC_LITE = 'tv.mrmc.mrmc.lite'
 APP_MX_PLAYER = 'com.mxtech.videoplayer.ad'
 APP_NETFLIX = 'com.netflix.ninja'
 APP_NLZIET = 'nl.nlziet'
@@ -406,6 +411,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_DAILYMOTION: 'Dailymotion',
         APP_DEEZER: 'Deezer',
         APP_DISNEY_PLUS: 'Disney+',
+        APP_DISNEY_PLUS_HOTSTAR: 'Disney+ Hotstar',
         APP_DS_PHOTO: 'DS photo',
         APP_DS_VIDEO: 'DS video',
         APP_ES_FILE_EXPLORER: 'ES File Explorer',
@@ -420,15 +426,19 @@ APPS = {APP_AE_TV: 'A&E',
         APP_HAYSTACK_NEWS: 'Haystack News',
         APP_HBO_GO: 'HBO GO',
         APP_HBO_GO_2: 'HBO GO (2)',
+        APP_HOICHOI: 'Hoichoi',
         APP_HULU: 'Hulu',
+        APP_HUNGAMA_PLAY: 'Hungama Play',
         APP_IMDB_TV: 'IMDb TV',
         APP_IPTV: 'IPTV',
         APP_IPTV_SMARTERS_PRO: 'IPTV Smarters Pro',
         APP_JELLYFIN_TV: 'Jellyfin',
+        APP_JIO_CINEMA: 'Jio Cinema',
         APP_KODI: 'Kodi',
         APP_LIVE_CHANNELS: 'Live Channels',
         APP_MIJN_RADIO: 'Mijn Radio',
         APP_MOLOTOV: 'Molotov',
+        APP_MRMC_LITE: 'MrMC Lite',
         APP_MX_PLAYER: 'MX Player',
         APP_NETFLIX: 'Netflix',
         APP_NLZIET: 'NLZIET',
