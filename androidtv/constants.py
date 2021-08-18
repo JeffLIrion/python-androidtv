@@ -368,6 +368,7 @@ APP_SONY_BRAVIA_TUTORIALS = 'com.sony.dtv.bravialifehack'
 APP_SONY_DISCOVER = 'com.sony.dtv.discovery'
 APP_SONY_HELP = 'com.sony.dtv.smarthelp'
 APP_SONY_INTERNET_BROWSER = 'com.vewd.core.integration.dia'
+APP_SONY_LIV = 'com.sonyliv'
 APP_SONY_MUSIC = 'com.sony.dtv.osat.music'
 APP_SONY_SCREEN_MIRRORING = 'com.sony.dtv.networkapp.wifidirect'
 APP_SONY_SELECT = 'com.sony.dtv.sonyselect'
@@ -461,6 +462,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_SONY_DISCOVER: 'Discover',
         APP_SONY_HELP: 'Help',
         APP_SONY_INTERNET_BROWSER: 'Internet Browser',
+        APP_SONY_LIV: 'SonyLIV',
         APP_SONY_MUSIC: 'Music',
         APP_SONY_SCREEN_MIRRORING: 'Screen mirroring',
         APP_SONY_SELECT: 'Sony Select',
