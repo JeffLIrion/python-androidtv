@@ -402,9 +402,9 @@ APP_ZIGGO_GO_TV = 'com.ziggo.tv'
 APPS = {APP_AE_TV: 'A&E',
         APP_AMAZON_PRIME_VIDEO: 'Amazon Prime Video',
         APP_AMAZON_VIDEO: 'Amazon Video',
-        APP_APPLE_TV_PLUS: 'Apple TV+'
-        APP_APPLE_TV_PLUS_FIRETV: 'Apple TV+ (Fire TV)'
-        APP_APPLE_TV_PLUS_SONY: 'Apple TV+ (Sony)'
+        APP_APPLE_TV_PLUS: 'Apple TV+',
+        APP_APPLE_TV_PLUS_FIRETV: 'Apple TV+ (Fire TV)',
+        APP_APPLE_TV_PLUS_SONY: 'Apple TV+ (Sony)',
         APP_ATV_LAUNCHER: 'Android TV Launcher',
         APP_BELL_FIBE: 'Bell Fibe',
         APP_COMEDY_CENTRAL: 'Comedy Central',
