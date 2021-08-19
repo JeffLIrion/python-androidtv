@@ -399,6 +399,7 @@ APP_YOUTUBE_KIDS = 'com.google.android.youtube.tvkids'
 APP_YOUTUBE_KIDS_FIRETV = 'com.amazon.firetv.youtube.kids'
 APP_YOUTUBE_MUSIC = 'com.google.android.youtube.tvmusic'
 APP_YOUTUBE_TV = 'com.google.android.youtube.tvunplugged'
+APP_ZEE5 = 'com.graymatrix.did'
 APP_ZIGGO_GO_TV = 'com.ziggo.tv'
 APPS = {APP_AE_TV: 'A&E',
         APP_AMAZON_PRIME_VIDEO: 'Amazon Prime Video',
@@ -493,6 +494,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_YOUTUBE_KIDS_FIRETV: 'YouTube Kids (FireTV)',
         APP_YOUTUBE_MUSIC: 'YouTube Music',
         APP_YOUTUBE_TV: 'YouTube TV',
+        APP_ZEE5: 'ZEE5',
         APP_ZIGGO_GO_TV: 'Ziggo GO TV'}
 
 
