@@ -480,7 +480,7 @@ APPS = {APP_AE_TV: 'A&E',
         APP_YOUTUBE_KIDS_FIRETV: 'YouTube Kids (FireTV)',
         APP_YOUTUBE_MUSIC: 'YouTube Music',
         APP_YOUTUBE_TV: 'YouTube TV',
-        APP_ZEE5 = 'ZEE5',
+        APP_ZEE5: 'ZEE5',
         APP_ZIGGO_GO_TV: 'Ziggo GO TV'}
 
 
