@@ -3,8 +3,9 @@
 ADB Debugging must be enabled.
 """
 
-
+import json
 import logging
+import os
 import re
 
 from .. import constants
@@ -66,7 +67,19 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
     """
 
-    def __init__(self, adb, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
+    _devices_definition = None
+
+    def __init__(
+            self,
+            adb,
+            host,
+            port=5555,
+            adbkey='',
+            adb_server_ip='',
+            adb_server_port=5037,
+            state_detection_rules=None,
+            device_class=constants.DEVICE_CLASS_AUTO,
+    ):
         self._adb = adb
         self.host = host
         self.port = int(port)
@@ -74,10 +87,12 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         self.adb_server_ip = adb_server_ip
         self.adb_server_port = adb_server_port
         self._state_detection_rules = state_detection_rules
+        self._device_class = device_class
         self.device_properties = {}
         self.installed_apps = []
 
         # commands that can vary based on the device
+        self._device_commands = {}
         self._cmd_get_properties_lazy_running_apps = ""
         self._cmd_get_properties_lazy_no_running_apps = ""
         self._cmd_get_properties_not_lazy_running_apps = ""
@@ -95,12 +110,110 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         # the max volume level (determined when first getting the volume level)
         self.max_volume = None
 
+    @staticmethod
+    def _queue_cmd(commands: str, new_command: str) -> str:
+        """Queue a new command in the commands string"""
+        ret_value = commands
+        if commands and new_command:
+            ret_value += " && "
+        if new_command:
+            ret_value += new_command
+        return ret_value
+
+    @classmethod
+    def _get_devices_definition(cls):
+        """Load the device definition file."""
+        if cls._devices_definition is None:
+            try:
+                dir_path = os.path.dirname(os.path.realpath(__file__))
+                f_name = os.path.join(dir_path, "devices_definition.json")
+                with open(f_name) as f:
+                    cls._devices_definition = json.loads(f.read())
+            except OSError:
+                cls._devices_definition = {}
+        return cls._devices_definition
+
+    @classmethod
+    def supported_device_classes(cls):
+        """Return a list of supported device classes."""
+        definition = cls._get_devices_definition()
+        return [value for value in definition]
+
+    def _detect_device_class(self):
+        """Try to detect device type based on 'devices_info'."""
+        detected = False
+        dev_definition = self._get_devices_definition()
+        for dev_class, dev_prop in dev_definition.items():
+            rules = dev_prop.get("class_detection_rules", {})
+            for prop, value in rules.items():
+                detected = value in self.device_properties.get(prop, "")
+                if not detected:
+                    break
+            if detected:
+                return dev_class
+        return constants.DEVICE_CLASS_AUTO
+
     def _fill_in_commands(self):
-        """Fill in commands that are specific to the device.
+        """Fill in commands that are specific to Android TV devices."""
+        self._device_commands = constants.CMD_DEFAULTS.copy()
 
-        This is implemented in the `BaseAndroidTV` and `BaseFireTV` classes.
+        # try to detect the device class
+        if self._device_class == constants.DEVICE_CLASS_AUTO:
+            self._device_class = self._detect_device_class()
 
-        """
+        # update the device command from definition file based on the device class
+        if self._device_class != constants.DEVICE_CLASS_AUTO:
+            dev_definition = self._get_devices_definition()
+            device_commands = dev_definition.get(self._device_class, {}).get("commands")
+            if device_commands:
+                self._device_commands.update(device_commands)
+
+        # prepare the commands for the specific device
+        lazy_cmd = ""
+        not_lazy_cmd = ""
+        for cmd_name in constants.CMD_STATUS_LIST:
+            if cmd_name == "current_app":
+                cmd = self._current_app_cmd()
+            else:
+                cmd = self._device_commands.get(cmd_name)
+                if cmd and cmd_name in ["media_session_state", "hdmi_input"]:
+                    cmd = f"({cmd} || echo)"
+                elif cmd and cmd_name == "audio_state":
+                    cmd = f"({cmd})"
+
+            lazy_cmd = self._queue_cmd(lazy_cmd, cmd)
+            not_lazy_cmd = self._queue_cmd(not_lazy_cmd, cmd)
+            if cmd_name in ["screen_on", "awake"]:
+                lazy_cmd += constants.CMD_SUCCESS1
+                not_lazy_cmd += constants.CMD_SUCCESS1_FAILURE0
+
+        self._cmd_get_properties_lazy_no_running_apps = str(lazy_cmd)
+        self._cmd_get_properties_not_lazy_no_running_apps = str(not_lazy_cmd)
+        cmd_app = self._device_commands.get("running_apps", "")
+        self._cmd_get_properties_lazy_running_apps = self._queue_cmd(
+            lazy_cmd, cmd_app
+        )
+        self._cmd_get_properties_not_lazy_running_apps = self._queue_cmd(
+            not_lazy_cmd, cmd_app
+        )
+        self._cmd_current_app = self._current_app_cmd()
+        self._cmd_launch_app = self._launch_app_cmd()
+
+    def _get_current_app_var(self):
+        """Determinate the 'current_app_var' command"""
+        cmd_parse = self._device_commands.get("parse_current_app")
+        cmd_define = self._device_commands.get("define_current_app_var")
+        return f"{cmd_define} && {cmd_parse}"
+
+    def _current_app_cmd(self):
+        """Determinate the 'current_app' command"""
+        return f"{self._get_current_app_var()} && echo $CURRENT_APP"
+
+    def _launch_app_cmd(self):
+        """Determinate the 'launch_app' command"""
+        cur_app_var = self._get_current_app_var()
+        launch_cmd = cur_app_var.replace("{", "{{").replace("}", "}}")
+        return f"{launch_cmd} && {constants.CMD_LAUNCH_APP_CONDITION}"
 
     # ======================================================================= #
     #                                                                         #
@@ -188,8 +301,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
                                   'sw_version': version,
                                   'wifimac': wifimac,
                                   'ethmac': ethmac}
-
-        self._fill_in_commands()
 
     # ======================================================================= #
     #                                                                         #

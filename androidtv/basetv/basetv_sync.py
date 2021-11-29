@@ -67,7 +67,17 @@ class BaseTVSync(BaseTV):
 
     """
 
-    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, signer=None):
+    def __init__(
+            self,
+            host,
+            port=5555,
+            adbkey='',
+            adb_server_ip='',
+            adb_server_port=5037,
+            state_detection_rules=None,
+            signer=None,
+            device_class=constants.DEVICE_CLASS_AUTO
+    ):
         # the handler for ADB commands
         if not adb_server_ip:
             # python-adb
@@ -76,7 +86,9 @@ class BaseTVSync(BaseTV):
             # pure-python-adb
             adb = ADBServerSync(host, port, adb_server_ip, adb_server_port)
 
-        BaseTV.__init__(self, adb, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
+        BaseTV.__init__(
+            self, adb, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, device_class
+        )
 
     # ======================================================================= #
     #                                                                         #
@@ -228,7 +240,7 @@ class BaseTVSync(BaseTV):
             The audio state, as determined from the ADB shell command :py:const:`androidtv.constants.CMD_AUDIO_STATE`, or ``None`` if it could not be determined
 
         """
-        audio_state_response = self._adb.shell(constants.CMD_AUDIO_STATE)
+        audio_state_response = self._adb.shell(self._device_commands["audio_state"])
         return self._audio_state(audio_state_response)
 
     def awake(self):
@@ -240,7 +252,7 @@ class BaseTVSync(BaseTV):
             Whether or not the device is awake (screensaver is not running)
 
         """
-        return self._adb.shell(constants.CMD_AWAKE + constants.CMD_SUCCESS1_FAILURE0) == '1'
+        return self._adb.shell(self._device_commands["awake"] + constants.CMD_SUCCESS1_FAILURE0) == '1'
 
     def current_app(self):
         """Return the current app.
@@ -264,7 +276,7 @@ class BaseTVSync(BaseTV):
             The HDMI input, or ``None`` if it could not be determined
 
         """
-        return self._get_hdmi_input(self._adb.shell(constants.CMD_HDMI_INPUT))
+        return self._get_hdmi_input(self._adb.shell(self._device_commands["hdmi_input"]))
 
     def get_installed_apps(self):
         """Return a list of installed applications.
@@ -301,7 +313,8 @@ class BaseTVSync(BaseTV):
             The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
 
         """
-        media_session_state_response = self._adb.shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
+        cmd = f"{self._cmd_current_app} && {self._device_commands['media_session_state']}"
+        media_session_state_response = self._adb.shell(cmd)
 
         _, media_session_state = self._current_app_media_session_state(media_session_state_response)
 
@@ -316,7 +329,7 @@ class BaseTVSync(BaseTV):
             Whether or not the device is on
 
         """
-        return self._adb.shell(constants.CMD_SCREEN_ON + constants.CMD_SUCCESS1_FAILURE0) == '1'
+        return self._adb.shell(self._device_commands["screen_on"] + constants.CMD_SUCCESS1_FAILURE0) == '1'
 
     def volume(self):
         """Get the absolute volume level.
@@ -354,7 +367,7 @@ class BaseTVSync(BaseTV):
             The size of the current wake lock, or ``None`` if it could not be determined
 
         """
-        wake_lock_size_response = self._adb.shell(constants.CMD_WAKE_LOCK_SIZE)
+        wake_lock_size_response = self._adb.shell(self._device_commands["wake_lock_size"])
 
         return self._wake_lock_size(wake_lock_size_response)
 
@@ -378,7 +391,7 @@ class BaseTVSync(BaseTV):
 
         """
         if not stream_music_raw:
-            stream_music_raw = self._adb.shell(constants.CMD_STREAM_MUSIC)
+            stream_music_raw = self._adb.shell(self._device_commands["stream_music"])
 
         return self._parse_stream_music(stream_music_raw)
 

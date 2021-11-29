@@ -57,10 +57,13 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
         ftv.get_installed_apps()
         return ftv
 
-    if device_class != 'auto':
-        raise ValueError("`device_class` must be 'androidtv', 'firetv', or 'auto'.")
+    sup_classes = BaseTVSync.supported_device_classes()
+    if device_class != 'auto' and device_class not in sup_classes:
+        raise ValueError("`device_class` must be 'auto', 'androidtv' or one of %s.", str(sup_classes))
 
-    aftv = BaseTVSync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
+    aftv = BaseTVSync(
+        host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer, device_class
+    )
 
     # establish the ADB connection
     aftv.adb_connect(auth_timeout_s=auth_timeout_s)
@@ -68,8 +71,8 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
     # get device properties
     aftv.device_properties = aftv.get_device_properties()
 
-    # get the installed apps
-    aftv.get_installed_apps()
+    # Fill in commands that are specific to the device
+    aftv._fill_in_commands()  # pylint: disable=protected-access
 
     # Fire TV
     if aftv.device_properties.get('manufacturer') == 'Amazon':
@@ -79,8 +82,8 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
     else:
         aftv.__class__ = AndroidTVSync
 
-    # Fill in commands that are specific to the device
-    aftv._fill_in_commands()  # pylint: disable=protected-access
+    # get the installed apps
+    aftv.get_installed_apps()
 
     return aftv
 

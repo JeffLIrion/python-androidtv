@@ -52,18 +52,6 @@ class TestFireTVAsyncPython(unittest.TestCase):
             self.assertDictEqual(result, {})
 
     @awaiter
-    async def test_launch_app_stop_app(self):
-        """Test that the ``FireTVAsync.launch_app`` and ``FireTVAsync.stop_app`` methods work correctly.
-
-        """
-        with async_patchers.patch_shell('')[self.PATCH_KEY]:
-            await self.ftv.launch_app("TEST")
-            self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP.format("TEST"))
-
-            await self.ftv.stop_app("TEST")
-            self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "am force-stop TEST")
-
-    @awaiter
     async def test_running_apps(self):
         """Check that the ``running_apps`` property works correctly.
 

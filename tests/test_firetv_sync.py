@@ -186,17 +186,6 @@ class TestFireTVSyncPython(unittest.TestCase):
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "monkey -p TEST -c android.intent.category.LAUNCHER 1; echo $?")
             self.assertDictEqual(result, {})
 
-    def test_launch_app_stop_app(self):
-        """Test that the ``FireTVSync.launch_app`` and ``FireTVSync.stop_app`` methods work correctly.
-
-        """
-        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.ftv.launch_app("TEST")
-            self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP.format("TEST"))
-
-            self.ftv.stop_app("TEST")
-            self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "am force-stop TEST")
-
     def test_running_apps(self):
         """Check that the ``running_apps`` property works correctly.
 

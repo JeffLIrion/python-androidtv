@@ -3,6 +3,8 @@
 ADB Debugging must be enabled.
 """
 
+import json
+
 from .androidtv.androidtv_async import AndroidTVAsync
 from .basetv.basetv_async import BaseTVAsync
 from .constants import DEFAULT_AUTH_TIMEOUT_S
@@ -53,10 +55,13 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
         await ftv.get_installed_apps()
         return ftv
 
-    if device_class != 'auto':
-        raise ValueError("`device_class` must be 'androidtv', 'firetv', or 'auto'.")
+    sup_classes = BaseTVAsync.supported_device_classes()
+    if device_class != 'auto' and device_class not in sup_classes:
+        raise ValueError("`device_class` must be 'auto', 'androidtv' or one of %s.", str(sup_classes))
 
-    aftv = BaseTVAsync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
+    aftv = BaseTVAsync(
+        host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer, device_class
+    )
 
     # establish the ADB connection
     await aftv.adb_connect(auth_timeout_s=auth_timeout_s)
@@ -64,8 +69,8 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
     # get device properties
     await aftv.get_device_properties()
 
-    # get the installed apps
-    await aftv.get_installed_apps()
+    # Fill in commands that are specific to the device
+    aftv._fill_in_commands()  # pylint: disable=protected-access
 
     # Fire TV
     if aftv.device_properties.get('manufacturer') == 'Amazon':
@@ -75,7 +80,7 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
     else:
         aftv.__class__ = AndroidTVAsync
 
-    # Fill in commands that are specific to the device
-    aftv._fill_in_commands()  # pylint: disable=protected-access
+    # get the installed apps
+    await aftv.get_installed_apps()
 
     return aftv

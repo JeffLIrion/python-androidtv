@@ -35,8 +35,27 @@ class FireTVSync(BaseTVSync, BaseFireTV):
 
     """
 
-    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, signer=None):  # pylint: disable=super-init-not-called
-        BaseTVSync.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
+    def __init__(
+            self,
+            host,
+            port=5555,
+            adbkey='',
+            adb_server_ip='',
+            adb_server_port=5037,
+            state_detection_rules=None,
+            signer=None,
+    ):  # pylint: disable=super-init-not-called
+        BaseTVSync.__init__(
+            self,
+            host,
+            port,
+            adbkey,
+            adb_server_ip,
+            adb_server_port,
+            state_detection_rules,
+            signer,
+            device_class=self.DEVICE_CLASS,
+        )
 
         # fill in commands that can vary based on the device
         BaseFireTV._fill_in_commands(self)
@@ -163,7 +182,7 @@ class FireTVSync(BaseTVSync, BaseFireTV):
             A list of the running apps
 
         """
-        running_apps_response = self._adb.shell(constants.CMD_RUNNING_APPS_FIRETV)
+        running_apps_response = self._adb.shell(self._device_commands["running_apps"])
 
         return self._running_apps(running_apps_response)
 
@@ -174,8 +193,10 @@ class FireTVSync(BaseTVSync, BaseFireTV):
     # ======================================================================= #
     def turn_on(self):
         """Send ``POWER`` and ``HOME`` actions if the device is off."""
-        self._adb.shell(constants.CMD_SCREEN_ON + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME))
+        self._adb.shell(
+            self._device_commands["screen_on"] + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME)
+        )
 
     def turn_off(self):
         """Send ``SLEEP`` action if the device is not off."""
-        self._adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_SLEEP))
+        self._adb.shell(self._device_commands["screen_on"] + " && input keyevent {0}".format(constants.KEY_SLEEP))

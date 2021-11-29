@@ -1,0 +1,30 @@
+{
+  "firetv": {
+    "class_detection_rules": {
+      "manufacturer": "Amazon"
+    },
+    "commands": {
+      "audio_state": "",
+      "stream_music": "",
+      "running_apps": "ps | grep u0_a"
+    }
+  },
+  "chromecast": {
+    "class_detection_rules": {
+      "manufacturer": "Google",
+      "model": "Chromecast"
+    },
+    "commands": {
+      "define_current_app_var": "CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity)"
+    }
+  },
+  "android11": {
+    "class_detection_rules": {},
+    "commands": {
+      "audio_state": "dumpsys audio | grep paused | grep -v 'Buffer Queue' >/dev/null 2>&1 && echo -e '1\\c' || (dumpsys audio | grep started | grep -v 'Buffer Queue' >/dev/null 2>&1 && echo '2\\c' || echo '0\\c')",
+      "parse_current_app": "{ CURRENT_APP=${CURRENT_APP%%/*}; CURRENT_APP=${CURRENT_APP##* * }; CURRENT_APP=${CURRENT_APP%\\\\}*}; }",
+      "define_current_app_var": "CURRENT_APP=$(dumpsys window windows | grep -E 'mInputMethodTarget in display# 0|mCurrentFocus=' | grep -o Window{.*})",
+      "hdmi_input": "(HDMI=$(dumpsys tv_input | grep 'ResourceClientProfile {.*}' | grep -o -E '(hdmi_port=[0-9]|TV)') && { echo ${HDMI/hdmi_port=/HW} | cut -d' ' -f1 ; }) || (dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]')"
+    }
+  }
+}
