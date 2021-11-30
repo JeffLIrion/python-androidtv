@@ -49,9 +49,7 @@ CMD_HDMI_INPUT = "dumpsys activity starter " \
 
 #: Launch an app if it is not already the current app (assumes the variable ``CURRENT_APP`` has already been set)
 CMD_LAUNCH_APP_CONDITION = (
-    "if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c "
-    + INTENT_LAUNCH
-    + " --pct-syskeys 0 1; fi"
+    "if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c " + INTENT_LAUNCH + " --pct-syskeys 0 1; fi"
 )
 
 #: Get the state from ``dumpsys media_session``; this assumes that the variable ``CURRENT_APP`` has been defined

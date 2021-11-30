@@ -3,8 +3,6 @@
 ADB Debugging must be enabled.
 """
 
-import json
-
 from .androidtv.androidtv_async import AndroidTVAsync
 from .basetv.basetv_async import BaseTVAsync
 from .constants import DEFAULT_AUTH_TIMEOUT_S
