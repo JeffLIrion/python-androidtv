@@ -31,6 +31,18 @@ tdd:
 lint:
 	flake8 androidtv/ && pylint androidtv/
 
+.PHONY: black
+black:
+	black --safe --line-length 120 --target-version py35 androidtv
+	black --safe --line-length 120 --target-version py35 tests
+	black --safe --line-length 120 --target-version py35 setup.py
+
+.PHONY: lint-black
+lint-black:
+	black --check --safe --line-length 120 --target-version py35 androidtv
+	black --check --safe --line-length 120 --target-version py35 tests
+	black --check --safe --line-length 120 --target-version py35 setup.py
+
 .PHONY: alltests
 alltests:
 	flake8 androidtv/ && pylint androidtv/ && coverage run --source androidtv -m unittest discover -s tests/ -t . && coverage report -m
