@@ -9,7 +9,17 @@ from .constants import DEFAULT_AUTH_TIMEOUT_S
 from .firetv.firetv_async import FireTVAsync
 
 
-async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, device_class='auto', auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S, signer=None):
+async def setup(
+    host,
+    port=5555,
+    adbkey="",
+    adb_server_ip="",
+    adb_server_port=5037,
+    state_detection_rules=None,
+    device_class="auto",
+    auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S,
+    signer=None,
+):
     """Connect to a device and determine whether it's an Android TV or an Amazon Fire TV.
 
     Parameters
@@ -39,21 +49,21 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
         The representation of the device
 
     """
-    if device_class == 'androidtv':
+    if device_class == "androidtv":
         atv = AndroidTVAsync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
         await atv.adb_connect(auth_timeout_s=auth_timeout_s)
         await atv.get_device_properties()
         await atv.get_installed_apps()
         return atv
 
-    if device_class == 'firetv':
+    if device_class == "firetv":
         ftv = FireTVAsync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
         await ftv.adb_connect(auth_timeout_s=auth_timeout_s)
         await ftv.get_device_properties()
         await ftv.get_installed_apps()
         return ftv
 
-    if device_class != 'auto':
+    if device_class != "auto":
         raise ValueError("`device_class` must be 'androidtv', 'firetv', or 'auto'.")
 
     aftv = BaseTVAsync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
@@ -68,7 +78,7 @@ async def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=50
     await aftv.get_installed_apps()
 
     # Fire TV
-    if aftv.device_properties.get('manufacturer') == 'Amazon':
+    if aftv.device_properties.get("manufacturer") == "Amazon":
         aftv.__class__ = FireTVAsync
 
     # Android TV

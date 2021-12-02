@@ -25,6 +25,7 @@ _LOGGER = logging.getLogger(__name__)
 
 class AdbDeviceUsbAsync:
     """An async wrapper for the adb-shell ``AdbDeviceUsb`` class."""
+
     def __init__(self, serial=None, port_path=None, default_transport_timeout_s=None, banner=None):
         self._adb = AdbDeviceUsb(serial, port_path, default_transport_timeout_s, banner)
 
@@ -37,25 +38,67 @@ class AdbDeviceUsbAsync:
         """Close the connection via the provided transport's ``close()`` method."""
         await asyncio.get_running_loop().run_in_executor(None, self._adb.close)
 
-    async def connect(self, rsa_keys=None, transport_timeout_s=None, auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S, read_timeout_s=DEFAULT_READ_TIMEOUT_S, auth_callback=None):
+    async def connect(
+        self,
+        rsa_keys=None,
+        transport_timeout_s=None,
+        auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S,
+        read_timeout_s=DEFAULT_READ_TIMEOUT_S,
+        auth_callback=None,
+    ):
         """Establish an ADB connection to the device."""
-        return await asyncio.get_running_loop().run_in_executor(None, self._adb.connect, rsa_keys, transport_timeout_s, auth_timeout_s, read_timeout_s, auth_callback)
+        return await asyncio.get_running_loop().run_in_executor(
+            None, self._adb.connect, rsa_keys, transport_timeout_s, auth_timeout_s, read_timeout_s, auth_callback
+        )
 
-    async def pull(self, device_path, local_path, progress_callback=None, transport_timeout_s=None, read_timeout_s=DEFAULT_READ_TIMEOUT_S):
+    async def pull(
+        self,
+        device_path,
+        local_path,
+        progress_callback=None,
+        transport_timeout_s=None,
+        read_timeout_s=DEFAULT_READ_TIMEOUT_S,
+    ):
         """Pull a file from the device."""
-        await asyncio.get_running_loop().run_in_executor(None, self._adb.pull, device_path, local_path, progress_callback, transport_timeout_s, read_timeout_s)
+        await asyncio.get_running_loop().run_in_executor(
+            None, self._adb.pull, device_path, local_path, progress_callback, transport_timeout_s, read_timeout_s
+        )
 
-    async def push(self, local_path, device_path, st_mode=DEFAULT_PUSH_MODE, mtime=0, progress_callback=None, transport_timeout_s=None, read_timeout_s=DEFAULT_READ_TIMEOUT_S):
+    async def push(
+        self,
+        local_path,
+        device_path,
+        st_mode=DEFAULT_PUSH_MODE,
+        mtime=0,
+        progress_callback=None,
+        transport_timeout_s=None,
+        read_timeout_s=DEFAULT_READ_TIMEOUT_S,
+    ):
         """Push a file or directory to the device."""
-        await asyncio.get_running_loop().run_in_executor(None, self._adb.push, local_path, device_path, st_mode, mtime, progress_callback, transport_timeout_s, read_timeout_s)
+        await asyncio.get_running_loop().run_in_executor(
+            None,
+            self._adb.push,
+            local_path,
+            device_path,
+            st_mode,
+            mtime,
+            progress_callback,
+            transport_timeout_s,
+            read_timeout_s,
+        )
 
-    async def shell(self, command, transport_timeout_s=None, read_timeout_s=DEFAULT_READ_TIMEOUT_S, timeout_s=None, decode=True):
+    async def shell(
+        self, command, transport_timeout_s=None, read_timeout_s=DEFAULT_READ_TIMEOUT_S, timeout_s=None, decode=True
+    ):
         """Send an ADB shell command to the device."""
-        return await asyncio.get_running_loop().run_in_executor(None, self._adb.shell, command, transport_timeout_s, read_timeout_s, timeout_s, decode)
+        return await asyncio.get_running_loop().run_in_executor(
+            None, self._adb.shell, command, transport_timeout_s, read_timeout_s, timeout_s, decode
+        )
 
 
 class DeviceAsync:
     """An async wrapper for the pure-python-adb ``Device`` class."""
+
     def __init__(self, device):
         self._device = device
 
@@ -79,6 +122,7 @@ class DeviceAsync:
 # pylint: disable=too-few-public-methods
 class ClientAsync:
     """An async wrapper for the pure-python-adb ``Client`` class."""
+
     def __init__(self, host, port):
         self._client = Client(host, port)
 
@@ -143,13 +187,16 @@ class ADBPythonAsync(object):
         The signer for the ADB keys, as loaded by :meth:`ADBPythonAsync.load_adbkey`
 
     """
-    def __init__(self, host, port, adbkey='', signer=None):
+
+    def __init__(self, host, port, adbkey="", signer=None):
         self.host = host
         self.port = int(port)
         self.adbkey = adbkey
 
         if host:
-            self._adb = AdbDeviceTcpAsync(host=self.host, port=self.port, default_transport_timeout_s=DEFAULT_ADB_TIMEOUT_S)
+            self._adb = AdbDeviceTcpAsync(
+                host=self.host, port=self.port, default_transport_timeout_s=DEFAULT_ADB_TIMEOUT_S
+            )
         else:
             self._adb = AdbDeviceUsbAsync(default_transport_timeout_s=DEFAULT_ADB_TIMEOUT_S)
 
@@ -174,9 +221,7 @@ class ADBPythonAsync(object):
         return self._adb.available
 
     async def close(self):
-        """Close the ADB socket connection.
-
-        """
+        """Close the ADB socket connection."""
         await self._adb.close()
 
     async def connect(self, always_log_errors=True, auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S):
@@ -204,7 +249,9 @@ class ADBPythonAsync(object):
                         if not self._signer:
                             self._signer = await self.load_adbkey(self.adbkey)
 
-                        await self._adb.connect(rsa_keys=[self._signer], transport_timeout_s=1.0, auth_timeout_s=auth_timeout_s)
+                        await self._adb.connect(
+                            rsa_keys=[self._signer], transport_timeout_s=1.0, auth_timeout_s=auth_timeout_s
+                        )
 
                     # Connect without authentication
                     else:
@@ -219,7 +266,13 @@ class ADBPythonAsync(object):
                     if self._available or always_log_errors:
                         if exc.strerror is None:
                             exc.strerror = "Timed out trying to connect to ADB device."
-                        _LOGGER.warning("Couldn't connect to %s:%d.  %s: %s", self.host, self.port, exc.__class__.__name__, exc.strerror)
+                        _LOGGER.warning(
+                            "Couldn't connect to %s:%d.  %s: %s",
+                            self.host,
+                            self.port,
+                            exc.__class__.__name__,
+                            exc.strerror,
+                        )
 
                     # ADB connection attempt failed
                     await self.close()
@@ -228,7 +281,9 @@ class ADBPythonAsync(object):
 
                 except Exception as exc:  # pylint: disable=broad-except
                     if self._available or always_log_errors:
-                        _LOGGER.warning("Couldn't connect to %s:%d.  %s: %s", self.host, self.port, exc.__class__.__name__, exc)
+                        _LOGGER.warning(
+                            "Couldn't connect to %s:%d.  %s: %s", self.host, self.port, exc.__class__.__name__, exc
+                        )
 
                     # ADB connection attempt failed
                     await self.close()
@@ -262,10 +317,10 @@ class ADBPythonAsync(object):
 
         # public key
         try:
-            async with aiofiles.open(adbkey + '.pub') as f:
+            async with aiofiles.open(adbkey + ".pub") as f:
                 pub = await f.read()
         except FileNotFoundError:
-            pub = ''
+            pub = ""
 
         return PythonRSASigner(pub, priv)
 
@@ -281,11 +336,19 @@ class ADBPythonAsync(object):
 
         """
         if not self.available:
-            _LOGGER.debug("ADB command not sent to %s:%d because adb-shell connection is not established: pull(%s, %s)", self.host, self.port, local_path, device_path)
+            _LOGGER.debug(
+                "ADB command not sent to %s:%d because adb-shell connection is not established: pull(%s, %s)",
+                self.host,
+                self.port,
+                local_path,
+                device_path,
+            )
             return
 
         async with _acquire(self._adb_lock):
-            _LOGGER.debug("Sending command to %s:%d via adb-shell: pull(%s, %s)", self.host, self.port, local_path, device_path)
+            _LOGGER.debug(
+                "Sending command to %s:%d via adb-shell: pull(%s, %s)", self.host, self.port, local_path, device_path
+            )
             await self._adb.pull(device_path, local_path)
             return
 
@@ -301,11 +364,19 @@ class ADBPythonAsync(object):
 
         """
         if not self.available:
-            _LOGGER.debug("ADB command not sent to %s:%d because adb-shell connection is not established: push(%s, %s)", self.host, self.port, local_path, device_path)
+            _LOGGER.debug(
+                "ADB command not sent to %s:%d because adb-shell connection is not established: push(%s, %s)",
+                self.host,
+                self.port,
+                local_path,
+                device_path,
+            )
             return
 
         async with _acquire(self._adb_lock):
-            _LOGGER.debug("Sending command to %s:%d via adb-shell: push(%s, %s)", self.host, self.port, local_path, device_path)
+            _LOGGER.debug(
+                "Sending command to %s:%d via adb-shell: push(%s, %s)", self.host, self.port, local_path, device_path
+            )
             await self._adb.push(local_path, device_path)
             return
 
@@ -319,7 +390,11 @@ class ADBPythonAsync(object):
 
         """
         if not self.available:
-            _LOGGER.debug("ADB screencap not taken from %s:%d because adb-shell connection is not established", self.host, self.port)
+            _LOGGER.debug(
+                "ADB screencap not taken from %s:%d because adb-shell connection is not established",
+                self.host,
+                self.port,
+            )
             return None
 
         async with _acquire(self._adb_lock):
@@ -344,7 +419,12 @@ class ADBPythonAsync(object):
 
         """
         if not self.available:
-            _LOGGER.debug("ADB command not sent to %s:%d because adb-shell connection is not established: %s", self.host, self.port, cmd)
+            _LOGGER.debug(
+                "ADB command not sent to %s:%d because adb-shell connection is not established: %s",
+                self.host,
+                self.port,
+                cmd,
+            )
             return None
 
         async with _acquire(self._adb_lock):
@@ -367,7 +447,8 @@ class ADBServerAsync(object):
         The port for the ADB server
 
     """
-    def __init__(self, host, port=5555, adb_server_ip='', adb_server_port=5037):
+
+    def __init__(self, host, port=5555, adb_server_ip="", adb_server_port=5037):
         self.host = host
         self.port = int(port)
         self.adb_server_ip = adb_server_ip
@@ -424,18 +505,30 @@ class ADBServerAsync(object):
                 # Catch exceptions
                 try:
                     self._adb_client = ClientAsync(host=self.adb_server_ip, port=self.adb_server_port)
-                    self._adb_device = await self._adb_client.device('{}:{}'.format(self.host, self.port))
+                    self._adb_device = await self._adb_client.device("{}:{}".format(self.host, self.port))
 
                     # ADB connection successfully established
                     if self._adb_device:
-                        _LOGGER.debug("ADB connection to %s:%d via ADB server %s:%d successfully established", self.host, self.port, self.adb_server_ip, self.adb_server_port)
+                        _LOGGER.debug(
+                            "ADB connection to %s:%d via ADB server %s:%d successfully established",
+                            self.host,
+                            self.port,
+                            self.adb_server_ip,
+                            self.adb_server_port,
+                        )
                         self._available = True
                         self._was_available = True
                         return True
 
                     # ADB connection attempt failed (without an exception)
                     if self._was_available or always_log_errors:
-                        _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d because the server is not connected to the device", self.host, self.port, self.adb_server_ip, self.adb_server_port)
+                        _LOGGER.warning(
+                            "Couldn't connect to %s:%d via ADB server %s:%d because the server is not connected to the device",
+                            self.host,
+                            self.port,
+                            self.adb_server_ip,
+                            self.adb_server_port,
+                        )
 
                     await self.close()
                     self._available = False
@@ -445,7 +538,14 @@ class ADBServerAsync(object):
                 # ADB connection attempt failed
                 except Exception as exc:  # noqa pylint: disable=broad-except
                     if self._was_available or always_log_errors:
-                        _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d, error: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, exc)
+                        _LOGGER.warning(
+                            "Couldn't connect to %s:%d via ADB server %s:%d, error: %s",
+                            self.host,
+                            self.port,
+                            self.adb_server_ip,
+                            self.adb_server_port,
+                            exc,
+                        )
 
                     await self.close()
                     self._available = False
@@ -453,7 +553,13 @@ class ADBServerAsync(object):
                     return False
 
         except LockNotAcquiredException:
-            _LOGGER.warning("Couldn't connect to %s:%d via ADB server %s:%d because pure-python-adb lock not acquired.", self.host, self.port, self.adb_server_ip, self.adb_server_port)
+            _LOGGER.warning(
+                "Couldn't connect to %s:%d via ADB server %s:%d because pure-python-adb lock not acquired.",
+                self.host,
+                self.port,
+                self.adb_server_ip,
+                self.adb_server_port,
+            )
             await self.close()
             self._available = False
             self._was_available = False
@@ -471,11 +577,27 @@ class ADBServerAsync(object):
 
         """
         if not self.available:
-            _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: pull(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
+            _LOGGER.debug(
+                "ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: pull(%s, %s)",
+                self.host,
+                self.port,
+                self.adb_server_ip,
+                self.adb_server_port,
+                local_path,
+                device_path,
+            )
             return
 
         async with _acquire(self._adb_lock):
-            _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: pull(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
+            _LOGGER.debug(
+                "Sending command to %s:%d via ADB server %s:%d: pull(%s, %s)",
+                self.host,
+                self.port,
+                self.adb_server_ip,
+                self.adb_server_port,
+                local_path,
+                device_path,
+            )
             await self._adb_device.pull(device_path, local_path)
             return
 
@@ -491,11 +613,27 @@ class ADBServerAsync(object):
 
         """
         if not self.available:
-            _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
+            _LOGGER.debug(
+                "ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: push(%s, %s)",
+                self.host,
+                self.port,
+                self.adb_server_ip,
+                self.adb_server_port,
+                local_path,
+                device_path,
+            )
             return
 
         async with _acquire(self._adb_lock):
-            _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: push(%s, %s)", self.host, self.port, self.adb_server_ip, self.adb_server_port, local_path, device_path)
+            _LOGGER.debug(
+                "Sending command to %s:%d via ADB server %s:%d: push(%s, %s)",
+                self.host,
+                self.port,
+                self.adb_server_ip,
+                self.adb_server_port,
+                local_path,
+                device_path,
+            )
             await self._adb_device.push(local_path, device_path)
             return
 
@@ -509,11 +647,23 @@ class ADBServerAsync(object):
 
         """
         if not self.available:
-            _LOGGER.debug("ADB screencap not taken from %s:%d via ADB server %s:%d because pure-python-adb connection is not established", self.host, self.port, self.adb_server_ip, self.adb_server_port)
+            _LOGGER.debug(
+                "ADB screencap not taken from %s:%d via ADB server %s:%d because pure-python-adb connection is not established",
+                self.host,
+                self.port,
+                self.adb_server_ip,
+                self.adb_server_port,
+            )
             return None
 
         async with _acquire(self._adb_lock):
-            _LOGGER.debug("Taking screencap from %s:%d via ADB server %s:%d", self.host, self.port, self.adb_server_ip, self.adb_server_port)
+            _LOGGER.debug(
+                "Taking screencap from %s:%d via ADB server %s:%d",
+                self.host,
+                self.port,
+                self.adb_server_ip,
+                self.adb_server_port,
+            )
             return await self._adb_device.screencap()
 
     async def shell(self, cmd):
@@ -531,9 +681,23 @@ class ADBServerAsync(object):
 
         """
         if not self.available:
-            _LOGGER.debug("ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, cmd)
+            _LOGGER.debug(
+                "ADB command not sent to %s:%d via ADB server %s:%d because pure-python-adb connection is not established: %s",
+                self.host,
+                self.port,
+                self.adb_server_ip,
+                self.adb_server_port,
+                cmd,
+            )
             return None
 
         async with _acquire(self._adb_lock):
-            _LOGGER.debug("Sending command to %s:%d via ADB server %s:%d: %s", self.host, self.port, self.adb_server_ip, self.adb_server_port, cmd)
+            _LOGGER.debug(
+                "Sending command to %s:%d via ADB server %s:%d: %s",
+                self.host,
+                self.port,
+                self.adb_server_ip,
+                self.adb_server_port,
+                cmd,
+            )
             return await self._adb_device.shell(cmd)

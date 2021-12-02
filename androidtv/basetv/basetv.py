@@ -66,7 +66,9 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
     """
 
-    def __init__(self, adb, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
+    def __init__(
+        self, adb, host, port=5555, adbkey="", adb_server_ip="", adb_server_port=5037, state_detection_rules=None
+    ):
         self._adb = adb
         self.host = host
         self.port = int(port)
@@ -134,7 +136,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             ``cmd`` with the 'adb shell ' prefix removed, if it was present
 
         """
-        return cmd[len("adb shell "):] if cmd.startswith("adb shell ") else cmd
+        return cmd[len("adb shell ") :] if cmd.startswith("adb shell ") else cmd
 
     # ======================================================================= #
     #                                                                         #
@@ -182,12 +184,14 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         else:
             ethmac = None
 
-        self.device_properties = {'manufacturer': manufacturer,
-                                  'model': model,
-                                  'serialno': serialno,
-                                  'sw_version': version,
-                                  'wifimac': wifimac,
-                                  'ethmac': ethmac}
+        self.device_properties = {
+            "manufacturer": manufacturer,
+            "model": model,
+            "serialno": serialno,
+            "sw_version": version,
+            "wifimac": wifimac,
+            "ethmac": ethmac,
+        }
 
         self._fill_in_commands()
 
@@ -196,7 +200,9 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
     #                         Custom state detection                          #
     #                                                                         #
     # ======================================================================= #
-    def _custom_state_detection(self, current_app=None, media_session_state=None, wake_lock_size=None, audio_state=None):
+    def _custom_state_detection(
+        self, current_app=None, media_session_state=None, wake_lock_size=None, audio_state=None
+    ):
         """Use the rules in ``self._state_detection_rules`` to determine the state.
 
         Parameters
@@ -227,7 +233,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
                 return rule
 
             # Use the `media_session_state` property
-            if rule == 'media_session_state':
+            if rule == "media_session_state":
                 if media_session_state == 2:
                     return constants.STATE_PAUSED
                 if media_session_state == 3:
@@ -236,13 +242,15 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
                     return constants.STATE_IDLE
 
             # Use the `audio_state` property
-            if rule == 'audio_state' and audio_state in constants.VALID_STATES:
+            if rule == "audio_state" and audio_state in constants.VALID_STATES:
                 return audio_state
 
             # Check conditions and if they are true, return the specified state
             if isinstance(rule, dict):
                 for state, conditions in rule.items():
-                    if state in constants.VALID_STATES and self._conditions_are_true(conditions, media_session_state, wake_lock_size, audio_state):
+                    if state in constants.VALID_STATES and self._conditions_are_true(
+                        conditions, media_session_state, wake_lock_size, audio_state
+                    ):
                         return state
 
         return None
@@ -269,15 +277,15 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         """
         for key, val in conditions.items():
-            if key == 'media_session_state':
+            if key == "media_session_state":
                 if media_session_state is None or media_session_state != val:
                     return False
 
-            elif key == 'wake_lock_size':
+            elif key == "wake_lock_size":
                 if wake_lock_size is None or wake_lock_size != val:
                     return False
 
-            elif key == 'audio_state':
+            elif key == "audio_state":
                 if audio_state is None or audio_state != val:
                     return False
 
@@ -333,9 +341,9 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         """
         if not audio_state_response:
             return None
-        if audio_state_response == '1':
+        if audio_state_response == "1":
             return constants.STATE_PAUSED
-        if audio_state_response == '2':
+        if audio_state_response == "2":
             return constants.STATE_PLAYING
         return constants.STATE_IDLE
 
@@ -354,7 +362,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The current app, or ``None`` if it could not be determined
 
         """
-        if not current_app_response or '=' in current_app_response or '{' in current_app_response:
+        if not current_app_response or "=" in current_app_response or "{" in current_app_response:
             return None
 
         return current_app_response
@@ -422,7 +430,9 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         """
         if installed_apps_response is not None:
-            return [line.strip().rsplit("package:", 1)[-1] for line in installed_apps_response.splitlines() if line.strip()]
+            return [
+                line.strip().rsplit("package:", 1)[-1] for line in installed_apps_response.splitlines() if line.strip()
+            ]
 
         return None
 
@@ -446,7 +456,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         matches = re.findall(constants.MUTED_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
         if matches:
-            return matches[0] == 'true'
+            return matches[0] == "true"
 
         return None
 
@@ -472,7 +482,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         matches = constants.REGEX_MEDIA_SESSION_STATE.search(media_session_state_response)
         if matches:
-            return int(matches.group('state'))
+            return int(matches.group("state"))
 
         return None
 
@@ -517,8 +527,8 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         """
         if running_apps_response:
             if isinstance(running_apps_response, list):
-                return [line.strip().rsplit(' ', 1)[-1] for line in running_apps_response if line.strip()]
-            return [line.strip().rsplit(' ', 1)[-1] for line in running_apps_response.splitlines() if line.strip()]
+                return [line.strip().rsplit(" ", 1)[-1] for line in running_apps_response if line.strip()]
+            return [line.strip().rsplit(" ", 1)[-1] for line in running_apps_response.splitlines() if line.strip()]
 
         return None
 
@@ -546,12 +556,14 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             if max_volume_matches:
                 self.max_volume = float(max_volume_matches[0])
             else:
-                self.max_volume = 15.
+                self.max_volume = 15.0
 
         if not audio_output_device:
             return None
 
-        volume_matches = re.findall(audio_output_device + constants.VOLUME_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
+        volume_matches = re.findall(
+            audio_output_device + constants.VOLUME_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE
+        )
         if volume_matches:
             return int(volume_matches[0])
 
@@ -594,7 +606,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         if wake_lock_size_response:
             wake_lock_size_matches = constants.REGEX_WAKE_LOCK_SIZE.search(wake_lock_size_response)
             if wake_lock_size_matches:
-                return int(wake_lock_size_matches.group('size'))
+                return int(wake_lock_size_matches.group("size"))
 
         return None
 
@@ -664,7 +676,11 @@ def state_detection_rules_validator(rules, exc=KeyError):
         # If a rule is a string, check that it is valid
         if isinstance(rule, str):
             if rule not in constants.VALID_STATE_PROPERTIES + constants.VALID_STATES:
-                raise exc("Invalid rule '{0}' is not in {1}".format(rule, constants.VALID_STATE_PROPERTIES + constants.VALID_STATES))
+                raise exc(
+                    "Invalid rule '{0}' is not in {1}".format(
+                        rule, constants.VALID_STATE_PROPERTIES + constants.VALID_STATES
+                    )
+                )
 
         # If a rule is a dictionary, check that it is valid
         else:
@@ -675,7 +691,11 @@ def state_detection_rules_validator(rules, exc=KeyError):
 
                 # The values of the dictionary must be dictionaries
                 if not isinstance(conditions, dict):
-                    raise exc("Expected a map for entry '{0}' in 'state_detection_rules', got {1}".format(state, type(conditions).__name__))
+                    raise exc(
+                        "Expected a map for entry '{0}' in 'state_detection_rules', got {1}".format(
+                            state, type(conditions).__name__
+                        )
+                    )
 
                 for prop, value in conditions.items():
                     # The keys of the dictionary must be valid properties that can be checked
@@ -684,6 +704,10 @@ def state_detection_rules_validator(rules, exc=KeyError):
 
                     # Make sure the value is of the right type
                     if not isinstance(value, constants.VALID_PROPERTIES_TYPES[prop]):
-                        raise exc("Conditional value for property '{0}' must be of type {1}, not {2}".format(prop, constants.VALID_PROPERTIES_TYPES[prop].__name__, type(value).__name__))
+                        raise exc(
+                            "Conditional value for property '{0}' must be of type {1}, not {2}".format(
+                                prop, constants.VALID_PROPERTIES_TYPES[prop].__name__, type(value).__name__
+                            )
+                        )
 
     return rules
