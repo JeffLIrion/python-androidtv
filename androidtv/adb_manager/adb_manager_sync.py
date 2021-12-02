@@ -274,6 +274,7 @@ class ADBPythonSync(object):
 
         """
         if not self.available:
+            _LOGGER.warning("This line is too long and black should format it. This is just a test. %s %d", "test", 1234)
             _LOGGER.debug(
                 "ADB screencap not taken from %s:%d because adb-shell connection is not established",
                 self.host,
