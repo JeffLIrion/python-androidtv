@@ -10,10 +10,20 @@ from .constants import DEFAULT_AUTH_TIMEOUT_S
 from .firetv.firetv_sync import FireTVSync
 
 
-__version__ = '0.0.60'
+__version__ = "0.0.60"
 
 
-def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, device_class='auto', auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S, signer=None):
+def setup(
+    host,
+    port=5555,
+    adbkey="",
+    adb_server_ip="",
+    adb_server_port=5037,
+    state_detection_rules=None,
+    device_class="auto",
+    auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S,
+    signer=None,
+):
     """Connect to a device and determine whether it's an Android TV or an Amazon Fire TV.
 
     Parameters
@@ -43,21 +53,21 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
         The representation of the device
 
     """
-    if device_class == 'androidtv':
+    if device_class == "androidtv":
         atv = AndroidTVSync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
         atv.adb_connect(auth_timeout_s=auth_timeout_s)
         atv.get_device_properties()
         atv.get_installed_apps()
         return atv
 
-    if device_class == 'firetv':
+    if device_class == "firetv":
         ftv = FireTVSync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
         ftv.adb_connect(auth_timeout_s=auth_timeout_s)
         ftv.get_device_properties()
         ftv.get_installed_apps()
         return ftv
 
-    if device_class != 'auto':
+    if device_class != "auto":
         raise ValueError("`device_class` must be 'androidtv', 'firetv', or 'auto'.")
 
     aftv = BaseTVSync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
@@ -72,7 +82,7 @@ def setup(host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, st
     aftv.get_installed_apps()
 
     # Fire TV
-    if aftv.device_properties.get('manufacturer') == 'Amazon':
+    if aftv.device_properties.get("manufacturer") == "Amazon":
         aftv.__class__ = FireTVSync
 
     # Android TV
@@ -101,6 +111,7 @@ def ha_state_detection_rules_validator(exc):
         A function that is the same as :func:`~androidtv.basetv.state_detection_rules_validator`, but with the ``exc`` argument provided
 
     """
+
     def wrapped_state_detection_rules_validator(rules):
         """Run :func:`~androidtv.basetv.state_detection_rules_validator` using the ``exc`` parameter from the parent function."""
         return state_detection_rules_validator(rules, exc)

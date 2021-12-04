@@ -16,6 +16,7 @@ CLIENT_FAKE_SUCCESS = "ClientFakeSuccess"
 CLIENT_FAKE_FAIL = "ClientFakeFail"
 DEVICE_FAKE = "DeviceFake"
 
+
 class AdbDeviceTcpFake(object):
     """A fake of the `adb_shell.adb_device.AdbDeviceTcp` class."""
 
@@ -102,8 +103,14 @@ def patch_connect(success):
         raise OSError
 
     if success:
-        return {KEY_PYTHON: patch("{}.{}.connect".format(__name__, ADB_DEVICE_TCP_FAKE), connect_success_python), KEY_SERVER: patch("androidtv.adb_manager.adb_manager_sync.Client", ClientFakeSuccess)}
-    return {KEY_PYTHON: patch("{}.{}.connect".format(__name__, ADB_DEVICE_TCP_FAKE), connect_fail_python), KEY_SERVER: patch("androidtv.adb_manager.adb_manager_sync.Client", ClientFakeFail)}
+        return {
+            KEY_PYTHON: patch("{}.{}.connect".format(__name__, ADB_DEVICE_TCP_FAKE), connect_success_python),
+            KEY_SERVER: patch("androidtv.adb_manager.adb_manager_sync.Client", ClientFakeSuccess),
+        }
+    return {
+        KEY_PYTHON: patch("{}.{}.connect".format(__name__, ADB_DEVICE_TCP_FAKE), connect_fail_python),
+        KEY_SERVER: patch("androidtv.adb_manager.adb_manager_sync.Client", ClientFakeFail),
+    }
 
 
 def patch_shell(response=None, error=False):
@@ -125,13 +132,25 @@ def patch_shell(response=None, error=False):
         raise ConnectionResetError
 
     if not error:
-        return {KEY_PYTHON: patch("{}.{}.shell".format(__name__, ADB_DEVICE_TCP_FAKE), shell_success), KEY_SERVER: patch("{}.{}.shell".format(__name__, DEVICE_FAKE), shell_success)}
-    return {KEY_PYTHON: patch("{}.{}.shell".format(__name__, ADB_DEVICE_TCP_FAKE), shell_fail_python), KEY_SERVER: patch("{}.{}.shell".format(__name__, DEVICE_FAKE), shell_fail_server)}
+        return {
+            KEY_PYTHON: patch("{}.{}.shell".format(__name__, ADB_DEVICE_TCP_FAKE), shell_success),
+            KEY_SERVER: patch("{}.{}.shell".format(__name__, DEVICE_FAKE), shell_success),
+        }
+    return {
+        KEY_PYTHON: patch("{}.{}.shell".format(__name__, ADB_DEVICE_TCP_FAKE), shell_fail_python),
+        KEY_SERVER: patch("{}.{}.shell".format(__name__, DEVICE_FAKE), shell_fail_server),
+    }
 
 
-PATCH_PUSH = {KEY_PYTHON: patch("{}.{}.push".format(__name__, ADB_DEVICE_TCP_FAKE)), KEY_SERVER: patch("{}.{}.push".format(__name__, DEVICE_FAKE))}
+PATCH_PUSH = {
+    KEY_PYTHON: patch("{}.{}.push".format(__name__, ADB_DEVICE_TCP_FAKE)),
+    KEY_SERVER: patch("{}.{}.push".format(__name__, DEVICE_FAKE)),
+}
 
-PATCH_PULL = {KEY_PYTHON: patch("{}.{}.pull".format(__name__, ADB_DEVICE_TCP_FAKE)), KEY_SERVER: patch("{}.{}.pull".format(__name__, DEVICE_FAKE))}
+PATCH_PULL = {
+    KEY_PYTHON: patch("{}.{}.pull".format(__name__, ADB_DEVICE_TCP_FAKE)),
+    KEY_SERVER: patch("{}.{}.pull".format(__name__, DEVICE_FAKE)),
+}
 
 PATCH_ADB_DEVICE_TCP = patch("androidtv.adb_manager.adb_manager_sync.AdbDeviceTcp", AdbDeviceTcpFake)
 
@@ -144,7 +163,10 @@ class CustomException(Exception):
     """A custom exception type."""
 
 
-PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION = {KEY_PYTHON: patch("{}.{}.connect".format(__name__, ADB_DEVICE_TCP_FAKE), side_effect=CustomException), KEY_SERVER: patch("{}.{}.device".format(__name__, CLIENT_FAKE_SUCCESS), side_effect=CustomException)}
+PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION = {
+    KEY_PYTHON: patch("{}.{}.connect".format(__name__, ADB_DEVICE_TCP_FAKE), side_effect=CustomException),
+    KEY_SERVER: patch("{}.{}.device".format(__name__, CLIENT_FAKE_SUCCESS), side_effect=CustomException),
+}
 
 
 def patch_calls(obj, wraps):

@@ -67,7 +67,16 @@ class BaseTVSync(BaseTV):
 
     """
 
-    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, signer=None):
+    def __init__(
+        self,
+        host,
+        port=5555,
+        adbkey="",
+        adb_server_ip="",
+        adb_server_port=5037,
+        state_detection_rules=None,
+        signer=None,
+    ):
         # the handler for ADB commands
         if not adb_server_ip:
             # python-adb
@@ -191,12 +200,19 @@ class BaseTVSync(BaseTV):
             A dictionary with keys ``'wifimac'``, ``'ethmac'``, ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
 
         """
-        properties = self._adb.shell(constants.CMD_MANUFACTURER + " && " +
-                                     constants.CMD_MODEL + " && " +
-                                     constants.CMD_SERIALNO + " && " +
-                                     constants.CMD_VERSION + " && " +
-                                     constants.CMD_MAC_WLAN0 + " && " +
-                                     constants.CMD_MAC_ETH0)
+        properties = self._adb.shell(
+            constants.CMD_MANUFACTURER
+            + " && "
+            + constants.CMD_MODEL
+            + " && "
+            + constants.CMD_SERIALNO
+            + " && "
+            + constants.CMD_VERSION
+            + " && "
+            + constants.CMD_MAC_WLAN0
+            + " && "
+            + constants.CMD_MAC_ETH0
+        )
 
         self._parse_device_properties(properties)
         return self.device_properties
@@ -240,7 +256,7 @@ class BaseTVSync(BaseTV):
             Whether or not the device is awake (screensaver is not running)
 
         """
-        return self._adb.shell(constants.CMD_AWAKE + constants.CMD_SUCCESS1_FAILURE0) == '1'
+        return self._adb.shell(constants.CMD_AWAKE + constants.CMD_SUCCESS1_FAILURE0) == "1"
 
     def current_app(self):
         """Return the current app.
@@ -316,7 +332,7 @@ class BaseTVSync(BaseTV):
             Whether or not the device is on
 
         """
-        return self._adb.shell(constants.CMD_SCREEN_ON + constants.CMD_SUCCESS1_FAILURE0) == '1'
+        return self._adb.shell(constants.CMD_SCREEN_ON + constants.CMD_SUCCESS1_FAILURE0) == "1"
 
     def volume(self):
         """Get the absolute volume level.
@@ -405,7 +421,7 @@ class BaseTVSync(BaseTV):
             A dictionary with keys ``'output'`` and ``'retcode'``, if they could be determined; otherwise, an empty dictionary
 
         """
-        cmd = 'monkey -p {} -c {} {}; echo $?'.format(pkg, intent, count)
+        cmd = "monkey -p {} -c {} {}; echo $?".format(pkg, intent, count)
 
         # adb shell outputs in weird format, so we cut it into lines,
         # separate the retcode and return info to the user
@@ -471,7 +487,7 @@ class BaseTVSync(BaseTV):
             The Key constant
 
         """
-        self._adb.shell('input keyevent {0}'.format(key))
+        self._adb.shell("input keyevent {0}".format(key))
 
     def power(self):
         """Send power action."""
@@ -724,7 +740,7 @@ class BaseTVSync(BaseTV):
             if not self.max_volume:
                 return None
 
-        new_volume = int(min(max(round(self.max_volume * volume_level), 0.), self.max_volume))
+        new_volume = int(min(max(round(self.max_volume * volume_level), 0.0), self.max_volume))
 
         self._adb.shell("media volume --show --stream 3 --set {}".format(new_volume))
 
@@ -787,7 +803,7 @@ class BaseTVSync(BaseTV):
             return None
 
         # return the new volume level
-        return max(current_volume - 1, 0.) / self.max_volume
+        return max(current_volume - 1, 0.0) / self.max_volume
 
     # ======================================================================= #
     #                                                                         #
@@ -813,6 +829,12 @@ class BaseTVSync(BaseTV):
             The events converted to ``sendevent`` commands
 
         """
-        getevent = self._adb.shell("( getevent ) & pid=$!; ( sleep {} && kill -HUP $pid ) 2>/dev/null & watcher=$!; if wait $pid 2>/dev/null; then echo 'your command finished'; kill -HUP -P $watcher; wait $watcher; else echo 'your command was interrupted'; fi".format(timeout_s))
+        getevent = self._adb.shell(
+            "( getevent ) & pid=$!; ( sleep {} && kill -HUP $pid ) 2>/dev/null & watcher=$!; if wait $pid 2>/dev/null; then echo 'your command finished'; kill -HUP -P $watcher; wait $watcher; else echo 'your command was interrupted'; fi".format(
+                timeout_s
+            )
+        )
 
-        return " && ".join([self._parse_getevent_line(line) for line in getevent.splitlines() if line.startswith("/") and ":" in line])
+        return " && ".join(
+            [self._parse_getevent_line(line) for line in getevent.splitlines() if line.startswith("/") and ":" in line]
+        )

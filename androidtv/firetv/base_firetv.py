@@ -32,9 +32,9 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
 
     """
 
-    DEVICE_CLASS = 'firetv'
+    DEVICE_CLASS = "firetv"
 
-    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
+    def __init__(self, host, port=5555, adbkey="", adb_server_ip="", adb_server_port=5037, state_detection_rules=None):
         BaseTV.__init__(self, None, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
 
     def _fill_in_commands(self):
@@ -107,7 +107,9 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
                 running_apps = [current_app]
 
             # Determine the state using custom rules
-            state = self._custom_state_detection(current_app=current_app, media_session_state=media_session_state, wake_lock_size=wake_lock_size)
+            state = self._custom_state_detection(
+                current_app=current_app, media_session_state=media_session_state, wake_lock_size=wake_lock_size
+            )
             if state:
                 return state, current_app, running_apps, hdmi_input
 
@@ -269,12 +271,12 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
         # `screen_on` property
         if not output:
             return False, False, -1, None, None, None, None
-        screen_on = output[0] == '1'
+        screen_on = output[0] == "1"
 
         # `awake` property
         if len(output) < 2:
             return screen_on, False, -1, None, None, None, None
-        awake = output[1] == '1'
+        awake = output[1] == "1"
 
         lines = output.strip().splitlines()
 

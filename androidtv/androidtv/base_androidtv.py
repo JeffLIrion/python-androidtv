@@ -32,19 +32,23 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
 
     """
 
-    DEVICE_CLASS = 'androidtv'
+    DEVICE_CLASS = "androidtv"
 
-    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None):
+    def __init__(self, host, port=5555, adbkey="", adb_server_ip="", adb_server_port=5037, state_detection_rules=None):
         BaseTV.__init__(self, None, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
 
     def _fill_in_commands(self):
         """Fill in commands that are specific to Android TV devices."""
         # Is this a Google Chromecast Android TV?
-        if "Google" in self.device_properties.get("manufacturer", "") and "Chromecast" in self.device_properties.get("model", ""):
+        if "Google" in self.device_properties.get("manufacturer", "") and "Chromecast" in self.device_properties.get(
+            "model", ""
+        ):
             self._cmd_get_properties_lazy_running_apps = constants.CMD_GOOGLE_TV_PROPERTIES_LAZY_RUNNING_APPS
             self._cmd_get_properties_lazy_no_running_apps = constants.CMD_GOOGLE_TV_PROPERTIES_LAZY_NO_RUNNING_APPS
             self._cmd_get_properties_not_lazy_running_apps = constants.CMD_GOOGLE_TV_PROPERTIES_NOT_LAZY_RUNNING_APPS
-            self._cmd_get_properties_not_lazy_no_running_apps = constants.CMD_GOOGLE_TV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS
+            self._cmd_get_properties_not_lazy_no_running_apps = (
+                constants.CMD_GOOGLE_TV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS
+            )
             self._cmd_current_app = constants.CMD_CURRENT_APP_GOOGLE_TV
             self._cmd_launch_app = constants.CMD_LAUNCH_APP_GOOGLE_TV
             return
@@ -61,7 +65,20 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
     #                          Home Assistant Update                          #
     #                                                                         #
     # ======================================================================= #
-    def _update(self, screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps, hdmi_input):
+    def _update(
+        self,
+        screen_on,
+        awake,
+        audio_state,
+        wake_lock_size,
+        current_app,
+        media_session_state,
+        audio_output_device,
+        is_volume_muted,
+        volume,
+        running_apps,
+        hdmi_input,
+    ):
         """Get the info needed for a Home Assistant update.
 
         Parameters
@@ -115,7 +132,7 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
             state = None
 
         # Check if device is off
-        elif not screen_on or current_app == 'off':
+        elif not screen_on or current_app == "off":
             state = constants.STATE_OFF
 
         # Check if screen saver is on
@@ -128,7 +145,12 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
                 running_apps = [current_app]
 
             # Determine the state using custom rules
-            state = self._custom_state_detection(current_app=current_app, media_session_state=media_session_state, wake_lock_size=wake_lock_size, audio_state=audio_state)
+            state = self._custom_state_detection(
+                current_app=current_app,
+                media_session_state=media_session_state,
+                wake_lock_size=wake_lock_size,
+                audio_state=audio_state,
+            )
             if state:
                 return state, current_app, running_apps, audio_output_device, is_volume_muted, volume_level, hdmi_input
 
@@ -262,12 +284,12 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
         # `screen_on` property
         if not output:
             return False, False, None, -1, None, None, None, None, None, None, None
-        screen_on = output[0] == '1'
+        screen_on = output[0] == "1"
 
         # `awake` property
         if len(output) < 2:
             return screen_on, False, None, -1, None, None, None, None, None, None, None
-        awake = output[1] == '1'
+        awake = output[1] == "1"
 
         # `audio_state` property
         if len(output) < 3:
@@ -293,12 +315,36 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
 
         # HDMI input property
         if len(lines) < 4:
-            return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, None, None, None, None, None
+            return (
+                screen_on,
+                awake,
+                audio_state,
+                wake_lock_size,
+                current_app,
+                media_session_state,
+                None,
+                None,
+                None,
+                None,
+                None,
+            )
         hdmi_input = self._get_hdmi_input(lines[3])
 
         # "STREAM_MUSIC" block
         if len(lines) < 5:
-            return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, None, None, None, None, hdmi_input
+            return (
+                screen_on,
+                awake,
+                audio_state,
+                wake_lock_size,
+                current_app,
+                media_session_state,
+                None,
+                None,
+                None,
+                None,
+                hdmi_input,
+            )
 
         # reconstruct the output of `constants.CMD_STREAM_MUSIC`
         stream_music_raw = "\n".join(lines[4:])
@@ -317,7 +363,31 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
 
         # `running_apps` property
         if not get_running_apps or len(lines) < 17:
-            return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, None, hdmi_input
+            return (
+                screen_on,
+                awake,
+                audio_state,
+                wake_lock_size,
+                current_app,
+                media_session_state,
+                audio_output_device,
+                is_volume_muted,
+                volume,
+                None,
+                hdmi_input,
+            )
         running_apps = self._running_apps(lines[16:])
 
-        return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps, hdmi_input
+        return (
+            screen_on,
+            awake,
+            audio_state,
+            wake_lock_size,
+            current_app,
+            media_session_state,
+            audio_output_device,
+            is_volume_muted,
+            volume,
+            running_apps,
+            hdmi_input,
+        )

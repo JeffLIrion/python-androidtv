@@ -2,7 +2,7 @@ import sys
 import unittest
 from unittest.mock import patch
 
-sys.path.insert(0, '..')
+sys.path.insert(0, "..")
 
 from adb_shell.transport.usb_transport import UsbTransport
 

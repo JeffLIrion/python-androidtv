@@ -35,7 +35,16 @@ class FireTVAsync(BaseTVAsync, BaseFireTV):
 
     """
 
-    def __init__(self, host, port=5555, adbkey='', adb_server_ip='', adb_server_port=5037, state_detection_rules=None, signer=None):  # pylint: disable=super-init-not-called
+    def __init__(
+        self,
+        host,
+        port=5555,
+        adbkey="",
+        adb_server_ip="",
+        adb_server_port=5037,
+        state_detection_rules=None,
+        signer=None,
+    ):  # pylint: disable=super-init-not-called
         BaseTVAsync.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
 
         # fill in commands that can vary based on the device
@@ -69,9 +78,19 @@ class FireTVAsync(BaseTVAsync, BaseFireTV):
 
         """
         # Get the properties needed for the update
-        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps, hdmi_input = await self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        (
+            screen_on,
+            awake,
+            wake_lock_size,
+            current_app,
+            media_session_state,
+            running_apps,
+            hdmi_input,
+        ) = await self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
-        return self._update(screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps, hdmi_input)
+        return self._update(
+            screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps, hdmi_input
+        )
 
     # ======================================================================= #
     #                                                                         #
@@ -144,15 +163,25 @@ class FireTVAsync(BaseTVAsync, BaseFireTV):
              ``'media_session_state'``, ``'running_apps'``, and ``'hdmi_input'``
 
         """
-        screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps, hdmi_input = await self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
+        (
+            screen_on,
+            awake,
+            wake_lock_size,
+            current_app,
+            media_session_state,
+            running_apps,
+            hdmi_input,
+        ) = await self.get_properties(get_running_apps=get_running_apps, lazy=lazy)
 
-        return {'screen_on': screen_on,
-                'awake': awake,
-                'wake_lock_size': wake_lock_size,
-                'current_app': current_app,
-                'media_session_state': media_session_state,
-                'running_apps': running_apps,
-                'hdmi_input': hdmi_input}
+        return {
+            "screen_on": screen_on,
+            "awake": awake,
+            "wake_lock_size": wake_lock_size,
+            "current_app": current_app,
+            "media_session_state": media_session_state,
+            "running_apps": running_apps,
+            "hdmi_input": hdmi_input,
+        }
 
     async def running_apps(self):
         """Return a list of running user applications.
@@ -174,7 +203,10 @@ class FireTVAsync(BaseTVAsync, BaseFireTV):
     # ======================================================================= #
     async def turn_on(self):
         """Send ``POWER`` and ``HOME`` actions if the device is off."""
-        await self._adb.shell(constants.CMD_SCREEN_ON + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME))
+        await self._adb.shell(
+            constants.CMD_SCREEN_ON
+            + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME)
+        )
 
     async def turn_off(self):
         """Send ``SLEEP`` action if the device is not off."""
