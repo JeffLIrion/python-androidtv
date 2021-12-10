@@ -537,7 +537,9 @@ APP_APPLE_TV_PLUS_FIRETV = "com.apple.atve.amazon.appletv"
 APP_APPLE_TV_PLUS_SONY = "com.apple.atve.sony.appletv"
 APP_ATV_LAUNCHER = "com.google.android.tvlauncher"
 APP_BELL_FIBE = "com.quickplay.android.bellmediaplayer"
+APP_CBC_GEM = "ca.cbc.android.cbctv"
 APP_COMEDY_CENTRAL = "com.vmn.android.comedycentral"
+APP_CRAVE = "ca.bellmedia.cravetv"
 APP_DAILYMOTION = "com.dailymotion.dailymotion"
 APP_DEEZER = "deezer.android.tv"
 APP_DISNEY_PLUS = "com.disney.disneyplus"
@@ -553,6 +555,7 @@ APP_FIRETV_PACKAGE_SETTINGS = "com.amazon.tv.settings"
 APP_FIRETV_STORE = "com.amazon.venezia"
 APP_FOOD_NETWORK_GO = "tv.accedo.foodnetwork"
 APP_FRANCE_TV = "fr.francetv.pluzz"
+APP_GLOBAL_TV = "com.shawmedia.smglobal"
 APP_GOOGLE_CAST = "com.google.android.apps.mediashell"
 APP_GOOGLE_TV_LAUNCHER = "com.google.android.apps.tv.launcherx"
 APP_HAYSTACK_NEWS = "com.haystack.android"
@@ -636,7 +639,9 @@ APPS = {
     APP_APPLE_TV_PLUS_SONY: "Apple TV+ (Sony)",
     APP_ATV_LAUNCHER: "Android TV Launcher",
     APP_BELL_FIBE: "Bell Fibe",
+    APP_CBC_GEM: "CBC Gem",
     APP_COMEDY_CENTRAL: "Comedy Central",
+    APP_CRAVE: "Crave",
     APP_DAILYMOTION: "Dailymotion",
     APP_DEEZER: "Deezer",
     APP_DISNEY_PLUS: "Disney+",
@@ -650,6 +655,7 @@ APPS = {
     APP_FIRETV_STORE: "FireTV Store",
     APP_FOOD_NETWORK_GO: "Food Network GO",
     APP_FRANCE_TV: "France TV",
+    APP_GLOBAL_TV: "Global TV",
     APP_GOOGLE_CAST: "Google Cast",
     APP_GOOGLE_TV_LAUNCHER: "Google TV Launcher",
     APP_HAYSTACK_NEWS: "Haystack News",
