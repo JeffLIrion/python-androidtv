@@ -171,6 +171,12 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
                 else:
                     state = constants.STATE_IDLE
 
+            elif current_app == constants.APP_NLZIET:
+                if wake_lock_size == 1:
+                    state = constants.STATE_PAUSED
+                elif wake_lock_size == 2:
+                    state = constants.STATE_PLAYING
+                    
             # Plex
             elif current_app == constants.APP_PLEX:
                 if media_session_state == 3:
