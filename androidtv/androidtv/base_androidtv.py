@@ -171,6 +171,7 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
                 else:
                     state = constants.STATE_IDLE
 
+            # NLZIET
             elif current_app == constants.APP_NLZIET:
                 if wake_lock_size == 1:
                     state = constants.STATE_PAUSED
