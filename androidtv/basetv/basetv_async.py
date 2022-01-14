@@ -334,6 +334,23 @@ class BaseTVAsync(BaseTV):
         """
         return await self._adb.shell(constants.CMD_SCREEN_ON + constants.CMD_SUCCESS1_FAILURE0) == "1"
 
+    async def screen_on_awake_wake_lock_size(self):
+        """Check if the screen is on and the device is awake, and get the wake lock size.
+
+        Returns
+        -------
+        bool
+            Whether or not the device is on
+        bool
+            Whether or not the device is awake (screensaver is not running)
+        int, None
+            The size of the current wake lock, or ``None`` if it could not be determined
+
+        """
+        output = await self._adb.shell(constants.CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE)
+
+        return self._screen_on_awake_wake_lock_size(output)
+
     async def volume(self):
         """Get the absolute volume level.
 

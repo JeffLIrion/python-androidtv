@@ -562,6 +562,23 @@ class TestBaseTVSyncPython(unittest.TestCase):
         with patchers.patch_shell("1")[self.PATCH_KEY]:
             self.assertTrue(self.btv.screen_on())
 
+    def test_screen_on_awake_wake_lock_size(self):
+        """Check that the ``screen_on_awake_wake_lock_size`` property works correctly."""
+        with patchers.patch_shell(None)[self.PATCH_KEY]:
+            self.assertTupleEqual(self.btv.screen_on_awake_wake_lock_size(), (False, False, None))
+
+        with patchers.patch_shell("")[self.PATCH_KEY]:
+            self.assertTupleEqual(self.btv.screen_on_awake_wake_lock_size(), (False, False, None))
+
+        with patchers.patch_shell("1")[self.PATCH_KEY]:
+            self.assertTupleEqual(self.btv.screen_on_awake_wake_lock_size(), (True, False, None))
+
+        with patchers.patch_shell("11")[self.PATCH_KEY]:
+            self.assertTupleEqual(self.btv.screen_on_awake_wake_lock_size(), (True, True, None))
+
+        with patchers.patch_shell("11Wake Locks: size=2")[self.PATCH_KEY]:
+            self.assertTupleEqual(self.btv.screen_on_awake_wake_lock_size(), (True, True, 2))
+
     def test_state_detection_rules_validator(self):
         """Check that the ``state_detection_rules_validator`` function works correctly."""
         with patchers.patch_connect(True)["python"], patchers.patch_shell("")["python"]:

@@ -532,6 +532,36 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         return None
 
+    @staticmethod
+    def _screen_on_awake_wake_lock_size(output):
+        """Check if the screen is on and the device is awake, and get the wake lock size.
+
+        Parameters
+        ----------
+        output : str, None
+            The output from :py:const:`androidtv.constants.CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE`
+
+        Returns
+        -------
+        bool
+            Whether or not the device is on
+        bool
+            Whether or not the device is awake (screensaver is not running)
+        int, None
+            The size of the current wake lock, or ``None`` if it could not be determined
+
+        """
+        if not output:
+            return False, False, None
+
+        if output == "1":
+            return True, False, None
+
+        if output == "11":
+            return True, True, None
+
+        return True, True, BaseTV._wake_lock_size(output[2:])
+
     def _volume(self, stream_music, audio_output_device):
         """Get the absolute volume level from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
 
