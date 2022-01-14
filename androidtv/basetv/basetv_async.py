@@ -271,6 +271,21 @@ class BaseTVAsync(BaseTV):
 
         return self._current_app(current_app_response)
 
+    async def current_app_media_session_state(self):
+        """Get the current app and the state from the output of ``dumpsys media_session``.
+
+        Returns
+        -------
+        str, None
+            The current app, or ``None`` if it could not be determined
+        int, None
+            The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
+
+        """
+        media_session_state_response = await self._adb.shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
+
+        return self._current_app_media_session_state(media_session_state_response)
+
     async def get_hdmi_input(self):
         """Get the HDMI input from the output of :py:const:`androidtv.constants.CMD_HDMI_INPUT`.
 
@@ -317,9 +332,7 @@ class BaseTVAsync(BaseTV):
             The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
 
         """
-        media_session_state_response = await self._adb.shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
-
-        _, media_session_state = self._current_app_media_session_state(media_session_state_response)
+        _, media_session_state = await self.current_app_media_session_state()
 
         return media_session_state
 
