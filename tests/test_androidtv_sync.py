@@ -901,6 +901,17 @@ class TestAndroidTVSyncPython(unittest.TestCase):
             (constants.STATE_IDLE, constants.APP_NETFLIX, [constants.APP_NETFLIX], "hmdi_arc", False, 0.5, None),
         )
 
+        # NLZIET
+        self.assertUpdate(
+            [True, True, constants.STATE_IDLE, 1, constants.APP_NLZIET, 2, "hmdi_arc", False, 30, None, None],
+            (constants.STATE_PAUSED, constants.APP_NLZIET, [constants.APP_NLZIET], "hmdi_arc", False, 0.5, None),
+        )
+
+        self.assertUpdate(
+            [True, True, constants.STATE_IDLE, 2, constants.APP_NLZIET, 2, "hmdi_arc", False, 30, None, None],
+            (constants.STATE_PLAYING, constants.APP_NLZIET, [constants.APP_NLZIET], "hmdi_arc", False, 0.5, None),
+        )
+
         # Plex
         self.assertUpdate(
             [True, True, constants.STATE_IDLE, 2, constants.APP_PLEX, 4, "hmdi_arc", False, 30, None, None],
