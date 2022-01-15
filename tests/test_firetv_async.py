@@ -93,7 +93,7 @@ class TestFireTVAsyncPython(unittest.TestCase):
     async def test_update(self):
         """Check that the ``update`` method works correctly."""
         with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            with patch_calls(self.ftv, self.ftv._get_properties) as patched:
+            with patch_calls(self.ftv, self.ftv.get_properties) as patched:
                 await self.ftv.update()
                 assert patched.called
 
