@@ -25,17 +25,6 @@ u0_a2     15121 197   998628 24628 ffffffff 00000000 S com.amazon.device.control
 
 RUNNING_APPS_LIST = ["com.netflix.ninja", "com.amazon.device.controllermanager"]
 
-STATE1 = (constants.STATE_OFF, None, None, None)
-
-STATE2 = (constants.STATE_STANDBY, None, None, None)
-
-STATE3 = (
-    constants.STATE_IDLE,
-    "com.amazon.tv.launcher",
-    ["com.amazon.device.controllermanager", "com.amazon.device.controllermanager:BluetoothReceiver"],
-    None,
-)
-
 STATE_NONE = (None, None, None, None)
 
 STATE_DETECTION_RULES1 = {"com.amazon.tv.launcher": ["off"]}
