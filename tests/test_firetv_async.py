@@ -129,6 +129,14 @@ class TestFireTVAsyncPython(unittest.TestCase):
                 assert get_hdmi_input.called
 
     @awaiter
+    async def test_get_properties_dict(self):
+        """Check that ``get_properties_dict()`` works correctly."""
+        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
+            with patch_calls(self.ftv, self.ftv.get_properties) as get_properties:
+                await self.ftv.get_properties_dict()
+                assert get_properties.called
+
+    @awaiter
     async def test_update(self):
         """Check that the ``update`` method works correctly."""
         with async_patchers.patch_shell(None)[self.PATCH_KEY]:

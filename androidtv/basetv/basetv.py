@@ -543,15 +543,18 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         Returns
         -------
-        bool
-            Whether or not the device is on
-        bool
-            Whether or not the device is awake (screensaver is not running)
+        bool, None
+            Whether or not the device is on, or ``None`` if it could not be determined
+        bool, None
+            Whether or not the device is awake (screensaver is not running), or ``None`` if it could not be determined
         int, None
             The size of the current wake lock, or ``None`` if it could not be determined
 
         """
-        if not output:
+        if output is None:
+            return None, None, None
+
+        if output == "":
             return False, False, None
 
         screen_on = output[0] == "1"
