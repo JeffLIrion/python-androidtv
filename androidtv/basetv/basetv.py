@@ -555,7 +555,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             return False, False, None
 
         screen_on = output[0] == "1"
-        awake = len(output) > 1 and output[1] == "1"
+        awake = None if len(output) < 2 else output[1] == "1"
         wake_lock_size = None if len(output) < 3 else BaseTV._wake_lock_size(output[2:])
 
         return screen_on, awake, wake_lock_size
