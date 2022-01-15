@@ -160,9 +160,9 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
             The HDMI input, or ``None`` if it could not be determined
 
         """
-        """screen_on, awake, wake_lock_size = self.screen_on_awake_wake_lock_size()
+        screen_on, awake, wake_lock_size = self.screen_on_awake_wake_lock_size()
 
-        if lazy and not (screen_on and awake)::
+        if lazy and not (screen_on and awake):
             return screen_on, awake, None, wake_lock_size, None, None, None, None, None, None, None
 
         audio_state = self.audio_state()
@@ -170,28 +170,25 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
         audio_output_device, is_volume_muted, volume, _ = self.stream_music_properties()
 
         if get_running_apps:
-            running_apps= self.running_apps()
+            running_apps = self.running_apps()
         else:
             running_apps = [current_app] if current_app else None
 
         hdmi_input = self.get_hdmi_input()
 
-        return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps, hdmi_input"""
-        # Left off here
-
-        if lazy:
-            if get_running_apps:
-                output = self._adb.shell(self._cmd_get_properties_lazy_running_apps)
-            else:
-                output = self._adb.shell(self._cmd_get_properties_lazy_no_running_apps)
-        else:
-            if get_running_apps:
-                output = self._adb.shell(self._cmd_get_properties_not_lazy_running_apps)
-            else:
-                output = self._adb.shell(self._cmd_get_properties_not_lazy_no_running_apps)
-        _LOGGER.debug("Android TV %s:%d `get_properties` response: %s", self.host, self.port, output)
-
-        return self._get_properties(output, get_running_apps)
+        return (
+            screen_on,
+            awake,
+            audio_state,
+            wake_lock_size,
+            current_app,
+            media_session_state,
+            audio_output_device,
+            is_volume_muted,
+            volume,
+            running_apps,
+            hdmi_input,
+        )
 
     def get_properties_dict(self, get_running_apps=True, lazy=True):
         """Get the properties needed for Home Assistant updates and return them as a dictionary.
