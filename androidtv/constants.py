@@ -95,7 +95,7 @@ CMD_WAKE_LOCK_SIZE = "dumpsys power | grep Locks | grep 'size='"
 
 #: Determine if the device is on, the screen is on, and get the wake lock size
 CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE = (
-    CMD_SCREEN_ON + CMD_SUCCESS1 + " && " + CMD_AWAKE + CMD_SUCCESS1 + " && " + CMD_WAKE_LOCK_SIZE
+    CMD_SCREEN_ON + CMD_SUCCESS1_FAILURE0 + " && " + CMD_AWAKE + CMD_SUCCESS1_FAILURE0 + " && " + CMD_WAKE_LOCK_SIZE
 )
 
 #: Get the properties for an Android TV device (``lazy=True, get_running_apps=True``); see :py:meth:`androidtv.androidtv.androidtv_sync.AndroidTVSync.get_properties` and :py:meth:`androidtv.androidtv.androidtv_async.AndroidTVAsync.get_properties`

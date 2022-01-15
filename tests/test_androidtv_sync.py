@@ -473,121 +473,56 @@ class TestAndroidTVSyncPython(unittest.TestCase):
             running_apps = self.atv.running_apps()
             self.assertListEqual(running_apps, RUNNING_APPS_LIST)
 
-    def test_audio_output_device(self):
-        """Check that the ``device`` property works correctly."""
+    def test_stream_music_properties(self):
+        """Check that the ``stream_music_properties`` method works correctly."""
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            audio_output_device = self.atv.audio_output_device()
-            self.assertIsNone(audio_output_device)
+            self.assertTupleEqual(self.atv.stream_music_properties(), (None, None, None, None))
+            self.assertIsNone(self.atv.audio_output_device())
+            self.assertIsNone(self.atv.is_volume_muted())
+            self.assertIsNone(self.atv.volume())
+            self.assertIsNone(self.atv.volume_level())
 
         with patchers.patch_shell("")[self.PATCH_KEY]:
-            audio_output_device = self.atv.audio_output_device()
-            self.assertIsNone(audio_output_device)
+            self.assertTupleEqual(self.atv.stream_music_properties(), (None, None, None, None))
+            self.assertIsNone(self.atv.audio_output_device())
+            self.assertIsNone(self.atv.is_volume_muted())
+            self.assertIsNone(self.atv.volume())
+            self.assertIsNone(self.atv.volume_level())
 
         with patchers.patch_shell(" ")[self.PATCH_KEY]:
-            audio_output_device = self.atv.audio_output_device()
-            self.assertIsNone(audio_output_device)
+            self.assertTupleEqual(self.atv.stream_music_properties(), (None, None, None, None))
+            self.assertIsNone(self.atv.audio_output_device())
+            self.assertIsNone(self.atv.is_volume_muted())
+            self.assertIsNone(self.atv.volume())
+            self.assertIsNone(self.atv.volume_level())
 
         with patchers.patch_shell(STREAM_MUSIC_EMPTY)[self.PATCH_KEY]:
-            audio_output_device = self.atv.audio_output_device()
-            self.assertIsNone(audio_output_device)
-
-        with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
-            audio_output_device = self.atv.audio_output_device()
-            self.assertEqual("speaker", audio_output_device)
-
-        with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
-            audio_output_device = self.atv.audio_output_device()
-            self.assertEqual("hmdi_arc", audio_output_device)
-
-    def test_volume(self):
-        """Check that the ``volume`` property works correctly."""
-        with patchers.patch_shell(None)[self.PATCH_KEY]:
-            volume = self.atv.volume()
-            self.assertIsNone(volume)
-
-        with patchers.patch_shell("")[self.PATCH_KEY]:
-            volume = self.atv.volume()
-            self.assertIsNone(volume)
-
-        with patchers.patch_shell(" ")[self.PATCH_KEY]:
-            volume = self.atv.volume()
-            self.assertIsNone(volume)
-
-        with patchers.patch_shell(STREAM_MUSIC_EMPTY)[self.PATCH_KEY]:
-            volume = self.atv.volume()
-            self.assertIsNone(volume)
+            self.assertTupleEqual(self.atv.stream_music_properties(), (None, None, None, None))
+            self.assertIsNone(self.atv.audio_output_device())
+            self.assertIsNone(self.atv.is_volume_muted())
+            self.assertIsNone(self.atv.volume())
+            self.assertIsNone(self.atv.volume_level())
 
         with patchers.patch_shell(STREAM_MUSIC_NO_VOLUME)[self.PATCH_KEY]:
-            volume = self.atv.volume()
-            self.assertIsNone(volume)
+            self.assertTupleEqual(self.atv.stream_music_properties(), ("speaker", False, None, None))
+            self.assertEqual("speaker", self.atv.audio_output_device())
+            self.assertFalse(self.atv.is_volume_muted())
+            self.assertIsNone(self.atv.volume())
+            self.assertIsNone(self.atv.volume_level())
 
-        self.atv.max_volume = None
         with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
-            volume = self.atv.volume()
-            self.assertEqual(volume, 20)
+            self.assertTupleEqual(self.atv.stream_music_properties(), ("speaker", False, 20, 20 / 60.0))
+            self.assertEqual("speaker", self.atv.audio_output_device())
+            self.assertFalse(self.atv.is_volume_muted())
+            self.assertEqual(self.atv.volume(), 20)
             self.assertEqual(self.atv.max_volume, 60.0)
 
-        self.atv.max_volume = None
         with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
-            volume = self.atv.volume()
-            self.assertEqual(volume, 22)
+            self.assertTupleEqual(self.atv.stream_music_properties(), ("hmdi_arc", False, 22, 22 / 60.0))
+            self.assertEqual("hmdi_arc", self.atv.audio_output_device())
+            self.assertFalse(self.atv.is_volume_muted())
+            self.assertEqual(self.atv.volume(), 22)
             self.assertEqual(self.atv.max_volume, 60.0)
-
-    def test_volume_level(self):
-        """Check that the ``volume_level`` property works correctly."""
-        with patchers.patch_shell(None)[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
-            self.assertIsNone(volume_level)
-
-        with patchers.patch_shell("")[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
-            self.assertIsNone(volume_level)
-
-        with patchers.patch_shell(" ")[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
-            self.assertIsNone(volume_level)
-
-        with patchers.patch_shell(STREAM_MUSIC_EMPTY)[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
-            self.assertIsNone(volume_level)
-
-        with patchers.patch_shell(STREAM_MUSIC_NO_VOLUME)[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
-            self.assertIsNone(volume_level)
-
-        self.atv.max_volume = None
-        with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
-            self.assertEqual(volume_level, 20.0 / 60)
-            self.assertEqual(self.atv.max_volume, 60.0)
-
-        self.atv.max_volume = None
-        with patchers.patch_shell(STREAM_MUSIC_ON)[self.PATCH_KEY]:
-            volume_level = self.atv.volume_level()
-            self.assertEqual(volume_level, 22.0 / 60)
-            self.assertEqual(self.atv.max_volume, 60.0)
-
-    def test_is_volume_muted(self):
-        """Check that the ``is_volume_muted`` property works correctly."""
-        with patchers.patch_shell(None)[self.PATCH_KEY]:
-            is_volume_muted = self.atv.is_volume_muted()
-            self.assertIsNone(is_volume_muted)
-
-        with patchers.patch_shell("")[self.PATCH_KEY]:
-            is_volume_muted = self.atv.is_volume_muted()
-            self.assertIsNone(is_volume_muted)
-
-        with patchers.patch_shell(" ")[self.PATCH_KEY]:
-            is_volume_muted = self.atv.is_volume_muted()
-            self.assertIsNone(is_volume_muted)
-
-        with patchers.patch_shell(STREAM_MUSIC_EMPTY)[self.PATCH_KEY]:
-            is_volume_muted = self.atv.is_volume_muted()
-            self.assertIsNone(is_volume_muted)
-
-        with patchers.patch_shell(STREAM_MUSIC_OFF)[self.PATCH_KEY]:
-            is_volume_muted = self.atv.is_volume_muted()
-            self.assertFalse(is_volume_muted)
 
     def test_set_volume_level(self):
         """Check that the ``set_volume_level`` method works correctly."""

@@ -554,13 +554,11 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         if not output:
             return False, False, None
 
-        if output == "1":
-            return True, False, None
+        screen_on = output[0] == "1"
+        awake = None if len(output) < 2 else output[1] == "1"
+        wake_lock_size = None if len(output) < 3 else BaseTV._wake_lock_size(output[2:])
 
-        if output == "11":
-            return True, True, None
-
-        return True, True, BaseTV._wake_lock_size(output[2:])
+        return screen_on, awake, wake_lock_size
 
     def _volume(self, stream_music, audio_output_device):
         """Get the absolute volume level from the ``STREAM_MUSIC`` block from ``adb shell dumpsys audio``.
@@ -585,8 +583,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             max_volume_matches = re.findall(constants.MAX_VOLUME_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
             if max_volume_matches:
                 self.max_volume = float(max_volume_matches[0])
-            else:
-                self.max_volume = 15.0
 
         if not audio_output_device:
             return None
