@@ -190,9 +190,6 @@ class TestFireTVSyncPython(unittest.TestCase):
         ]:
             self.ftv = FireTVSync("HOST", 5555)
             self.ftv.adb_connect()
-            self.assertEqual(
-                self.ftv._cmd_get_properties_lazy_no_running_apps, constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS
-            )
 
     def test_turn_on_off(self):
         """Test that the ``FireTVSync.turn_on`` and ``FireTVSync.turn_off`` methods work correctly."""

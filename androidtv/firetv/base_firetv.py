@@ -39,10 +39,6 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
 
     def _fill_in_commands(self):
         """Fill in commands that are specific to Fire TV devices."""
-        self._cmd_get_properties_lazy_running_apps = constants.CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS
-        self._cmd_get_properties_lazy_no_running_apps = constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS
-        self._cmd_get_properties_not_lazy_running_apps = constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS
-        self._cmd_get_properties_not_lazy_no_running_apps = constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS
         self._cmd_current_app = constants.CMD_CURRENT_APP
         self._cmd_launch_app = constants.CMD_LAUNCH_APP
 
@@ -223,86 +219,3 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
                     state = constants.STATE_PAUSED
 
         return state, current_app, running_apps, hdmi_input
-
-    # ======================================================================= #
-    #                                                                         #
-    #                               Properties                                #
-    #                                                                         #
-    # ======================================================================= #
-    def _get_properties(self, output, get_running_apps=True):
-        """Get the properties needed for Home Assistant updates.
-
-        This will send one of the following ADB commands:
-
-        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS`
-        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS`
-        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS`
-        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS`
-
-        Parameters
-        ----------
-        output : str, None
-            The output of the ADB command used to retrieve the properties
-        get_running_apps : bool
-            Whether or not to get the ``running_apps`` property
-
-        Returns
-        -------
-        screen_on : bool, None
-            Whether or not the device is on, or ``None`` if it was not determined
-        awake : bool, None
-            Whether or not the device is awake (screensaver is not running), or ``None`` if it was not determined
-        wake_lock_size : int, None
-            The size of the current wake lock, or ``None`` if it was not determined
-        current_app : str, None
-            The current app property, or ``None`` if it was not determined
-        media_session_state : int, None
-            The state from the output of ``dumpsys media_session``, or ``None`` if it was not determined
-        running_apps : list, None
-            A list of the running apps, or ``None`` if it was not determined
-        hdmi_input : str, None
-            The HDMI input, or ``None`` if it could not be determined
-
-        """
-        # ADB command was unsuccessful
-        if output is None:
-            return None, None, None, None, None, None, None
-
-        # `screen_on` property
-        if not output:
-            return False, False, -1, None, None, None, None
-        screen_on = output[0] == "1"
-
-        # `awake` property
-        if len(output) < 2:
-            return screen_on, False, -1, None, None, None, None
-        awake = output[1] == "1"
-
-        lines = output.strip().splitlines()
-
-        # `wake_lock_size` property
-        if len(lines[0]) < 3:
-            return screen_on, awake, -1, None, None, None, None
-        wake_lock_size = self._wake_lock_size(lines[0])
-
-        # `current_app` property
-        if len(lines) < 2:
-            return screen_on, awake, wake_lock_size, None, None, None, None
-        current_app = self._current_app(lines[1])
-
-        # `media_session_state` property
-        if len(lines) < 3:
-            return screen_on, awake, wake_lock_size, current_app, None, None, None
-        media_session_state = self._media_session_state(lines[2], current_app)
-
-        # HDMI input property
-        if len(lines) < 4:
-            return screen_on, awake, wake_lock_size, current_app, media_session_state, None, None
-        hdmi_input = self._get_hdmi_input(lines[3])
-
-        # `running_apps` property
-        if not get_running_apps or len(lines) < 5:
-            return screen_on, awake, wake_lock_size, current_app, media_session_state, None, hdmi_input
-        running_apps = self._running_apps(lines[4:])
-
-        return screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps, hdmi_input

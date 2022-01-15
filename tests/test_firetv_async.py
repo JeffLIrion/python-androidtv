@@ -24,9 +24,6 @@ class TestFireTVAsyncPython(unittest.TestCase):
         ], async_patchers.patch_shell("")[self.PATCH_KEY]:
             self.ftv = FireTVAsync("HOST", 5555)
             await self.ftv.adb_connect()
-            self.assertEqual(
-                self.ftv._cmd_get_properties_lazy_no_running_apps, constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS
-            )
 
     @awaiter
     async def test_turn_on_off(self):
