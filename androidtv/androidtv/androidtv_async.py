@@ -158,6 +158,23 @@ class AndroidTVAsync(BaseTVAsync, BaseAndroidTV):
             The HDMI input, or ``None`` if it could not be determined
 
         """
+        """screen_on, awake, wake_lock_size = await self.screen_on_awake_wake_lock_size()
+
+        if lazy and not (screen_on and awake)::
+            return screen_on, awake, None, wake_lock_size, None, None, None, None, None, None, None
+
+        audio_state = await self.audio_state()
+        current_app, media_session_state = await self.current_app_media_session_state()
+        audio_output_device, is_volume_muted, volume, _ = await self.stream_music_properties()
+
+        if get_running_apps:
+            running_apps= await self.running_apps()
+        else:
+            running_apps = [current_app] if current_app else None
+
+        hdmi_input = await self.get_hdmi_input()
+
+        return screen_on, awake, audio_state, wake_lock_size, current_app, media_session_state, audio_output_device, is_volume_muted, volume, running_apps, hdmi_input"""
         if lazy:
             if get_running_apps:
                 output = await self._adb.shell(self._cmd_get_properties_lazy_running_apps)
