@@ -571,7 +571,7 @@ class TestBaseTVSyncPython(unittest.TestCase):
             self.assertTupleEqual(self.btv.screen_on_awake_wake_lock_size(), (False, False, None))
 
         with patchers.patch_shell("1")[self.PATCH_KEY]:
-            self.assertTupleEqual(self.btv.screen_on_awake_wake_lock_size(), (True, False, None))
+            self.assertTupleEqual(self.btv.screen_on_awake_wake_lock_size(), (True, None, None))
 
         with patchers.patch_shell("11")[self.PATCH_KEY]:
             self.assertTupleEqual(self.btv.screen_on_awake_wake_lock_size(), (True, True, None))
