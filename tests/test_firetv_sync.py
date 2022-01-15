@@ -307,47 +307,8 @@ class TestFireTVSyncPython(unittest.TestCase):
         """Check that the ``update`` method works correctly."""
         with patchers.patch_connect(False)[self.PATCH_KEY]:
             self.ftv.adb_connect()
-        # state = self.ftv.update()
+
         self.assertTupleEqual(self.ftv.update(), STATE_NONE)
-        return
-        with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.assertTrue(self.ftv.adb_connect())
-
-        with patchers.patch_shell(None)[self.PATCH_KEY]:
-            state = self.ftv.update()
-            self.assertTupleEqual(state, STATE_NONE)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            state = self.ftv.update()
-            self.assertTupleEqual(state, STATE1)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            state = self.ftv.update()
-            self.assertTupleEqual(state, STATE2)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
-            state = self.ftv.update()
-            self.assertTupleEqual(state, STATE3)
-
-            self.ftv._state_detection_rules = STATE_DETECTION_RULES1
-            state = self.ftv.update()
-            self.assertEqual(state[0], constants.STATE_OFF)
-
-            self.ftv._state_detection_rules = STATE_DETECTION_RULES2
-            state = self.ftv.update()
-            self.assertEqual(state[0], constants.STATE_OFF)
-
-            self.ftv._state_detection_rules = STATE_DETECTION_RULES3
-            state = self.ftv.update()
-            self.assertEqual(state[0], constants.STATE_STANDBY)
-
-            self.ftv._state_detection_rules = STATE_DETECTION_RULES4
-            state = self.ftv.update()
-            self.assertEqual(state[0], constants.STATE_PAUSED)
-
-            self.ftv._state_detection_rules = STATE_DETECTION_RULES5
-            state = self.ftv.update()
-            self.assertEqual(state[0], constants.STATE_IDLE)
 
     def assertUpdate(self, get_properties, update):
         """Check that the results of the `update` method are as expected."""

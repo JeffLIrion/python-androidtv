@@ -129,7 +129,6 @@ class FireTVAsync(BaseTVAsync, BaseFireTV):
         if lazy and not (screen_on and awake):
             return screen_on, awake, wake_lock_size, None, None, None, None
 
-        # Left off here
         current_app, media_session_state = await self.current_app_media_session_state()
 
         if get_running_apps:
