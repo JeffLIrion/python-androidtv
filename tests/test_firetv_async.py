@@ -83,11 +83,50 @@ class TestFireTVAsyncPython(unittest.TestCase):
     async def test_get_properties(self):
         """Check that ``get_properties()`` works correctly."""
         with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            for get_running_apps in [True, False]:
-                for lazy in [True, False]:
-                    with patch_calls(self.ftv, self.ftv._get_properties) as patched:
-                        await self.ftv.get_properties_dict(get_running_apps, lazy)
-                        assert patched.called
+            with patch_calls(
+                self.ftv, self.ftv.screen_on_awake_wake_lock_size
+            ) as screen_on_awake_wake_lock_size, patch_calls(
+                self.ftv, self.ftv.current_app_media_session_state
+            ) as current_app_media_session_state, patch_calls(
+                self.ftv, self.ftv.running_apps
+            ) as running_apps, patch_calls(
+                self.ftv, self.ftv.get_hdmi_input
+            ) as get_hdmi_input:
+                await self.ftv.get_properties(lazy=True)
+                assert screen_on_awake_wake_lock_size.called
+                assert not current_app_media_session_state.called
+                assert not running_apps.called
+                assert not get_hdmi_input.called
+
+            with patch_calls(
+                self.ftv, self.ftv.screen_on_awake_wake_lock_size
+            ) as screen_on_awake_wake_lock_size, patch_calls(
+                self.ftv, self.ftv.current_app_media_session_state
+            ) as current_app_media_session_state, patch_calls(
+                self.ftv, self.ftv.running_apps
+            ) as running_apps, patch_calls(
+                self.ftv, self.ftv.get_hdmi_input
+            ) as get_hdmi_input:
+                await self.ftv.get_properties(lazy=False, get_running_apps=True)
+                assert screen_on_awake_wake_lock_size.called
+                assert current_app_media_session_state.called
+                assert running_apps.called
+                assert get_hdmi_input.called
+
+            with patch_calls(
+                self.ftv, self.ftv.screen_on_awake_wake_lock_size
+            ) as screen_on_awake_wake_lock_size, patch_calls(
+                self.ftv, self.ftv.current_app_media_session_state
+            ) as current_app_media_session_state, patch_calls(
+                self.ftv, self.ftv.running_apps
+            ) as running_apps, patch_calls(
+                self.ftv, self.ftv.get_hdmi_input
+            ) as get_hdmi_input:
+                await self.ftv.get_properties(lazy=False, get_running_apps=False)
+                assert screen_on_awake_wake_lock_size.called
+                assert current_app_media_session_state.called
+                assert not running_apps.called
+                assert get_hdmi_input.called
 
     @awaiter
     async def test_update(self):
