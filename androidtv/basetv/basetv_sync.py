@@ -282,6 +282,7 @@ class BaseTVSync(BaseTV):
             The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
 
         """
+        # This needs to use different commands depending on the device
         media_session_state_response = self._adb.shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
 
         return self._current_app_media_session_state(media_session_state_response)
@@ -363,6 +364,29 @@ class BaseTVSync(BaseTV):
         output = self._adb.shell(constants.CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE)
 
         return self._screen_on_awake_wake_lock_size(output)
+
+    def stream_music_properties(self):
+        """Get various properties from the "STREAM_MUSIC" block from ``dumpsys audio``..
+
+        Returns
+        -------
+        audio_output_device : str, None
+            The current audio playback device, or ``None`` if it could not be determined
+        is_volume_muted : bool, None
+            Whether or not the volume is muted, or ``None`` if it could not be determined
+        volume : int, None
+            The absolute volume level, or ``None`` if it could not be determined
+        volume_level : float, None
+            The volume level (between 0 and 1), or ``None`` if it could not be determined
+
+        """
+        stream_music = self._get_stream_music()
+        audio_output_device = self._audio_output_device(stream_music)
+        volume = self._volume(stream_music, audio_output_device)
+        volume_level = self._volume_level(volume)
+        is_volume_muted = self._is_volume_muted(stream_music)
+
+        return audio_output_device, is_volume_muted, volume, volume_level
 
     def volume(self):
         """Get the absolute volume level.

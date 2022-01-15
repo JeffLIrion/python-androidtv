@@ -106,36 +106,35 @@ class TestAndroidTVAsyncPython(unittest.TestCase):
                 assert patched.called
 
     @awaiter
-    async def test_audio_output_device(self):
-        """Check that the ``device`` property works correctly."""
+    async def test_stream_music_properties(self):
+        """Check that the ``stream_music_properties`` method works correctly."""
         with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            with patch_calls(self.atv, self.atv._audio_output_device) as patched:
+            with patch_calls(self.atv, self.atv._audio_output_device) as audio_output_device, patch_calls(
+                self.atv, self.atv._is_volume_muted
+            ) as is_volume_muted, patch_calls(self.atv, self.atv._volume) as volume, patch_calls(
+                self.atv, self.atv._volume_level
+            ) as volume_level:
+                await self.atv.stream_music_properties()
+                assert audio_output_device.called
+                assert is_volume_muted.called
+                assert volume.called
+                assert volume_level.called
+
+            with patch_calls(self.atv, self.atv._audio_output_device) as audio_output_device:
                 await self.atv.audio_output_device()
-                assert patched.called
+                assert audio_output_device.called
 
-    @awaiter
-    async def test_volume(self):
-        """Check that the ``volume`` property works correctly."""
-        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            with patch_calls(self.atv, self.atv._volume) as patched:
-                await self.atv.volume()
-                assert patched.called
-
-    @awaiter
-    async def test_volume_level(self):
-        """Check that the ``volume_level`` property works correctly."""
-        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            with patch_calls(self.atv, self.atv._volume_level) as patched:
-                await self.atv.volume_level()
-                assert patched.called
-
-    @awaiter
-    async def test_is_volume_muted(self):
-        """Check that the ``is_volume_muted`` property works correctly."""
-        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            with patch_calls(self.atv, self.atv._is_volume_muted) as patched:
+            with patch_calls(self.atv, self.atv._is_volume_muted) as is_volume_muted:
                 await self.atv.is_volume_muted()
-                assert patched.called
+                assert is_volume_muted.called
+
+            with patch_calls(self.atv, self.atv._volume) as volume:
+                await self.atv.volume()
+                assert volume.called
+
+            with patch_calls(self.atv, self.atv._volume_level) as volume_level:
+                await self.atv.volume_level()
+                assert volume_level.called
 
     @awaiter
     async def test_set_volume_level(self):
