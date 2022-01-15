@@ -25,45 +25,10 @@ u0_a2     15121 197   998628 24628 ffffffff 00000000 S com.amazon.device.control
 
 RUNNING_APPS_LIST = ["com.netflix.ninja", "com.amazon.device.controllermanager"]
 
-GET_PROPERTIES_OUTPUT1 = ""
-GET_PROPERTIES_DICT1 = {
-    "screen_on": False,
-    "awake": False,
-    "wake_lock_size": -1,
-    "current_app": None,
-    "media_session_state": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
 STATE1 = (constants.STATE_OFF, None, None, None)
 
-GET_PROPERTIES_OUTPUT2 = "1"
-GET_PROPERTIES_DICT2 = {
-    "screen_on": True,
-    "awake": False,
-    "wake_lock_size": -1,
-    "current_app": None,
-    "media_session_state": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
 STATE2 = (constants.STATE_STANDBY, None, None, None)
 
-GET_PROPERTIES_OUTPUT3 = """11Wake Locks: size=2
-com.amazon.tv.launcher
-
-
-u0_a2     17243 197   998628 24932 ffffffff 00000000 S com.amazon.device.controllermanager
-u0_a2     17374 197   995368 20764 ffffffff 00000000 S com.amazon.device.controllermanager:BluetoothReceiver"""
-GET_PROPERTIES_DICT3 = {
-    "screen_on": True,
-    "awake": True,
-    "wake_lock_size": 2,
-    "current_app": "com.amazon.tv.launcher",
-    "media_session_state": None,
-    "running_apps": ["com.amazon.device.controllermanager", "com.amazon.device.controllermanager:BluetoothReceiver"],
-    "hdmi_input": None,
-}
 STATE3 = (
     constants.STATE_IDLE,
     "com.amazon.tv.launcher",
@@ -71,106 +36,6 @@ STATE3 = (
     None,
 )
 
-GET_PROPERTIES_OUTPUT3A = GET_PROPERTIES_OUTPUT3[0]
-GET_PROPERTIES_OUTPUT3B = GET_PROPERTIES_OUTPUT3[:2]
-GET_PROPERTIES_OUTPUT3C = GET_PROPERTIES_OUTPUT3.splitlines()[0]
-GET_PROPERTIES_OUTPUT3D = "\n".join(GET_PROPERTIES_OUTPUT3.splitlines()[:2])
-GET_PROPERTIES_OUTPUT3E = "\n".join(GET_PROPERTIES_OUTPUT3.splitlines()[:3])
-GET_PROPERTIES_OUTPUT3F = "\n".join(GET_PROPERTIES_OUTPUT3.splitlines()[:4]) + "HW2"
-
-GET_PROPERTIES_DICT3A = {
-    "screen_on": True,
-    "awake": False,
-    "wake_lock_size": -1,
-    "current_app": None,
-    "media_session_state": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-GET_PROPERTIES_DICT3B = {
-    "screen_on": True,
-    "awake": True,
-    "wake_lock_size": -1,
-    "current_app": None,
-    "media_session_state": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-GET_PROPERTIES_DICT3C = {
-    "screen_on": True,
-    "awake": True,
-    "wake_lock_size": 2,
-    "current_app": None,
-    "media_session_state": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-GET_PROPERTIES_DICT3D = {
-    "screen_on": True,
-    "awake": True,
-    "wake_lock_size": 2,
-    "current_app": "com.amazon.tv.launcher",
-    "media_session_state": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-GET_PROPERTIES_DICT3E = {
-    "screen_on": True,
-    "awake": True,
-    "wake_lock_size": 2,
-    "current_app": "com.amazon.tv.launcher",
-    "media_session_state": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-GET_PROPERTIES_DICT3F = {
-    "screen_on": True,
-    "awake": True,
-    "wake_lock_size": 2,
-    "current_app": "com.amazon.tv.launcher",
-    "media_session_state": None,
-    "running_apps": None,
-    "hdmi_input": "HW2",
-}
-
-GET_PROPERTIES_OUTPUT4 = """11Wake Locks: size=2
-com.amazon.tv.launcher
-state=PlaybackState {state=2, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}"""
-GET_PROPERTIES_DICT4 = {
-    "screen_on": True,
-    "awake": True,
-    "wake_lock_size": 2,
-    "current_app": "com.amazon.tv.launcher",
-    "media_session_state": 2,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-
-GET_PROPERTIES_OUTPUT5 = """11Wake Locks: size=2
-com.amazon.tv.launcher
-state=PlaybackState {state=2, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}
-
-u0_a2     17243 197   998628 24932 ffffffff 00000000 S com.amazon.device.controllermanager
-u0_a2     17374 197   995368 20764 ffffffff 00000000 S com.amazon.device.controllermanager:BluetoothReceiver"""
-GET_PROPERTIES_DICT5 = {
-    "screen_on": True,
-    "awake": True,
-    "wake_lock_size": 2,
-    "current_app": "com.amazon.tv.launcher",
-    "media_session_state": 2,
-    "running_apps": ["com.amazon.device.controllermanager", "com.amazon.device.controllermanager:BluetoothReceiver"],
-    "hdmi_input": None,
-}
-
-GET_PROPERTIES_DICT_NONE = {
-    "screen_on": None,
-    "awake": None,
-    "wake_lock_size": None,
-    "media_session_state": None,
-    "current_app": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
 STATE_NONE = (None, None, None, None)
 
 STATE_DETECTION_RULES1 = {"com.amazon.tv.launcher": ["off"]}
