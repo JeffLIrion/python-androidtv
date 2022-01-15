@@ -100,13 +100,6 @@ class FireTVSync(BaseTVSync, BaseFireTV):
     def get_properties(self, get_running_apps=True, lazy=False):
         """Get the properties needed for Home Assistant updates.
 
-        This will send one of the following ADB commands:
-
-        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_LAZY_RUNNING_APPS`
-        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_LAZY_NO_RUNNING_APPS`
-        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_RUNNING_APPS`
-        * :py:const:`androidtv.constants.CMD_FIRETV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS`
-
         Parameters
         ----------
         get_running_apps : bool
@@ -132,19 +125,20 @@ class FireTVSync(BaseTVSync, BaseFireTV):
             The HDMI input, or ``None`` if it could not be determined
 
         """
-        if lazy:
-            if get_running_apps:
-                output = self._adb.shell(self._cmd_get_properties_lazy_running_apps)
-            else:
-                output = self._adb.shell(self._cmd_get_properties_lazy_no_running_apps)
-        else:
-            if get_running_apps:
-                output = self._adb.shell(self._cmd_get_properties_not_lazy_running_apps)
-            else:
-                output = self._adb.shell(self._cmd_get_properties_not_lazy_no_running_apps)
-        _LOGGER.debug("Fire TV %s:%d `get_properties` response: %s", self.host, self.port, output)
+        screen_on, awake, wake_lock_size = self.screen_on_awake_wake_lock_size()
+        if lazy and not (screen_on and awake):
+            return screen_on, awake, wake_lock_size, None, None, None, None
 
-        return self._get_properties(output, get_running_apps)
+        current_app, media_session_state = self.current_app_media_session_state()
+
+        if get_running_apps:
+            running_apps = self.running_apps()
+        else:
+            running_apps = None
+
+        hdmi_input = self.get_hdmi_input()
+
+        return screen_on, awake, wake_lock_size, current_app, media_session_state, running_apps, hdmi_input
 
     def get_properties_dict(self, get_running_apps=True, lazy=True):
         """Get the properties needed for Home Assistant updates and return them as a dictionary.

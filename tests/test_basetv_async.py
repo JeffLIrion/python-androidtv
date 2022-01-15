@@ -408,7 +408,7 @@ class TestBaseTVAsyncPython(unittest.TestCase):
     async def test_screen_on_awake_wake_lock_size(self):
         """Check that the ``screen_on_awake_wake_lock_size`` property works correctly."""
         with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            self.assertTupleEqual(await self.btv.screen_on_awake_wake_lock_size(), (False, False, None))
+            self.assertTupleEqual(await self.btv.screen_on_awake_wake_lock_size(), (None, None, None))
 
         with async_patchers.patch_shell("")[self.PATCH_KEY]:
             self.assertTupleEqual(await self.btv.screen_on_awake_wake_lock_size(), (False, False, None))
