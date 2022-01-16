@@ -112,19 +112,6 @@ GET_PROPERTIES_OUTPUT = (
     None,
     None,
 )
-GET_PROPERTIES_OUTPUT_WITH_RUNNING_APPS = (
-    True,
-    True,
-    constants.STATE_IDLE,
-    2,
-    "com.amazon.tv.launcher",
-    None,
-    "hmdi_arc",
-    False,
-    22,
-    ["some.app"],
-    None,
-)
 GET_PROPERTIES_OUTPUT3 = (
     """110Wake Locks: size=2
 com.amazon.tv.launcher
@@ -712,18 +699,6 @@ class TestAndroidTVSyncPython(unittest.TestCase):
         with patchers.patch_shell(None)[self.PATCH_KEY]:
             state = self.atv.update()
             self.assertTupleEqual(state, STATE_NONE)
-        # return
-        # with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-        #    state = self.atv.update()
-        #    self.assertTupleEqual(state, STATE1)
-
-        # with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-        #    state = self.atv.update()
-        #    self.assertTupleEqual(state, STATE2)
-
-        # with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
-        #    state = self.atv.update()
-        #    self.assertTupleEqual(state, STATE3)
 
         with patch(
             "androidtv.androidtv.androidtv_sync.AndroidTVSync.get_properties", return_value=GET_PROPERTIES_OUTPUT
@@ -747,14 +722,6 @@ class TestAndroidTVSyncPython(unittest.TestCase):
             self.atv._state_detection_rules = STATE_DETECTION_RULES5
             state = self.atv.update()
             self.assertEqual(state[0], constants.STATE_IDLE)
-
-        with patch(
-            "androidtv.androidtv.androidtv_sync.AndroidTVSync.get_properties",
-            return_value=GET_PROPERTIES_OUTPUT_WITH_RUNNING_APPS,
-        ):
-            self.atv._state_detection_rules = None
-            state = self.atv.update(get_running_apps=True)
-            self.assertEqual(state[0], constants.STATE_PLAYING)
 
     def assertUpdate(self, get_properties, update):
         """Check that the results of the `update` method are as expected."""
