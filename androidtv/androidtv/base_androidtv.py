@@ -241,4 +241,3 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
                     state = constants.STATE_IDLE
 
         return state, current_app, running_apps, audio_output_device, is_volume_muted, volume_level, hdmi_input
-
