@@ -391,11 +391,11 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         current_app = self._current_app(lines[0].strip())
 
         if len(lines) > 1:
-            media_session_state = self._media_session_state(lines[1], current_app)
-        else:
-            media_session_state = None
+            matches = constants.REGEX_MEDIA_SESSION_STATE.search(media_session_state_response)
+            if matches:
+                return current_app, int(matches.group("state"))
 
-        return current_app, media_session_state
+        return current_app, None
 
     @staticmethod
     def _get_hdmi_input(hdmi_response):
@@ -461,32 +461,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         return None
 
     @staticmethod
-    def _media_session_state(media_session_state_response, current_app):
-        """Get the state from the output of :py:const:`androidtv.constants.CMD_MEDIA_SESSION_STATE`.
-
-        Parameters
-        ----------
-        media_session_state_response : str, None
-            The output of :py:const:`androidtv.constants.CMD_MEDIA_SESSION_STATE`
-        current_app : str, None
-            The current app, or ``None`` if it could not be determined
-
-        Returns
-        -------
-        int, None
-            The state from the output of the ADB shell command, or ``None`` if it could not be determined
-
-        """
-        if not media_session_state_response or not current_app:
-            return None
-
-        matches = constants.REGEX_MEDIA_SESSION_STATE.search(media_session_state_response)
-        if matches:
-            return int(matches.group("state"))
-
-        return None
-
-    @staticmethod
     def _parse_stream_music(stream_music_raw):
         """Parse the output of the command :py:const:`androidtv.constants.CMD_STREAM_MUSIC`.
 
@@ -526,8 +500,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         """
         if running_apps_response:
-            if isinstance(running_apps_response, list):
-                return [line.strip().rsplit(" ", 1)[-1] for line in running_apps_response if line.strip()]
             return [line.strip().rsplit(" ", 1)[-1] for line in running_apps_response.splitlines() if line.strip()]
 
         return None

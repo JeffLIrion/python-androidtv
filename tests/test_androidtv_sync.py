@@ -67,352 +67,20 @@ u0_a2     15121 197   998628 24628 ffffffff 00000000 S com.amazon.device.control
 RUNNING_APPS_LIST = ["com.netflix.ninja", "com.amazon.device.controllermanager"]
 
 
-GET_PROPERTIES_OUTPUT1 = ""
-GET_PROPERTIES_DICT1 = {
-    "screen_on": False,
-    "awake": False,
-    "audio_state": None,
-    "wake_lock_size": -1,
-    "media_session_state": None,
-    "current_app": None,
-    "audio_output_device": None,
-    "is_volume_muted": None,
-    "volume": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-STATE1 = (constants.STATE_OFF, None, None, None, None, None, None)
-
-GET_PROPERTIES_OUTPUT2 = "1"
-GET_PROPERTIES_DICT2 = {
-    "screen_on": True,
-    "awake": False,
-    "audio_state": None,
-    "wake_lock_size": -1,
-    "media_session_state": None,
-    "current_app": None,
-    "audio_output_device": None,
-    "is_volume_muted": None,
-    "volume": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-STATE2 = (constants.STATE_STANDBY, None, None, None, None, None, None)
-
-GET_PROPERTIES_OUTPUT3 = (
-    """110Wake Locks: size=2
-com.amazon.tv.launcher
-
-"""
-    + HDMI_INPUT_EMPTY
-    + STREAM_MUSIC_ON
-)
-GET_PROPERTIES_DICT3 = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_IDLE,
-    "wake_lock_size": 2,
-    "current_app": "com.amazon.tv.launcher",
-    "media_session_state": None,
-    "audio_output_device": "hmdi_arc",
-    "is_volume_muted": False,
-    "volume": 22,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-STATE3 = (
-    constants.STATE_PLAYING,
+GET_PROPERTIES_OUTPUT = (
+    True,
+    True,
+    constants.STATE_IDLE,
+    2,
     "com.amazon.tv.launcher",
-    ["com.amazon.tv.launcher"],
+    None,
     "hmdi_arc",
     False,
-    (22 / 60.0),
+    22,
+    None,
     None,
 )
-
-GET_PROPERTIES_OUTPUT3A = GET_PROPERTIES_OUTPUT3[:1]
-GET_PROPERTIES_OUTPUT3B = GET_PROPERTIES_OUTPUT3[:2]
-GET_PROPERTIES_OUTPUT3C = GET_PROPERTIES_OUTPUT3[:3]
-GET_PROPERTIES_OUTPUT3D = GET_PROPERTIES_OUTPUT3.splitlines()[0]
-GET_PROPERTIES_OUTPUT3E = "\n".join(GET_PROPERTIES_OUTPUT3.splitlines()[:2])
-GET_PROPERTIES_OUTPUT3F = "\n".join(GET_PROPERTIES_OUTPUT3.splitlines()[:3])
-GET_PROPERTIES_OUTPUT3G = "\n".join(GET_PROPERTIES_OUTPUT3.splitlines()[:4]) + "HW2"
-
-GET_PROPERTIES_DICT3A = {
-    "screen_on": True,
-    "awake": False,
-    "audio_state": None,
-    "wake_lock_size": -1,
-    "current_app": None,
-    "media_session_state": None,
-    "audio_output_device": None,
-    "is_volume_muted": None,
-    "volume": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-GET_PROPERTIES_DICT3B = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": None,
-    "wake_lock_size": -1,
-    "current_app": None,
-    "media_session_state": None,
-    "audio_output_device": None,
-    "is_volume_muted": None,
-    "volume": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-GET_PROPERTIES_DICT3C = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_IDLE,
-    "wake_lock_size": -1,
-    "current_app": None,
-    "media_session_state": None,
-    "audio_output_device": None,
-    "is_volume_muted": None,
-    "volume": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-GET_PROPERTIES_DICT3D = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_IDLE,
-    "wake_lock_size": 2,
-    "current_app": None,
-    "media_session_state": None,
-    "audio_output_device": None,
-    "is_volume_muted": None,
-    "volume": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-GET_PROPERTIES_DICT3E = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_IDLE,
-    "wake_lock_size": 2,
-    "current_app": "com.amazon.tv.launcher",
-    "media_session_state": None,
-    "audio_output_device": None,
-    "is_volume_muted": None,
-    "volume": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-GET_PROPERTIES_DICT3F = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_IDLE,
-    "wake_lock_size": 2,
-    "current_app": "com.amazon.tv.launcher",
-    "media_session_state": None,
-    "audio_output_device": None,
-    "is_volume_muted": None,
-    "volume": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-GET_PROPERTIES_DICT3G = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_IDLE,
-    "wake_lock_size": 2,
-    "current_app": "com.amazon.tv.launcher",
-    "media_session_state": None,
-    "audio_output_device": None,
-    "is_volume_muted": None,
-    "volume": None,
-    "running_apps": None,
-    "hdmi_input": "HW2",
-}
-
-GET_PROPERTIES_OUTPUT4 = """111Wake Locks: size=2
-com.amazon.tv.launcher
-state=PlaybackState {state=1, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}
-"""
-GET_PROPERTIES_DICT4 = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_PAUSED,
-    "wake_lock_size": 2,
-    "current_app": "com.amazon.tv.launcher",
-    "media_session_state": 1,
-    "audio_output_device": None,
-    "is_volume_muted": None,
-    "volume": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-
-GET_PROPERTIES_DICT_NONE = {
-    "screen_on": None,
-    "awake": None,
-    "audio_state": None,
-    "wake_lock_size": None,
-    "media_session_state": None,
-    "current_app": None,
-    "audio_output_device": None,
-    "is_volume_muted": None,
-    "volume": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
 STATE_NONE = (None, None, None, None, None, None, None)
-
-# Source: https://community.home-assistant.io/t/new-chromecast-w-android-tv-integration-only-showing-as-off-or-idle/234424/17
-GET_PROPERTIES_OUTPUT_GOOGLE_TV = """111Wake Locks: size=4
-com.google.android.youtube.tv
-      state=PlaybackState {state=3, position=610102, buffered position=0, speed=1.0, updated=234649304, actions=379, custom actions=[], active item id=-1, error=null}
-
-- STREAM_MUSIC:
-   Muted: false
-   Min: 0
-   Max: 25
-   streamVolume:25
-   Current: 4 (headset): 10, 8 (headphone): 10, 400 (hdmi): 25, 4000000 (usb_headset): 6, 40000000 (default): 20
-   Devices: hdmi
-- STREAM_ALARM:
-   Muted: false
-   Min: 1
-   Max: 7
-   streamVolume:6
-u0_a38       16522 16265 1348552  89960 0                   0 S com.android.systemui
-u0_a56       16765 16265 1343904  94124 0                   0 S com.google.android.inputmethod.latin
-u0_a42       16783 16265 1302956  67868 0                   0 S com.google.android.tv.remote.service
-"""
-
-GET_PROPERTIES_DICT_GOOGLE_TV = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_PAUSED,
-    "wake_lock_size": 4,
-    "current_app": "com.google.android.youtube.tv",
-    "media_session_state": 3,
-    "audio_output_device": "hdmi",
-    "is_volume_muted": False,
-    "volume": 25,
-    "running_apps": [
-        "com.android.systemui",
-        "com.google.android.inputmethod.latin",
-        "com.google.android.tv.remote.service",
-    ],
-    "hdmi_input": None,
-}
-
-# https://community.home-assistant.io/t/testers-needed-custom-state-detection-rules-for-android-tv-fire-tv/129493/6?u=jefflirion
-STATE_DETECTION_RULES_PLEX = {
-    "com.plexapp.android": [
-        {"playing": {"media_session_state": 3, "wake_lock_size": 3}},
-        {"paused": {"media_session_state": 3, "wake_lock_size": 1}},
-        "idle",
-    ]
-}
-
-# Plex: idle
-GET_PROPERTIES_OUTPUT_PLEX_IDLE = (
-    """110Wake Locks: size=1
-com.plexapp.android
-
-"""
-    + HDMI_INPUT_EMPTY
-    + STREAM_MUSIC_ON
-)
-
-GET_PROPERTIES_DICT_PLEX_IDLE = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_IDLE,
-    "wake_lock_size": 1,
-    "media_session_state": None,
-    "current_app": "com.plexapp.android",
-    "audio_output_device": "hmdi_arc",
-    "is_volume_muted": False,
-    "volume": 22,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-
-STATE_PLEX_IDLE = (
-    constants.STATE_PLAYING,
-    "com.plexapp.android",
-    ["com.plexapp.android"],
-    "hmdi_arc",
-    False,
-    22 / 60.0,
-    None,
-)
-
-# Plex: playing
-GET_PROPERTIES_OUTPUT_PLEX_PLAYING = (
-    """110Wake Locks: size=3
-com.plexapp.android
-state=3
-"""
-    + HDMI_INPUT_EMPTY
-    + STREAM_MUSIC_ON
-)
-
-GET_PROPERTIES_DICT_PLEX_PLAYING = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_IDLE,
-    "wake_lock_size": 3,
-    "media_session_state": 3,
-    "current_app": "com.plexapp.android",
-    "audio_output_device": "hmdi_arc",
-    "is_volume_muted": False,
-    "volume": 22,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-
-STATE_PLEX_PLAYING = (
-    constants.STATE_PLAYING,
-    "com.plexapp.android",
-    ["com.plexapp.android"],
-    "hmdi_arc",
-    False,
-    22 / 60.0,
-    None,
-)
-
-# Plex: paused
-GET_PROPERTIES_OUTPUT_PLEX_PAUSED = (
-    """110Wake Locks: size=1
-com.plexapp.android
-state=3
-"""
-    + HDMI_INPUT_EMPTY
-    + STREAM_MUSIC_ON
-)
-
-GET_PROPERTIES_DICT_PLEX_PAUSED = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_IDLE,
-    "wake_lock_size": 1,
-    "media_session_state": 3,
-    "current_app": "com.plexapp.android",
-    "audio_output_device": "hmdi_arc",
-    "is_volume_muted": False,
-    "volume": 22,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-
-STATE_PLEX_PAUSED = (
-    constants.STATE_PAUSED,
-    "com.plexapp.android",
-    ["com.plexapp.android"],
-    "hmdi_arc",
-    False,
-    22 / 60.0,
-    None,
-)
 
 STATE_DETECTION_RULES1 = {"com.amazon.tv.launcher": ["off"]}
 STATE_DETECTION_RULES2 = {"com.amazon.tv.launcher": ["media_session_state", "off"]}
@@ -606,100 +274,74 @@ class TestAndroidTVSyncPython(unittest.TestCase):
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "input keyevent 25")
 
     def test_get_properties(self):
-        """Check that the ``get_properties`` method works correctly."""
+        """Check that ``get_properties()`` works correctly."""
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT_NONE)
+            with patchers.patch_calls(
+                self.atv, self.atv.screen_on_awake_wake_lock_size
+            ) as screen_on_awake_wake_lock_size, patchers.patch_calls(
+                self.atv, self.atv.current_app_media_session_state
+            ) as current_app_media_session_state, patchers.patch_calls(
+                self.atv, self.atv.stream_music_properties
+            ) as stream_music_properties, patchers.patch_calls(
+                self.atv, self.atv.running_apps
+            ) as running_apps, patchers.patch_calls(
+                self.atv, self.atv.get_hdmi_input
+            ) as get_hdmi_input:
+                self.atv.get_properties(lazy=True)
+                assert screen_on_awake_wake_lock_size.called
+                assert not current_app_media_session_state.called
+                assert not running_apps.called
+                assert not get_hdmi_input.called
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT1)
+            with patchers.patch_calls(
+                self.atv, self.atv.screen_on_awake_wake_lock_size
+            ) as screen_on_awake_wake_lock_size, patchers.patch_calls(
+                self.atv, self.atv.current_app_media_session_state
+            ) as current_app_media_session_state, patchers.patch_calls(
+                self.atv, self.atv.stream_music_properties
+            ) as stream_music_properties, patchers.patch_calls(
+                self.atv, self.atv.running_apps
+            ) as running_apps, patchers.patch_calls(
+                self.atv, self.atv.get_hdmi_input
+            ) as get_hdmi_input:
+                self.atv.get_properties(lazy=False, get_running_apps=True)
+                assert screen_on_awake_wake_lock_size.called
+                assert current_app_media_session_state.called
+                assert running_apps.called
+                assert get_hdmi_input.called
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT2)
+            with patchers.patch_calls(
+                self.atv, self.atv.screen_on_awake_wake_lock_size
+            ) as screen_on_awake_wake_lock_size, patchers.patch_calls(
+                self.atv, self.atv.current_app_media_session_state
+            ) as current_app_media_session_state, patchers.patch_calls(
+                self.atv, self.atv.stream_music_properties
+            ) as stream_music_properties, patchers.patch_calls(
+                self.atv, self.atv.running_apps
+            ) as running_apps, patchers.patch_calls(
+                self.atv, self.atv.get_hdmi_input
+            ) as get_hdmi_input:
+                self.atv.get_properties(lazy=False, get_running_apps=False)
+                assert screen_on_awake_wake_lock_size.called
+                assert current_app_media_session_state.called
+                assert not running_apps.called
+                assert get_hdmi_input.called
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT3)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3A)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT3A)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3B)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT3B)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3C)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT3C)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3D)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT3D)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3E)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT3E)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3F)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT3F)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3G)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT3G)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT4)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=False)
-            self.assertEqual(properties, GET_PROPERTIES_DICT4)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT4)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=False, lazy=False)
-            self.assertEqual(properties, GET_PROPERTIES_DICT4)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_IDLE)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_IDLE)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PLAYING)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PLAYING)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PAUSED)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PAUSED)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=False, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT_PLEX_PAUSED)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED + RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
-            true_properties = GET_PROPERTIES_DICT_PLEX_PAUSED.copy()
-            true_properties["running_apps"] = RUNNING_APPS_LIST
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, true_properties)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_PLEX_PAUSED + RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
-            true_properties = GET_PROPERTIES_DICT_PLEX_PAUSED.copy()
-            true_properties["running_apps"] = RUNNING_APPS_LIST
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=False)
-            self.assertEqual(properties, true_properties)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT_GOOGLE_TV)[self.PATCH_KEY]:
-            properties = self.atv.get_properties_dict(get_running_apps=True, lazy=True)
-            self.assertEqual(properties, GET_PROPERTIES_DICT_GOOGLE_TV)
+    def test_get_properties_dict(self):
+        """Check that ``get_properties_dict()`` works correctly."""
+        with patchers.patch_shell(None)[self.PATCH_KEY]:
+            with patchers.patch_calls(self.atv, self.atv.get_properties) as get_properties:
+                self.atv.get_properties_dict()
+                assert get_properties.called
 
     def test_update(self):
+        """Check that the ``update`` method works correctly."""
+        with patchers.patch_shell(None)[self.PATCH_KEY]:
+            with patchers.patch_calls(self.atv, self.atv._update) as patched:
+                self.atv.update()
+                assert patched.called
+
+    def test_update2(self):
         """Check that the ``update`` method works correctly."""
         with patchers.patch_connect(False)[self.PATCH_KEY]:
             self.atv.adb_connect()
@@ -713,18 +355,9 @@ class TestAndroidTVSyncPython(unittest.TestCase):
             state = self.atv.update()
             self.assertTupleEqual(state, STATE_NONE)
 
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            state = self.atv.update()
-            self.assertTupleEqual(state, STATE1)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            state = self.atv.update()
-            self.assertTupleEqual(state, STATE2)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
-            state = self.atv.update()
-            self.assertTupleEqual(state, STATE3)
-
+        with patch(
+            "androidtv.androidtv.androidtv_sync.AndroidTVSync.get_properties", return_value=GET_PROPERTIES_OUTPUT
+        ):
             self.atv._state_detection_rules = STATE_DETECTION_RULES1
             state = self.atv.update()
             self.assertEqual(state[0], constants.STATE_OFF)
@@ -744,12 +377,6 @@ class TestAndroidTVSyncPython(unittest.TestCase):
             self.atv._state_detection_rules = STATE_DETECTION_RULES5
             state = self.atv.update()
             self.assertEqual(state[0], constants.STATE_IDLE)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3 + RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
-            self.atv._state_detection_rules = None
-            state = self.atv.update(get_running_apps=True)
-            true_state = STATE3[:2] + (RUNNING_APPS_LIST,) + STATE3[3:]
-            self.assertTupleEqual(state, true_state)
 
     def assertUpdate(self, get_properties, update):
         """Check that the results of the `update` method are as expected."""
