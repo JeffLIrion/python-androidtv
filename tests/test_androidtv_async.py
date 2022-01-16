@@ -276,14 +276,12 @@ class TestAndroidTVAsyncPython(unittest.TestCase):
                 assert get_hdmi_input.called
 
     @awaiter
-    async def _test_get_properties(self):
-        """Check that the ``get_properties`` method works correctly."""
+    async def test_get_properties_dict(self):
+        """Check that ``get_properties_dict()`` works correctly."""
         with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            for get_running_apps in [True, False]:
-                for lazy in [True, False]:
-                    with patch_calls(self.atv, self.atv._get_properties) as patched:
-                        await self.atv.get_properties_dict(get_running_apps, lazy)
-                        assert patched.called
+            with patch_calls(self.atv, self.atv.get_properties) as get_properties:
+                await self.atv.get_properties_dict()
+                assert get_properties.called
 
     @awaiter
     async def test_update(self):
