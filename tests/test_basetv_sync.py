@@ -468,8 +468,8 @@ class TestBaseTVSyncPython(unittest.TestCase):
             device_properties = self.btv.get_device_properties()
             self.assertEqual(self.btv.device_properties["manufacturer"], "Google")
             self.assertEqual(
-                self.btv._cmd_get_properties_lazy_no_running_apps,
-                constants.CMD_GOOGLE_TV_PROPERTIES_LAZY_NO_RUNNING_APPS,
+                self.btv._cmd_current_app,
+                constants.CMD_CURRENT_APP_GOOGLE_TV,
             )
 
         with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT_SONY_TV)[self.PATCH_KEY]:

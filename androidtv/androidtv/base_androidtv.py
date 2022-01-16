@@ -43,20 +43,10 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
         if "Google" in self.device_properties.get("manufacturer", "") and "Chromecast" in self.device_properties.get(
             "model", ""
         ):
-            self._cmd_get_properties_lazy_running_apps = constants.CMD_GOOGLE_TV_PROPERTIES_LAZY_RUNNING_APPS
-            self._cmd_get_properties_lazy_no_running_apps = constants.CMD_GOOGLE_TV_PROPERTIES_LAZY_NO_RUNNING_APPS
-            self._cmd_get_properties_not_lazy_running_apps = constants.CMD_GOOGLE_TV_PROPERTIES_NOT_LAZY_RUNNING_APPS
-            self._cmd_get_properties_not_lazy_no_running_apps = (
-                constants.CMD_GOOGLE_TV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS
-            )
             self._cmd_current_app = constants.CMD_CURRENT_APP_GOOGLE_TV
             self._cmd_launch_app = constants.CMD_LAUNCH_APP_GOOGLE_TV
             return
 
-        self._cmd_get_properties_lazy_running_apps = constants.CMD_ANDROIDTV_PROPERTIES_LAZY_RUNNING_APPS
-        self._cmd_get_properties_lazy_no_running_apps = constants.CMD_ANDROIDTV_PROPERTIES_LAZY_NO_RUNNING_APPS
-        self._cmd_get_properties_not_lazy_running_apps = constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_RUNNING_APPS
-        self._cmd_get_properties_not_lazy_no_running_apps = constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS
         self._cmd_current_app = constants.CMD_CURRENT_APP
         self._cmd_launch_app = constants.CMD_LAUNCH_APP
 
