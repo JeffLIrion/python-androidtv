@@ -67,38 +67,6 @@ u0_a2     15121 197   998628 24628 ffffffff 00000000 S com.amazon.device.control
 RUNNING_APPS_LIST = ["com.netflix.ninja", "com.amazon.device.controllermanager"]
 
 
-GET_PROPERTIES_OUTPUT1 = ""
-GET_PROPERTIES_DICT1 = {
-    "screen_on": False,
-    "awake": False,
-    "audio_state": None,
-    "wake_lock_size": -1,
-    "media_session_state": None,
-    "current_app": None,
-    "audio_output_device": None,
-    "is_volume_muted": None,
-    "volume": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-STATE1 = (constants.STATE_OFF, None, None, None, None, None, None)
-
-GET_PROPERTIES_OUTPUT2 = "1"
-GET_PROPERTIES_DICT2 = {
-    "screen_on": True,
-    "awake": False,
-    "audio_state": None,
-    "wake_lock_size": -1,
-    "media_session_state": None,
-    "current_app": None,
-    "audio_output_device": None,
-    "is_volume_muted": None,
-    "volume": None,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-STATE2 = (constants.STATE_STANDBY, None, None, None, None, None, None)
-
 GET_PROPERTIES_OUTPUT = (
     True,
     True,
@@ -112,27 +80,8 @@ GET_PROPERTIES_OUTPUT = (
     None,
     None,
 )
-GET_PROPERTIES_OUTPUT3 = (
-    """110Wake Locks: size=2
-com.amazon.tv.launcher
-
-"""
-    + HDMI_INPUT_EMPTY
-    + STREAM_MUSIC_ON
-)
-GET_PROPERTIES_DICT3 = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_IDLE,
-    "wake_lock_size": 2,
-    "current_app": "com.amazon.tv.launcher",
-    "media_session_state": None,
-    "audio_output_device": "hmdi_arc",
-    "is_volume_muted": False,
-    "volume": 22,
-    "running_apps": None,
-    "hdmi_input": None,
-}
+STATE1 = (constants.STATE_OFF, None, None, None, None, None, None)
+STATE2 = (constants.STATE_STANDBY, None, None, None, None, None, None)
 STATE3 = (
     constants.STATE_PLAYING,
     "com.amazon.tv.launcher",
@@ -142,14 +91,6 @@ STATE3 = (
     (22 / 60.0),
     None,
 )
-
-GET_PROPERTIES_OUTPUT3A = GET_PROPERTIES_OUTPUT3[:1]
-GET_PROPERTIES_OUTPUT3B = GET_PROPERTIES_OUTPUT3[:2]
-GET_PROPERTIES_OUTPUT3C = GET_PROPERTIES_OUTPUT3[:3]
-GET_PROPERTIES_OUTPUT3D = GET_PROPERTIES_OUTPUT3.splitlines()[0]
-GET_PROPERTIES_OUTPUT3E = "\n".join(GET_PROPERTIES_OUTPUT3.splitlines()[:2])
-GET_PROPERTIES_OUTPUT3F = "\n".join(GET_PROPERTIES_OUTPUT3.splitlines()[:3])
-GET_PROPERTIES_OUTPUT3G = "\n".join(GET_PROPERTIES_OUTPUT3.splitlines()[:4]) + "HW2"
 
 GET_PROPERTIES_DICT3A = {
     "screen_on": True,
