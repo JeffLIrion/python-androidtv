@@ -101,30 +101,6 @@ STATE_PLEX_IDLE = (
     None,
 )
 
-# Plex: playing
-GET_PROPERTIES_OUTPUT_PLEX_PLAYING = (
-    """110Wake Locks: size=3
-com.plexapp.android
-state=3
-"""
-    + HDMI_INPUT_EMPTY
-    + STREAM_MUSIC_ON
-)
-
-GET_PROPERTIES_DICT_PLEX_PLAYING = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_IDLE,
-    "wake_lock_size": 3,
-    "media_session_state": 3,
-    "current_app": "com.plexapp.android",
-    "audio_output_device": "hmdi_arc",
-    "is_volume_muted": False,
-    "volume": 22,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-
 STATE_PLEX_PLAYING = (
     constants.STATE_PLAYING,
     "com.plexapp.android",
@@ -134,30 +110,6 @@ STATE_PLEX_PLAYING = (
     22 / 60.0,
     None,
 )
-
-# Plex: paused
-GET_PROPERTIES_OUTPUT_PLEX_PAUSED = (
-    """110Wake Locks: size=1
-com.plexapp.android
-state=3
-"""
-    + HDMI_INPUT_EMPTY
-    + STREAM_MUSIC_ON
-)
-
-GET_PROPERTIES_DICT_PLEX_PAUSED = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_IDLE,
-    "wake_lock_size": 1,
-    "media_session_state": 3,
-    "current_app": "com.plexapp.android",
-    "audio_output_device": "hmdi_arc",
-    "is_volume_muted": False,
-    "volume": 22,
-    "running_apps": None,
-    "hdmi_input": None,
-}
 
 STATE_PLEX_PAUSED = (
     constants.STATE_PAUSED,
