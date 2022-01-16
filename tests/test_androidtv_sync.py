@@ -91,30 +91,6 @@ STATE_DETECTION_RULES_PLEX = {
     ]
 }
 
-# Plex: idle
-GET_PROPERTIES_OUTPUT_PLEX_IDLE = (
-    """110Wake Locks: size=1
-com.plexapp.android
-
-"""
-    + HDMI_INPUT_EMPTY
-    + STREAM_MUSIC_ON
-)
-
-GET_PROPERTIES_DICT_PLEX_IDLE = {
-    "screen_on": True,
-    "awake": True,
-    "audio_state": constants.STATE_IDLE,
-    "wake_lock_size": 1,
-    "media_session_state": None,
-    "current_app": "com.plexapp.android",
-    "audio_output_device": "hmdi_arc",
-    "is_volume_muted": False,
-    "volume": 22,
-    "running_apps": None,
-    "hdmi_input": None,
-}
-
 STATE_PLEX_IDLE = (
     constants.STATE_PLAYING,
     "com.plexapp.android",
