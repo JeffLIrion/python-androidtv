@@ -229,7 +229,7 @@ class TestAndroidTVAsyncPython(unittest.TestCase):
             ) as screen_on_awake_wake_lock_size, patch_calls(
                 self.atv, self.atv.current_app_media_session_state
             ) as current_app_media_session_state, patch_calls(
-                self.atv.stream_music_properties
+                self.atv, self.atv.stream_music_properties
             ) as stream_music_properties, patch_calls(
                 self.atv, self.atv.running_apps
             ) as running_apps, patch_calls(
@@ -246,7 +246,7 @@ class TestAndroidTVAsyncPython(unittest.TestCase):
             ) as screen_on_awake_wake_lock_size, patch_calls(
                 self.atv, self.atv.current_app_media_session_state
             ) as current_app_media_session_state, patch_calls(
-                self.atv.stream_music_properties
+                self.atv, self.atv.stream_music_properties
             ) as stream_music_properties, patch_calls(
                 self.atv, self.atv.running_apps
             ) as running_apps, patch_calls(
@@ -263,6 +263,8 @@ class TestAndroidTVAsyncPython(unittest.TestCase):
             ) as screen_on_awake_wake_lock_size, patch_calls(
                 self.atv, self.atv.current_app_media_session_state
             ) as current_app_media_session_state, patch_calls(
+                self.atv, self.atv.stream_music_properties
+            ) as stream_music_properties, patch_calls(
                 self.atv, self.atv.running_apps
             ) as running_apps, patch_calls(
                 self.atv, self.atv.get_hdmi_input
