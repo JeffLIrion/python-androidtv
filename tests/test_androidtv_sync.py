@@ -82,45 +82,6 @@ GET_PROPERTIES_OUTPUT = (
 )
 STATE_NONE = (None, None, None, None, None, None, None)
 
-# https://community.home-assistant.io/t/testers-needed-custom-state-detection-rules-for-android-tv-fire-tv/129493/6?u=jefflirion
-STATE_DETECTION_RULES_PLEX = {
-    "com.plexapp.android": [
-        {"playing": {"media_session_state": 3, "wake_lock_size": 3}},
-        {"paused": {"media_session_state": 3, "wake_lock_size": 1}},
-        "idle",
-    ]
-}
-
-STATE_PLEX_IDLE = (
-    constants.STATE_PLAYING,
-    "com.plexapp.android",
-    ["com.plexapp.android"],
-    "hmdi_arc",
-    False,
-    22 / 60.0,
-    None,
-)
-
-STATE_PLEX_PLAYING = (
-    constants.STATE_PLAYING,
-    "com.plexapp.android",
-    ["com.plexapp.android"],
-    "hmdi_arc",
-    False,
-    22 / 60.0,
-    None,
-)
-
-STATE_PLEX_PAUSED = (
-    constants.STATE_PAUSED,
-    "com.plexapp.android",
-    ["com.plexapp.android"],
-    "hmdi_arc",
-    False,
-    22 / 60.0,
-    None,
-)
-
 STATE_DETECTION_RULES1 = {"com.amazon.tv.launcher": ["off"]}
 STATE_DETECTION_RULES2 = {"com.amazon.tv.launcher": ["media_session_state", "off"]}
 STATE_DETECTION_RULES3 = {"com.amazon.tv.launcher": [{"idle": {"wake_lock_size": 2}}]}
