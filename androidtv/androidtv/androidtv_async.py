@@ -118,13 +118,6 @@ class AndroidTVAsync(BaseTVAsync, BaseAndroidTV):
     async def get_properties(self, get_running_apps=True, lazy=False):
         """Get the properties needed for Home Assistant updates.
 
-        This will send one of the following ADB commands:
-
-        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_LAZY_RUNNING_APPS`
-        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_LAZY_NO_RUNNING_APPS`
-        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_RUNNING_APPS`
-        * :py:const:`androidtv.constants.CMD_ANDROIDTV_PROPERTIES_NOT_LAZY_NO_RUNNING_APPS`
-
         Parameters
         ----------
         get_running_apps : bool
