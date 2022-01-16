@@ -607,53 +607,53 @@ class TestAndroidTVSyncPython(unittest.TestCase):
 
     def test_get_properties(self):
         """Check that ``get_properties()`` works correctly."""
-        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            with patch_calls(
+        with patchers.patch_shell(None)[self.PATCH_KEY]:
+            with patchers.patch_calls(
                 self.atv, self.atv.screen_on_awake_wake_lock_size
-            ) as screen_on_awake_wake_lock_size, patch_calls(
+            ) as screen_on_awake_wake_lock_size, patchers.patch_calls(
                 self.atv, self.atv.current_app_media_session_state
-            ) as current_app_media_session_state, patch_calls(
+            ) as current_app_media_session_state, patchers.patch_calls(
                 self.atv, self.atv.stream_music_properties
-            ) as stream_music_properties, patch_calls(
+            ) as stream_music_properties, patchers.patch_calls(
                 self.atv, self.atv.running_apps
-            ) as running_apps, patch_calls(
+            ) as running_apps, patchers.patch_calls(
                 self.atv, self.atv.get_hdmi_input
             ) as get_hdmi_input:
-                await self.atv.get_properties(lazy=True)
+                self.atv.get_properties(lazy=True)
                 assert screen_on_awake_wake_lock_size.called
                 assert not current_app_media_session_state.called
                 assert not running_apps.called
                 assert not get_hdmi_input.called
 
-            with patch_calls(
+            with patchers.patch_calls(
                 self.atv, self.atv.screen_on_awake_wake_lock_size
-            ) as screen_on_awake_wake_lock_size, patch_calls(
+            ) as screen_on_awake_wake_lock_size, patchers.patch_calls(
                 self.atv, self.atv.current_app_media_session_state
-            ) as current_app_media_session_state, patch_calls(
+            ) as current_app_media_session_state, patchers.patch_calls(
                 self.atv, self.atv.stream_music_properties
-            ) as stream_music_properties, patch_calls(
+            ) as stream_music_properties, patchers.patch_calls(
                 self.atv, self.atv.running_apps
-            ) as running_apps, patch_calls(
+            ) as running_apps, patchers.patch_calls(
                 self.atv, self.atv.get_hdmi_input
             ) as get_hdmi_input:
-                await self.atv.get_properties(lazy=False, get_running_apps=True)
+                self.atv.get_properties(lazy=False, get_running_apps=True)
                 assert screen_on_awake_wake_lock_size.called
                 assert current_app_media_session_state.called
                 assert running_apps.called
                 assert get_hdmi_input.called
 
-            with patch_calls(
+            with patchers.patch_calls(
                 self.atv, self.atv.screen_on_awake_wake_lock_size
-            ) as screen_on_awake_wake_lock_size, patch_calls(
+            ) as screen_on_awake_wake_lock_size, patchers.patch_calls(
                 self.atv, self.atv.current_app_media_session_state
-            ) as current_app_media_session_state, patch_calls(
+            ) as current_app_media_session_state, patchers.patch_calls(
                 self.atv, self.atv.stream_music_properties
-            ) as stream_music_properties, patch_calls(
+            ) as stream_music_properties, patchers.patch_calls(
                 self.atv, self.atv.running_apps
-            ) as running_apps, patch_calls(
+            ) as running_apps, patchers.patch_calls(
                 self.atv, self.atv.get_hdmi_input
             ) as get_hdmi_input:
-                await self.atv.get_properties(lazy=False, get_running_apps=False)
+                self.atv.get_properties(lazy=False, get_running_apps=False)
                 assert screen_on_awake_wake_lock_size.called
                 assert current_app_media_session_state.called
                 assert not running_apps.called
@@ -661,62 +661,17 @@ class TestAndroidTVSyncPython(unittest.TestCase):
 
     def test_get_properties_dict(self):
         """Check that ``get_properties_dict()`` works correctly."""
-        with async_patchers.patch_shell(None)[self.PATCH_KEY]:
-            with patch_calls(self.atv, self.atv.get_properties) as get_properties:
-                await self.atv.get_properties_dict()
+        with patchers.patch_shell(None)[self.PATCH_KEY]:
+            with patchers.patch_calls(self.atv, self.atv.get_properties) as get_properties:
+                self.atv.get_properties_dict()
                 assert get_properties.called
  
     def test_update(self):
         """Check that the ``update`` method works correctly."""
-        with patchers.patch_connect(False)[self.PATCH_KEY]:
-            self.atv.adb_connect()
-        state = self.atv.update()
-        self.assertTupleEqual(state, STATE_NONE)
-
-        with patchers.patch_connect(True)[self.PATCH_KEY]:
-            self.atv.adb_connect()
-
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            state = self.atv.update()
-            self.assertTupleEqual(state, STATE_NONE)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
-            state = self.atv.update()
-            self.assertTupleEqual(state, STATE1)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
-            state = self.atv.update()
-            self.assertTupleEqual(state, STATE2)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
-            state = self.atv.update()
-            self.assertTupleEqual(state, STATE3)
-
-            self.atv._state_detection_rules = STATE_DETECTION_RULES1
-            state = self.atv.update()
-            self.assertEqual(state[0], constants.STATE_OFF)
-
-            self.atv._state_detection_rules = STATE_DETECTION_RULES2
-            state = self.atv.update()
-            self.assertEqual(state[0], constants.STATE_OFF)
-
-            self.atv._state_detection_rules = STATE_DETECTION_RULES3
-            state = self.atv.update()
-            self.assertEqual(state[0], constants.STATE_IDLE)
-
-            self.atv._state_detection_rules = STATE_DETECTION_RULES4
-            state = self.atv.update()
-            self.assertEqual(state[0], constants.STATE_PAUSED)
-
-            self.atv._state_detection_rules = STATE_DETECTION_RULES5
-            state = self.atv.update()
-            self.assertEqual(state[0], constants.STATE_IDLE)
-
-        with patchers.patch_shell(GET_PROPERTIES_OUTPUT3 + RUNNING_APPS_OUTPUT)[self.PATCH_KEY]:
-            self.atv._state_detection_rules = None
-            state = self.atv.update(get_running_apps=True)
-            true_state = STATE3[:2] + (RUNNING_APPS_LIST,) + STATE3[3:]
-            self.assertTupleEqual(state, true_state)
+            with patchers.patch_calls(self.atv, self.atv._update) as patched:
+                self.atv.update()
+                assert patched.called
 
     def assertUpdate(self, get_properties, update):
         """Check that the results of the `update` method are as expected."""
