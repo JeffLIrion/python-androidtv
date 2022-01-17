@@ -267,7 +267,7 @@ class BaseTVSync(BaseTV):
             The ID of the current app, or ``None`` if it could not be determined
 
         """
-        current_app_response = self._adb.shell(self._cmd_current_app)
+        current_app_response = self._adb.shell(self._cmd_current_app())
 
         return self._current_app(current_app_response)
 
@@ -282,8 +282,7 @@ class BaseTVSync(BaseTV):
             The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
 
         """
-        # This needs to use different commands depending on the device
-        media_session_state_response = self._adb.shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
+        media_session_state_response = self._adb.shell(self._cmd_current_app_media_session_state())
 
         return self._current_app_media_session_state(media_session_state_response)
 
@@ -511,7 +510,7 @@ class BaseTVSync(BaseTV):
             The ID of the app that will be launched
 
         """
-        self._adb.shell(self._cmd_launch_app.format(app))
+        self._adb.shell(self._cmd_launch_app(app))
 
     def stop_app(self, app):
         """Stop an app.

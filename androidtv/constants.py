@@ -23,7 +23,7 @@ else:  # pragma: no cover
 
 @unique
 class DeviceEnum(IntEnum):
-    """An enum for the varios device types."""
+    """An enum for the various device types."""
 
     BASE_TV = 0
     ANDROID_TV = 1
@@ -90,10 +90,10 @@ CMD_LAUNCH_APP_GOOGLE_TV = (
 CMD_MEDIA_SESSION_STATE = "dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'"
 
 #: Determine the current app and get the state from ``dumpsys media_session``
-CMD_MEDIA_SESSION_STATE_FULL = CMD_CURRENT_APP + " && " + CMD_MEDIA_SESSION_STATE
+CMD_CURRENT_APP_MEDIA_SESSION_STATE = CMD_CURRENT_APP + " && " + CMD_MEDIA_SESSION_STATE
 
 #: Determine the current app and get the state from ``dumpsys media_session`` for a Google TV device
-CMD_MEDIA_SESSION_STATE_FULL_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV + " && " + CMD_MEDIA_SESSION_STATE
+CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV + " && " + CMD_MEDIA_SESSION_STATE
 
 #: Get the running apps for an Android TV device
 CMD_RUNNING_APPS_ANDROIDTV = "ps -A | grep u0_a"

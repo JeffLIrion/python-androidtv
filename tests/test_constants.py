@@ -65,12 +65,6 @@ class TestConstants(unittest.TestCase):
             r"CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && CURRENT_APP=${{CURRENT_APP#*ActivityRecord{{* * }} && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP%\}}*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LAUNCHER --pct-syskeys 0 1; fi",
         )
 
-        # CMD_MEDIA_SESSION_STATE_FULL
-        self.assertEqual(
-            constants.CMD_MEDIA_SESSION_STATE_FULL,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
-        )
-
     def test_current_app_extraction_atv_launcher(self):
         dumpsys_output = """
             mCurrentFocus=Window{e74bb23 u0 com.google.android.tvlauncher/com.google.android.tvlauncher.MainActivity}

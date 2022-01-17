@@ -28,7 +28,6 @@ class TestBaseTVAsyncPython(unittest.TestCase):
         ], async_patchers.patch_shell("")[self.PATCH_KEY]:
             self.btv = BaseTVAsync("HOST", 5555)
             await self.btv.adb_connect()
-            self.assertEqual(self.btv._cmd_launch_app, "")
 
     def test_available(self):
         """Test that the available property works correctly."""
