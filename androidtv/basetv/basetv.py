@@ -130,6 +130,25 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         return constants.CMD_CURRENT_APP
 
+    def _cmd_current_app2_media_session_state(self):
+        """Get the command used to retrieve the current app and media session state for this device.
+
+        Returns
+        -------
+        str
+            The device-specific ADB shell command used to determine the current app and media session state
+
+        """
+        # Is this a Google Chromecast Android TV?
+        if (
+            self.DEVICE_ENUM == constants.DeviceEnum.ANDROID_TV
+            and "Google" in self.device_properties.get("manufacturer", "")
+            and "Chromecast" in self.device_properties.get("model", "")
+        ):
+            return constants.CMD_CURRENT_APP_GOOGLE_TV
+
+        return constants.CMD_CURRENT_APP
+
     def _cmd_launch_app2(self, app):
         """Get the command to launch the specified app for this device.
 
