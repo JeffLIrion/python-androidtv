@@ -106,6 +106,11 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         """
 
+    # ======================================================================= #
+    #                                                                         #
+    #                      Device-specific ADB commands                       #
+    #                                                                         #
+    # ======================================================================= #
     def _cmd_current_app2(self):
         """Get the command used to retrieve the current app for this device.
 
@@ -113,6 +118,30 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         -------
         str
             The device-specific ADB shell command used to determine the current app
+
+        """
+        # Is this a Google Chromecast Android TV?
+        if (
+            self.DEVICE_ENUM == constants.DeviceEnum.ANDROID_TV
+            and "Google" in self.device_properties.get("manufacturer", "")
+            and "Chromecast" in self.device_properties.get("model", "")
+        ):
+            return constants.CMD_CURRENT_APP_GOOGLE_TV
+
+        return constants.CMD_CURRENT_APP
+
+    def _cmd_launch_app2(self, app):
+        """Get the command to launch the specified app for this device.
+
+        Parameters
+        ----------
+        app : str
+            The app that will be launched
+
+        Returns
+        -------
+        str
+            The device-specific command to launch the app
 
         """
         # Is this a Google Chromecast Android TV?
