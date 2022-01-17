@@ -337,6 +337,19 @@ class BaseTVSync(BaseTV):
 
         return media_session_state
 
+    def running_apps(self):
+        """Return a list of running user applications.
+
+        Returns
+        -------
+        list
+            A list of the running apps
+
+        """
+        running_apps_response = self._adb.shell(self._cmd_running_apps())
+
+        return self._running_apps(running_apps_response)
+
     def screen_on(self):
         """Check if the screen is on.
 

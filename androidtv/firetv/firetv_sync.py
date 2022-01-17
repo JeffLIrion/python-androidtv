@@ -207,19 +207,6 @@ class FireTVSync(BaseTVSync, BaseFireTV):
             "hdmi_input": hdmi_input,
         }
 
-    def running_apps(self):
-        """Return a list of running user applications.
-
-        Returns
-        -------
-        list
-            A list of the running apps
-
-        """
-        running_apps_response = self._adb.shell(constants.CMD_RUNNING_APPS_FIRETV)
-
-        return self._running_apps(running_apps_response)
-
     # ======================================================================= #
     #                                                                         #
     #                           turn on/off methods                           #

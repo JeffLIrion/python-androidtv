@@ -337,6 +337,19 @@ class BaseTVAsync(BaseTV):
 
         return media_session_state
 
+    async def running_apps(self):
+        """Return a list of running user applications.
+
+        Returns
+        -------
+        list
+            A list of the running apps
+
+        """
+        running_apps_response = await self._adb.shell(self._cmd_running_apps())
+
+        return self._running_apps(running_apps_response)
+
     async def screen_on(self):
         """Check if the screen is on.
 
