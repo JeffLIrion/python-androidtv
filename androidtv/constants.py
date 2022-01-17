@@ -9,6 +9,25 @@
 
 
 import re
+import sys
+
+if sys.version_info[0] == 3 and sys.version_info[1] >= 5:
+    from enum import IntEnum, unique
+else:  # pragma: no cover
+    IntEnum = object
+
+    def unique(cls):
+        """A class decorator that does nothing."""
+        return cls
+
+
+@unique
+class DeviceEnum(IntEnum):
+    """An enum for the varios device types."""
+
+    BASE_TV = 0
+    ANDROID_TV = 1
+    FIRE_TV = 2
 
 
 # Intents
@@ -72,6 +91,9 @@ CMD_MEDIA_SESSION_STATE = "dumpsys media_session | grep -A 100 'Sessions Stack' 
 
 #: Determine the current app and get the state from ``dumpsys media_session``
 CMD_MEDIA_SESSION_STATE_FULL = CMD_CURRENT_APP + " && " + CMD_MEDIA_SESSION_STATE
+
+#: Determine the current app and get the state from ``dumpsys media_session`` for a Google TV device
+CMD_MEDIA_SESSION_STATE_FULL_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV + " && " + CMD_MEDIA_SESSION_STATE
 
 #: Get the running apps for an Android TV device
 CMD_RUNNING_APPS_ANDROIDTV = "ps -A | grep u0_a"

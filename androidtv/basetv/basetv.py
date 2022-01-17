@@ -66,6 +66,8 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
     """
 
+    DEVICE_ENUM = constants.DeviceEnum.BASE_TV
+
     def __init__(
         self, adb, host, port=5555, adbkey="", adb_server_ip="", adb_server_port=5037, state_detection_rules=None
     ):
@@ -103,6 +105,39 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         This is implemented in the `BaseAndroidTV` and `BaseFireTV` classes.
 
         """
+
+    def _cmd_current_app2(self):
+        """Get the command used to retrieve the current app for this device.
+
+        Returns
+        -------
+        str
+            The device-specific ADB shell command used to determine the current app
+
+        """
+        # Is this a Google Chromecast Android TV?
+        if (
+            self.DEVICE_ENUM == constants.DeviceEnum.ANDROID_TV
+            and "Google" in self.device_properties.get("manufacturer", "")
+            and "Chromecast" in self.device_properties.get("model", "")
+        ):
+            return constants.CMD_CURRENT_APP_GOOGLE_TV
+
+        return constants.CMD_CURRENT_APP
+
+    def _cmd_running_apps(self):
+        """Get the command used to retrieve the running apps for this device.
+
+        Returns
+        -------
+        str
+            The device-specific ADB shell command used to determine the running apps
+
+        """
+        if self.DEVICE_ENUM == constants.DeviceEnum.FIRE_TV:
+            return constants.CMD_RUNNING_APPS_FIRETV
+
+        return constants.CMD_RUNNING_APPS_ANDROIDTV
 
     # ======================================================================= #
     #                                                                         #
