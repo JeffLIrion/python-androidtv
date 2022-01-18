@@ -83,11 +83,11 @@ def setup(
 
     # Fire TV
     if aftv.device_properties.get("manufacturer") == "Amazon":
-        aftv.__class__ = FireTVSync
+        aftv = FireTVSync.from_base(aftv)
 
     # Android TV
     else:
-        aftv.__class__ = AndroidTVSync
+        aftv = AndroidTVSync.from_base(aftv)
 
     # Fill in commands that are specific to the device
     aftv._fill_in_commands()  # pylint: disable=protected-access
