@@ -464,7 +464,7 @@ class TestBaseTVSyncPython(unittest.TestCase):
             self.assertDictEqual({}, device_properties)
 
         with patchers.patch_shell(DEVICE_PROPERTIES_GOOGLE_TV)[self.PATCH_KEY]:
-            self.btv.__class__ = AndroidTVSync
+            self.btv = AndroidTVSync.from_base(self.btv)
             device_properties = self.btv.get_device_properties()
             self.assertEqual(self.btv.device_properties["manufacturer"], "Google")
             self.assertEqual(

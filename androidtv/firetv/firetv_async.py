@@ -50,6 +50,36 @@ class FireTVAsync(BaseTVAsync, BaseFireTV):
         # fill in commands that can vary based on the device
         BaseFireTV._fill_in_commands(self)
 
+    @classmethod
+    def from_base(cls, base_tv):
+        """Construct a `FireTVAsync` object from a `BaseTVAsync` object.
+
+        Parameters
+        ----------
+        base_tv : BaseTVAsync
+            The object that will be converted to a `FireTVAsync` object
+
+        Returns
+        -------
+        ftv : FireTVAsync
+            The constructed `FireTVAsync` object
+
+        """
+        # pylint: disable=protected-access
+        ftv = cls(
+            base_tv.host,
+            base_tv.port,
+            base_tv.adbkey,
+            base_tv.adb_server_ip,
+            base_tv.adb_server_port,
+            base_tv._state_detection_rules,
+        )
+        ftv._adb = base_tv._adb
+        ftv.device_properties = base_tv.device_properties
+        ftv.installed_apps = base_tv.installed_apps
+        ftv.max_volume = base_tv.max_volume
+        return ftv
+
     # ======================================================================= #
     #                                                                         #
     #                          Home Assistant Update                          #

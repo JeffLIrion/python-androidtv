@@ -50,6 +50,36 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
         # fill in commands that can vary based on the device
         BaseAndroidTV._fill_in_commands(self)
 
+    @classmethod
+    def from_base(cls, base_tv):
+        """Construct an `AndroidTVSync` object from a `BaseTVSync` object.
+
+        Parameters
+        ----------
+        base_tv : BaseTVSync
+            The object that will be converted to an `AndroidTVSync` object
+
+        Returns
+        -------
+        atv : AndroidTVSync
+            The constructed `AndroidTVSync` object
+
+        """
+        # pylint: disable=protected-access
+        atv = cls(
+            base_tv.host,
+            base_tv.port,
+            base_tv.adbkey,
+            base_tv.adb_server_ip,
+            base_tv.adb_server_port,
+            base_tv._state_detection_rules,
+        )
+        atv._adb = base_tv._adb
+        atv.device_properties = base_tv.device_properties
+        atv.installed_apps = base_tv.installed_apps
+        atv.max_volume = base_tv.max_volume
+        return atv
+
     # ======================================================================= #
     #                                                                         #
     #                          Home Assistant Update                          #
