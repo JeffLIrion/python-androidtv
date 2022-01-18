@@ -119,9 +119,10 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         """
         # Is this a Google Chromecast Android TV?
-        assert self.DEVICE_ENUM == constants.DeviceEnum.ANDROID_TV
-        assert "Google" in self.device_properties.get("manufacturer", "")
-        assert "Chromecast" in self.device_properties.get("model", "")
+        # assert self.DEVICE_ENUM == constants.DeviceEnum.ANDROID_TV
+        assert self.DEVICE_ENUM == constants.DeviceEnum.BASE_TV
+        # assert "Google" in self.device_properties.get("manufacturer", "")
+        # assert "Chromecast" in self.device_properties.get("model", "")
         if (
             self.DEVICE_ENUM == constants.DeviceEnum.ANDROID_TV
             and "Google" in self.device_properties.get("manufacturer", "")
@@ -183,6 +184,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The device-specific ADB shell command used to determine the running apps
 
         """
+        assert self.DEVICE_ENUM == constants.DeviceEnum.BASE_TV
         if self.DEVICE_ENUM == constants.DeviceEnum.FIRE_TV:
             return constants.CMD_RUNNING_APPS_FIRETV
 
