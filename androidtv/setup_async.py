@@ -79,13 +79,7 @@ async def setup(
 
     # Fire TV
     if aftv.device_properties.get("manufacturer") == "Amazon":
-        aftv = FireTVAsync.from_base(aftv)
+        return FireTVAsync.from_base(aftv)
 
     # Android TV
-    else:
-        aftv = AndroidTVAsync.from_base(aftv)
-
-    # Fill in commands that are specific to the device
-    aftv._fill_in_commands()  # pylint: disable=protected-access
-
-    return aftv
+    return AndroidTVAsync.from_base(aftv)

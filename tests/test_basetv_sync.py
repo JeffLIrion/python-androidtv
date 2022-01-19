@@ -461,7 +461,6 @@ class TestBaseTVSyncPython(unittest.TestCase):
         with patchers.patch_shell("")[self.PATCH_KEY]:
             device_properties = self.btv.get_device_properties()
             self.assertDictEqual({}, device_properties)
-        return # FIX
 
         with patchers.patch_shell(DEVICE_PROPERTIES_GOOGLE_TV)[self.PATCH_KEY]:
             self.btv = AndroidTVSync.from_base(self.btv)
@@ -473,7 +472,15 @@ class TestBaseTVSyncPython(unittest.TestCase):
                 self.btv._cmd_current_app(),
                 constants.CMD_CURRENT_APP_GOOGLE_TV,
             )
-        return
+            self.assertEqual(
+                self.btv._cmd_current_app_media_session_state(),
+                constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV,
+            )
+            self.assertEqual(
+                self.btv._cmd_launch_app("TEST"),
+                constants.CMD_LAUNCH_APP_GOOGLE_TV.format("TEST"),
+            )
+
         with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT_SONY_TV)[self.PATCH_KEY]:
             device_properties = self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT_SONY_TV, device_properties)

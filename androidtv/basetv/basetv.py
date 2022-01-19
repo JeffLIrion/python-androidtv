@@ -97,13 +97,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         # the max volume level (determined when first getting the volume level)
         self.max_volume = None
 
-    def _fill_in_commands(self):
-        """Fill in commands that are specific to the device.
-
-        This is implemented in the `BaseAndroidTV` and `BaseFireTV` classes.
-
-        """
-
     # ======================================================================= #
     #                                                                         #
     #                      Device-specific ADB commands                       #
@@ -120,7 +113,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         """
         # Is this a Google Chromecast Android TV?
         # assert self.DEVICE_ENUM == constants.DeviceEnum.ANDROID_TV
-        assert self.DEVICE_ENUM == constants.DeviceEnum.BASE_TV
+        # assert self.DEVICE_ENUM == constants.DeviceEnum.BASE_TV
         # assert "Google" in self.device_properties.get("manufacturer", "")
         # assert "Chromecast" in self.device_properties.get("model", "")
         if (
@@ -184,7 +177,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The device-specific ADB shell command used to determine the running apps
 
         """
-        assert self.DEVICE_ENUM == constants.DeviceEnum.BASE_TV
+        # assert self.DEVICE_ENUM == constants.DeviceEnum.BASE_TV
         if self.DEVICE_ENUM == constants.DeviceEnum.FIRE_TV:
             return constants.CMD_RUNNING_APPS_FIRETV
 
@@ -278,8 +271,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             "wifimac": wifimac,
             "ethmac": ethmac,
         }
-
-        self._fill_in_commands()
 
     # ======================================================================= #
     #                                                                         #
