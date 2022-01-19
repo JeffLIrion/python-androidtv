@@ -36,10 +36,21 @@ class TestConstants(unittest.TestCase):
     def test_constants(self):
         """Test ADB shell commands.
 
+        The contents of this test can be generated via the script tests/generate_test_constants.py.
+
         This is basically a form of version control for constants.
 
         """
         self.maxDiff = None
+
+        # CMD_AUDIO_STATE
+        self.assertEqual(
+            constants.CMD_AUDIO_STATE,
+            r"dumpsys audio | grep paused | grep -qv 'Buffer Queue' && echo -e '1\c' || (dumpsys audio | grep started | grep -qv 'Buffer Queue' && echo '2\c' || echo '0\c')",
+        )
+
+        # CMD_AWAKE
+        self.assertEqual(constants.CMD_AWAKE, r"dumpsys power | grep mWakefulness | grep -q Awake")
 
         # CMD_CURRENT_APP
         self.assertEqual(
@@ -53,6 +64,27 @@ class TestConstants(unittest.TestCase):
             r"CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP",
         )
 
+        # CMD_CURRENT_APP_MEDIA_SESSION_STATE
+        self.assertEqual(
+            constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE,
+            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+        )
+
+        # CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV
+        self.assertEqual(
+            constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV,
+            r"CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+        )
+
+        # CMD_HDMI_INPUT
+        self.assertEqual(
+            constants.CMD_HDMI_INPUT,
+            r"dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'",
+        )
+
+        # CMD_INSTALLED_APPS
+        self.assertEqual(constants.CMD_INSTALLED_APPS, r"pm list packages")
+
         # CMD_LAUNCH_APP
         self.assertEqual(
             constants.CMD_LAUNCH_APP,
@@ -64,6 +96,54 @@ class TestConstants(unittest.TestCase):
             constants.CMD_LAUNCH_APP_GOOGLE_TV,
             r"CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && CURRENT_APP=${{CURRENT_APP#*ActivityRecord{{* * }} && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP%\}}*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LAUNCHER --pct-syskeys 0 1; fi",
         )
+
+        # CMD_MAC_ETH0
+        self.assertEqual(constants.CMD_MAC_ETH0, r"ip addr show eth0 | grep -m 1 ether")
+
+        # CMD_MAC_WLAN0
+        self.assertEqual(constants.CMD_MAC_WLAN0, r"ip addr show wlan0 | grep -m 1 ether")
+
+        # CMD_MANUFACTURER
+        self.assertEqual(constants.CMD_MANUFACTURER, r"getprop ro.product.manufacturer")
+
+        # CMD_MEDIA_SESSION_STATE
+        self.assertEqual(
+            constants.CMD_MEDIA_SESSION_STATE,
+            r"dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+        )
+
+        # CMD_MODEL
+        self.assertEqual(constants.CMD_MODEL, r"getprop ro.product.model")
+
+        # CMD_RUNNING_APPS_ANDROIDTV
+        self.assertEqual(constants.CMD_RUNNING_APPS_ANDROIDTV, r"ps -A | grep u0_a")
+
+        # CMD_RUNNING_APPS_FIRETV
+        self.assertEqual(constants.CMD_RUNNING_APPS_FIRETV, r"ps | grep u0_a")
+
+        # CMD_SCREEN_ON
+        self.assertEqual(
+            constants.CMD_SCREEN_ON,
+            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true')",
+        )
+
+        # CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE
+        self.assertEqual(
+            constants.CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE,
+            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep Locks | grep 'size='",
+        )
+
+        # CMD_SERIALNO
+        self.assertEqual(constants.CMD_SERIALNO, r"getprop ro.serialno")
+
+        # CMD_STREAM_MUSIC
+        self.assertEqual(constants.CMD_STREAM_MUSIC, r"dumpsys audio | grep '\- STREAM_MUSIC:' -A 11")
+
+        # CMD_VERSION
+        self.assertEqual(constants.CMD_VERSION, r"getprop ro.build.version.release")
+
+        # CMD_WAKE_LOCK_SIZE
+        self.assertEqual(constants.CMD_WAKE_LOCK_SIZE, r"dumpsys power | grep Locks | grep 'size='")
 
     def test_current_app_extraction_atv_launcher(self):
         dumpsys_output = """
