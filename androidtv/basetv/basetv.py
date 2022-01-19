@@ -66,6 +66,8 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
     """
 
+    DEVICE_ENUM = constants.DeviceEnum.BASE_TV
+
     def __init__(
         self, adb, host, port=5555, adbkey="", adb_server_ip="", adb_server_port=5037, state_detection_rules=None
     ):
@@ -79,14 +81,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         self.device_properties = {}
         self.installed_apps = []
 
-        # commands that can vary based on the device
-        self._cmd_get_properties_lazy_running_apps = ""
-        self._cmd_get_properties_lazy_no_running_apps = ""
-        self._cmd_get_properties_not_lazy_running_apps = ""
-        self._cmd_get_properties_not_lazy_no_running_apps = ""
-        self._cmd_current_app = ""
-        self._cmd_launch_app = ""
-
         # make sure the rules are valid
         if self._state_detection_rules:
             for app_id, rules in self._state_detection_rules.items():
@@ -97,12 +91,86 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         # the max volume level (determined when first getting the volume level)
         self.max_volume = None
 
-    def _fill_in_commands(self):
-        """Fill in commands that are specific to the device.
+    # ======================================================================= #
+    #                                                                         #
+    #                      Device-specific ADB commands                       #
+    #                                                                         #
+    # ======================================================================= #
+    def _cmd_current_app(self):
+        """Get the command used to retrieve the current app for this device.
 
-        This is implemented in the `BaseAndroidTV` and `BaseFireTV` classes.
+        Returns
+        -------
+        str
+            The device-specific ADB shell command used to determine the current app
 
         """
+        # Is this a Google Chromecast Android TV?
+        if (
+            self.DEVICE_ENUM == constants.DeviceEnum.ANDROID_TV
+            and "Google" in self.device_properties.get("manufacturer", "")
+            and "Chromecast" in self.device_properties.get("model", "")
+        ):
+            return constants.CMD_CURRENT_APP_GOOGLE_TV
+
+        return constants.CMD_CURRENT_APP
+
+    def _cmd_current_app_media_session_state(self):
+        """Get the command used to retrieve the current app and media session state for this device.
+
+        Returns
+        -------
+        str
+            The device-specific ADB shell command used to determine the current app and media session state
+
+        """
+        # Is this a Google Chromecast Android TV?
+        if (
+            self.DEVICE_ENUM == constants.DeviceEnum.ANDROID_TV
+            and "Google" in self.device_properties.get("manufacturer", "")
+            and "Chromecast" in self.device_properties.get("model", "")
+        ):
+            return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV
+
+        return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE
+
+    def _cmd_launch_app(self, app):
+        """Get the command to launch the specified app for this device.
+
+        Parameters
+        ----------
+        app : str
+            The app that will be launched
+
+        Returns
+        -------
+        str
+            The device-specific command to launch the app
+
+        """
+        # Is this a Google Chromecast Android TV?
+        if (
+            self.DEVICE_ENUM == constants.DeviceEnum.ANDROID_TV
+            and "Google" in self.device_properties.get("manufacturer", "")
+            and "Chromecast" in self.device_properties.get("model", "")
+        ):
+            return constants.CMD_LAUNCH_APP_GOOGLE_TV.format(app)
+
+        return constants.CMD_LAUNCH_APP.format(app)
+
+    def _cmd_running_apps(self):
+        """Get the command used to retrieve the running apps for this device.
+
+        Returns
+        -------
+        str
+            The device-specific ADB shell command used to determine the running apps
+
+        """
+        if self.DEVICE_ENUM == constants.DeviceEnum.FIRE_TV:
+            return constants.CMD_RUNNING_APPS_FIRETV
+
+        return constants.CMD_RUNNING_APPS_ANDROIDTV
 
     # ======================================================================= #
     #                                                                         #
@@ -192,8 +260,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             "wifimac": wifimac,
             "ethmac": ethmac,
         }
-
-        self._fill_in_commands()
 
     # ======================================================================= #
     #                                                                         #
@@ -349,12 +415,12 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
     @staticmethod
     def _current_app(current_app_response):
-        """Get the current app from the output of the command :py:const:`androidtv.constants.CMD_CURRENT_APP`.
+        """Get the current app from the output of the command `androidtv.basetv.basetv.BaseTV._cmd_current_app`.
 
         Parameters
         ----------
         current_app_response : str, None
-            The output from the ADB command :py:const:`androidtv.constants.CMD_CURRENT_APP`
+            The output from the ADB command `androidtv.basetv.basetv.BaseTV._cmd_current_app`
 
         Returns
         -------
@@ -367,13 +433,13 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         return current_app_response
 
-    def _current_app_media_session_state(self, media_session_state_response):
-        """Get the current app and the media session state properties from the output of :py:const:`androidtv.constants.CMD_MEDIA_SESSION_STATE_FULL`.
+    def _current_app_media_session_state(self, current_app_media_session_state_response):
+        """Get the current app and the media session state properties from the output of `androidtv.basetv.basetv.BaseTV._cmd_current_app_media_session_state`.
 
         Parameters
         ----------
-        media_session_state_response : str, None
-            The output of :py:const:`androidtv.constants.CMD_MEDIA_SESSION_STATE_FULL`
+        current_app_media_session_state_response : str, None
+            The output of `androidtv.basetv.basetv.BaseTV._cmd_current_app_media_session_state`
 
         Returns
         -------
@@ -383,15 +449,15 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The state from the output of the ADB shell command, or ``None`` if it could not be determined
 
         """
-        if not media_session_state_response:
+        if not current_app_media_session_state_response:
             return None, None
 
-        lines = media_session_state_response.splitlines()
+        lines = current_app_media_session_state_response.splitlines()
 
         current_app = self._current_app(lines[0].strip())
 
         if len(lines) > 1:
-            matches = constants.REGEX_MEDIA_SESSION_STATE.search(media_session_state_response)
+            matches = constants.REGEX_MEDIA_SESSION_STATE.search(current_app_media_session_state_response)
             if matches:
                 return current_app, int(matches.group("state"))
 

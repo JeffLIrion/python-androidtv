@@ -33,14 +33,10 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
     """
 
     DEVICE_CLASS = "firetv"
+    DEVICE_ENUM = constants.DeviceEnum.FIRE_TV
 
     def __init__(self, host, port=5555, adbkey="", adb_server_ip="", adb_server_port=5037, state_detection_rules=None):
         BaseTV.__init__(self, None, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
-
-    def _fill_in_commands(self):
-        """Fill in commands that are specific to Fire TV devices."""
-        self._cmd_current_app = constants.CMD_CURRENT_APP
-        self._cmd_launch_app = constants.CMD_LAUNCH_APP
 
     # ======================================================================= #
     #                                                                         #

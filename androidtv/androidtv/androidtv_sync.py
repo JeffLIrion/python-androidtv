@@ -47,9 +47,6 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
     ):  # pylint: disable=super-init-not-called
         BaseTVSync.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
 
-        # fill in commands that can vary based on the device
-        BaseAndroidTV._fill_in_commands(self)
-
     @classmethod
     def from_base(cls, base_tv):
         """Construct an `AndroidTVSync` object from a `BaseTVSync` object.
@@ -257,19 +254,6 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
             "running_apps": running_apps,
             "hdmi_input": hdmi_input,
         }
-
-    def running_apps(self):
-        """Return a list of running user applications.
-
-        Returns
-        -------
-        list
-            A list of the running apps
-
-        """
-        running_apps_response = self._adb.shell(constants.CMD_RUNNING_APPS_ANDROIDTV)
-
-        return self._running_apps(running_apps_response)
 
     # ======================================================================= #
     #                                                                         #

@@ -267,7 +267,7 @@ class BaseTVAsync(BaseTV):
             The ID of the current app, or ``None`` if it could not be determined
 
         """
-        current_app_response = await self._adb.shell(self._cmd_current_app)
+        current_app_response = await self._adb.shell(self._cmd_current_app())
 
         return self._current_app(current_app_response)
 
@@ -282,8 +282,7 @@ class BaseTVAsync(BaseTV):
             The state from the output of the ADB shell command ``dumpsys media_session``, or ``None`` if it could not be determined
 
         """
-        # This needs to use different commands depending on the device
-        media_session_state_response = await self._adb.shell(constants.CMD_MEDIA_SESSION_STATE_FULL)
+        media_session_state_response = await self._adb.shell(self._cmd_current_app_media_session_state())
 
         return self._current_app_media_session_state(media_session_state_response)
 
@@ -336,6 +335,19 @@ class BaseTVAsync(BaseTV):
         _, media_session_state = await self.current_app_media_session_state()
 
         return media_session_state
+
+    async def running_apps(self):
+        """Return a list of running user applications.
+
+        Returns
+        -------
+        list
+            A list of the running apps
+
+        """
+        running_apps_response = await self._adb.shell(self._cmd_running_apps())
+
+        return self._running_apps(running_apps_response)
 
     async def screen_on(self):
         """Check if the screen is on.
@@ -498,7 +510,7 @@ class BaseTVAsync(BaseTV):
             The ID of the app that will be launched
 
         """
-        await self._adb.shell(self._cmd_launch_app.format(app))
+        await self._adb.shell(self._cmd_launch_app(app))
 
     async def stop_app(self, app):
         """Stop an app.
