@@ -630,6 +630,19 @@ class BaseTVAsync(BaseTV):
 
     # ======================================================================= #
     #                                                                         #
+    #                   "key" methods: turn on/off commands                   #
+    #                                                                         #
+    # ======================================================================= #
+    async def turn_on(self):
+        """Turn on the device."""
+        await self._adb.shell(self._cmd_turn_on())
+
+    async def turn_off(self):
+        """Turn off the device."""
+        await self._adb.shell(self._cmd_turn_off())
+
+    # ======================================================================= #
+    #                                                                         #
     #                   "key" methods: alphanumeric commands                  #
     #                                                                         #
     # ======================================================================= #

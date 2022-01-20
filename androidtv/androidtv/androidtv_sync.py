@@ -8,7 +8,6 @@ import logging
 
 from .base_androidtv import BaseAndroidTV
 from ..basetv.basetv_sync import BaseTVSync
-from .. import constants
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -254,16 +253,3 @@ class AndroidTVSync(BaseTVSync, BaseAndroidTV):
             "running_apps": running_apps,
             "hdmi_input": hdmi_input,
         }
-
-    # ======================================================================= #
-    #                                                                         #
-    #                           turn on/off methods                           #
-    #                                                                         #
-    # ======================================================================= #
-    def turn_on(self):
-        """Send ``POWER`` action if the device is off."""
-        self._adb.shell(constants.CMD_SCREEN_ON + " || input keyevent {0}".format(constants.KEY_POWER))
-
-    def turn_off(self):
-        """Send ``POWER`` action if the device is not off."""
-        self._adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))

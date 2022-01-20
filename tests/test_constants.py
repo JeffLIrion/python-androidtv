@@ -139,6 +139,30 @@ class TestConstants(unittest.TestCase):
         # CMD_STREAM_MUSIC
         self.assertEqual(constants.CMD_STREAM_MUSIC, r"dumpsys audio | grep '\- STREAM_MUSIC:' -A 11")
 
+        # CMD_TURN_OFF_ANDROIDTV
+        self.assertEqual(
+            constants.CMD_TURN_OFF_ANDROIDTV,
+            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') && input keyevent 26",
+        )
+
+        # CMD_TURN_OFF_FIRETV
+        self.assertEqual(
+            constants.CMD_TURN_OFF_FIRETV,
+            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') && input keyevent 223",
+        )
+
+        # CMD_TURN_ON_ANDROIDTV
+        self.assertEqual(
+            constants.CMD_TURN_ON_ANDROIDTV,
+            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') || input keyevent 26",
+        )
+
+        # CMD_TURN_ON_FIRETV
+        self.assertEqual(
+            constants.CMD_TURN_ON_FIRETV,
+            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') || (input keyevent 26 && input keyevent 3)",
+        )
+
         # CMD_VERSION
         self.assertEqual(constants.CMD_VERSION, r"getprop ro.build.version.release")
 
