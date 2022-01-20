@@ -172,6 +172,34 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         return constants.CMD_RUNNING_APPS_ANDROIDTV
 
+    def _cmd_turn_off(self):
+        """Get the command used to turn off this device.
+
+        Returns
+        -------
+        str
+            The device-specific ADB shell command used to turn off the device
+
+        """
+        if self.DEVICE_ENUM == constants.DeviceEnum.FIRE_TV:
+            return constants.CMD_TURN_OFF_FIRETV
+
+        return constants.CMD_TURN_OFF_ANDROIDTV
+
+    def _cmd_turn_on(self):
+        """Get the command used to turn on this device.
+
+        Returns
+        -------
+        str
+            The device-specific ADB shell command used to turn on the device
+
+        """
+        if self.DEVICE_ENUM == constants.DeviceEnum.FIRE_TV:
+            return constants.CMD_TURN_ON_FIRETV
+
+        return constants.CMD_TURN_ON_ANDROIDTV
+
     # ======================================================================= #
     #                                                                         #
     #                               ADB methods                               #

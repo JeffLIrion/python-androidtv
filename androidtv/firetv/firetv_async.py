@@ -8,7 +8,6 @@ import logging
 
 from .base_firetv import BaseFireTV
 from ..basetv.basetv_async import BaseTVAsync
-from .. import constants
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -203,19 +202,3 @@ class FireTVAsync(BaseTVAsync, BaseFireTV):
             "running_apps": running_apps,
             "hdmi_input": hdmi_input,
         }
-
-    # ======================================================================= #
-    #                                                                         #
-    #                           turn on/off methods                           #
-    #                                                                         #
-    # ======================================================================= #
-    async def turn_on(self):
-        """Send ``POWER`` and ``HOME`` actions if the device is off."""
-        await self._adb.shell(
-            constants.CMD_SCREEN_ON
-            + " || (input keyevent {0} && input keyevent {1})".format(constants.KEY_POWER, constants.KEY_HOME)
-        )
-
-    async def turn_off(self):
-        """Send ``SLEEP`` action if the device is not off."""
-        await self._adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_SLEEP))

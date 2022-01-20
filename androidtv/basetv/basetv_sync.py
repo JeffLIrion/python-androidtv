@@ -630,6 +630,19 @@ class BaseTVSync(BaseTV):
 
     # ======================================================================= #
     #                                                                         #
+    #                   "key" methods: turn on/off commands                   #
+    #                                                                         #
+    # ======================================================================= #
+    def turn_on(self):
+        """Turn on the device."""
+        self._adb.shell(self._cmd_turn_on())
+
+    def turn_off(self):
+        """Turn off the device."""
+        self._adb.shell(self._cmd_turn_off())
+
+    # ======================================================================= #
+    #                                                                         #
     #                   "key" methods: alphanumeric commands                  #
     #                                                                         #
     # ======================================================================= #

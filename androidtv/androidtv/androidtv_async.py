@@ -8,7 +8,6 @@ import logging
 
 from .base_androidtv import BaseAndroidTV
 from ..basetv.basetv_async import BaseTVAsync
-from .. import constants
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -252,16 +251,3 @@ class AndroidTVAsync(BaseTVAsync, BaseAndroidTV):
             "running_apps": running_apps,
             "hdmi_input": hdmi_input,
         }
-
-    # ======================================================================= #
-    #                                                                         #
-    #                           turn on/off methods                           #
-    #                                                                         #
-    # ======================================================================= #
-    async def turn_on(self):
-        """Send ``POWER`` action if the device is off."""
-        await self._adb.shell(constants.CMD_SCREEN_ON + " || input keyevent {0}".format(constants.KEY_POWER))
-
-    async def turn_off(self):
-        """Send ``POWER`` action if the device is not off."""
-        await self._adb.shell(constants.CMD_SCREEN_ON + " && input keyevent {0}".format(constants.KEY_POWER))

@@ -112,6 +112,18 @@ CMD_SCREEN_ON = (
 #: Get the "STREAM_MUSIC" block from ``dumpsys audio``
 CMD_STREAM_MUSIC = r"dumpsys audio | grep '\- STREAM_MUSIC:' -A 11"
 
+#: Turn off an Android TV device (note: `KEY_POWER = 26` is defined below)
+CMD_TURN_OFF_ANDROIDTV = CMD_SCREEN_ON + " && input keyevent 26"
+
+#: Turn off a Fire TV device (note: `KEY_SLEEP = 223` is defined below)
+CMD_TURN_OFF_FIRETV = CMD_SCREEN_ON + " && input keyevent 223"
+
+#: Turn on an Android TV device (note: `KEY_POWER = 26` is defined below)
+CMD_TURN_ON_ANDROIDTV = CMD_SCREEN_ON + " || input keyevent 26"
+
+#: Turn on a Fire TV device (note: `KEY_POWER = 26` and `KEY_HOME = 3` are defined below)
+CMD_TURN_ON_FIRETV = CMD_SCREEN_ON + " || (input keyevent 26 && input keyevent 3)"
+
 #: Get the wake lock size
 CMD_WAKE_LOCK_SIZE = "dumpsys power | grep Locks | grep 'size='"
 
