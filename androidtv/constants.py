@@ -25,9 +25,9 @@ else:  # pragma: no cover
 class DeviceEnum(IntEnum):
     """An enum for the various device types."""
 
-    BASE_TV = 0
-    ANDROID_TV = 1
-    FIRE_TV = 2
+    BASETV = 0
+    ANDROIDTV = 1
+    FIRETV = 2
 
 
 # Intents
