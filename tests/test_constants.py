@@ -1,5 +1,7 @@
 import inspect
 import os
+import shlex
+import subprocess
 import sys
 import unittest
 
@@ -168,6 +170,13 @@ class TestConstants(unittest.TestCase):
 
         # CMD_WAKE_LOCK_SIZE
         self.assertEqual(constants.CMD_WAKE_LOCK_SIZE, r"dumpsys power | grep Locks | grep 'size='")
+
+    def test_no_underscores(self):
+        """Test that 'ANDROID_TV', 'BASE_TV', and 'FIRE_TV' do not appear in the code base."""
+        cwd = os.path.join(os.path.dirname(__file__), "..")
+        for underscore_name in ["ANDROID_TV", "BASE_TV", "FIRE_TV"]:
+            with subprocess.Popen(shlex.split("git grep -l {} -- androidtv/".format(underscore_name)), cwd=cwd) as p:
+                self.assertEqual(p.wait(), 1)
 
     def test_current_app_extraction_atv_launcher(self):
         dumpsys_output = """

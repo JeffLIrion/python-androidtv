@@ -66,7 +66,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
     """
 
-    DEVICE_ENUM = constants.DeviceEnum.BASE_TV
+    DEVICE_ENUM = constants.DeviceEnum.BASETV
 
     def __init__(
         self, adb, host, port=5555, adbkey="", adb_server_ip="", adb_server_port=5037, state_detection_rules=None
@@ -107,7 +107,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         """
         # Is this a Google Chromecast Android TV?
         if (
-            self.DEVICE_ENUM == constants.DeviceEnum.ANDROID_TV
+            self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
             and "Google" in self.device_properties.get("manufacturer", "")
             and "Chromecast" in self.device_properties.get("model", "")
         ):
@@ -126,7 +126,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         """
         # Is this a Google Chromecast Android TV?
         if (
-            self.DEVICE_ENUM == constants.DeviceEnum.ANDROID_TV
+            self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
             and "Google" in self.device_properties.get("manufacturer", "")
             and "Chromecast" in self.device_properties.get("model", "")
         ):
@@ -150,7 +150,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         """
         # Is this a Google Chromecast Android TV?
         if (
-            self.DEVICE_ENUM == constants.DeviceEnum.ANDROID_TV
+            self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
             and "Google" in self.device_properties.get("manufacturer", "")
             and "Chromecast" in self.device_properties.get("model", "")
         ):
@@ -167,7 +167,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The device-specific ADB shell command used to determine the running apps
 
         """
-        if self.DEVICE_ENUM == constants.DeviceEnum.FIRE_TV:
+        if self.DEVICE_ENUM == constants.DeviceEnum.FIRETV:
             return constants.CMD_RUNNING_APPS_FIRETV
 
         return constants.CMD_RUNNING_APPS_ANDROIDTV
@@ -181,7 +181,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The device-specific ADB shell command used to turn off the device
 
         """
-        if self.DEVICE_ENUM == constants.DeviceEnum.FIRE_TV:
+        if self.DEVICE_ENUM == constants.DeviceEnum.FIRETV:
             return constants.CMD_TURN_OFF_FIRETV
 
         return constants.CMD_TURN_OFF_ANDROIDTV
@@ -195,7 +195,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The device-specific ADB shell command used to turn on the device
 
         """
-        if self.DEVICE_ENUM == constants.DeviceEnum.FIRE_TV:
+        if self.DEVICE_ENUM == constants.DeviceEnum.FIRETV:
             return constants.CMD_TURN_ON_FIRETV
 
         return constants.CMD_TURN_ON_ANDROIDTV
