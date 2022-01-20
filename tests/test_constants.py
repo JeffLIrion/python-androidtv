@@ -171,6 +171,7 @@ class TestConstants(unittest.TestCase):
         # CMD_WAKE_LOCK_SIZE
         self.assertEqual(constants.CMD_WAKE_LOCK_SIZE, r"dumpsys power | grep Locks | grep 'size='")
 
+    @unittest.skipIf(sys.version_info.major == 2, "Test requires Python 3")
     def test_no_underscores(self):
         """Test that 'ANDROID_TV', 'BASE_TV', and 'FIRE_TV' do not appear in the code base."""
         cwd = os.path.join(os.path.dirname(__file__), "..")
