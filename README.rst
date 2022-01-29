@@ -11,6 +11,19 @@ python-androidtv
    :target: https://pepy.tech/project/androidtv
    :alt: Downloads
 
+
+Contributions Only
+------------------
+
+I no longer have the time to actively work on this project, and so all future development will be from pull requests submitted by the community.  What I will do is:
+
+* review pull requests that pass all of the CI checks
+* publish new releases upon request
+
+
+About
+-----
+
 Documentation for this package can be found at `https://androidtv.readthedocs.io <https://androidtv.readthedocs.io>`_.
 
 ``androidtv`` is a Python package that provides state information and control of Android TV and Fire TV devices via ADB.  This package is used by the `Android TV <https://www.home-assistant.io/components/androidtv/>`_ integration in Home Assistant.
