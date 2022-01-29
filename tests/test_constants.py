@@ -9,8 +9,18 @@ sys.path.insert(0, "..")
 
 from androidtv import constants
 
+from .generate_test_constants import get_cmds
+
 
 class TestConstants(unittest.TestCase):
+    def setUp(self):
+        self._cmds = []
+        self._cmd_names = {}
+
+    def assertCommand(self, value, expected_value):
+        self.assertEqual(value, expected_value)
+        self._cmds.append(self._cmd_names[value])
+
     @staticmethod
     def _exec(command):
         process = os.popen(command)
@@ -45,131 +55,141 @@ class TestConstants(unittest.TestCase):
         """
         self.maxDiff = None
 
+        # Generate a dictionary where the keys are the `CMD_*` strings and the values are their variable names
+        cmds = get_cmds()
+        self._cmd_names = {val: key for key, val in cmds.items()}
+
+        # Check that each `CMD_*` is unique
+        self.assertEqual(len(cmds), len(self._cmd_names))
+
         # CMD_AUDIO_STATE
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_AUDIO_STATE,
             r"dumpsys audio | grep paused | grep -qv 'Buffer Queue' && echo -e '1\c' || (dumpsys audio | grep started | grep -qv 'Buffer Queue' && echo '2\c' || echo '0\c')",
         )
 
         # CMD_AWAKE
-        self.assertEqual(constants.CMD_AWAKE, r"dumpsys power | grep mWakefulness | grep -q Awake")
+        self.assertCommand(constants.CMD_AWAKE, r"dumpsys power | grep mWakefulness | grep -q Awake")
 
         # CMD_CURRENT_APP
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_CURRENT_APP,
             r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP",
         )
 
         # CMD_CURRENT_APP_GOOGLE_TV
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_CURRENT_APP_GOOGLE_TV,
             r"CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP",
         )
 
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE,
             r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
 
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV,
             r"CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
 
         # CMD_HDMI_INPUT
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_HDMI_INPUT,
             r"dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'",
         )
 
         # CMD_INSTALLED_APPS
-        self.assertEqual(constants.CMD_INSTALLED_APPS, r"pm list packages")
+        self.assertCommand(constants.CMD_INSTALLED_APPS, r"pm list packages")
 
         # CMD_LAUNCH_APP
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_LAUNCH_APP,
             r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${{CURRENT_APP#*ActivityRecord{{* * }} && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP%\}}*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LAUNCHER --pct-syskeys 0 1; fi",
         )
 
         # CMD_LAUNCH_APP_GOOGLE_TV
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_LAUNCH_APP_GOOGLE_TV,
             r"CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && CURRENT_APP=${{CURRENT_APP#*ActivityRecord{{* * }} && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP%\}}*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LAUNCHER --pct-syskeys 0 1; fi",
         )
 
         # CMD_MAC_ETH0
-        self.assertEqual(constants.CMD_MAC_ETH0, r"ip addr show eth0 | grep -m 1 ether")
+        self.assertCommand(constants.CMD_MAC_ETH0, r"ip addr show eth0 | grep -m 1 ether")
 
         # CMD_MAC_WLAN0
-        self.assertEqual(constants.CMD_MAC_WLAN0, r"ip addr show wlan0 | grep -m 1 ether")
+        self.assertCommand(constants.CMD_MAC_WLAN0, r"ip addr show wlan0 | grep -m 1 ether")
 
         # CMD_MANUFACTURER
-        self.assertEqual(constants.CMD_MANUFACTURER, r"getprop ro.product.manufacturer")
+        self.assertCommand(constants.CMD_MANUFACTURER, r"getprop ro.product.manufacturer")
 
         # CMD_MEDIA_SESSION_STATE
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_MEDIA_SESSION_STATE,
             r"dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
 
         # CMD_MODEL
-        self.assertEqual(constants.CMD_MODEL, r"getprop ro.product.model")
+        self.assertCommand(constants.CMD_MODEL, r"getprop ro.product.model")
 
         # CMD_RUNNING_APPS_ANDROIDTV
-        self.assertEqual(constants.CMD_RUNNING_APPS_ANDROIDTV, r"ps -A | grep u0_a")
+        self.assertCommand(constants.CMD_RUNNING_APPS_ANDROIDTV, r"ps -A | grep u0_a")
 
         # CMD_RUNNING_APPS_FIRETV
-        self.assertEqual(constants.CMD_RUNNING_APPS_FIRETV, r"ps | grep u0_a")
+        self.assertCommand(constants.CMD_RUNNING_APPS_FIRETV, r"ps | grep u0_a")
 
         # CMD_SCREEN_ON
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_SCREEN_ON,
             r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true')",
         )
 
         # CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE,
             r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep Locks | grep 'size='",
         )
 
         # CMD_SERIALNO
-        self.assertEqual(constants.CMD_SERIALNO, r"getprop ro.serialno")
+        self.assertCommand(constants.CMD_SERIALNO, r"getprop ro.serialno")
 
         # CMD_STREAM_MUSIC
-        self.assertEqual(constants.CMD_STREAM_MUSIC, r"dumpsys audio | grep '\- STREAM_MUSIC:' -A 11")
+        self.assertCommand(constants.CMD_STREAM_MUSIC, r"dumpsys audio | grep '\- STREAM_MUSIC:' -A 11")
 
         # CMD_TURN_OFF_ANDROIDTV
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_TURN_OFF_ANDROIDTV,
             r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') && input keyevent 26",
         )
 
         # CMD_TURN_OFF_FIRETV
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_TURN_OFF_FIRETV,
             r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') && input keyevent 223",
         )
 
         # CMD_TURN_ON_ANDROIDTV
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_TURN_ON_ANDROIDTV,
             r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') || input keyevent 26",
         )
 
         # CMD_TURN_ON_FIRETV
-        self.assertEqual(
+        self.assertCommand(
             constants.CMD_TURN_ON_FIRETV,
             r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') || (input keyevent 26 && input keyevent 3)",
         )
 
         # CMD_VERSION
-        self.assertEqual(constants.CMD_VERSION, r"getprop ro.build.version.release")
+        self.assertCommand(constants.CMD_VERSION, r"getprop ro.build.version.release")
 
         # CMD_WAKE_LOCK_SIZE
-        self.assertEqual(constants.CMD_WAKE_LOCK_SIZE, r"dumpsys power | grep Locks | grep 'size='")
+        self.assertCommand(constants.CMD_WAKE_LOCK_SIZE, r"dumpsys power | grep Locks | grep 'size='")
+
+        # Assert that the keys were checked in alphabetical order
+        self.assertEqual(self._cmds, sorted(cmds.keys()))
 
     @unittest.skipIf(sys.version_info.major == 2, "Test requires Python 3")
     def test_no_underscores(self):
