@@ -34,6 +34,22 @@ class DeviceEnum(IntEnum):
 INTENT_LAUNCH = "android.intent.category.LAUNCHER"
 INTENT_HOME = "android.intent.category.HOME"
 
+# Customizable commands
+CUSTOM_CURRENT_APP = "current_app"
+CUSTOM_CURRENT_APP_MEDIA_SESSION_STATE = "current_app_media_session_state"
+CUSTOM_LAUNCH_APP = "launch_app"
+CUSTOM_RUNNING_APPS = "running_apps"
+CUSTOM_TURN_OFF = "turn_off"
+CUSTOM_TURN_ON = "turn_on"
+CUSTOMIZABLE_COMMANDS = {
+    CUSTOM_CURRENT_APP,
+    CUSTOM_CURRENT_APP_MEDIA_SESSION_STATE,
+    CUSTOM_LAUNCH_APP,
+    CUSTOM_RUNNING_APPS,
+    CUSTOM_TURN_OFF,
+    CUSTOM_TURN_ON,
+}
+
 
 # echo '1' if the previous shell command was successful
 CMD_SUCCESS1 = r" && echo -e '1\c'"

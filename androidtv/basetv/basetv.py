@@ -91,11 +91,31 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         # the max volume level (determined when first getting the volume level)
         self.max_volume = None
 
+        # Customizable commands
+        self._custom_commands = {}
+
     # ======================================================================= #
     #                                                                         #
     #                      Device-specific ADB commands                       #
     #                                                                         #
     # ======================================================================= #
+    def customize_command(self, custom_command, value):
+        """Customize a command used to retrieve properties.
+
+        Parameters
+        ----------
+        custom_command : str
+            The name of the command that will be customized; it must be in `constants.CUSTOMIZABLE_COMMANDS`
+        value : str, None
+            The custom ADB command that will be used, or ``None`` if the custom command should be deleted
+
+        """
+        if custom_command in constants.CUSTOMIZABLE_COMMANDS:
+            if value is not None:
+                self._custom_commands[custom_command] = value
+            elif custom_command in self._custom_commands:
+                del self._custom_commands[custom_command]
+
     def _cmd_current_app(self):
         """Get the command used to retrieve the current app for this device.
 
@@ -105,6 +125,9 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The device-specific ADB shell command used to determine the current app
 
         """
+        if constants.CUSTOM_CURRENT_APP in self._custom_commands:
+            return self._custom_commands[constants.CUSTOM_CURRENT_APP]
+
         # Is this a Google Chromecast Android TV?
         if (
             self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
@@ -124,6 +147,9 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The device-specific ADB shell command used to determine the current app and media session state
 
         """
+        if constants.CUSTOM_CURRENT_APP_MEDIA_SESSION_STATE in self._custom_commands:
+            return self._custom_commands[constants.CUSTOM_CURRENT_APP_MEDIA_SESSION_STATE]
+
         # Is this a Google Chromecast Android TV?
         if (
             self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
@@ -148,6 +174,9 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The device-specific command to launch the app
 
         """
+        if constants.CUSTOM_LAUNCH_APP in self._custom_commands:
+            return self._custom_commands[constants.CUSTOM_LAUNCH_APP].format(app)
+
         # Is this a Google Chromecast Android TV?
         if (
             self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
@@ -167,6 +196,9 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The device-specific ADB shell command used to determine the running apps
 
         """
+        if constants.CUSTOM_RUNNING_APPS in self._custom_commands:
+            return self._custom_commands[constants.CUSTOM_RUNNING_APPS]
+
         if self.DEVICE_ENUM == constants.DeviceEnum.FIRETV:
             return constants.CMD_RUNNING_APPS_FIRETV
 
@@ -181,6 +213,9 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The device-specific ADB shell command used to turn off the device
 
         """
+        if constants.CUSTOM_TURN_OFF in self._custom_commands:
+            return self._custom_commands[constants.CUSTOM_TURN_OFF]
+
         if self.DEVICE_ENUM == constants.DeviceEnum.FIRETV:
             return constants.CMD_TURN_OFF_FIRETV
 
@@ -195,6 +230,9 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The device-specific ADB shell command used to turn on the device
 
         """
+        if constants.CUSTOM_TURN_ON in self._custom_commands:
+            return self._custom_commands[constants.CUSTOM_TURN_ON]
+
         if self.DEVICE_ENUM == constants.DeviceEnum.FIRETV:
             return constants.CMD_TURN_ON_FIRETV
 

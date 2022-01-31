@@ -591,6 +591,43 @@ class TestAndroidTVSyncPython(unittest.TestCase):
             (constants.STATE_IDLE, "unknown", ["unknown"], "hmdi_arc", False, 0.5, None),
         )
 
+    def test_customize_command(self):
+        self.atv.customize_command(constants.CUSTOM_CURRENT_APP, "1")
+        with patch.object(self.atv._adb, "shell") as patched:
+            self.atv.current_app()
+            patched.assert_called_with("1")
+
+        self.atv.customize_command(constants.CUSTOM_CURRENT_APP_MEDIA_SESSION_STATE, "2")
+        with patch.object(self.atv._adb, "shell") as patched:
+            self.atv.current_app_media_session_state()
+            patched.assert_called_with("2")
+
+        self.atv.customize_command(constants.CUSTOM_LAUNCH_APP, "this is a {}")
+        with patch.object(self.atv._adb, "shell") as patched:
+            self.atv.launch_app("test")
+            patched.assert_called_with("this is a test")
+
+        self.atv.customize_command(constants.CUSTOM_RUNNING_APPS, "3")
+        with patch.object(self.atv._adb, "shell") as patched:
+            self.atv.running_apps()
+            patched.assert_called_with("3")
+
+        self.atv.customize_command(constants.CUSTOM_TURN_OFF, "4")
+        with patch.object(self.atv._adb, "shell") as patched:
+            self.atv.turn_off()
+            patched.assert_called_with("4")
+
+        self.atv.customize_command(constants.CUSTOM_TURN_ON, "5")
+        with patch.object(self.atv._adb, "shell") as patched:
+            self.atv.turn_on()
+            patched.assert_called_with("5")
+
+        # Delete a custom command
+        self.atv.customize_command(constants.CUSTOM_TURN_ON, None)
+        with patch.object(self.atv._adb, "shell") as patched:
+            self.atv.turn_on()
+            patched.assert_called_with(constants.CMD_TURN_ON_ANDROIDTV)
+
 
 class TestAndroidTVSyncServer(TestAndroidTVSyncPython):
     PATCH_KEY = "server"
