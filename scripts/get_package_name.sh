@@ -5,8 +5,8 @@ set -e
 # get the directory of this script
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-RSTRIP="'*"
-LSTRIP="*'"
+RSTRIP="\"*"
+LSTRIP="*\""
 
 # get the package name
 PACKAGE_LINE=$(grep 'name=' $DIR/../setup.py || echo '')

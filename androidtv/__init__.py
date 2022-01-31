@@ -10,7 +10,7 @@ from .constants import DEFAULT_AUTH_TIMEOUT_S
 from .firetv.firetv_sync import FireTVSync
 
 
-__version__ = "0.0.60"
+__version__ = "0.0.61"
 
 
 def setup(
