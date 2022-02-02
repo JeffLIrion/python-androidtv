@@ -50,6 +50,14 @@ CUSTOMIZABLE_COMMANDS = {
     CUSTOM_TURN_ON,
 }
 
+#: The subset of `CUSTOMIZABLE_COMMANDS` that is potentially used in the ``update()`` method
+HA_CUSTOMIZABLE_COMMANDS = (
+    CUSTOM_CURRENT_APP_MEDIA_SESSION_STATE,
+    CUSTOM_LAUNCH_APP,
+    CUSTOM_RUNNING_APPS,
+    CUSTOM_TURN_OFF,
+    CUSTOM_TURN_ON,
+)
 
 # echo '1' if the previous shell command was successful
 CMD_SUCCESS1 = r" && echo -e '1\c'"
