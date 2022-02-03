@@ -163,8 +163,8 @@ CMD_SERIALNO = "getprop ro.serialno"
 CMD_VERSION = "getprop ro.build.version.release"
 
 # Commands for getting the MAC address
-CMD_MAC_WLAN0 = "ip addr show wlan0 | grep -m 1 ether"
-CMD_MAC_ETH0 = "ip addr show eth0 | grep -m 1 ether"
+CMD_MAC_WLAN0 = "ip addr show wlan0 | grep -m 1 ether || echo ''"
+CMD_MAC_ETH0 = "ip addr show eth0 | grep -m 1 ether || echo ''"
 
 #: The command used for getting the device properties
 CMD_DEVICE_PROPERTIES = (
@@ -177,7 +177,7 @@ CMD_DEVICE_PROPERTIES = (
     + CMD_VERSION
     + " && "
     + CMD_MAC_WLAN0
-    + " && "
+    + "; "
     + CMD_MAC_ETH0
 )
 
