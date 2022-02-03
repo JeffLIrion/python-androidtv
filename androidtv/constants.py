@@ -166,6 +166,21 @@ CMD_VERSION = "getprop ro.build.version.release"
 CMD_MAC_WLAN0 = "ip addr show wlan0 | grep -m 1 ether"
 CMD_MAC_ETH0 = "ip addr show eth0 | grep -m 1 ether"
 
+#: The command used for getting the device properties
+CMD_DEVICE_PROPERTIES = (
+    CMD_MANUFACTURER
+    + " && "
+    + CMD_MODEL
+    + " && "
+    + CMD_SERIALNO
+    + " && "
+    + CMD_VERSION
+    + " && "
+    + CMD_MAC_WLAN0
+    + " && "
+    + CMD_MAC_ETH0
+)
+
 
 # ADB key event codes
 # https://developer.android.com/reference/android/view/KeyEvent
