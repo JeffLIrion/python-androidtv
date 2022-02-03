@@ -95,6 +95,12 @@ class TestConstants(unittest.TestCase):
             r"CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
 
+        # CMD_DEVICE_PROPERTIES
+        self.assertCommand(
+            constants.CMD_DEVICE_PROPERTIES,
+            r"getprop ro.product.manufacturer && getprop ro.product.model && getprop ro.serialno && getprop ro.build.version.release && ip addr show wlan0 | grep -m 1 ether && ip addr show eth0 | grep -m 1 ether",
+        )
+
         # CMD_HDMI_INPUT
         self.assertCommand(
             constants.CMD_HDMI_INPUT,

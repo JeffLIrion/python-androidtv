@@ -200,19 +200,7 @@ class BaseTVSync(BaseTV):
             A dictionary with keys ``'wifimac'``, ``'ethmac'``, ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
 
         """
-        properties = self._adb.shell(
-            constants.CMD_MANUFACTURER
-            + " && "
-            + constants.CMD_MODEL
-            + " && "
-            + constants.CMD_SERIALNO
-            + " && "
-            + constants.CMD_VERSION
-            + " && "
-            + constants.CMD_MAC_WLAN0
-            + " && "
-            + constants.CMD_MAC_ETH0
-        )
+        properties = self._adb.shell(constants.CMD_DEVICE_PROPERTIES)
 
         self._parse_device_properties(properties)
         return self.device_properties
