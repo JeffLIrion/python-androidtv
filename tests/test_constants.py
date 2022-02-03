@@ -98,7 +98,7 @@ class TestConstants(unittest.TestCase):
         # CMD_DEVICE_PROPERTIES
         self.assertCommand(
             constants.CMD_DEVICE_PROPERTIES,
-            r"getprop ro.product.manufacturer && getprop ro.product.model && getprop ro.serialno && getprop ro.build.version.release && ip addr show wlan0 | grep -m 1 ether || echo ''; ip addr show eth0 | grep -m 1 ether || echo ''",
+            r"getprop ro.product.manufacturer && getprop ro.product.model && getprop ro.serialno && getprop ro.build.version.release && ip addr show wlan0 | grep -m 1 ether; ip addr show eth0 | grep -m 1 ether",
         )
 
         # CMD_HDMI_INPUT
@@ -123,10 +123,10 @@ class TestConstants(unittest.TestCase):
         )
 
         # CMD_MAC_ETH0
-        self.assertCommand(constants.CMD_MAC_ETH0, r"ip addr show eth0 | grep -m 1 ether || echo ''")
+        self.assertCommand(constants.CMD_MAC_ETH0, r"ip addr show eth0 | grep -m 1 ether")
 
         # CMD_MAC_WLAN0
-        self.assertCommand(constants.CMD_MAC_WLAN0, r"ip addr show wlan0 | grep -m 1 ether || echo ''")
+        self.assertCommand(constants.CMD_MAC_WLAN0, r"ip addr show wlan0 | grep -m 1 ether")
 
         # CMD_MANUFACTURER
         self.assertCommand(constants.CMD_MANUFACTURER, r"getprop ro.product.manufacturer")
