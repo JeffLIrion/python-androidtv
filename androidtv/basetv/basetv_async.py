@@ -203,6 +203,12 @@ class BaseTVAsync(BaseTV):
         properties = await self._adb.shell(constants.CMD_DEVICE_PROPERTIES)
 
         self._parse_device_properties(properties)
+
+        ethmac_response = await self._adb.shell(constants.CMD_MAC_ETH0)
+        wifimac_response = await self._adb.shell(constants.CMD_MAC_WLAN0)
+        self.device_properties["ethmac"] = self._parse_mac_address(ethmac_response)
+        self.device_properties["wifimac"] = self._parse_mac_address(wifimac_response)
+
         return self.device_properties
 
     # ======================================================================= #

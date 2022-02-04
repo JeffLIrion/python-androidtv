@@ -286,7 +286,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The output of the ADB command that retrieves the device properties
 
         This method fills in the ``device_properties`` attribute, which is a dictionary with keys
-        ``'wifimac'``, ``'ethmac'``, ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
+        ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
 
         """
         _LOGGER.debug("%s:%d `get_device_properties` response: %s", self.host, self.port, properties)
@@ -296,36 +296,46 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             return
 
         lines = properties.strip().splitlines()
-        if len(lines) != 6:
+        if len(lines) != 4:
             self.device_properties = {}
             return
 
-        manufacturer, model, serialno, version, mac_wlan0_output, mac_eth0_output = lines
+        manufacturer, model, serialno, version = lines
 
         if not serialno.strip():
             _LOGGER.warning("Could not obtain serialno for %s:%d, got: '%s'", self.host, self.port, serialno)
             serialno = None
-
-        mac_wlan0_matches = re.findall(constants.MAC_REGEX_PATTERN, mac_wlan0_output)
-        if mac_wlan0_matches:
-            wifimac = mac_wlan0_matches[0]
-        else:
-            wifimac = None
-
-        mac_eth0_matches = re.findall(constants.MAC_REGEX_PATTERN, mac_eth0_output)
-        if mac_eth0_matches:
-            ethmac = mac_eth0_matches[0]
-        else:
-            ethmac = None
 
         self.device_properties = {
             "manufacturer": manufacturer,
             "model": model,
             "serialno": serialno,
             "sw_version": version,
-            "wifimac": wifimac,
-            "ethmac": ethmac,
         }
+
+    @staticmethod
+    def _parse_mac_address(mac_response):
+        """Parse a MAC address from the ADB shell response.
+
+        Parameters
+        ----------
+        mac_response : str, None
+            The response from the MAC address ADB shell command
+
+        Returns
+        -------
+        str, None
+            The parsed MAC address, or ``None`` if it could not be determined
+
+        """
+        if not mac_response:
+            return None
+
+        mac_matches = re.findall(constants.MAC_REGEX_PATTERN, mac_response)
+        if mac_matches:
+            return mac_matches[0]
+
+        return None
 
     # ======================================================================= #
     #                                                                         #
