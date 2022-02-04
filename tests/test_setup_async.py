@@ -13,24 +13,24 @@ from . import async_patchers
 from .async_wrapper import awaiter
 
 
-DEVICE_PROPERTIES_OUTPUT1 = "Amazon\n\n\n\n\n."
+DEVICE_PROPERTIES_OUTPUT1 = "Amazon\n\n\n123"
 
 DEVICE_PROPERTIES_DICT1 = {
     "manufacturer": "Amazon",
     "model": "",
     "serialno": None,
-    "sw_version": "",
+    "sw_version": "123",
     "wifimac": None,
     "ethmac": None,
 }
 
-DEVICE_PROPERTIES_OUTPUT2 = "Not Amazon\n\n\n\n\n."
+DEVICE_PROPERTIES_OUTPUT2 = "Not Amazon\n\n\n456"
 
 DEVICE_PROPERTIES_DICT2 = {
     "manufacturer": "Not Amazon",
     "model": "",
     "serialno": None,
-    "sw_version": "",
+    "sw_version": "456",
     "wifimac": None,
     "ethmac": None,
 }

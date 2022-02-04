@@ -19,9 +19,10 @@ DEVICE_PROPERTIES_OUTPUT1 = """Amazon
 AFTT
 SERIALNO
 5.1.1
-    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
-Device "eth0" does not exist.
 """
+
+WIFIMAC_OUTPUT1 = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
+ETHMAC_OUTPUT1 = 'Device "eth0" does not exist.'
 
 DEVICE_PROPERTIES_DICT1 = {
     "manufacturer": "Amazon",
@@ -36,8 +37,6 @@ DEVICE_PROPERTIES_OUTPUT2 = """Amazon
 AFTT
  
 5.1.1
-    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
-Device "eth0" does not exist.
 """
 
 DEVICE_PROPERTIES_DICT2 = {
@@ -53,26 +52,39 @@ DEVICE_PROPERTIES_OUTPUT3 = """Not Amazon
 AFTT
 SERIALNO
 5.1.1
-Device "wlan0" does not exist.
-    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
 """
+
+WIFIMAC_OUTPUT3 = 'Device "wlan0" does not exist.'
+ETHMAC_OUTPUT3 = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
+
+DEVICE_PROPERTIES_DICT3 = {
+    "manufacturer": "Not Amazon",
+    "model": "AFTT",
+    "serialno": "SERIALNO",
+    "sw_version": "5.1.1",
+    "wifimac": None,
+    "ethmac": "ab:cd:ef:gh:ij:kl",
+}
+
 
 # Source: https://community.home-assistant.io/t/new-chromecast-w-android-tv-integration-only-showing-as-off-or-idle/234424/15
 DEVICE_PROPERTIES_GOOGLE_TV = """Google
 Chromecast
 SERIALNO
 10
-    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
-Device "eth0" does not exist.
 """
+
+WIFIMAC_GOOGLE = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
+ETHMAC_GOOGLE = 'Device "eth0" does not exist.'
 
 DEVICE_PROPERTIES_OUTPUT_SONY_TV = """Sony
 BRAVIA 4K GB
 SERIALNO
 8.0.0
-    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff
-    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff
 """
+
+WIFIMAC_SONY = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
+ETHMAC_SONY = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
 
 DEVICE_PROPERTIES_DICT_SONY_TV = {
     "manufacturer": "Sony",
@@ -91,15 +103,6 @@ INSTALLED_APPS_LIST = [
     "org.example.app",
     "org.example.launcher",
 ]
-
-DEVICE_PROPERTIES_DICT3 = {
-    "manufacturer": "Not Amazon",
-    "model": "AFTT",
-    "serialno": "SERIALNO",
-    "sw_version": "5.1.1",
-    "wifimac": None,
-    "ethmac": "ab:cd:ef:gh:ij:kl",
-}
 
 MEDIA_SESSION_STATE_OUTPUT = "com.amazon.tv.launcher\nstate=PlaybackState {state=2, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}"
 
@@ -442,27 +445,35 @@ class TestBaseTVSyncPython(unittest.TestCase):
 
     def test_get_device_properties(self):
         """Check that ``get_device_properties`` works correctly."""
-        with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT1)[self.PATCH_KEY]:
+        with patch.object(
+            self.btv._adb, "shell", side_effect=(DEVICE_PROPERTIES_OUTPUT1, ETHMAC_OUTPUT1, WIFIMAC_OUTPUT1)
+        ):
             device_properties = self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT1, device_properties)
 
-        with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT2)[self.PATCH_KEY]:
+        with patch.object(
+            self.btv._adb, "shell", side_effect=(DEVICE_PROPERTIES_OUTPUT2, ETHMAC_OUTPUT1, WIFIMAC_OUTPUT1)
+        ):
             device_properties = self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT2, device_properties)
 
-        with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT3)[self.PATCH_KEY]:
+        with patch.object(
+            self.btv._adb, "shell", side_effect=(DEVICE_PROPERTIES_OUTPUT3, ETHMAC_OUTPUT3, WIFIMAC_OUTPUT3)
+        ):
             device_properties = self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT3, device_properties)
 
-        with patchers.patch_shell("manufacturer")[self.PATCH_KEY]:
+        with patch.object(self.btv._adb, "shell", side_effect=("manufacturer", None, "No match")):
             device_properties = self.btv.get_device_properties()
-            self.assertDictEqual({}, device_properties)
+            self.assertDictEqual({"ethmac": None, "wifimac": None}, device_properties)
 
-        with patchers.patch_shell("")[self.PATCH_KEY]:
+        with patch.object(self.btv._adb, "shell", side_effect=("", None, "No match")):
             device_properties = self.btv.get_device_properties()
-            self.assertDictEqual({}, device_properties)
+            self.assertDictEqual({"ethmac": None, "wifimac": None}, device_properties)
 
-        with patchers.patch_shell(DEVICE_PROPERTIES_GOOGLE_TV)[self.PATCH_KEY]:
+        with patch.object(
+            self.btv._adb, "shell", side_effect=(DEVICE_PROPERTIES_GOOGLE_TV, ETHMAC_GOOGLE, WIFIMAC_GOOGLE)
+        ):
             self.btv = AndroidTVSync.from_base(self.btv)
             device_properties = self.btv.get_device_properties()
             assert "Chromecast" in self.btv.device_properties.get("model", "")
@@ -481,7 +492,9 @@ class TestBaseTVSyncPython(unittest.TestCase):
                 constants.CMD_LAUNCH_APP_GOOGLE_TV.format("TEST"),
             )
 
-        with patchers.patch_shell(DEVICE_PROPERTIES_OUTPUT_SONY_TV)[self.PATCH_KEY]:
+        with patch.object(
+            self.btv._adb, "shell", side_effect=(DEVICE_PROPERTIES_OUTPUT_SONY_TV, ETHMAC_SONY, WIFIMAC_SONY)
+        ):
             device_properties = self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT_SONY_TV, device_properties)
 

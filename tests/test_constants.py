@@ -98,7 +98,7 @@ class TestConstants(unittest.TestCase):
         # CMD_DEVICE_PROPERTIES
         self.assertCommand(
             constants.CMD_DEVICE_PROPERTIES,
-            r"getprop ro.product.manufacturer && getprop ro.product.model && getprop ro.serialno && getprop ro.build.version.release && ip addr show wlan0 | grep -m 1 ether; ip addr show eth0 | grep -m 1 ether",
+            r"getprop ro.product.manufacturer && getprop ro.product.model && getprop ro.serialno && getprop ro.build.version.release",
         )
 
         # CMD_HDMI_INPUT
