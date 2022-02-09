@@ -238,7 +238,8 @@ class BaseTVAsync(BaseTV):
             The audio state, as determined from the ADB shell command :py:const:`androidtv.constants.CMD_AUDIO_STATE`, or ``None`` if it could not be determined
 
         """
-        audio_state_response = await self._adb.shell(constants.CMD_AUDIO_STATE)
+        audio_state_response = await self._adb.shell(self._cmd_audio_state())
+
         return self._audio_state(audio_state_response)
 
     async def awake(self):
