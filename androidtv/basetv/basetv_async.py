@@ -290,7 +290,7 @@ class BaseTVAsync(BaseTV):
             The HDMI input, or ``None`` if it could not be determined
 
         """
-        return self._get_hdmi_input(await self._adb.shell(constants.CMD_HDMI_INPUT))
+        return self._get_hdmi_input(self._adb.shell(self._cmd_hdmi_input()))
 
     async def get_installed_apps(self):
         """Return a list of installed applications.
