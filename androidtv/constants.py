@@ -103,14 +103,9 @@ CMD_CURRENT_APP_GOOGLE_TV_10 = CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV_10 + ' 
 CMD_CURRENT_APP_GOOGLE_TV_11 = CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV_11 + ' && echo $CURRENT_APP'
 
 #: Get the HDMI input
-CMD_HDMI_INPUT = (
-    "dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'"
-)
-
-#: Get the HDMI input
-CMD_HDMI_INPUT = "dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'"
 CMD_HDMI_INPUT_LEGACY = "(dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]')"
-CMD_HDMI_INPUT = "(HDMI=$(dumpsys tv_input | grep 'ResourceClientProfile {.*}' | grep -o -E '(hdmi_port=[0-9]|TV)') && { echo ${HDMI/hdmi_port=/HW} | cut -d' ' -f1 ; }) || " + CMD_HDMI_INPUT_LEGACY
+CMD_HDMI_INPUT_10 = "(HDMI=$(dumpsys tv_input | grep 'ResourceClientProfile {.*}' | grep -o -E '(hdmi_port=[0-9]|TV)') && { echo ${HDMI/hdmi_port=/HW} | cut -d' ' -f1 ; }) || " + CMD_HDMI_INPUT_LEGACY
+CMD_HDMI_INPUT_11 = CMD_HDMI_INPUT_10
 
 
 #: Launch an app if it is not already the current app (assumes the variable ``CURRENT_APP`` has already been set)
