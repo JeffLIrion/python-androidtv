@@ -287,6 +287,32 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             return constants.CMD_AUDIO_STATE_11
 
         return constants.CMD_AUDIO_STATE_LEGACY
+
+    def _cmd_hdmi_input(self):
+        """Get the command used to retrieve the current HDMI input for this device.
+
+        Returns
+        -------
+        str
+            The device-specific ADB shell command used to determine the current HDMIinput
+
+        """
+        if constants.CUSTOM_HDMI_INPUT in self._custom_commands:
+            return self._custom_commands[constants.CUSTOM_HDMI_INPUT]
+
+        # Is the Android version 10 ?
+        if (
+            int(self.device_properties.get("sw_version", "0")) == 10
+        ):
+            return constants.CMD_HDMI_INPUT_10
+        
+        # Is the Android version 11 ?
+        if (
+            int(self.device_properties.get("sw_version", "0")) == 11
+        ):
+            return constants.CMD_HDMI_INPUT_11
+
+        return constants.CMD_HDMI_INPUT_LEGACY
     
     # ======================================================================= #
     #                                                                         #
