@@ -49,6 +49,7 @@ CUSTOMIZABLE_COMMANDS = {
     CUSTOM_TURN_OFF,
     CUSTOM_TURN_ON,
     CUSTOM_AUDIO_STATE,
+    CUSTOM_HDMI_INPUT,
 }
 
 #: The subset of `CUSTOMIZABLE_COMMANDS` that is potentially used in the ``update()`` method
@@ -58,6 +59,8 @@ HA_CUSTOMIZABLE_COMMANDS = (
     CUSTOM_RUNNING_APPS,
     CUSTOM_TURN_OFF,
     CUSTOM_TURN_ON,
+    CUSTOM_AUDIO_STATE,
+    CUSTOM_HDMI_INPUT,
 )
 
 # echo '1' if the previous shell command was successful
