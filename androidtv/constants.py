@@ -121,22 +121,22 @@ CMD_LAUNCH_APP_CONDITION = (
 
 #: Launch an app if it is not already the current app
 CMD_LAUNCH_APP = (
-    CMD_DEFINE_CURRENT_APP_VARIABLE.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
+    CMD_DEFINE_CURRENT_APP_VARIABLE_LEGACY.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
 )
 
 #: Launch an app on a Google TV device
 CMD_LAUNCH_APP_GOOGLE_TV = (
-    CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
+    CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV_LEGACY.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
 )
 
 #: Get the state from ``dumpsys media_session``; this assumes that the variable ``CURRENT_APP`` has been defined
 CMD_MEDIA_SESSION_STATE = "dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'"
 
 #: Determine the current app and get the state from ``dumpsys media_session``
-CMD_CURRENT_APP_MEDIA_SESSION_STATE = CMD_CURRENT_APP + " && " + CMD_MEDIA_SESSION_STATE
+CMD_CURRENT_APP_MEDIA_SESSION_STATE = CMD_CURRENT_APP_LEGACY + " && " + CMD_MEDIA_SESSION_STATE
 
 #: Determine the current app and get the state from ``dumpsys media_session`` for a Google TV device
-CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV + " && " + CMD_MEDIA_SESSION_STATE
+CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV_LEGACY + " && " + CMD_MEDIA_SESSION_STATE
 
 #: Get the running apps for an Android TV device
 CMD_RUNNING_APPS_ANDROIDTV = "ps -A | grep u0_a"
