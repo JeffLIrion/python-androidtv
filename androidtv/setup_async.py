@@ -44,7 +44,7 @@ async def setup(
     signer : PythonRSASigner, None
         The signer for the ADB keys, as loaded by :meth:`androidtv.adb_manager.adb_manager_async.ADBPythonAsync.load_adbkey`
     transport_timeout_s : float
-        Transport timeout (in seconds). Maximum allowed value is 5 seconds
+        Transport timeout (in seconds)
 
     Returns
     -------

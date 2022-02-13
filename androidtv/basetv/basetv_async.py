@@ -172,7 +172,7 @@ class BaseTVAsync(BaseTV):
         auth_timeout_s : float
             Authentication timeout (in seconds)
         transport_timeout_s : float
-            Transport timeout (in seconds). Maximum allowed value is 5 seconds
+            Transport timeout (in seconds)
 
         Returns
         -------

@@ -20,7 +20,6 @@ from ..constants import (
     DEFAULT_AUTH_TIMEOUT_S,
     DEFAULT_LOCK_TIMEOUT_S,
     DEFAULT_TRANSPORT_TIMEOUT_S,
-    MAX_TRANSPORT_TIMEOUT_S,
 )
 from ..exceptions import LockNotAcquiredException
 
@@ -129,7 +128,7 @@ class ADBPythonSync(object):
         auth_timeout_s : float
             Authentication timeout (in seconds)
         transport_timeout_s : float
-            Transport timeout (in seconds). Maximum allowed value is 5 seconds
+            Transport timeout (in seconds)
 
         Returns
         -------
@@ -148,16 +147,13 @@ class ADBPythonSync(object):
 
                         self._adb.connect(
                             rsa_keys=[self._signer],
-                            transport_timeout_s=min(transport_timeout_s, MAX_TRANSPORT_TIMEOUT_S),
+                            transport_timeout_s=transport_timeout_s,
                             auth_timeout_s=auth_timeout_s,
                         )
 
                     # Connect without authentication
                     else:
-                        self._adb.connect(
-                            transport_timeout_s=min(transport_timeout_s, MAX_TRANSPORT_TIMEOUT_S),
-                            auth_timeout_s=auth_timeout_s,
-                        )
+                        self._adb.connect(transport_timeout_s=transport_timeout_s, auth_timeout_s=auth_timeout_s)
 
                     # ADB connection successfully established
                     _LOGGER.debug("ADB connection to %s:%d successfully established", self.host, self.port)
