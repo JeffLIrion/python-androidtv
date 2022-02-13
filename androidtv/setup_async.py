@@ -5,7 +5,7 @@ ADB Debugging must be enabled.
 
 from .androidtv.androidtv_async import AndroidTVAsync
 from .basetv.basetv_async import BaseTVAsync
-from .constants import DEFAULT_AUTH_TIMEOUT_S
+from .constants import DEFAULT_AUTH_TIMEOUT_S, DEFAULT_TRANSPORT_TIMEOUT_S
 from .firetv.firetv_async import FireTVAsync
 
 
@@ -19,6 +19,7 @@ async def setup(
     device_class="auto",
     auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S,
     signer=None,
+    transport_timeout_s=DEFAULT_TRANSPORT_TIMEOUT_S,
 ):
     """Connect to a device and determine whether it's an Android TV or an Amazon Fire TV.
 
@@ -42,6 +43,8 @@ async def setup(
         Authentication timeout (in seconds)
     signer : PythonRSASigner, None
         The signer for the ADB keys, as loaded by :meth:`androidtv.adb_manager.adb_manager_async.ADBPythonAsync.load_adbkey`
+    transport_timeout_s : float
+        Transport timeout (in seconds). Maximum allowed value is 5 seconds
 
     Returns
     -------
@@ -51,14 +54,14 @@ async def setup(
     """
     if device_class == "androidtv":
         atv = AndroidTVAsync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
-        await atv.adb_connect(auth_timeout_s=auth_timeout_s)
+        await atv.adb_connect(auth_timeout_s=auth_timeout_s, transport_timeout_s=transport_timeout_s)
         await atv.get_device_properties()
         await atv.get_installed_apps()
         return atv
 
     if device_class == "firetv":
         ftv = FireTVAsync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
-        await ftv.adb_connect(auth_timeout_s=auth_timeout_s)
+        await ftv.adb_connect(auth_timeout_s=auth_timeout_s, transport_timeout_s=transport_timeout_s)
         await ftv.get_device_properties()
         await ftv.get_installed_apps()
         return ftv
@@ -69,7 +72,7 @@ async def setup(
     aftv = BaseTVAsync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
 
     # establish the ADB connection
-    await aftv.adb_connect(auth_timeout_s=auth_timeout_s)
+    await aftv.adb_connect(auth_timeout_s=auth_timeout_s, transport_timeout_s=transport_timeout_s)
 
     # get device properties
     await aftv.get_device_properties()

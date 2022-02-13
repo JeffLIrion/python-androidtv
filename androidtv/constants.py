@@ -564,6 +564,12 @@ VOLUME_REGEX_PATTERN = r"\): (\d{1,})"
 #: Default authentication timeout (in s) for :meth:`adb_shell.handle.tcp_handle.TcpHandle.connect` and :meth:`adb_shell.handle.tcp_handle_async.TcpHandleAsync.connect`
 DEFAULT_AUTH_TIMEOUT_S = 10.0
 
+#: Default transport timeout (in s) for :meth:`adb_shell.handle.tcp_handle.TcpHandle.connect` and :meth:`adb_shell.handle.tcp_handle_async.TcpHandleAsync.connect`
+DEFAULT_TRANSPORT_TIMEOUT_S = 1.0
+
+#: Maximum allowed transport timeout (in s) for :meth:`adb_shell.handle.tcp_handle.TcpHandle.connect` and :meth:`adb_shell.handle.tcp_handle_async.TcpHandleAsync.connect`
+MAX_TRANSPORT_TIMEOUT_S = 5.0
+
 #: Default timeout (in s) for :class:`adb_shell.handle.tcp_handle.TcpHandle` and :class:`adb_shell.handle.tcp_handle_async.TcpHandleAsync`
 DEFAULT_ADB_TIMEOUT_S = 9.0
 

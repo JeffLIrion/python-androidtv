@@ -157,7 +157,12 @@ class BaseTVAsync(BaseTV):
         """
         return await self._adb.screencap()
 
-    async def adb_connect(self, always_log_errors=True, auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S):
+    async def adb_connect(
+        self,
+        always_log_errors=True,
+        auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S,
+        transport_timeout_s=constants.DEFAULT_TRANSPORT_TIMEOUT_S,
+    ):
         """Connect to an Android TV / Fire TV device.
 
         Parameters
@@ -166,6 +171,8 @@ class BaseTVAsync(BaseTV):
             If True, errors will always be logged; otherwise, errors will only be logged on the first failed reconnect attempt
         auth_timeout_s : float
             Authentication timeout (in seconds)
+        transport_timeout_s : float
+            Transport timeout (in seconds). Maximum allowed value is 5 seconds
 
         Returns
         -------
@@ -174,7 +181,7 @@ class BaseTVAsync(BaseTV):
 
         """
         if isinstance(self._adb, ADBPythonAsync):
-            return await self._adb.connect(always_log_errors, auth_timeout_s)
+            return await self._adb.connect(always_log_errors, auth_timeout_s, transport_timeout_s)
         return await self._adb.connect(always_log_errors)
 
     async def adb_close(self):

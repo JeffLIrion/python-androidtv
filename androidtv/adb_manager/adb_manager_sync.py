@@ -15,7 +15,13 @@ from adb_shell.adb_device import AdbDeviceTcp, AdbDeviceUsb
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
 from ppadb.client import Client
 
-from ..constants import DEFAULT_ADB_TIMEOUT_S, DEFAULT_AUTH_TIMEOUT_S, DEFAULT_LOCK_TIMEOUT_S
+from ..constants import (
+    DEFAULT_ADB_TIMEOUT_S,
+    DEFAULT_AUTH_TIMEOUT_S,
+    DEFAULT_LOCK_TIMEOUT_S,
+    DEFAULT_TRANSPORT_TIMEOUT_S,
+    MAX_TRANSPORT_TIMEOUT_S,
+)
 from ..exceptions import LockNotAcquiredException
 
 _LOGGER = logging.getLogger(__name__)
@@ -108,7 +114,12 @@ class ADBPythonSync(object):
         """Close the ADB socket connection."""
         self._adb.close()
 
-    def connect(self, always_log_errors=True, auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S):
+    def connect(
+        self,
+        always_log_errors=True,
+        auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S,
+        transport_timeout_s=DEFAULT_TRANSPORT_TIMEOUT_S,
+    ):
         """Connect to an Android TV / Fire TV device.
 
         Parameters
@@ -117,6 +128,8 @@ class ADBPythonSync(object):
             If True, errors will always be logged; otherwise, errors will only be logged on the first failed reconnect attempt
         auth_timeout_s : float
             Authentication timeout (in seconds)
+        transport_timeout_s : float
+            Transport timeout (in seconds). Maximum allowed value is 5 seconds
 
         Returns
         -------
@@ -134,12 +147,17 @@ class ADBPythonSync(object):
                             self._signer = self.load_adbkey(self.adbkey)
 
                         self._adb.connect(
-                            rsa_keys=[self._signer], transport_timeout_s=1.0, auth_timeout_s=auth_timeout_s
+                            rsa_keys=[self._signer],
+                            transport_timeout_s=min(transport_timeout_s, MAX_TRANSPORT_TIMEOUT_S),
+                            auth_timeout_s=auth_timeout_s,
                         )
 
                     # Connect without authentication
                     else:
-                        self._adb.connect(transport_timeout_s=1.0, auth_timeout_s=auth_timeout_s)
+                        self._adb.connect(
+                            transport_timeout_s=min(transport_timeout_s, MAX_TRANSPORT_TIMEOUT_S),
+                            auth_timeout_s=auth_timeout_s
+                        )
 
                     # ADB connection successfully established
                     _LOGGER.debug("ADB connection to %s:%d successfully established", self.host, self.port)
