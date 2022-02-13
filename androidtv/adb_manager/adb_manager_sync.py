@@ -156,7 +156,7 @@ class ADBPythonSync(object):
                     else:
                         self._adb.connect(
                             transport_timeout_s=min(transport_timeout_s, MAX_TRANSPORT_TIMEOUT_S),
-                            auth_timeout_s=auth_timeout_s
+                            auth_timeout_s=auth_timeout_s,
                         )
 
                     # ADB connection successfully established
