@@ -248,7 +248,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         if constants.CUSTOM_AUDIO_STATE in self._custom_commands:
             return self._custom_commands[constants.CUSTOM_AUDIO_STATE]
 
-        return constants.CMD_AUDIO_STATE_LEGACY
+        return constants.CMD_AUDIO_STATE
 
     # ======================================================================= #
     #                                                                         #
