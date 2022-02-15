@@ -237,7 +237,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             return constants.CMD_TURN_ON_FIRETV
 
         return constants.CMD_TURN_ON_ANDROIDTV
-    
+
     def _cmd_audio_state(self):
         """Get the command used to retrieve the current audio state for this device.
         
