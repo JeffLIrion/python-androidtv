@@ -624,7 +624,7 @@ class TestAndroidTVSyncPython(unittest.TestCase):
 
         self.atv.customize_command(constants.CUSTOM_AUDIO_STATE, "6")
         with patch.object(self.atv._adb, "shell") as patched:
-            self.atv.turn_on()
+            self.atv.audio_state()
             patched.assert_called_with("6")
 
         # Delete a custom command
