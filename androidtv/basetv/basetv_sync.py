@@ -245,7 +245,7 @@ class BaseTVSync(BaseTV):
             The audio state, as determined from the ADB shell command :py:const:`androidtv.constants.CMD_AUDIO_STATE`, or ``None`` if it could not be determined
 
         """
-        audio_state_response = self._adb.shell(constants.CMD_AUDIO_STATE)
+        audio_state_response = self._adb.shell(self._cmd_audio_state())
         return self._audio_state(audio_state_response)
 
     def awake(self):
@@ -296,7 +296,7 @@ class BaseTVSync(BaseTV):
             The HDMI input, or ``None`` if it could not be determined
 
         """
-        return self._get_hdmi_input(self._adb.shell(constants.CMD_HDMI_INPUT))
+        return self._get_hdmi_input(self._adb.shell(self._cmd_hdmi_input()))
 
     def get_installed_apps(self):
         """Return a list of installed applications.

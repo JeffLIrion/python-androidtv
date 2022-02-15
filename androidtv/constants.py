@@ -41,6 +41,9 @@ CUSTOM_LAUNCH_APP = "launch_app"
 CUSTOM_RUNNING_APPS = "running_apps"
 CUSTOM_TURN_OFF = "turn_off"
 CUSTOM_TURN_ON = "turn_on"
+CUSTOM_AUDIO_STATE = "audio_state"
+CUSTOM_HDMI_INPUT = "hdmi_input"
+
 CUSTOMIZABLE_COMMANDS = {
     CUSTOM_CURRENT_APP,
     CUSTOM_CURRENT_APP_MEDIA_SESSION_STATE,
@@ -48,6 +51,8 @@ CUSTOMIZABLE_COMMANDS = {
     CUSTOM_RUNNING_APPS,
     CUSTOM_TURN_OFF,
     CUSTOM_TURN_ON,
+    CUSTOM_AUDIO_STATE,
+    CUSTOM_HDMI_INPUT,
 }
 
 #: The subset of `CUSTOMIZABLE_COMMANDS` that is potentially used in the ``update()`` method
@@ -57,6 +62,8 @@ HA_CUSTOMIZABLE_COMMANDS = (
     CUSTOM_RUNNING_APPS,
     CUSTOM_TURN_OFF,
     CUSTOM_TURN_ON,
+    CUSTOM_AUDIO_STATE,
+    CUSTOM_HDMI_INPUT,
 )
 
 # echo '1' if the previous shell command was successful
@@ -66,34 +73,46 @@ CMD_SUCCESS1 = r" && echo -e '1\c'"
 CMD_SUCCESS1_FAILURE0 = r" && echo -e '1\c' || echo -e '0\c'"
 
 #: Get the audio state
-CMD_AUDIO_STATE = r"dumpsys audio | grep paused | grep -qv 'Buffer Queue' && echo -e '1\c' || (dumpsys audio | grep started | grep -qv 'Buffer Queue' && echo '2\c' || echo '0\c')"
+CMD_AUDIO_STATE_LEGACY = r"dumpsys audio | grep paused | grep -qv 'Buffer Queue' && echo -e '1\c' || (dumpsys audio | grep started | grep -qv 'Buffer Queue' && echo '2\c' || echo '0\c')"
+
+CMD_AUDIO_STATE_RAW = "CURRENT_AUDIO_STATE=$(dumpsys audio | sed -r -n '/[0-9]{2}-[0-9]{2}.*player piid:[0-9]{3,5} state:.*$/h; ${x;p;}') && "
+CMD_AUDIO_STATE_10 = CMD_AUDIO_STATE_RAW + r"echo $CURRENT_AUDIO_STATE | grep paused >/dev/null 2>&1 && echo -e '1\c' || { echo $CURRENT_AUDIO_STATE | grep started >/dev/null 2>&1 && echo '2\c' || echo '0\c' ; }"
+# Assuming command for 11 is the same as 10, if not then this can be updated
+CMD_AUDIO_STATE_11 = CMD_AUDIO_STATE_10
 
 #: Determine whether the device is awake
 CMD_AWAKE = "dumpsys power | grep mWakefulness | grep -q Awake"
 
 #: Parse current application identifier from dumpsys output and assign it to ``CURRENT_APP`` variable (assumes dumpsys output is momentarily set to ``CURRENT_APP`` variable)
-CMD_PARSE_CURRENT_APP = "CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\\}*}"
+CMD_PARSE_CURRENT_APP_LEGACY = 'CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\\}*}'
+CMD_PARSE_CURRENT_APP_10 = '{ CURRENT_APP=${CURRENT_APP%%/*}; CURRENT_APP=${CURRENT_APP##* * }; CURRENT_APP=${CURRENT_APP%\\}*}; }'
+CMD_PARSE_CURRENT_APP_11 = CMD_PARSE_CURRENT_APP_10
 
 #: Assign focused application identifier to ``CURRENT_APP`` variable
-CMD_DEFINE_CURRENT_APP_VARIABLE = (
-    "CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && " + CMD_PARSE_CURRENT_APP
-)
+CMD_DEFINE_CURRENT_APP_VARIABLE_LEGACY = "CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && " + CMD_PARSE_CURRENT_APP_LEGACY
+CMD_DEFINE_CURRENT_APP_VARIABLE_10 = "CURRENT_APP=$(grep -m1 -E 'mActivityRecord=|mCurrentFocus' <<< $(dumpsys window windows) | grep -o {.*}) && " + CMD_PARSE_CURRENT_APP_10
+CMD_DEFINE_CURRENT_APP_VARIABLE_11 = "CURRENT_APP=$(grep -m1 -E 'mActivityRecord=|mCurrentFocus' <<< $(dumpsys window windows) | grep -o {.*}) && " + CMD_PARSE_CURRENT_APP_11
 
 #: Output identifier for current/focused application
-CMD_CURRENT_APP = CMD_DEFINE_CURRENT_APP_VARIABLE + " && echo $CURRENT_APP"
+CMD_CURRENT_APP_LEGACY = CMD_DEFINE_CURRENT_APP_VARIABLE_LEGACY + ' && echo $CURRENT_APP'
+CMD_CURRENT_APP_10 = CMD_DEFINE_CURRENT_APP_VARIABLE_10 + ' && echo $CURRENT_APP'
+CMD_CURRENT_APP_11 = CMD_DEFINE_CURRENT_APP_VARIABLE_11 + ' && echo $CURRENT_APP'
 
 #: Assign focused application identifier to ``CURRENT_APP`` variable (for a Google TV device)
-CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV = (
-    "CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && " + CMD_PARSE_CURRENT_APP
-)
+CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV_LEGACY = 'CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && ' + CMD_PARSE_CURRENT_APP_LEGACY
+CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV_10 = 'CURRENT_APP=$(grep mResumedActivity: <<< $(dumpsys activity a .) | grep -o {.*}) && ' + CMD_PARSE_CURRENT_APP_10
+CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV_11 = 'CURRENT_APP=$(grep mResumedActivity: <<< $(dumpsys activity a .) | grep -o {.*}) && ' + CMD_PARSE_CURRENT_APP_11
 
 #: Output identifier for current/focused application (for a Google TV device)
-CMD_CURRENT_APP_GOOGLE_TV = CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV + " && echo $CURRENT_APP"
+CMD_CURRENT_APP_GOOGLE_TV_LEGACY = CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV_LEGACY + ' && echo $CURRENT_APP'
+CMD_CURRENT_APP_GOOGLE_TV_10 = CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV_10 + ' && echo $CURRENT_APP'
+CMD_CURRENT_APP_GOOGLE_TV_11 = CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV_11 + ' && echo $CURRENT_APP'
 
 #: Get the HDMI input
-CMD_HDMI_INPUT = (
-    "dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'"
-)
+CMD_HDMI_INPUT_LEGACY = "(dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]')"
+CMD_HDMI_INPUT_10 = "(HDMI=$(dumpsys tv_input | grep 'ResourceClientProfile {.*}' | grep -o -E '(hdmi_port=[0-9]|TV)') && { echo ${HDMI/hdmi_port=/HW} | cut -d' ' -f1 ; }) || " + CMD_HDMI_INPUT_LEGACY
+CMD_HDMI_INPUT_11 = CMD_HDMI_INPUT_10
+
 
 #: Launch an app if it is not already the current app (assumes the variable ``CURRENT_APP`` has already been set)
 CMD_LAUNCH_APP_CONDITION = (
@@ -102,22 +121,22 @@ CMD_LAUNCH_APP_CONDITION = (
 
 #: Launch an app if it is not already the current app
 CMD_LAUNCH_APP = (
-    CMD_DEFINE_CURRENT_APP_VARIABLE.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
+    CMD_DEFINE_CURRENT_APP_VARIABLE_LEGACY.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
 )
 
 #: Launch an app on a Google TV device
 CMD_LAUNCH_APP_GOOGLE_TV = (
-    CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
+    CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV_LEGACY.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
 )
 
 #: Get the state from ``dumpsys media_session``; this assumes that the variable ``CURRENT_APP`` has been defined
 CMD_MEDIA_SESSION_STATE = "dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'"
 
 #: Determine the current app and get the state from ``dumpsys media_session``
-CMD_CURRENT_APP_MEDIA_SESSION_STATE = CMD_CURRENT_APP + " && " + CMD_MEDIA_SESSION_STATE
+CMD_CURRENT_APP_MEDIA_SESSION_STATE = CMD_CURRENT_APP_LEGACY + " && " + CMD_MEDIA_SESSION_STATE
 
 #: Determine the current app and get the state from ``dumpsys media_session`` for a Google TV device
-CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV + " && " + CMD_MEDIA_SESSION_STATE
+CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV_LEGACY + " && " + CMD_MEDIA_SESSION_STATE
 
 #: Get the running apps for an Android TV device
 CMD_RUNNING_APPS_ANDROIDTV = "ps -A | grep u0_a"

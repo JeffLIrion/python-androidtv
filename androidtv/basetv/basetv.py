@@ -127,16 +127,40 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         """
         if constants.CUSTOM_CURRENT_APP in self._custom_commands:
             return self._custom_commands[constants.CUSTOM_CURRENT_APP]
-
+        
         # Is this a Google Chromecast Android TV?
         if (
             self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
             and "Google" in self.device_properties.get("manufacturer", "")
             and "Chromecast" in self.device_properties.get("model", "")
         ):
-            return constants.CMD_CURRENT_APP_GOOGLE_TV
+            # Is the Android version 10 ?
+            if (
+                int(self.device_properties.get("sw_version", "0")) == 10
+            ):
+                return constants.CMD_CURRENT_APP_GOOGLE_TV_10
+            
+            # Is the Android version 11 ?
+            if (
+                int(self.device_properties.get("sw_version", "0")) == 11
+            ):
+                return constants.CMD_CURRENT_APP_GOOGLE_TV_11
+            
+            return constants.CMD_CURRENT_APP_GOOGLE_TV_LEGACY
 
-        return constants.CMD_CURRENT_APP
+        # Is the Android version 10 ?
+        if (
+            int(self.device_properties.get("sw_version", "0")) == 10
+        ):
+            return constants.CMD_CURRENT_APP_10
+        
+        # Is the Android version 11 ?
+        if (
+            int(self.device_properties.get("sw_version", "0")) == 11
+        ):
+            return constants.CMD_CURRENT_APP_11
+        
+        return constants.CMD_CURRENT_APP_LEGACY
 
     def _cmd_current_app_media_session_state(self):
         """Get the command used to retrieve the current app and media session state for this device.
@@ -238,6 +262,58 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         return constants.CMD_TURN_ON_ANDROIDTV
 
+    def _cmd_audio_state(self):
+        """Get the command used to retrieve the current audio state for this device.
+
+        Returns
+        -------
+        str
+            The device-specific ADB shell command used to determine the current audio state
+
+        """
+        if constants.CUSTOM_AUDIO_STATE in self._custom_commands:
+            return self._custom_commands[constants.CUSTOM_AUDIO_STATE]
+
+        # Is the Android version 10 ?
+        if (
+            int(self.device_properties.get("sw_version", "0")) == 10
+        ):
+            return constants.CMD_AUDIO_STATE_10
+        
+        # Is the Android version 11 ?
+        if (
+            int(self.device_properties.get("sw_version", "0")) == 11
+        ):
+            return constants.CMD_AUDIO_STATE_11
+
+        return constants.CMD_AUDIO_STATE_LEGACY
+
+    def _cmd_hdmi_input(self):
+        """Get the command used to retrieve the current HDMI input for this device.
+
+        Returns
+        -------
+        str
+            The device-specific ADB shell command used to determine the current HDMIinput
+
+        """
+        if constants.CUSTOM_HDMI_INPUT in self._custom_commands:
+            return self._custom_commands[constants.CUSTOM_HDMI_INPUT]
+
+        # Is the Android version 10 ?
+        if (
+            int(self.device_properties.get("sw_version", "0")) == 10
+        ):
+            return constants.CMD_HDMI_INPUT_10
+        
+        # Is the Android version 11 ?
+        if (
+            int(self.device_properties.get("sw_version", "0")) == 11
+        ):
+            return constants.CMD_HDMI_INPUT_11
+
+        return constants.CMD_HDMI_INPUT_LEGACY
+    
     # ======================================================================= #
     #                                                                         #
     #                               ADB methods                               #
