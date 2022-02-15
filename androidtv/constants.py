@@ -41,6 +41,7 @@ CUSTOM_LAUNCH_APP = "launch_app"
 CUSTOM_RUNNING_APPS = "running_apps"
 CUSTOM_TURN_OFF = "turn_off"
 CUSTOM_TURN_ON = "turn_on"
+CUSTOM_AUDIO_STATE = "audio_state"
 CUSTOMIZABLE_COMMANDS = {
     CUSTOM_CURRENT_APP,
     CUSTOM_CURRENT_APP_MEDIA_SESSION_STATE,
@@ -48,6 +49,7 @@ CUSTOMIZABLE_COMMANDS = {
     CUSTOM_RUNNING_APPS,
     CUSTOM_TURN_OFF,
     CUSTOM_TURN_ON,
+    CUSTOM_AUDIO_STATE,
 }
 
 #: The subset of `CUSTOMIZABLE_COMMANDS` that is potentially used in the ``update()`` method
@@ -57,6 +59,7 @@ HA_CUSTOMIZABLE_COMMANDS = (
     CUSTOM_RUNNING_APPS,
     CUSTOM_TURN_OFF,
     CUSTOM_TURN_ON,
+    CUSTOM_AUDIO_STATE,
 )
 
 # echo '1' if the previous shell command was successful
