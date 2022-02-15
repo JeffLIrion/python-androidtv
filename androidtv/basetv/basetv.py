@@ -240,7 +240,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
     def _cmd_audio_state(self):
         """Get the command used to retrieve the current audio state for this device.
-        
+
         Returns
         -------
         str
@@ -251,7 +251,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             return self._custom_commands[constants.CUSTOM_AUDIO_STATE]
 
         return constants.CMD_AUDIO_STATE
-    
+
     # ======================================================================= #
     #                                                                         #
     #                               ADB methods                               #
