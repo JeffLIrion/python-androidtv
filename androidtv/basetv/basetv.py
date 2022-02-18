@@ -487,7 +487,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         Parameters
         ----------
         audio_state_response : str, None
-            The output of the command :py:const:`androidtv.constants.CMD_AUDIO_STATE`
+            The output from the ADB command `androidtv.basetv.basetv.BaseTV._cmd_audio_state``
 
         Returns
         -------
