@@ -242,7 +242,7 @@ class BaseTVSync(BaseTV):
         Returns
         -------
         str, None
-            The audio state, as determined from the ADB shell command :py:const:`androidtv.constants.CMD_AUDIO_STATE`, or ``None`` if it could not be determined
+            The audio state, or ``None`` if it could not be determined
 
         """
         audio_state_response = self._adb.shell(self._cmd_audio_state())
