@@ -482,7 +482,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
     @staticmethod
     def _audio_state(audio_state_response):
-        """Parse the :meth:`audio_state` property from the output of the command :py:const:`androidtv.constants.CMD_AUDIO_STATE`.
+        """Parse the :meth:`audio_state` property from the ADB shell output.
 
         Parameters
         ----------
