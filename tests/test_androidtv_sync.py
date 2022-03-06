@@ -627,6 +627,11 @@ class TestAndroidTVSyncPython(unittest.TestCase):
             self.atv.audio_state()
             patched.assert_called_with("6")
 
+        self.atv.customize_command(constants.CUSTOM_HDMI_INPUT, "7")
+        with patch.object(self.atv._adb, "shell") as patched:
+            self.atv.audio_state()
+            patched.assert_called_with("7")
+
         # Delete a custom command
         self.atv.customize_command(constants.CUSTOM_TURN_ON, None)
         with patch.object(self.atv._adb, "shell") as patched:

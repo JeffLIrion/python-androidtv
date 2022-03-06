@@ -174,6 +174,20 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE
 
+    def _cmd_hdmi_input(self):
+        """Get the command used to retrieve the current HDMI input for this device.
+
+        Returns
+        -------
+        str
+            The device-specific ADB shell command used to determine the current HDMI input
+
+        """
+        if constants.CUSTOM_HDMI_INPUT in self._custom_commands:
+            return self._custom_commands[constants.CUSTOM_HDMI_INPUT]
+
+        return constants.CMD_HDMI_INPUT
+
     def _cmd_launch_app(self, app):
         """Get the command to launch the specified app for this device.
 
@@ -555,12 +569,12 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
     @staticmethod
     def _get_hdmi_input(hdmi_response):
-        """Get the HDMI input from the output of :py:const:`androidtv.constants.CMD_HDMI_INPUT`.
+        """Get the HDMI input from the from the ADB shell output`.
 
         Parameters
         ----------
         hdmi_response : str, None
-            The output of :py:const:`androidtv.constants.CMD_HDMI_INPUT`
+            The output from the ADB command `androidtv.basetv.basetv.BaseTV._cmd_hdmi_input``
 
         Returns
         -------
