@@ -83,7 +83,8 @@ class TestFireTVSyncPython(unittest.TestCase):
         """Test that the ``FireTVSync.launch_app`` and ``FireTVSync.stop_app`` methods work correctly."""
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
             self.ftv.launch_app("TEST")
-            self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP_FIRETV.format("TEST"))
+            self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd,
+            constants.CMD_LAUNCH_APP_FIRETV.format("TEST"))
 
             self.ftv.stop_app("TEST")
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "am force-stop TEST")
