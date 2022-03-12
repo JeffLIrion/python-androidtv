@@ -8,6 +8,7 @@ androidtv.egg-info
 .eggs/
 build/
 dist/
+.vs/
 
 # Documentation
 docs/build/
