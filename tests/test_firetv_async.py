@@ -66,8 +66,9 @@ class TestFireTVAsyncPython(unittest.TestCase):
         """Test that the ``FireTVAsync.launch_app`` and ``FireTVAsync.stop_app`` methods work correctly."""
         with async_patchers.patch_shell("")[self.PATCH_KEY]:
             await self.ftv.launch_app("TEST")
-            self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd,
-            constants.CMD_LAUNCH_APP_FIRETV.format("TEST"))
+            self.assertEqual(
+                getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP_FIRETV.format("TEST")
+            )
 
             await self.ftv.stop_app("TEST")
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "am force-stop TEST")
