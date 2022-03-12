@@ -32,7 +32,7 @@ class DeviceEnum(IntEnum):
 
 # Intents
 INTENT_LAUNCH = "android.intent.category.LEANBACK_LAUNCHER"
-INTENT_LAUNCH_FIRE_TV = "android.intent.category.LAUNCHER"
+INTENT_LAUNCH_FIRETV = "android.intent.category.LAUNCHER"
 INTENT_HOME = "android.intent.category.HOME"
 
 # Customizable commands
@@ -108,8 +108,8 @@ CMD_LAUNCH_APP_CONDITION = (
 )
 
 #: Launch an app if it is not already the current app (assumes the variable ``CURRENT_APP`` has already been set) on a Fire TV
-CMD_LAUNCH_APP_CONDITION_FIRE_TV = (
-    "if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c " + INTENT_LAUNCH_FIRE_TV + " --pct-syskeys 0 1; fi"
+CMD_LAUNCH_APP_CONDITION_FIRETV = (
+    "if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c " + INTENT_LAUNCH_FIRETV + " --pct-syskeys 0 1; fi"
 )
 
 #: Launch an app if it is not already the current app
@@ -117,14 +117,14 @@ CMD_LAUNCH_APP = (
     CMD_DEFINE_CURRENT_APP_VARIABLE.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
 )
 
+#: Launch an app on a Fire TV device
+CMD_LAUNCH_APP_FIRETV = (
+    CMD_DEFINE_CURRENT_APP_VARIABLE.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION_FIRETV
+)
+
 #: Launch an app on a Google TV device
 CMD_LAUNCH_APP_GOOGLE_TV = (
     CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
-)
-
-#: Launch an app on a Fire TV device
-CMD_LAUNCH_APP_FIRE_TV = (
-    CMD_DEFINE_CURRENT_APP_VARIABLE.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION_FIRE_TV
 )
 
 #: Get the state from ``dumpsys media_session``; this assumes that the variable ``CURRENT_APP`` has been defined
