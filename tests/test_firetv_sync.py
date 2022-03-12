@@ -64,7 +64,7 @@ class TestFireTVSyncPython(unittest.TestCase):
     def test_send_intent(self):
         """Test that the ``_send_intent`` method works correctly."""
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("output\r\nretcode")[self.PATCH_KEY]:
-            result = self.ftv._send_intent("TEST", constants.INTENT_LAUNCH)
+            result = self.ftv._send_intent("TEST", constants.INTENT_LAUNCH_FIRETV)
             self.assertEqual(
                 getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd,
                 "monkey -p TEST -c android.intent.category.LAUNCHER 1; echo $?",
@@ -72,7 +72,7 @@ class TestFireTVSyncPython(unittest.TestCase):
             self.assertDictEqual(result, {"output": "output", "retcode": "retcode"})
 
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
-            result = self.ftv._send_intent("TEST", constants.INTENT_LAUNCH)
+            result = self.ftv._send_intent("TEST", constants.INTENT_LAUNCH_FIRETV)
             self.assertEqual(
                 getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd,
                 "monkey -p TEST -c android.intent.category.LAUNCHER 1; echo $?",
@@ -83,7 +83,7 @@ class TestFireTVSyncPython(unittest.TestCase):
         """Test that the ``FireTVSync.launch_app`` and ``FireTVSync.stop_app`` methods work correctly."""
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
             self.ftv.launch_app("TEST")
-            self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP.format("TEST"))
+            self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP_FIRETV.format("TEST"))
 
             self.ftv.stop_app("TEST")
             self.assertEqual(getattr(self.ftv._adb, self.ADB_ATTR).shell_cmd, "am force-stop TEST")
