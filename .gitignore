@@ -7,9 +7,9 @@ androidtv.egg-info
 # Build files
 .eggs/
 build/
-dist/
 .vs/
 .vscode/
+dist/
 
 # Documentation
 docs/build/
