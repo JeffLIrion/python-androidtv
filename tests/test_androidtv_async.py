@@ -94,6 +94,37 @@ class TestAndroidTVAsyncPython(unittest.TestCase):
             )
 
     @awaiter
+    async def test_send_intent(self):
+        """Test that the ``_send_intent`` method works correctly."""
+        with async_patchers.patch_shell("output\r\nretcode")[self.PATCH_KEY]:
+            result = await self.atv._send_intent("TEST", constants.INTENT_LAUNCH)
+            self.assertEqual(
+                getattr(self.atv._adb, self.ADB_ATTR).shell_cmd,
+                "monkey -p TEST -c android.intent.category.LEANBACK_LAUNCHER 1; echo $?",
+            )
+            self.assertDictEqual(result, {"output": "output", "retcode": "retcode"})
+
+        with async_patchers.patch_connect(True)[self.PATCH_KEY], async_patchers.patch_shell(None)[self.PATCH_KEY]:
+            result = await self.atv._send_intent("TEST", constants.INTENT_LAUNCH)
+            self.assertEqual(
+                getattr(self.atv._adb, self.ADB_ATTR).shell_cmd,
+                "monkey -p TEST -c android.intent.category.LEANBACK_LAUNCHER 1; echo $?",
+            )
+            self.assertDictEqual(result, {})
+
+    @awaiter
+    async def test_launch_app_stop_app(self):
+        """Test that the ``AndroidTVAsync.launch_app`` and ``AndroidTVAsync.stop_app`` methods work correctly."""
+        with async_patchers.patch_shell("")[self.PATCH_KEY]:
+            await self.atv.launch_app("TEST")
+            self.assertEqual(
+                getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP.format("TEST")
+            )
+
+            await self.atv.stop_app("TEST")
+            self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "am force-stop TEST")
+
+    @awaiter
     async def test_running_apps(self):
         """Check that the ``running_apps`` property works correctly."""
         with async_patchers.patch_shell(None)[self.PATCH_KEY]:
