@@ -117,9 +117,7 @@ class TestAndroidTVAsyncPython(unittest.TestCase):
         """Test that the ``AndroidTVAsync.launch_app`` and ``AndroidTVAsync.stop_app`` methods work correctly."""
         with async_patchers.patch_shell("")[self.PATCH_KEY]:
             await self.atv.launch_app("TEST")
-            self.assertEqual(
-                getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP.format("TEST")
-            )
+            self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP.format("TEST"))
 
             await self.atv.stop_app("TEST")
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "am force-stop TEST")

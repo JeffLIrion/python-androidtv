@@ -145,9 +145,7 @@ class TestAndroidTVSyncPython(unittest.TestCase):
         """Test that the ``AndroidTVSync.launch_app`` and ``AndroidTVSync.stop_app`` methods work correctly."""
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
             self.atv.launch_app("TEST")
-            self.assertEqual(
-                getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP.format("TEST")
-            )
+            self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, constants.CMD_LAUNCH_APP.format("TEST"))
 
             self.atv.stop_app("TEST")
             self.assertEqual(getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "am force-stop TEST")
