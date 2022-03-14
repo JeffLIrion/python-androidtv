@@ -213,6 +213,9 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         ):
             return constants.CMD_LAUNCH_APP_GOOGLE_TV.format(app)
 
+        if self.DEVICE_ENUM == constants.DeviceEnum.FIRETV:
+            return constants.CMD_LAUNCH_APP_FIRETV.format(app)
+
         return constants.CMD_LAUNCH_APP.format(app)
 
     def _cmd_running_apps(self):

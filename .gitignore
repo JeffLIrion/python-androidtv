@@ -4,8 +4,10 @@
 **/__pycache__/
 androidtv.egg-info
 
-# Build files
+# Build / development files
 .eggs/
+.vs/
+.vscode/
 build/
 dist/
 
