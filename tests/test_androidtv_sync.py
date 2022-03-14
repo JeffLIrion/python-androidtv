@@ -123,24 +123,6 @@ class TestAndroidTVSyncPython(unittest.TestCase):
                 getattr(self.atv._adb, self.ADB_ATTR).shell_cmd, "am start -a android.intent.action.VIEW -d TEST"
             )
 
-    def test_send_intent(self):
-        """Test that the ``_send_intent`` method works correctly."""
-        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("output\r\nretcode")[self.PATCH_KEY]:
-            result = self.atv._send_intent("TEST", constants.INTENT_LAUNCH)
-            self.assertEqual(
-                getattr(self.atv._adb, self.ADB_ATTR).shell_cmd,
-                "monkey -p TEST -c android.intent.category.LEANBACK_LAUNCHER 1; echo $?",
-            )
-            self.assertDictEqual(result, {"output": "output", "retcode": "retcode"})
-
-        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
-            result = self.atv._send_intent("TEST", constants.INTENT_LAUNCH)
-            self.assertEqual(
-                getattr(self.atv._adb, self.ADB_ATTR).shell_cmd,
-                "monkey -p TEST -c android.intent.category.LEANBACK_LAUNCHER 1; echo $?",
-            )
-            self.assertDictEqual(result, {})
-
     def test_launch_app_stop_app(self):
         """Test that the ``AndroidTVSync.launch_app`` and ``AndroidTVSync.stop_app`` methods work correctly."""
         with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(None)[self.PATCH_KEY]:
