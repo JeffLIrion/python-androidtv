@@ -83,6 +83,18 @@ SERIALNO
 8.0.0
 """
 
+WIFIMAC_SONY = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
+ETHMAC_SONY = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
+
+DEVICE_PROPERTIES_DICT_SONY_TV = {
+    "manufacturer": "Sony",
+    "model": "BRAVIA 4K GB",
+    "serialno": "SERIALNO",
+    "sw_version": "8.0.0",
+    "wifimac": "11:22:33:44:55:66",
+    "ethmac": "ab:cd:ef:gh:ij:kl",
+}
+
 DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_11 = """NVIDIA
 SHIELD Android TV
 0123456789012
@@ -97,18 +109,6 @@ DEVICE_PROPERTIES_DICT_SHIELD_TV_11 = {
     "model": "SHIELD Android TV",
     "serialno": "0123456789012",
     "sw_version": "11",
-    "wifimac": "11:22:33:44:55:66",
-    "ethmac": "ab:cd:ef:gh:ij:kl",
-}
-
-WIFIMAC_SONY = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
-ETHMAC_SONY = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
-
-DEVICE_PROPERTIES_DICT_SONY_TV = {
-    "manufacturer": "Sony",
-    "model": "BRAVIA 4K GB",
-    "serialno": "SERIALNO",
-    "sw_version": "8.0.0",
     "wifimac": "11:22:33:44:55:66",
     "ethmac": "ab:cd:ef:gh:ij:kl",
 }
@@ -523,6 +523,31 @@ class TestBaseTVSyncPython(unittest.TestCase):
         ):
             device_properties = self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT_SHIELD_TV_11, device_properties)
+            # _cmd_audio_state
+            self.assertEqual(
+                self.btv._cmd_audio_state(),
+                constants.CMD_AUDIO_STATE11,
+            )
+            # _cmd_current_app
+            self.assertEqual(
+                self.btv._cmd_current_app(),
+                constants.CMD_CURRENT_APP11,
+            )
+            # _cmd_current_app_media_session_state
+            self.assertEqual(
+                self.btv._cmd_current_app_media_session_state(),
+                constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE11,
+            )
+            # _cmd_hdmi_input
+            self.assertEqual(
+                self.btv._cmd_hdmi_input(),
+                constants.CMD_HDMI_INPUT11,
+            )
+            # _cmd_launch_app
+            self.assertEqual(
+                self.btv._cmd_launch_app(),
+                constants.CMD_LAUNCH_APP11,
+            )
 
     def test_get_installed_apps(self):
         """ "Check that `get_installed_apps` works correctly."""
