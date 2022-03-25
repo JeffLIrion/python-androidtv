@@ -68,6 +68,12 @@ class TestConstants(unittest.TestCase):
             r"dumpsys audio | grep paused | grep -qv 'Buffer Queue' && echo -e '1\c' || (dumpsys audio | grep started | grep -qv 'Buffer Queue' && echo '2\c' || echo '0\c')",
         )
 
+        # CMD_AUDIO_STATE11
+        self.assertCommand(
+            constants.CMD_AUDIO_STATE11,
+            r"CURRENT_AUDIO_STATE=$(dumpsys audio | sed -r -n '/[0-9]{2}-[0-9]{2}.*player piid:.*state:.*$/h; ${x;p;}') && echo $CURRENT_AUDIO_STATE | grep paused >/dev/null 2>&1 && echo -e '1\c' || { echo $CURRENT_AUDIO_STATE | grep started >/dev/null 2>&1 && echo '2\c' || echo '0\c' ; }",
+        )
+
         # CMD_AWAKE
         self.assertCommand(constants.CMD_AWAKE, r"dumpsys power | grep mWakefulness | grep -q Awake")
 
@@ -75,6 +81,12 @@ class TestConstants(unittest.TestCase):
         self.assertCommand(
             constants.CMD_CURRENT_APP,
             r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP",
+        )
+
+        # CMD_CURRENT_APP11
+        self.assertCommand(
+            constants.CMD_CURRENT_APP11,
+            r"CURRENT_APP=$(dumpsys window windows | grep 'Window #1') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
         )
 
         # CMD_CURRENT_APP_GOOGLE_TV
@@ -87,6 +99,12 @@ class TestConstants(unittest.TestCase):
         self.assertCommand(
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE,
             r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+        )
+
+        # CMD_CURRENT_APP_MEDIA_SESSION_STATE11
+        self.assertCommand(
+            constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE11,
+            r"CURRENT_APP=$(dumpsys window windows | grep 'Window #1') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
 
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV
@@ -106,6 +124,11 @@ class TestConstants(unittest.TestCase):
             constants.CMD_HDMI_INPUT,
             r"dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'",
         )
+        # CMD_HDMI_INPUT11 = (
+        self.assertCommand(
+            constants.CMD_HDMI_INPUT11,
+            r"(HDMI=$(dumpsys tv_input | grep 'ResourceClientProfile {.*}' | grep -o -E '(hdmi_port=[0-9]|TV)') && { echo ${HDMI/hdmi_port=/HW} | cut -d' ' -f1 ; }) || dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'",
+        )
 
         # CMD_INSTALLED_APPS
         self.assertCommand(constants.CMD_INSTALLED_APPS, r"pm list packages")
@@ -113,6 +136,12 @@ class TestConstants(unittest.TestCase):
         # CMD_LAUNCH_APP
         self.assertCommand(
             constants.CMD_LAUNCH_APP,
+            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${{CURRENT_APP#*ActivityRecord{{* * }} && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP%\}}*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
+        )
+
+        # CMD_LAUNCH_APP11
+        self.assertCommand(
+            constants.CMD_LAUNCH_APP11,
             r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${{CURRENT_APP#*ActivityRecord{{* * }} && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP%\}}*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
         )
 
