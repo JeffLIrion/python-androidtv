@@ -83,6 +83,24 @@ SERIALNO
 8.0.0
 """
 
+DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_11 = """NVIDIA
+SHIELD Android TV
+0123456789012
+11
+"""
+
+WIFIMAC_SHIELD_TV_11 = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
+ETHMAC_SHIELD_TV_11 = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
+
+DEVICE_PROPERTIES_DICT_SHIELD_TV_11 = {
+    "manufacturer": "NVIDIA",
+    "model": "SHIELD Android TV",
+    "serialno": "0123456789012",
+    "sw_version": "11",
+    "wifimac": "11:22:33:44:55:66",
+    "ethmac": "ab:cd:ef:gh:ij:kl",
+}
+
 WIFIMAC_SONY = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
 ETHMAC_SONY = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
 
@@ -497,6 +515,14 @@ class TestBaseTVSyncPython(unittest.TestCase):
         ):
             device_properties = self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT_SONY_TV, device_properties)
+
+        with patch.object(
+            self.btv._adb,
+            "shell",
+            side_effect=(DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_11, ETHMAC_SHIELD_TV_11, WIFIMAC_SHIELD_TV_11),
+        ):
+            device_properties = self.btv.get_device_properties()
+            self.assertDictEqual(DEVICE_PROPERTIES_DICT_SHIELD_TV_11, device_properties)
 
     def test_get_installed_apps(self):
         """ "Check that `get_installed_apps` works correctly."""
