@@ -131,7 +131,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         # Is this a Android 11 Android TV?
         if(
             self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
-            and "11" in self.device_properties.get("sw_version","")
+            and self.device_properties.get("sw_version", "") == 11
         ):
             return constants.CMD_AUDIO_STATE11
         return constants.CMD_AUDIO_STATE
@@ -158,7 +158,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         # Is this a Android 11 Android TV?
         if(
             self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
-            and int(self.device_properties.get("sw_version", "")) == 11
+            and self.device_properties.get("sw_version", "") == 11
         ):
             return constants.CMD_CURRENT_APP11
 
@@ -186,7 +186,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         # Is this a Android 11 Android TV?
         if(
             self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
-            and int(self.device_properties.get("sw_version", "")) == 11
+            and self.device_properties.get("sw_version", "") == 11
         ):
             return(constants.CMD_CURRENT_APP11 +" && "+ constants.CMD_MEDIA_SESSION_STATE)
 
@@ -207,7 +207,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         # Is this a Android 11 Android TV?
         if(
             self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
-            and int(self.device_properties.get("sw_version", "")) == 11
+            and self.device_properties.get("sw_version", "") == 11
         ): 
             return constants.CMD_AUDIO_STATE11
 
@@ -244,7 +244,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         # Is this a Android 11 Android TV?
         if(
             self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
-            and int(self.device_properties.get("sw_version", "")) == 11
+            and self.device_properties.get("sw_version", "") == 11
         ): 
             return constants.CMD_LAUNCH_APP11.format(app)
 
