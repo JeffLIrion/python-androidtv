@@ -75,19 +75,31 @@ CMD_SUCCESS1_FAILURE0 = r" && echo -e '1\c' || echo -e '0\c'"
 #: Get the audio state
 CMD_AUDIO_STATE = r"dumpsys audio | grep paused | grep -qv 'Buffer Queue' && echo -e '1\c' || (dumpsys audio | grep started | grep -qv 'Buffer Queue' && echo '2\c' || echo '0\c')"
 
+#: Get the audio state for an Android 11 Device
+CMD_AUDIO_STATE11 = "CURRENT_AUDIO_STATE=$(dumpsys audio | sed -r -n '/[0-9]{2}-[0-9]{2}.*player piid:.*state:.*$/h; ${x;p;}') && " + r"echo $CURRENT_AUDIO_STATE | grep paused >/dev/null 2>&1 && echo -e '1\c' || { echo $CURRENT_AUDIO_STATE | grep started >/dev/null 2>&1 && echo '2\c' || echo '0\c' ; }"
+
 #: Determine whether the device is awake
 CMD_AWAKE = "dumpsys power | grep mWakefulness | grep -q Awake"
 
 #: Parse current application identifier from dumpsys output and assign it to ``CURRENT_APP`` variable (assumes dumpsys output is momentarily set to ``CURRENT_APP`` variable)
 CMD_PARSE_CURRENT_APP = "CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\\}*}"
 
+#: Parse current application for an Android 11 Device
+CMD_PARSE_CURRENT_APP11 = 'CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* }'
+
 #: Assign focused application identifier to ``CURRENT_APP`` variable
 CMD_DEFINE_CURRENT_APP_VARIABLE = (
     "CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && " + CMD_PARSE_CURRENT_APP
 )
+#: Assign focused application identifier to ``CURRENT_APP`` variable for an Android 11 Device
+CMD_DEFINE_CURRENT_APP_VARIABLE11 = "CURRENT_APP=$(dumpsys window windows | grep 'Window #1') && " + CMD_PARSE_CURRENT_APP11
+
 
 #: Output identifier for current/focused application
 CMD_CURRENT_APP = CMD_DEFINE_CURRENT_APP_VARIABLE + " && echo $CURRENT_APP"
+
+#: Output identifier for current/focused application for an Android 11 Device
+CMD_CURRENT_APP11 = CMD_DEFINE_CURRENT_APP_VARIABLE11 + ' && echo $CURRENT_APP'
 
 #: Assign focused application identifier to ``CURRENT_APP`` variable (for a Google TV device)
 CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV = (
@@ -101,6 +113,8 @@ CMD_CURRENT_APP_GOOGLE_TV = CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV + " && ech
 CMD_HDMI_INPUT = (
     "dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'"
 )
+#: Get the HDMI input for an Android 11 Device
+CMD_HDMI_INPUT11 = "(HDMI=$(dumpsys tv_input | grep 'ResourceClientProfile {.*}' | grep -o -E '(hdmi_port=[0-9]|TV)') && { echo ${HDMI/hdmi_port=/HW} | cut -d' ' -f1 ; }) || " + CMD_HDMI_INPUT
 
 #: Launch an app if it is not already the current app (assumes the variable ``CURRENT_APP`` has already been set)
 CMD_LAUNCH_APP_CONDITION = (
@@ -115,6 +129,11 @@ CMD_LAUNCH_APP_CONDITION_FIRETV = (
 #: Launch an app if it is not already the current app
 CMD_LAUNCH_APP = (
     CMD_DEFINE_CURRENT_APP_VARIABLE.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
+)
+
+#: Launch an app if it is not already the current app on an Android 11 Device
+CMD_LAUNCH_APP11 = (
+    CMD_DEFINE_CURRENT_APP_VARIABLE11.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
 )
 
 #: Launch an app on a Fire TV device
@@ -132,6 +151,9 @@ CMD_MEDIA_SESSION_STATE = "dumpsys media_session | grep -A 100 'Sessions Stack' 
 
 #: Determine the current app and get the state from ``dumpsys media_session``
 CMD_CURRENT_APP_MEDIA_SESSION_STATE = CMD_CURRENT_APP + " && " + CMD_MEDIA_SESSION_STATE
+
+#: Determine the current app and get the state from ``dumpsys media_session`` for an Android 11 Device
+CMD_CURRENT_APP_MEDIA_SESSION_STATE11 = CMD_CURRENT_APP11 + " && " + CMD_MEDIA_SESSION_STATE
 
 #: Determine the current app and get the state from ``dumpsys media_session`` for a Google TV device
 CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV + " && " + CMD_MEDIA_SESSION_STATE
