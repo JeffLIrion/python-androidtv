@@ -521,6 +521,7 @@ class TestBaseTVSyncPython(unittest.TestCase):
             "shell",
             side_effect=(DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_11, ETHMAC_SHIELD_TV_11, WIFIMAC_SHIELD_TV_11),
         ):
+            self.btv = AndroidTVSync.from_base(self.btv)
             device_properties = self.btv.get_device_properties()
             assert self.btv.device_properties.get("sw_version", "") == "11"
             assert self.btv.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
