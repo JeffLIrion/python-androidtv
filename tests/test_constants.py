@@ -142,7 +142,7 @@ class TestConstants(unittest.TestCase):
         # CMD_LAUNCH_APP11
         self.assertCommand(
             constants.CMD_LAUNCH_APP11,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${{CURRENT_APP#*ActivityRecord{{* * }} && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP%\}}*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
+            r"CURRENT_APP=$(dumpsys window windows | grep 'Window #1') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
         )
 
         # CMD_LAUNCH_APP_FIRETV
