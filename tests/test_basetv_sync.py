@@ -522,6 +522,8 @@ class TestBaseTVSyncPython(unittest.TestCase):
             side_effect=(DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_11, ETHMAC_SHIELD_TV_11, WIFIMAC_SHIELD_TV_11),
         ):
             device_properties = self.btv.get_device_properties()
+            assert self.btv.device_properties.get("sw_version", "") == "11"
+            assert self.btv.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
             self.assertDictEqual(DEVICE_PROPERTIES_DICT_SHIELD_TV_11, device_properties)
             # _cmd_audio_state
             self.assertEqual(
