@@ -548,8 +548,8 @@ class TestBaseTVSyncPython(unittest.TestCase):
             )
             # _cmd_launch_app
             self.assertEqual(
-                self.btv._cmd_launch_app(),
-                constants.CMD_LAUNCH_APP11,
+                self.btv._cmd_launch_app("TEST"),
+                constants.CMD_LAUNCH_APP11.format("TEST"),
             )
 
     def test_get_installed_apps(self):
