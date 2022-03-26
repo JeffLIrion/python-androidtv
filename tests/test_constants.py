@@ -124,7 +124,8 @@ class TestConstants(unittest.TestCase):
             constants.CMD_HDMI_INPUT,
             r"dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'",
         )
-        # CMD_HDMI_INPUT11 = (
+
+        # CMD_HDMI_INPUT11
         self.assertCommand(
             constants.CMD_HDMI_INPUT11,
             r"(HDMI=$(dumpsys tv_input | grep 'ResourceClientProfile {.*}' | grep -o -E '(hdmi_port=[0-9]|TV)') && { echo ${HDMI/hdmi_port=/HW} | cut -d' ' -f1 ; }) || dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'",
