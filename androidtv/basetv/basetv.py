@@ -129,7 +129,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             return self._custom_commands[constants.CUSTOM_AUDIO_STATE]
 
         # Is this an Android 11 device??
-        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == 11:
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
             return constants.CMD_AUDIO_STATE11
         return constants.CMD_AUDIO_STATE
 
@@ -153,7 +153,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         ):
             return constants.CMD_CURRENT_APP_GOOGLE_TV
         # Is this an Android 11 device??
-        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == 11:
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
             return constants.CMD_CURRENT_APP11
 
         return constants.CMD_CURRENT_APP
@@ -178,7 +178,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         ):
             return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV
         # Is this an Android 11 device??
-        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == 11:
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
             return constants.CMD_CURRENT_APP11 + " && " + constants.CMD_MEDIA_SESSION_STATE
 
         return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE
@@ -196,7 +196,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             return self._custom_commands[constants.CUSTOM_HDMI_INPUT]
 
         # Is this an Android 11 device??
-        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == 11:
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
             return constants.CMD_AUDIO_STATE11
 
         return constants.CMD_HDMI_INPUT
@@ -230,7 +230,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             return constants.CMD_LAUNCH_APP_FIRETV.format(app)
 
         # Is this an Android 11 device??
-        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == 11:
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
             return constants.CMD_LAUNCH_APP11.format(app)
 
         return constants.CMD_LAUNCH_APP.format(app)
