@@ -78,7 +78,7 @@ CMD_AUDIO_STATE = r"dumpsys audio | grep paused | grep -qv 'Buffer Queue' && ech
 #: Get the audio state for an Android 11 Device
 CMD_AUDIO_STATE11 = (
     "CURRENT_AUDIO_STATE=$(dumpsys audio | sed -r -n '/[0-9]{2}-[0-9]{2}.*player piid:.*state:.*$/h; ${x;p;}') && "
-    + r"echo $CURRENT_AUDIO_STATE | grep -q paused && echo -e '1\c' || { echo $CURRENT_AUDIO_STATE | grep started >/dev/null 2>&1 && echo '2\c' || echo '0\c' ; }"
+    + r"echo $CURRENT_AUDIO_STATE | grep -q paused && echo -e '1\c' || { echo $CURRENT_AUDIO_STATE | grep -q started && echo '2\c' || echo '0\c' ; }"
 )
 
 #: Determine whether the device is awake
