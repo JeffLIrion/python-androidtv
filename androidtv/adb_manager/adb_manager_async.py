@@ -207,9 +207,6 @@ class ADBPythonAsync(object):
 
         self._signer = signer
 
-        # keep track of whether the ADB connection is intact
-        self._available = False
-
         # use a lock to make sure that ADB commands don't overlap
         self._adb_lock = asyncio.Lock()
 
@@ -231,7 +228,7 @@ class ADBPythonAsync(object):
 
     async def connect(
         self,
-        always_log_errors=True,
+        log_errors=True,
         auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S,
         transport_timeout_s=DEFAULT_TRANSPORT_TIMEOUT_S,
     ):
@@ -239,8 +236,8 @@ class ADBPythonAsync(object):
 
         Parameters
         ----------
-        always_log_errors : bool
-            If True, errors will always be logged; otherwise, errors will only be logged on the first failed reconnect attempt
+        log_errors : bool
+            Whether errors should be logged
         auth_timeout_s : float
             Authentication timeout (in seconds)
         transport_timeout_s : float
@@ -273,11 +270,10 @@ class ADBPythonAsync(object):
 
                     # ADB connection successfully established
                     _LOGGER.debug("ADB connection to %s:%d successfully established", self.host, self.port)
-                    self._available = True
                     return True
 
                 except OSError as exc:
-                    if self._available or always_log_errors:
+                    if log_errors:
                         if exc.strerror is None:
                             exc.strerror = "Timed out trying to connect to ADB device."
                         _LOGGER.warning(
@@ -290,24 +286,21 @@ class ADBPythonAsync(object):
 
                     # ADB connection attempt failed
                     await self.close()
-                    self._available = False
                     return False
 
                 except Exception as exc:  # pylint: disable=broad-except
-                    if self._available or always_log_errors:
+                    if log_errors:
                         _LOGGER.warning(
                             "Couldn't connect to %s:%d.  %s: %s", self.host, self.port, exc.__class__.__name__, exc
                         )
 
                     # ADB connection attempt failed
                     await self.close()
-                    self._available = False
                     return False
 
         except LockNotAcquiredException:
             _LOGGER.warning("Couldn't connect to %s:%d because adb-shell lock not acquired.", self.host, self.port)
             await self.close()
-            self._available = False
             return False
 
     @staticmethod
@@ -470,9 +463,8 @@ class ADBServerAsync(object):
         self._adb_client = None
         self._adb_device = None
 
-        # keep track of whether the ADB connection is/was intact
+        # keep track of whether the ADB connection is intact
         self._available = False
-        self._was_available = False
 
         # use a lock to make sure that ADB commands don't overlap
         self._adb_lock = asyncio.Lock()
@@ -500,13 +492,13 @@ class ADBServerAsync(object):
         """
         self._available = False
 
-    async def connect(self, always_log_errors=True):
+    async def connect(self, log_errors=True):
         """Connect to an Android TV / Fire TV device.
 
         Parameters
         ----------
-        always_log_errors : bool
-            If True, errors will always be logged; otherwise, errors will only be logged on the first failed reconnect attempt
+        log_errors : bool
+            Whether errors should be logged
 
         Returns
         -------
@@ -531,11 +523,10 @@ class ADBServerAsync(object):
                             self.adb_server_port,
                         )
                         self._available = True
-                        self._was_available = True
                         return True
 
                     # ADB connection attempt failed (without an exception)
-                    if self._was_available or always_log_errors:
+                    if log_errors:
                         _LOGGER.warning(
                             "Couldn't connect to %s:%d via ADB server %s:%d because the server is not connected to the device",
                             self.host,
@@ -546,12 +537,11 @@ class ADBServerAsync(object):
 
                     await self.close()
                     self._available = False
-                    self._was_available = False
                     return False
 
                 # ADB connection attempt failed
                 except Exception as exc:  # noqa pylint: disable=broad-except
-                    if self._was_available or always_log_errors:
+                    if log_errors:
                         _LOGGER.warning(
                             "Couldn't connect to %s:%d via ADB server %s:%d, error: %s",
                             self.host,
@@ -563,7 +553,6 @@ class ADBServerAsync(object):
 
                     await self.close()
                     self._available = False
-                    self._was_available = False
                     return False
 
         except LockNotAcquiredException:
@@ -576,7 +565,6 @@ class ADBServerAsync(object):
             )
             await self.close()
             self._available = False
-            self._was_available = False
             return False
 
     async def pull(self, local_path, device_path):

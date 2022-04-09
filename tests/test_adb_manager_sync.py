@@ -103,25 +103,21 @@ class TestADBPythonSync(unittest.TestCase):
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
             self.assertTrue(self.adb.available)
-            self.assertTrue(self.adb._available)
 
     def test_connect_fail(self):
         """Test when the connect attempt fails."""
         with patchers.patch_connect(False)[self.PATCH_KEY]:
             self.assertFalse(self.adb.connect())
             self.assertFalse(self.adb.available)
-            self.assertFalse(self.adb._available)
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
             self.assertTrue(self.adb.available)
-            self.assertTrue(self.adb._available)
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             with patchers.PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION[self.PATCH_KEY]:
                 self.assertFalse(self.adb.connect())
                 self.assertFalse(self.adb.available)
-                self.assertFalse(self.adb._available)
 
     def test_connect_fail_lock(self):
         """Test when the connect attempt fails due to the lock."""
@@ -129,7 +125,6 @@ class TestADBPythonSync(unittest.TestCase):
             with patch.object(self.adb, "_adb_lock", LockedLock()):
                 self.assertFalse(self.adb.connect())
                 self.assertFalse(self.adb.available)
-                self.assertFalse(self.adb._available)
 
     def test_adb_shell_fail(self):
         """Test when an ADB shell command is not sent because the device is unavailable."""
@@ -286,7 +281,6 @@ class TestADBServerSync(TestADBPythonSync):
             with patchers.PATCH_ADB_SERVER_RUNTIME_ERROR:
                 self.assertFalse(self.adb.connect())
                 self.assertFalse(self.adb.available)
-                self.assertFalse(self.adb._available)
 
 
 class TestADBPythonSyncWithAuthentication(unittest.TestCase):
@@ -306,13 +300,11 @@ class TestADBPythonSyncWithAuthentication(unittest.TestCase):
         ), patch("androidtv.adb_manager.adb_manager_sync.PythonRSASigner", return_value="TEST"):
             self.assertTrue(self.adb.connect())
             self.assertTrue(self.adb.available)
-            self.assertTrue(self.adb._available)
 
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             with patch("androidtv.adb_manager.adb_manager_sync.open") as patch_open:
                 self.assertTrue(self.adb.connect())
                 self.assertTrue(self.adb.available)
-                self.assertTrue(self.adb._available)
                 assert not patch_open.called
 
     def test_connect_success_with_priv_pub_key(self):
@@ -322,7 +314,6 @@ class TestADBPythonSyncWithAuthentication(unittest.TestCase):
         ), patch("androidtv.adb_manager.adb_manager_sync.PythonRSASigner", return_value=None):
             self.assertTrue(self.adb.connect())
             self.assertTrue(self.adb.available)
-            self.assertTrue(self.adb._available)
 
 
 class TestADBPythonSyncClose(unittest.TestCase):
@@ -338,7 +329,6 @@ class TestADBPythonSyncClose(unittest.TestCase):
         with patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(self.adb.connect())
             self.assertTrue(self.adb.available)
-            self.assertTrue(self.adb._available)
 
             self.adb.close()
             self.assertFalse(self.adb.available)

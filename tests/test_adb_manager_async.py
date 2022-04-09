@@ -119,7 +119,6 @@ class TestADBPythonAsync(unittest.TestCase):
         with async_patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
-            self.assertTrue(self.adb._available)
 
     @awaiter
     async def test_connect_fail(self):
@@ -127,18 +126,15 @@ class TestADBPythonAsync(unittest.TestCase):
         with async_patchers.patch_connect(False)[self.PATCH_KEY]:
             self.assertFalse(await self.adb.connect())
             self.assertFalse(self.adb.available)
-            self.assertFalse(self.adb._available)
 
         with async_patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
-            self.assertTrue(self.adb._available)
 
         with async_patchers.patch_connect(True)[self.PATCH_KEY]:
             with async_patchers.PATCH_CONNECT_FAIL_CUSTOM_EXCEPTION[self.PATCH_KEY]:
                 self.assertFalse(await self.adb.connect())
                 self.assertFalse(self.adb.available)
-                self.assertFalse(self.adb._available)
 
     @awaiter
     async def test_connect_fail_lock(self):
@@ -147,7 +143,6 @@ class TestADBPythonAsync(unittest.TestCase):
             with patch.object(self.adb, "_adb_lock", AsyncLockedLock()):
                 self.assertFalse(await self.adb.connect())
                 self.assertFalse(self.adb.available)
-                self.assertFalse(self.adb._available)
 
     @awaiter
     async def test_adb_shell_fail(self):
@@ -322,7 +317,6 @@ class TestADBServerAsync(TestADBPythonAsync):
             with async_patchers.PATCH_ADB_SERVER_RUNTIME_ERROR:
                 self.assertFalse(await self.adb.connect())
                 self.assertFalse(self.adb.available)
-                self.assertFalse(self.adb._available)
 
 
 class TestADBPythonAsyncWithAuthentication(unittest.TestCase):
@@ -343,13 +337,11 @@ class TestADBPythonAsyncWithAuthentication(unittest.TestCase):
         ), patch("androidtv.adb_manager.adb_manager_async.PythonRSASigner", return_value="TEST"):
             self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
-            self.assertTrue(self.adb._available)
 
         with async_patchers.patch_connect(True)[self.PATCH_KEY]:
             with patch("androidtv.adb_manager.adb_manager_async.aiofiles.open") as patch_open:
                 self.assertTrue(await self.adb.connect())
                 self.assertTrue(self.adb.available)
-                self.assertTrue(self.adb._available)
                 assert not patch_open.called
 
     @awaiter
@@ -360,7 +352,6 @@ class TestADBPythonAsyncWithAuthentication(unittest.TestCase):
         ), patch("androidtv.adb_manager.adb_manager_async.PythonRSASigner", return_value=None):
             self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
-            self.assertTrue(self.adb._available)
 
 
 class TestADBPythonAsyncClose(unittest.TestCase):
@@ -377,7 +368,6 @@ class TestADBPythonAsyncClose(unittest.TestCase):
         with async_patchers.patch_connect(True)[self.PATCH_KEY]:
             self.assertTrue(await self.adb.connect())
             self.assertTrue(self.adb.available)
-            self.assertTrue(self.adb._available)
 
             await self.adb.close()
             self.assertFalse(self.adb.available)
