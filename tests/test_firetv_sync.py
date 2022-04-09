@@ -16,6 +16,8 @@ from androidtv.firetv.firetv_sync import FireTVSync
 from . import patchers
 
 
+UNKNOWN_APP = "unknown"
+
 HDMI_INPUT_EMPTY = "\n"
 
 CURRENT_APP_OUTPUT = "com.amazon.tv.launcher"
@@ -363,23 +365,28 @@ class TestFireTVSyncPython(unittest.TestCase):
 
         # Unknown app
         self.assertUpdate(
-            [True, True, 1, "unknown", 3, ["unknown"], None], (constants.STATE_PLAYING, "unknown", ["unknown"], None)
+            [True, True, 1, UNKNOWN_APP, 3, [UNKNOWN_APP], None],
+            (constants.STATE_PLAYING, UNKNOWN_APP, [UNKNOWN_APP], None),
         )
 
         self.assertUpdate(
-            [True, True, 1, "unknown", 2, ["unknown"], None], (constants.STATE_PAUSED, "unknown", ["unknown"], None)
+            [True, True, 1, UNKNOWN_APP, 2, [UNKNOWN_APP], None],
+            (constants.STATE_PAUSED, UNKNOWN_APP, [UNKNOWN_APP], None),
         )
 
         self.assertUpdate(
-            [True, True, 1, "unknown", 1, ["unknown"], None], (constants.STATE_IDLE, "unknown", ["unknown"], None)
+            [True, True, 1, UNKNOWN_APP, 1, [UNKNOWN_APP], None],
+            (constants.STATE_IDLE, UNKNOWN_APP, [UNKNOWN_APP], None),
         )
 
         self.assertUpdate(
-            [True, True, 1, "unknown", None, ["unknown"], None], (constants.STATE_PLAYING, "unknown", ["unknown"], None)
+            [True, True, 1, UNKNOWN_APP, None, [UNKNOWN_APP], None],
+            (constants.STATE_PLAYING, UNKNOWN_APP, [UNKNOWN_APP], None),
         )
 
         self.assertUpdate(
-            [True, True, 2, "unknown", None, ["unknown"], None], (constants.STATE_PAUSED, "unknown", ["unknown"], None)
+            [True, True, 2, UNKNOWN_APP, None, [UNKNOWN_APP], None],
+            (constants.STATE_PAUSED, UNKNOWN_APP, [UNKNOWN_APP], None),
         )
 
 

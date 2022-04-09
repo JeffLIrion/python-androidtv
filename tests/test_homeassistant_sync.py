@@ -10,12 +10,7 @@ except ImportError:
 
 sys.path.insert(0, "..")
 
-from adb_shell.exceptions import (
-    InvalidChecksumError,
-    InvalidCommandError,
-    InvalidResponseError,
-    TcpTimeoutException,
-)
+from adb_shell.exceptions import InvalidChecksumError, InvalidCommandError, InvalidResponseError, TcpTimeoutException
 from androidtv import setup
 from androidtv.constants import APPS, KEYS, STATE_IDLE, STATE_OFF, STATE_PAUSED, STATE_PLAYING, STATE_STANDBY
 from androidtv.exceptions import LockNotAcquiredException
@@ -508,10 +503,7 @@ class TestAndroidTVServerImplementation(unittest.TestCase):
 
         assert (
             "ADB connection to {}:{} via ADB server {}:{} successfully established".format(
-                self.aftv.aftv.host,
-                self.aftv.aftv.port,
-                self.aftv.aftv.adb_server_ip,
-                self.aftv.aftv.adb_server_port,
+                self.aftv.aftv.host, self.aftv.aftv.port, self.aftv.aftv.adb_server_ip, self.aftv.aftv.adb_server_port
             )
             in logs.output[0]
         )
