@@ -117,10 +117,7 @@ INSTALLED_APPS_OUTPUT_1 = """package:org.example.app
 package:org.example.launcher
 """
 
-INSTALLED_APPS_LIST = [
-    "org.example.app",
-    "org.example.launcher",
-]
+INSTALLED_APPS_LIST = ["org.example.app", "org.example.launcher"]
 
 MEDIA_SESSION_STATE_OUTPUT = "com.amazon.tv.launcher\nstate=PlaybackState {state=2, position=0, buffered position=0, speed=0.0, updated=65749, actions=240640, custom actions=[], active item id=-1, error=null}"
 
@@ -497,18 +494,11 @@ class TestBaseTVSyncPython(unittest.TestCase):
             assert "Chromecast" in self.btv.device_properties.get("model", "")
             assert self.btv.DEVICE_ENUM == AndroidTVSync.DEVICE_ENUM
             self.assertEqual(self.btv.device_properties["manufacturer"], "Google")
+            self.assertEqual(self.btv._cmd_current_app(), constants.CMD_CURRENT_APP_GOOGLE_TV)
             self.assertEqual(
-                self.btv._cmd_current_app(),
-                constants.CMD_CURRENT_APP_GOOGLE_TV,
+                self.btv._cmd_current_app_media_session_state(), constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV
             )
-            self.assertEqual(
-                self.btv._cmd_current_app_media_session_state(),
-                constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV,
-            )
-            self.assertEqual(
-                self.btv._cmd_launch_app("TEST"),
-                constants.CMD_LAUNCH_APP_GOOGLE_TV.format("TEST"),
-            )
+            self.assertEqual(self.btv._cmd_launch_app("TEST"), constants.CMD_LAUNCH_APP_GOOGLE_TV.format("TEST"))
 
         with patch.object(
             self.btv._adb, "shell", side_effect=(DEVICE_PROPERTIES_OUTPUT_SONY_TV, ETHMAC_SONY, WIFIMAC_SONY)
@@ -527,30 +517,17 @@ class TestBaseTVSyncPython(unittest.TestCase):
             assert self.btv.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
             self.assertDictEqual(DEVICE_PROPERTIES_DICT_SHIELD_TV_11, device_properties)
             # _cmd_audio_state
-            self.assertEqual(
-                self.btv._cmd_audio_state(),
-                constants.CMD_AUDIO_STATE11,
-            )
+            self.assertEqual(self.btv._cmd_audio_state(), constants.CMD_AUDIO_STATE11)
             # _cmd_current_app
-            self.assertEqual(
-                self.btv._cmd_current_app(),
-                constants.CMD_CURRENT_APP11,
-            )
+            self.assertEqual(self.btv._cmd_current_app(), constants.CMD_CURRENT_APP11)
             # _cmd_current_app_media_session_state
             self.assertEqual(
-                self.btv._cmd_current_app_media_session_state(),
-                constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE11,
+                self.btv._cmd_current_app_media_session_state(), constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE11
             )
             # _cmd_hdmi_input
-            self.assertEqual(
-                self.btv._cmd_hdmi_input(),
-                constants.CMD_HDMI_INPUT11,
-            )
+            self.assertEqual(self.btv._cmd_hdmi_input(), constants.CMD_HDMI_INPUT11)
             # _cmd_launch_app
-            self.assertEqual(
-                self.btv._cmd_launch_app("TEST"),
-                constants.CMD_LAUNCH_APP11.format("TEST"),
-            )
+            self.assertEqual(self.btv._cmd_launch_app("TEST"), constants.CMD_LAUNCH_APP11.format("TEST"))
 
     def test_get_installed_apps(self):
         """ "Check that `get_installed_apps` works correctly."""

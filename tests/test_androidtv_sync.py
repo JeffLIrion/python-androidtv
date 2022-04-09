@@ -16,6 +16,8 @@ from androidtv.androidtv.androidtv_sync import AndroidTVSync
 from . import patchers
 
 
+UNKNOWN_APP = "unknown"
+
 HDMI_INPUT_EMPTY = "\n"
 
 STREAM_MUSIC_EMPTY = "- STREAM_MUSIC:\n \n- STREAM"
@@ -377,8 +379,8 @@ class TestAndroidTVSyncPython(unittest.TestCase):
 
             self.atv._state_detection_rules = STATE_DETECTION_RULES4
             state = self.atv.update()
-            self.assertEqual(state[0], constants.STATE_PAUSED)
 
+            self.assertEqual(state[0], constants.STATE_PAUSED)
             self.atv._state_detection_rules = STATE_DETECTION_RULES5
             state = self.atv.update()
             self.assertEqual(state[0], constants.STATE_IDLE)
@@ -566,38 +568,38 @@ class TestAndroidTVSyncPython(unittest.TestCase):
 
         # Unknown app
         self.assertUpdate(
-            [True, True, constants.STATE_IDLE, 2, "unknown", 2, "hmdi_arc", False, 30, None, None],
-            (constants.STATE_PAUSED, "unknown", ["unknown"], "hmdi_arc", False, 0.5, None),
+            [True, True, constants.STATE_IDLE, 2, UNKNOWN_APP, 2, "hmdi_arc", False, 30, None, None],
+            (constants.STATE_PAUSED, UNKNOWN_APP, [UNKNOWN_APP], "hmdi_arc", False, 0.5, None),
         )
 
         self.assertUpdate(
-            [True, True, constants.STATE_IDLE, 2, "unknown", 3, "hmdi_arc", False, 30, None, None],
-            (constants.STATE_PLAYING, "unknown", ["unknown"], "hmdi_arc", False, 0.5, None),
+            [True, True, constants.STATE_IDLE, 2, UNKNOWN_APP, 3, "hmdi_arc", False, 30, None, None],
+            (constants.STATE_PLAYING, UNKNOWN_APP, [UNKNOWN_APP], "hmdi_arc", False, 0.5, None),
         )
 
         self.assertUpdate(
-            [True, True, constants.STATE_IDLE, 2, "unknown", 4, "hmdi_arc", False, 30, None, None],
-            (constants.STATE_IDLE, "unknown", ["unknown"], "hmdi_arc", False, 0.5, None),
+            [True, True, constants.STATE_IDLE, 2, UNKNOWN_APP, 4, "hmdi_arc", False, 30, None, None],
+            (constants.STATE_IDLE, UNKNOWN_APP, [UNKNOWN_APP], "hmdi_arc", False, 0.5, None),
         )
 
         self.assertUpdate(
-            [True, True, constants.STATE_PLAYING, 2, "unknown", None, "hmdi_arc", False, 30, None, None],
-            (constants.STATE_PLAYING, "unknown", ["unknown"], "hmdi_arc", False, 0.5, None),
+            [True, True, constants.STATE_PLAYING, 2, UNKNOWN_APP, None, "hmdi_arc", False, 30, None, None],
+            (constants.STATE_PLAYING, UNKNOWN_APP, [UNKNOWN_APP], "hmdi_arc", False, 0.5, None),
         )
 
         self.assertUpdate(
-            [True, True, constants.STATE_IDLE, 1, "unknown", None, "hmdi_arc", False, 30, None, None],
-            (constants.STATE_PAUSED, "unknown", ["unknown"], "hmdi_arc", False, 0.5, None),
+            [True, True, constants.STATE_IDLE, 1, UNKNOWN_APP, None, "hmdi_arc", False, 30, None, None],
+            (constants.STATE_PAUSED, UNKNOWN_APP, [UNKNOWN_APP], "hmdi_arc", False, 0.5, None),
         )
 
         self.assertUpdate(
-            [True, True, constants.STATE_IDLE, 2, "unknown", None, "hmdi_arc", False, 30, None, None],
-            (constants.STATE_PLAYING, "unknown", ["unknown"], "hmdi_arc", False, 0.5, None),
+            [True, True, constants.STATE_IDLE, 2, UNKNOWN_APP, None, "hmdi_arc", False, 30, None, None],
+            (constants.STATE_PLAYING, UNKNOWN_APP, [UNKNOWN_APP], "hmdi_arc", False, 0.5, None),
         )
 
         self.assertUpdate(
-            [True, True, constants.STATE_IDLE, 3, "unknown", None, "hmdi_arc", False, 30, None, None],
-            (constants.STATE_IDLE, "unknown", ["unknown"], "hmdi_arc", False, 0.5, None),
+            [True, True, constants.STATE_IDLE, 3, UNKNOWN_APP, None, "hmdi_arc", False, 30, None, None],
+            (constants.STATE_IDLE, UNKNOWN_APP, [UNKNOWN_APP], "hmdi_arc", False, 0.5, None),
         )
 
     def test_customize_command(self):

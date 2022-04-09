@@ -366,14 +366,12 @@ KEYS = {
 
 
 # Android TV / Fire TV states
-STATE_ON = "on"
 STATE_IDLE = "idle"
 STATE_OFF = "off"
 STATE_PLAYING = "playing"
 STATE_PAUSED = "paused"
 STATE_STANDBY = "standby"
 STATE_STOPPED = "stopped"
-STATE_UNKNOWN = "unknown"
 
 #: States that are valid (used by :func:`~androidtv.basetv.state_detection_rules_validator`)
 VALID_STATES = (STATE_IDLE, STATE_OFF, STATE_PLAYING, STATE_PAUSED, STATE_STANDBY)
