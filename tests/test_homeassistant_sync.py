@@ -130,6 +130,8 @@ class ADBDevice(MediaPlayerDevice):
         self._sources = None
         self._state = None
 
+        self._failed_connect_count = 0
+
     @property
     def app_id(self):
         """Return the current app."""
@@ -283,7 +285,11 @@ class AndroidTVDevice(ADBDevice):
         # Check if device is disconnected.
         if not self._available:
             # Try to connect
-            self._available = self.aftv.adb_connect(always_log_errors=False)
+            if self.aftv.adb_connect(log_errors=self._failed_connect_count == 0):
+                self._failed_connect_count = 0
+                self._available = True
+            else:
+                self._failed_connect_count += 1
 
             # To be safe, wait until the next update to run ADB commands if
             # using the Python ADB implementation.
@@ -353,7 +359,11 @@ class FireTVDevice(ADBDevice):
         # Check if device is disconnected.
         if not self._available:
             # Try to connect
-            self._available = self.aftv.adb_connect(always_log_errors=False)
+            if self.aftv.adb_connect(log_errors=self._failed_connect_count == 0):
+                self._failed_connect_count = 0
+                self._available = True
+            else:
+                self._failed_connect_count += 1
 
             # To be safe, wait until the next update to run ADB commands if
             # using the Python ADB implementation.

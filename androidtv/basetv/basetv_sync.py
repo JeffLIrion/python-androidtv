@@ -159,7 +159,7 @@ class BaseTVSync(BaseTV):
 
     def adb_connect(
         self,
-        always_log_errors=True,
+        log_errors=True,
         auth_timeout_s=constants.DEFAULT_AUTH_TIMEOUT_S,
         transport_timeout_s=constants.DEFAULT_TRANSPORT_TIMEOUT_S,
     ):
@@ -167,8 +167,8 @@ class BaseTVSync(BaseTV):
 
         Parameters
         ----------
-        always_log_errors : bool
-            If True, errors will always be logged; otherwise, errors will only be logged on the first failed reconnect attempt
+        log_errors : bool
+            Whether errors should be logged
         auth_timeout_s : float
             Authentication timeout (in seconds)
         transport_timeout_s : float
@@ -181,8 +181,8 @@ class BaseTVSync(BaseTV):
 
         """
         if isinstance(self._adb, ADBPythonSync):
-            return self._adb.connect(always_log_errors, auth_timeout_s, transport_timeout_s)
-        return self._adb.connect(always_log_errors)
+            return self._adb.connect(log_errors, auth_timeout_s, transport_timeout_s)
+        return self._adb.connect(log_errors)
 
     def adb_close(self):
         """Close the ADB connection.
