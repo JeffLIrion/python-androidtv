@@ -24,6 +24,7 @@ def setup(
     auth_timeout_s=DEFAULT_AUTH_TIMEOUT_S,
     signer=None,
     transport_timeout_s=DEFAULT_TRANSPORT_TIMEOUT_S,
+    log_errors=True,
 ):
     """Connect to a device and determine whether it's an Android TV or an Amazon Fire TV.
 
@@ -49,6 +50,8 @@ def setup(
         The signer for the ADB keys, as loaded by :meth:`androidtv.adb_manager.adb_manager_sync.ADBPythonSync.load_adbkey`
     transport_timeout_s : float
         Transport timeout (in seconds)
+    log_errors: bool
+        Whether connection errors should be logged
 
     Returns
     -------
@@ -58,14 +61,14 @@ def setup(
     """
     if device_class == "androidtv":
         atv = AndroidTVSync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
-        atv.adb_connect(auth_timeout_s=auth_timeout_s, transport_timeout_s=transport_timeout_s)
+        atv.adb_connect(log_errors=log_errors, auth_timeout_s=auth_timeout_s, transport_timeout_s=transport_timeout_s)
         atv.get_device_properties()
         atv.get_installed_apps()
         return atv
 
     if device_class == "firetv":
         ftv = FireTVSync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
-        ftv.adb_connect(auth_timeout_s=auth_timeout_s, transport_timeout_s=transport_timeout_s)
+        ftv.adb_connect(log_errors=log_errors, auth_timeout_s=auth_timeout_s, transport_timeout_s=transport_timeout_s)
         ftv.get_device_properties()
         ftv.get_installed_apps()
         return ftv
@@ -76,7 +79,7 @@ def setup(
     aftv = BaseTVSync(host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
 
     # establish the ADB connection
-    aftv.adb_connect(auth_timeout_s=auth_timeout_s, transport_timeout_s=transport_timeout_s)
+    aftv.adb_connect(log_errors=log_errors, auth_timeout_s=auth_timeout_s, transport_timeout_s=transport_timeout_s)
 
     # get device properties
     aftv.device_properties = aftv.get_device_properties()
