@@ -86,7 +86,7 @@ class TestConstants(unittest.TestCase):
         # CMD_CURRENT_APP11
         self.assertCommand(
             constants.CMD_CURRENT_APP11,
-            r"CURRENT_APP=$(dumpsys window windows | grep 'Window #1') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
+            r"CURRENT_APP=$(dumpsys window windows | grep 'mInputMethodTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
         )
 
         # CMD_CURRENT_APP_GOOGLE_TV
@@ -104,7 +104,7 @@ class TestConstants(unittest.TestCase):
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE11
         self.assertCommand(
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE11,
-            r"CURRENT_APP=$(dumpsys window windows | grep 'Window #1') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+            r"CURRENT_APP=$(dumpsys window windows | grep 'mInputMethodTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
 
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV
@@ -143,7 +143,7 @@ class TestConstants(unittest.TestCase):
         # CMD_LAUNCH_APP11
         self.assertCommand(
             constants.CMD_LAUNCH_APP11,
-            r"CURRENT_APP=$(dumpsys window windows | grep 'Window #1') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
+            r"CURRENT_APP=$(dumpsys window windows | grep 'mInputMethodTarget') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
         )
 
         # CMD_LAUNCH_APP_FIRETV
