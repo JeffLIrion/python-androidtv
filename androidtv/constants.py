@@ -178,7 +178,7 @@ CMD_INSTALLED_APPS = "pm list packages"
 
 #: Determine if the device is on
 CMD_SCREEN_ON = (
-    "(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true')"
+    "(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON')"
 )
 
 #: Get the "STREAM_MUSIC" block from ``dumpsys audio``
