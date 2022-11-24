@@ -185,13 +185,13 @@ class TestConstants(unittest.TestCase):
         # CMD_SCREEN_ON
         self.assertCommand(
             constants.CMD_SCREEN_ON,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true')",
+            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON')",
         )
 
         # CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE
         self.assertCommand(
             constants.CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep Locks | grep 'size='",
+            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep Locks | grep 'size='",
         )
 
         # CMD_SERIALNO
@@ -203,25 +203,25 @@ class TestConstants(unittest.TestCase):
         # CMD_TURN_OFF_ANDROIDTV
         self.assertCommand(
             constants.CMD_TURN_OFF_ANDROIDTV,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') && input keyevent 26",
+            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') && input keyevent 26",
         )
 
         # CMD_TURN_OFF_FIRETV
         self.assertCommand(
             constants.CMD_TURN_OFF_FIRETV,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') && input keyevent 223",
+            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') && input keyevent 223",
         )
 
         # CMD_TURN_ON_ANDROIDTV
         self.assertCommand(
             constants.CMD_TURN_ON_ANDROIDTV,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') || input keyevent 26",
+            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') || input keyevent 26",
         )
 
         # CMD_TURN_ON_FIRETV
         self.assertCommand(
             constants.CMD_TURN_ON_FIRETV,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true') || (input keyevent 26 && input keyevent 3)",
+            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') || (input keyevent 26 && input keyevent 3)",
         )
 
         # CMD_VERSION
