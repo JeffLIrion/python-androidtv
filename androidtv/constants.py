@@ -421,8 +421,10 @@ APP_GOOGLE_TV_LAUNCHER = "com.google.android.apps.tv.launcherx"
 APP_HAYSTACK_NEWS = "com.haystack.android"
 APP_HBO_GO = "eu.hbogo.androidtv.production"
 APP_HBO_GO_2 = "com.HBO"
+APP_HBO_MAX = "com.hbo.hbonow"
 APP_HOICHOI = "com.viewlift.hoichoi"
 APP_HULU = "com.hulu.plus"
+APP_HULU_2 = "com.hulu.livingroomplus"
 APP_HUNGAMA_PLAY = "com.hungama.movies.tv"
 APP_IMDB_TV = "com.amazon.imdb.tv.android.app"
 APP_IPTV = "ru.iptvremote.android.iptv"
@@ -441,6 +443,8 @@ APP_NLZIET = "nl.nlziet"
 APP_NOS = "nl.nos.app"
 APP_NPO = "nl.uitzendinggemist"
 APP_OCS = "com.orange.ocsgo"
+APP_PARAMOUNT_PLUS = "com.cbs.ott"
+APP_PEACOCK = "com.peacocktv.peacockandroid"
 APP_PLAY_GAMES = "com.google.android.play.games"
 APP_PLAY_MUSIC = "com.google.android.music"
 APP_PLAY_STORE = "com.android.vending"
@@ -521,8 +525,10 @@ APPS = {
     APP_HAYSTACK_NEWS: "Haystack News",
     APP_HBO_GO: "HBO GO",
     APP_HBO_GO_2: "HBO GO (2)",
+    APP_HBO_MAX: "HBO Max",
     APP_HOICHOI: "Hoichoi",
     APP_HULU: "Hulu",
+    APP_HULU_2: "Hulu (2)",
     APP_HUNGAMA_PLAY: "Hungama Play",
     APP_IMDB_TV: "IMDb TV",
     APP_IPTV: "IPTV",
@@ -541,6 +547,8 @@ APPS = {
     APP_NOS: "NOS",
     APP_NPO: "NPO",
     APP_OCS: "OCS",
+    APP_PARAMOUNT_PLUS: "Paramount+",
+    APP_PEACOCK: "Peacock",
     APP_PLAY_GAMES: "Play Games",
     APP_PLAY_MUSIC: "Play Music",
     APP_PLAY_STORE: "Play Store",
