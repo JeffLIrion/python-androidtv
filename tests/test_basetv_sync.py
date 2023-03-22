@@ -632,7 +632,9 @@ class TestBaseTVSyncPython(unittest.TestCase):
         with patchers.patch_shell("11Wake Locks: size=2")[self.PATCH_KEY]:
             self.assertTupleEqual(self.btv.screen_on_awake_wake_lock_size(), (True, True, 2))
 
-        with patchers.patch_shell(["Failed to write while dumping serviceWake Locks: size=2", "11Wake Locks: size=2"])[self.PATCH_KEY]:
+        with patchers.patch_shell(["Failed to write while dumping serviceWake Locks: size=2", "11Wake Locks: size=2"])[
+            self.PATCH_KEY
+        ]:
             self.assertTupleEqual(self.btv.screen_on_awake_wake_lock_size(), (True, True, 2))
 
     def test_state_detection_rules_validator(self):

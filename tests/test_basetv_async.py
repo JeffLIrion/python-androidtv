@@ -421,7 +421,9 @@ class TestBaseTVAsyncPython(unittest.TestCase):
         with async_patchers.patch_shell("11Wake Locks: size=2")[self.PATCH_KEY]:
             self.assertTupleEqual(await self.btv.screen_on_awake_wake_lock_size(), (True, True, 2))
 
-        with async_patchers.patch_shell(["Failed to write while dumping serviceWake Locks: size=2", "11Wake Locks: size=2"])[self.PATCH_KEY]:
+        with async_patchers.patch_shell(
+            ["Failed to write while dumping serviceWake Locks: size=2", "11Wake Locks: size=2"]
+        )[self.PATCH_KEY]:
             self.assertTupleEqual(await self.btv.screen_on_awake_wake_lock_size(), (True, True, 2))
 
     @awaiter
