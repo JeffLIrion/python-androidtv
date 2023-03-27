@@ -511,7 +511,7 @@ APPS = {
     APP_DS_PHOTO: "DS photo",
     APP_DS_VIDEO: "DS video",
     APP_ES_FILE_EXPLORER: "ES File Explorer",
-    APP_EMBY: "Emby"
+    APP_EMBY: "Emby",
     APP_FACEBOOK: "Facebook Watch",
     APP_FAWESOME: "Fawsome",
     APP_FIREFOX: "Firefox",
