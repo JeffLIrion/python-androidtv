@@ -407,6 +407,7 @@ APP_DISNEY_PLUS_HOTSTAR = "in.startv.hotstar"
 APP_DS_PHOTO = "com.synology.dsphoto"
 APP_DS_VIDEO = "com.synology.dsvideo"
 APP_ES_FILE_EXPLORER = "com.estrongs.android.pop"
+APP_EMBY = "tv.emby.embyatv"
 APP_FACEBOOK = "com.facebook.katana"
 APP_FAWESOME = "com.future.moviesByFawesomeAndroidTV"
 APP_FIREFOX = "org.mozilla.tv.firefox"
@@ -431,6 +432,7 @@ APP_JELLYFIN_TV = "org.jellyfin.androidtv"
 APP_JIO_CINEMA = "com.jio.media.stb.ondemand"
 APP_KODI = "org.xbmc.kodi"
 APP_LIVE_CHANNELS = "com.google.android.tv"
+APP_MAGENTA_TV = "de.telekom.magentatv.atv"
 APP_MIJN_RADIO = "org.samsonsen.nederlandse.radio.holland.nl"
 APP_MOLOTOV = "tv.molotov.app"
 APP_MRMC = "tv.mrmc.mrmc"
@@ -509,6 +511,7 @@ APPS = {
     APP_DS_PHOTO: "DS photo",
     APP_DS_VIDEO: "DS video",
     APP_ES_FILE_EXPLORER: "ES File Explorer",
+    APP_EMBY: "Emby"
     APP_FACEBOOK: "Facebook Watch",
     APP_FAWESOME: "Fawsome",
     APP_FIREFOX: "Firefox",
@@ -531,6 +534,7 @@ APPS = {
     APP_JIO_CINEMA: "Jio Cinema",
     APP_KODI: "Kodi",
     APP_LIVE_CHANNELS: "Live Channels",
+    APP_MAGENTA_TV: "Magenta TV",
     APP_MIJN_RADIO: "Mijn Radio",
     APP_MOLOTOV: "Molotov",
     APP_MRMC: "MrMC",
