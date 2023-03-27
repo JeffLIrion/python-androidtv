@@ -406,8 +406,8 @@ APP_DISNEY_PLUS = "com.disney.disneyplus"
 APP_DISNEY_PLUS_HOTSTAR = "in.startv.hotstar"
 APP_DS_PHOTO = "com.synology.dsphoto"
 APP_DS_VIDEO = "com.synology.dsvideo"
-APP_ES_FILE_EXPLORER = "com.estrongs.android.pop"
 APP_EMBY = "tv.emby.embyatv"
+APP_ES_FILE_EXPLORER = "com.estrongs.android.pop"
 APP_FACEBOOK = "com.facebook.katana"
 APP_FAWESOME = "com.future.moviesByFawesomeAndroidTV"
 APP_FIREFOX = "org.mozilla.tv.firefox"
@@ -510,8 +510,8 @@ APPS = {
     APP_DISNEY_PLUS_HOTSTAR: "Disney+ Hotstar",
     APP_DS_PHOTO: "DS photo",
     APP_DS_VIDEO: "DS video",
-    APP_ES_FILE_EXPLORER: "ES File Explorer",
     APP_EMBY: "Emby",
+    APP_ES_FILE_EXPLORER: "ES File Explorer",
     APP_FACEBOOK: "Facebook Watch",
     APP_FAWESOME: "Fawsome",
     APP_FIREFOX: "Firefox",
