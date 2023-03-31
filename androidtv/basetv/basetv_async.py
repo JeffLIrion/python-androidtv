@@ -823,7 +823,7 @@ class BaseTVAsync(BaseTV):
 
         new_volume = int(min(max(round(self.max_volume * volume_level), 0.0), self.max_volume))
 
-        await self._adb.shell("media volume --show --stream 3 --set {}".format(new_volume))
+        await self._adb.shell(self._cmd_volume_set().format(new_volume))
 
         # return the new volume level
         return new_volume / self.max_volume
