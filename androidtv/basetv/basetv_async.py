@@ -377,6 +377,13 @@ class BaseTVAsync(BaseTV):
         """
         output = await self._adb.shell(constants.CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE)
 
+        # Power service might sometimes reply with "Failed to write while dumping service". If this happens,
+        # retry the request, up to three times.
+        retries_left = 3
+        while output is not None and "Failed to write while dumping service" in output and retries_left > 0:
+            output = await self._adb.shell(constants.CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE)
+            retries_left -= 1
+
         return self._screen_on_awake_wake_lock_size(output)
 
     async def stream_music_properties(self):

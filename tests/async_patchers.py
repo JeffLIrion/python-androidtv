@@ -124,10 +124,21 @@ def patch_connect(success):
 def patch_shell(response=None, error=False):
     """Mock the `AdbDeviceTcpAsyncFake.shell` and `DeviceAsyncFake.shell` methods."""
 
+    if isinstance(response, list):
+        response_list = response
+    else:
+        response_list = [response]
+
+    next_response = 0
+
     async def shell_success(self, cmd, *args, **kwargs):
         """Mock the `AdbDeviceTcpAsyncFake.shell` and `DeviceAsyncFake.shell` methods when they are successful."""
         self.shell_cmd = cmd
-        return response
+        nonlocal next_response
+        nonlocal response_list
+        res = response_list[next_response]
+        next_response = (next_response + 1) % len(response_list)
+        return res
 
     async def shell_fail_python(self, cmd, *args, **kwargs):
         """Mock the `AdbDeviceTcpAsyncFake.shell` method when it fails."""
