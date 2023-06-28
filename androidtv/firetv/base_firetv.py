@@ -177,9 +177,9 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
                     state = constants.STATE_PLAYING
                 else:
                     state = constants.STATE_IDLE
-            
+
             # TV NOW (Germany)
-            elif current_app == constants.APP_TV_NOW:
+            elif current_app == constants.APP_TVNOW:
                 if wake_lock_size == 3:
                     state = constants.STATE_PAUSED
                 elif wake_lock_size == 4:
