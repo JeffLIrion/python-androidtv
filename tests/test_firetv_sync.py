@@ -328,22 +328,22 @@ class TestFireTVSyncPython(unittest.TestCase):
 
         # TV NOW (Germany)
         self.assertUpdate(
-            [True, True, 1, constants.APP_TVNOW, 3, [constants.APP_TVNOW], None],
+            [True, True, 3, constants.APP_TVNOW, 1, [constants.APP_TVNOW], None],
             (constants.STATE_PAUSED, constants.APP_TVNOW, [constants.APP_TVNOW], None),
         )
 
         self.assertUpdate(
-            [True, True, 1, constants.APP_TVNOW, 4, [constants.APP_TVNOW], None],
+            [True, True, 4, constants.APP_TVNOW, 1, [constants.APP_TVNOW], None],
             (constants.STATE_PLAYING, constants.APP_TVNOW, [constants.APP_TVNOW], None),
         )
 
         self.assertUpdate(
-            [True, True, 1, constants.APP_TVNOW, 5, [constants.APP_TVNOW], None],
+            [True, True, 5, constants.APP_TVNOW, 1, [constants.APP_TVNOW], None],
             (constants.STATE_PLAYING, constants.APP_TVNOW, [constants.APP_TVNOW], None),
         )
 
         self.assertUpdate(
-            [True, True, 1, constants.APP_TVNOW, 6, [constants.APP_TVNOW], None],
+            [True, True, 6, constants.APP_TVNOW, 1, [constants.APP_TVNOW], None],
             (constants.STATE_IDLE, constants.APP_TVNOW, [constants.APP_TVNOW], None),
         )
 
