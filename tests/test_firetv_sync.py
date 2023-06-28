@@ -326,7 +326,7 @@ class TestFireTVSyncPython(unittest.TestCase):
             (constants.STATE_IDLE, constants.APP_SPOTIFY, [constants.APP_SPOTIFY], None),
         )
 
-        # TV NOW (Germany)
+        # RTL Plus (Germany)
         self.assertUpdate(
             [True, True, 3, constants.APP_TVNOW, 1, [constants.APP_TVNOW], None],
             (constants.STATE_PAUSED, constants.APP_TVNOW, [constants.APP_TVNOW], None),

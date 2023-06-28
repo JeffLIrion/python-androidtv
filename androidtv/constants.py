@@ -577,7 +577,7 @@ APPS = {
     APP_TED: "TED",
     APP_TUNEIN: "TuneIn Radio",
     APP_TVHEADEND: "DreamPlayer TVHeadend",
-    APP_TVNOW: "TV NOW",
+    APP_TVNOW: "RTL Plus",
     APP_TWITCH: "Twitch",
     APP_TWITCH_FIRETV: "Twitch (FireTV)",
     APP_VEVO: "Vevo",
