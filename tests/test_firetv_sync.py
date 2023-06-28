@@ -328,23 +328,23 @@ class TestFireTVSyncPython(unittest.TestCase):
 
         # TV NOW (Germany)
         self.assertUpdate(
-            [True, True, 1, constants.APP_TV_NOW, 3, [constants.APP_TV_NOW], None],
-            (constants.STATE_PAUSED, constants.APP_TV_NOW, [constants.APP_TV_NOW], None),
+            [True, True, 1, constants.APP_TVNOW, 3, [constants.APP_TVNOW], None],
+            (constants.STATE_PAUSED, constants.APP_TVNOW, [constants.APP_TVNOW], None),
         )
 
         self.assertUpdate(
-            [True, True, 1, constants.APP_TV_NOW, 4, [constants.APP_TV_NOW], None],
-            (constants.STATE_PLAYING, constants.APP_TV_NOW, [constants.APP_TV_NOW], None),
+            [True, True, 1, constants.APP_TVNOW, 4, [constants.APP_TVNOW], None],
+            (constants.STATE_PLAYING, constants.APP_TVNOW, [constants.APP_TVNOW], None),
         )
 
         self.assertUpdate(
-            [True, True, 1, constants.APP_TV_NOW, 5, [constants.APP_TV_NOW], None],
-            (constants.STATE_PLAYING, constants.APP_TV_NOW, [constants.APP_TV_NOW], None),
+            [True, True, 1, constants.APP_TVNOW, 5, [constants.APP_TVNOW], None],
+            (constants.STATE_PLAYING, constants.APP_TVNOW, [constants.APP_TVNOW], None),
         )
 
         self.assertUpdate(
-            [True, True, 1, constants.APP_TV_NOW, 6, [constants.APP_TV_NOW], None],
-            (constants.STATE_IDLE, constants.APP_TV_NOW, [constants.APP_TV_NOW], None),
+            [True, True, 1, constants.APP_TVNOW, 6, [constants.APP_TVNOW], None],
+            (constants.STATE_IDLE, constants.APP_TVNOW, [constants.APP_TVNOW], None),
         )
 
         # Twitch
