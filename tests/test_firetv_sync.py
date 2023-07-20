@@ -326,6 +326,27 @@ class TestFireTVSyncPython(unittest.TestCase):
             (constants.STATE_IDLE, constants.APP_SPOTIFY, [constants.APP_SPOTIFY], None),
         )
 
+        # RTL Plus (Germany)
+        self.assertUpdate(
+            [True, True, 3, constants.APP_TVNOW, 1, [constants.APP_TVNOW], None],
+            (constants.STATE_PAUSED, constants.APP_TVNOW, [constants.APP_TVNOW], None),
+        )
+
+        self.assertUpdate(
+            [True, True, 4, constants.APP_TVNOW, 1, [constants.APP_TVNOW], None],
+            (constants.STATE_PLAYING, constants.APP_TVNOW, [constants.APP_TVNOW], None),
+        )
+
+        self.assertUpdate(
+            [True, True, 5, constants.APP_TVNOW, 1, [constants.APP_TVNOW], None],
+            (constants.STATE_PLAYING, constants.APP_TVNOW, [constants.APP_TVNOW], None),
+        )
+
+        self.assertUpdate(
+            [True, True, 6, constants.APP_TVNOW, 1, [constants.APP_TVNOW], None],
+            (constants.STATE_IDLE, constants.APP_TVNOW, [constants.APP_TVNOW], None),
+        )
+
         # Twitch
         self.assertUpdate(
             [True, True, 2, constants.APP_TWITCH_FIRETV, 3, [constants.APP_TWITCH_FIRETV], None],

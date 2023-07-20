@@ -478,6 +478,7 @@ APP_T2 = "tv.perception.clients.tv.android"
 APP_TED = "com.ted.android.tv"
 APP_TUNEIN = "tunein.player"
 APP_TVHEADEND = "de.cyberdream.dreamepg.tvh.tv.player"
+APP_TVNOW = "de.cbc.tvnow.firetv"
 APP_TWITCH = "tv.twitch.android.app"
 APP_TWITCH_FIRETV = "tv.twitch.android.viewer"
 APP_VEVO = "com.vevo.tv"
@@ -584,6 +585,7 @@ APPS = {
     APP_TED: "TED",
     APP_TUNEIN: "TuneIn Radio",
     APP_TVHEADEND: "DreamPlayer TVHeadend",
+    APP_TVNOW: "RTL Plus",
     APP_TWITCH: "Twitch",
     APP_TWITCH_FIRETV: "Twitch (FireTV)",
     APP_VEVO: "Vevo",

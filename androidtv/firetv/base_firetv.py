@@ -178,6 +178,17 @@ class BaseFireTV(BaseTV):  # pylint: disable=too-few-public-methods
                 else:
                     state = constants.STATE_IDLE
 
+            # RTL Plus (Germany)
+            elif current_app == constants.APP_TVNOW:
+                if wake_lock_size == 3:
+                    state = constants.STATE_PAUSED
+                elif wake_lock_size == 4:
+                    state = constants.STATE_PLAYING
+                elif wake_lock_size == 5:
+                    state = constants.STATE_PLAYING
+                else:
+                    state = constants.STATE_IDLE
+
             # Twitch
             elif current_app == constants.APP_TWITCH_FIRETV:
                 if wake_lock_size == 2:
