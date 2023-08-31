@@ -15,6 +15,7 @@ from adb_shell.adb_device_async import AdbDeviceTcpAsync
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
 from adb_shell.constants import DEFAULT_PUSH_MODE, DEFAULT_READ_TIMEOUT_S
 import aiofiles
+import async_timeout
 from ppadb.client import Client
 
 from ..constants import (
@@ -164,7 +165,8 @@ async def _acquire(lock, timeout=DEFAULT_LOCK_TIMEOUT_S):
     try:
         acquired = False
         try:
-            acquired = await asyncio.wait_for(lock.acquire(), timeout)
+            async with async_timeout.timeout(timeout):
+                acquired = await lock.acquire()
             if not acquired:
                 raise LockNotAcquiredException
             yield acquired

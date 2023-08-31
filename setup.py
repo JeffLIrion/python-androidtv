@@ -15,7 +15,7 @@ setup(
     author_email="jefflirion@users.noreply.github.com",
     packages=["androidtv", "androidtv.adb_manager", "androidtv.basetv", "androidtv.androidtv", "androidtv.firetv"],
     install_requires=["adb-shell>=0.4.0", "pure-python-adb>=0.3.0.dev0"],
-    extras_require={"async": ["aiofiles>=0.4.0"], "usb": ["adb-shell[usb]>=0.4.0"]},
+    extras_require={"async": ["aiofiles>=0.4.0", "async_timeout>=3.0.0"], "usb": ["adb-shell[usb]>=0.4.0"]},
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
