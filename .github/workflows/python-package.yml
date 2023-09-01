@@ -30,7 +30,7 @@ jobs:
         if python --version 2>&1 | grep -q "Python 2"; then pip install mock rsa==4.0; fi
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         pip install .
-        if python --version 2>&1 | grep -q "Python 3.7" || python --version 2>&1 | grep -q "Python 3.8" || python --version 2>&1 | grep -q "Python 3.9" || python --version 2>&1 | grep -q "Python 3.10"; then pip install aiofiles adb-shell[usb]; fi
+        if python --version 2>&1 | grep -q "Python 3.7" || python --version 2>&1 | grep -q "Python 3.8" || python --version 2>&1 | grep -q "Python 3.9" || python --version 2>&1 | grep -q "Python 3.10"; then pip install aiofiles async_timeout adb-shell[usb]; fi
     - name: Check formatting with black
       run: |
         if python --version 2>&1 | grep -q "Python 3.7" || python --version 2>&1 | grep -q "Python 3.8" || python --version 2>&1 | grep -q "Python 3.9" || python --version 2>&1 | grep -q "Python 3.10"; then pip install black && make lint-black; fi
