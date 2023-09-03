@@ -99,12 +99,20 @@ CMD_DEFINE_CURRENT_APP_VARIABLE11 = (
     "CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'mInputMethod(Input)?Target') && " + CMD_PARSE_CURRENT_APP11
 )
 
+#: Assign focused application identifier to ``CURRENT_APP`` variable for an Android 12 device
+CMD_DEFINE_CURRENT_APP_VARIABLE12 = (
+    "CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && " + CMD_PARSE_CURRENT_APP11
+)
 
 #: Output identifier for current/focused application
 CMD_CURRENT_APP = CMD_DEFINE_CURRENT_APP_VARIABLE + " && echo $CURRENT_APP"
 
 #: Output identifier for current/focused application for an Android 11 device
 CMD_CURRENT_APP11 = CMD_DEFINE_CURRENT_APP_VARIABLE11 + " && echo $CURRENT_APP"
+
+
+#: Output identifier for current/focused application for an Android 12 device
+CMD_CURRENT_APP12 = CMD_DEFINE_CURRENT_APP_VARIABLE12 + " && echo $CURRENT_APP"
 
 #: Assign focused application identifier to ``CURRENT_APP`` variable (for a Google TV device)
 CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV = (
@@ -113,6 +121,17 @@ CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV = (
 
 #: Output identifier for current/focused application (for a Google TV device)
 CMD_CURRENT_APP_GOOGLE_TV = CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV + " && echo $CURRENT_APP"
+
+#: set volume
+CMD_VOLUME_SET_COMMAND = (
+    "media volume --show --stream 3 --set {}"
+)
+
+#: set volume for an Android 12 device
+CMD_VOLUME_SET_COMMAND12 = (
+    "cmd media_session volume --show --stream 3 --set {}"
+)
+
 
 #: Get the HDMI input
 CMD_HDMI_INPUT = (
@@ -163,6 +182,9 @@ CMD_CURRENT_APP_MEDIA_SESSION_STATE = CMD_CURRENT_APP + " && " + CMD_MEDIA_SESSI
 
 #: Determine the current app and get the state from ``dumpsys media_session`` for an Android 11 device
 CMD_CURRENT_APP_MEDIA_SESSION_STATE11 = CMD_CURRENT_APP11 + " && " + CMD_MEDIA_SESSION_STATE
+
+#: Determine the current app and get the state from ``dumpsys media_session`` for an Android 12 device
+CMD_CURRENT_APP_MEDIA_SESSION_STATE12 = CMD_CURRENT_APP12 + " && " + CMD_MEDIA_SESSION_STATE
 
 #: Determine the current app and get the state from ``dumpsys media_session`` for a Google TV device
 CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV + " && " + CMD_MEDIA_SESSION_STATE
