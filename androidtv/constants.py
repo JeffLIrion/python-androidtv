@@ -189,6 +189,9 @@ CMD_CURRENT_APP_MEDIA_SESSION_STATE = CMD_CURRENT_APP + " && " + CMD_MEDIA_SESSI
 #: Determine the current app and get the state from ``dumpsys media_session`` for an Android 11 device
 CMD_CURRENT_APP_MEDIA_SESSION_STATE11 = CMD_CURRENT_APP11 + " && " + CMD_MEDIA_SESSION_STATE
 
+#: Determine the current app and get the state from ``dumpsys media_session`` for an Android 12 device
+CMD_CURRENT_APP_MEDIA_SESSION_STATE12 = CMD_CURRENT_APP12 + " && " + CMD_MEDIA_SESSION_STATE
+
 #: Determine the current app and get the state from ``dumpsys media_session`` for an Android 13 device
 CMD_CURRENT_APP_MEDIA_SESSION_STATE13 = CMD_CURRENT_APP13 + " && " + CMD_MEDIA_SESSION_STATE
 
