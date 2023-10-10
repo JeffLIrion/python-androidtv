@@ -104,6 +104,24 @@ SHIELD Android TV
 WIFIMAC_SHIELD_TV_11 = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
 ETHMAC_SHIELD_TV_11 = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
 
+DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_12 = """NVIDIA
+SHIELD Android TV
+0123456789012
+12
+"""
+
+WIFIMAC_SHIELD_TV_12 = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
+ETHMAC_SHIELD_TV_12 = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
+
+DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_13 = """NVIDIA
+SHIELD Android TV
+0123456789012
+13
+"""
+
+WIFIMAC_SHIELD_TV_13 = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
+ETHMAC_SHIELD_TV_13 = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
+
 DEVICE_PROPERTIES_DICT_SHIELD_TV_11 = {
     "manufacturer": "NVIDIA",
     "model": "SHIELD Android TV",
@@ -629,9 +647,9 @@ class TestBaseTVSyncPython(unittest.TestCase):
             self.btv._adb,
             "shell",
             side_effect=(
-                DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_11,
-                ETHMAC_SHIELD_TV_11,
-                WIFIMAC_SHIELD_TV_11,
+                DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_12,
+                ETHMAC_SHIELD_TV_12,
+                WIFIMAC_SHIELD_TV_12,
             ),
         ):
             self.btv = AndroidTVSync.from_base(self.btv)
@@ -662,9 +680,9 @@ class TestBaseTVSyncPython(unittest.TestCase):
             self.btv._adb,
             "shell",
             side_effect=(
-                DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_11,
-                ETHMAC_SHIELD_TV_11,
-                WIFIMAC_SHIELD_TV_11,
+                DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_13,
+                ETHMAC_SHIELD_TV_13,
+                WIFIMAC_SHIELD_TV_13,
             ),
         ):
             self.btv = AndroidTVSync.from_base(self.btv)
