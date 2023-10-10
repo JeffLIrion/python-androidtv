@@ -253,7 +253,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         """
         # Is this an Android 11 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
-            return constants.CMD_VOLUME_SET_COMMAND12
+            return constants.CMD_VOLUME_SET_COMMAND11
 
         # Is this an Android 12 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "12":

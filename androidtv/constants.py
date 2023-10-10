@@ -133,6 +133,9 @@ CMD_CURRENT_APP_GOOGLE_TV = CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV + " && ech
 #: set volume
 CMD_VOLUME_SET_COMMAND = "media volume --show --stream 3 --set {}"
 
+#: set volume for an Android 11 device
+CMD_VOLUME_SET_COMMAND11 = "cmd media_session volume --show --stream 3 --set {}"
+
 #: set volume for an Android 12 device
 CMD_VOLUME_SET_COMMAND12 = "cmd media_session volume --show --stream 3 --set {}"
 
