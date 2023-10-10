@@ -518,8 +518,8 @@ APP_TWITCH = "tv.twitch.android.app"
 APP_TWITCH_FIRETV = "tv.twitch.android.viewer"
 APP_VEVO = "com.vevo.tv"
 APP_VH1 = "com.mtvn.vh1android"
-APP_VIMEO = "com.vimeo.android.videoapp"
 APP_VIKI = "com.viki.android"
+APP_VIMEO = "com.vimeo.android.videoapp"
 APP_VLC = "org.videolan.vlc"
 APP_VOYO = "com.phonegap.voyo"
 APP_VRV = "com.ellation.vrv"
@@ -626,8 +626,8 @@ APPS = {
     APP_TWITCH_FIRETV: "Twitch (FireTV)",
     APP_VEVO: "Vevo",
     APP_VH1: "VH1",
-    APP_VIMEO: "Vimeo",
     APP_VIKI: "Rakuten Viki",
+    APP_VIMEO: "Vimeo",
     APP_VLC: "VLC",
     APP_VOYO: "VOYO",
     APP_VRV: "VRV",
