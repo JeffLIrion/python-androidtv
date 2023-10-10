@@ -206,7 +206,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
             return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE11
 
-        # Is this an Android 11 device?
+        # Is this an Android 12 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "12":
             return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE12
 
@@ -257,11 +257,11 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         # Is this an Android 12 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "12":
-            return constants.CMD_VOLUME_SET_COMMAND12
+            return constants.CMD_VOLUME_SET_COMMAND11
 
         # Is this an Android 13 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "13":
-            return constants.CMD_VOLUME_SET_COMMAND13
+            return constants.CMD_VOLUME_SET_COMMAND11
 
         return constants.CMD_VOLUME_SET_COMMAND
 
@@ -299,11 +299,11 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         # Is this an Android 12 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "12":
-            return constants.CMD_LAUNCH_APP11.format(app)
+            return constants.CMD_LAUNCH_APP12.format(app)
 
         # Is this an Android 13 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "13":
-            return constants.CMD_LAUNCH_APP11.format(app)
+            return constants.CMD_LAUNCH_APP13.format(app)
 
         return constants.CMD_LAUNCH_APP.format(app)
 

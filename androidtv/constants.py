@@ -133,14 +133,8 @@ CMD_CURRENT_APP_GOOGLE_TV = CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV + " && ech
 #: set volume
 CMD_VOLUME_SET_COMMAND = "media volume --show --stream 3 --set {}"
 
-#: set volume for an Android 11 device
+#: set volume for an Android 11 & 12 & 13 device
 CMD_VOLUME_SET_COMMAND11 = "cmd media_session volume --show --stream 3 --set {}"
-
-#: set volume for an Android 12 device
-CMD_VOLUME_SET_COMMAND12 = "cmd media_session volume --show --stream 3 --set {}"
-
-#: set volume for an Android 13 device
-CMD_VOLUME_SET_COMMAND13 = "cmd media_session volume --show --stream 3 --set {}"
 
 #: Get the HDMI input
 CMD_HDMI_INPUT = (
@@ -171,6 +165,16 @@ CMD_LAUNCH_APP = (
 #: Launch an app if it is not already the current app on an Android 11 device
 CMD_LAUNCH_APP11 = (
     CMD_DEFINE_CURRENT_APP_VARIABLE11.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
+)
+
+#: Launch an app if it is not already the current app on an Android 12 device
+CMD_LAUNCH_APP12 = (
+    CMD_DEFINE_CURRENT_APP_VARIABLE12.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
+)
+
+#: Launch an app if it is not already the current app on an Android 11 device
+CMD_LAUNCH_APP13 = (
+    CMD_DEFINE_CURRENT_APP_VARIABLE13.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
 )
 
 #: Launch an app on a Fire TV device
