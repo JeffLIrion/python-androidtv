@@ -1,3 +1,5 @@
+"""setup.py file for the androidtv package."""
+
 from setuptools import setup
 
 with open("README.rst") as f:

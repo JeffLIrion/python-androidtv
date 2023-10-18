@@ -1,10 +1,12 @@
-import sys
+"""Tests for the ClientAsync and AdbDeviceUsbAsync classes."""
+
 import unittest
 from unittest.mock import patch
 
-sys.path.insert(0, "..")
-
-from adb_shell.transport.usb_transport import UsbTransport
+try:
+    from adb_shell.transport.usb_transport import UsbTransport
+except (ImportError, OSError):
+    UsbTransport = None
 
 from androidtv.adb_manager.adb_manager_async import AdbDeviceUsbAsync, ClientAsync
 
@@ -21,6 +23,7 @@ class TestAsyncClientDevice(unittest.TestCase):
 
     @awaiter
     async def test_async_client_device(self):
+        """Test the ClientAsync class."""
         with patch("androidtv.adb_manager.adb_manager_async.Client", patchers.ClientFakeSuccess):
             client = ClientAsync("host", "port")
 
@@ -40,6 +43,7 @@ class TestAsyncClientDevice(unittest.TestCase):
 
     @awaiter
     async def test_async_client_device_fail(self):
+        """Test the ClientAsync class when it fails."""
         with patch("androidtv.adb_manager.adb_manager_async.Client", patchers.ClientFakeFail):
             client = ClientAsync("host", "port")
 
@@ -48,6 +52,7 @@ class TestAsyncClientDevice(unittest.TestCase):
             self.assertFalse(device)
 
 
+@unittest.skipIf(UsbTransport is None, "UsbTransport cannot be imported")
 class TestAsyncUsb(unittest.TestCase):
     """Test the ``AdbDeviceUsbAsync`` class defined in ``adb_manager_async.py``.
 
@@ -57,6 +62,7 @@ class TestAsyncUsb(unittest.TestCase):
 
     @awaiter
     async def test_async_usb(self):
+        """Test the AdbDeviceUsbAsync class."""
         with patch("adb_shell.adb_device.UsbTransport.find_adb", return_value=UsbTransport("device", "setting")):
             device = AdbDeviceUsbAsync()
 
