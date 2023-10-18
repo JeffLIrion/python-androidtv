@@ -1,4 +1,4 @@
-adb-shell[usb]
+adb-shell[async,usb]
 aiofiles
 black
 coverage
