@@ -1,0 +1,12 @@
+adb-shell[async,usb]
+aiofiles
+black
+coverage
+coveralls
+flake8
+pylint
+pytest
+pyyaml
+sphinx
+sphinx-rtd-theme
+tk
