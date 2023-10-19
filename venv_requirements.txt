@@ -1,12 +1,14 @@
-adb-shell[async,usb]
-aiofiles
+# Standard requirements
 black
 coverage
 coveralls
 flake8
 pylint
 pytest
-pyyaml
 sphinx
 sphinx-rtd-theme
-tk
+twine
+
+# Specific requirements for this project
+adb-shell[async,usb]
+aiofiles
