@@ -242,8 +242,13 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         return constants.CMD_HDMI_INPUT
 
-    def _cmd_volume_set(self):
+    def _cmd_volume_set(self, new_volume):
         """Get the command used to set volume for this device.
+
+        Parameters
+        ----------
+        new_volume : int
+            The new volume level
 
         Returns
         -------
@@ -253,17 +258,17 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         """
         # Is this an Android 11 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
-            return constants.CMD_VOLUME_SET_COMMAND11
+            return constants.CMD_VOLUME_SET_COMMAND11.format(new_volume)
 
         # Is this an Android 12 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "12":
-            return constants.CMD_VOLUME_SET_COMMAND11
+            return constants.CMD_VOLUME_SET_COMMAND11.format(new_volume)
 
         # Is this an Android 13 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "13":
-            return constants.CMD_VOLUME_SET_COMMAND11
+            return constants.CMD_VOLUME_SET_COMMAND11.format(new_volume)
 
-        return constants.CMD_VOLUME_SET_COMMAND
+        return constants.CMD_VOLUME_SET_COMMAND.format(new_volume)
 
     def _cmd_launch_app(self, app):
         """Get the command to launch the specified app for this device.
