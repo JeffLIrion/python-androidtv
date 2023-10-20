@@ -104,11 +104,47 @@ SHIELD Android TV
 WIFIMAC_SHIELD_TV_11 = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
 ETHMAC_SHIELD_TV_11 = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
 
+DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_12 = """NVIDIA
+SHIELD Android TV
+0123456789012
+12
+"""
+
+WIFIMAC_SHIELD_TV_12 = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
+ETHMAC_SHIELD_TV_12 = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
+
+DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_13 = """NVIDIA
+SHIELD Android TV
+0123456789012
+13
+"""
+
+WIFIMAC_SHIELD_TV_13 = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
+ETHMAC_SHIELD_TV_13 = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
+
 DEVICE_PROPERTIES_DICT_SHIELD_TV_11 = {
     "manufacturer": "NVIDIA",
     "model": "SHIELD Android TV",
     "serialno": "0123456789012",
     "sw_version": "11",
+    "wifimac": "11:22:33:44:55:66",
+    "ethmac": "ab:cd:ef:gh:ij:kl",
+}
+
+DEVICE_PROPERTIES_DICT_SHIELD_TV_12 = {
+    "manufacturer": "NVIDIA",
+    "model": "SHIELD Android TV",
+    "serialno": "0123456789012",
+    "sw_version": "12",
+    "wifimac": "11:22:33:44:55:66",
+    "ethmac": "ab:cd:ef:gh:ij:kl",
+}
+
+DEVICE_PROPERTIES_DICT_SHIELD_TV_13 = {
+    "manufacturer": "NVIDIA",
+    "model": "SHIELD Android TV",
+    "serialno": "0123456789012",
+    "sw_version": "13",
     "wifimac": "11:22:33:44:55:66",
     "ethmac": "ab:cd:ef:gh:ij:kl",
 }
@@ -190,290 +226,350 @@ class TestBaseTVSyncPython(unittest.TestCase):
 
             self.btv.space()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_SPACE)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_SPACE),
             )
 
             self.btv.key_0()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_0)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_0),
             )
 
             self.btv.key_1()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_1)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_1),
             )
 
             self.btv.key_2()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_2)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_2),
             )
 
             self.btv.key_3()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_3)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_3),
             )
 
             self.btv.key_4()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_4)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_4),
             )
 
             self.btv.key_5()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_5)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_5),
             )
 
             self.btv.key_6()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_6)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_6),
             )
 
             self.btv.key_7()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_7)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_7),
             )
 
             self.btv.key_8()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_8)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_8),
             )
 
             self.btv.key_9()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_9)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_9),
             )
 
             self.btv.key_a()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_A)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_A),
             )
 
             self.btv.key_b()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_B)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_B),
             )
 
             self.btv.key_c()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_C)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_C),
             )
 
             self.btv.key_d()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_D)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_D),
             )
 
             self.btv.key_e()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_E)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_E),
             )
 
             self.btv.key_f()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_F)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_F),
             )
 
             self.btv.key_g()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_G)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_G),
             )
 
             self.btv.key_h()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_H)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_H),
             )
 
             self.btv.key_i()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_I)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_I),
             )
 
             self.btv.key_j()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_J)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_J),
             )
 
             self.btv.key_k()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_K)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_K),
             )
 
             self.btv.key_l()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_L)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_L),
             )
 
             self.btv.key_m()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_M)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_M),
             )
 
             self.btv.key_n()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_N)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_N),
             )
 
             self.btv.key_o()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_O)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_O),
             )
 
             self.btv.key_p()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_P)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_P),
             )
 
             self.btv.key_q()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_Q)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_Q),
             )
 
             self.btv.key_r()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_R)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_R),
             )
 
             self.btv.key_s()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_S)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_S),
             )
 
             self.btv.key_t()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_T)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_T),
             )
 
             self.btv.key_u()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_U)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_U),
             )
 
             self.btv.key_v()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_V)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_V),
             )
 
             self.btv.key_w()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_W)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_W),
             )
 
             self.btv.key_x()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_X)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_X),
             )
 
             self.btv.key_y()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_Y)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_Y),
             )
 
             self.btv.key_z()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_Z)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_Z),
             )
 
             self.btv.power()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_POWER)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_POWER),
             )
 
             self.btv.sleep()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_SLEEP)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_SLEEP),
             )
 
             self.btv.home()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_HOME)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_HOME),
             )
 
             self.btv.up()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_UP)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_UP),
             )
 
             self.btv.down()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_DOWN)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_DOWN),
             )
 
             self.btv.left()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_LEFT)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_LEFT),
             )
 
             self.btv.right()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_RIGHT)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_RIGHT),
             )
 
             self.btv.enter()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_ENTER)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_ENTER),
             )
 
             self.btv.back()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_BACK)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_BACK),
             )
 
             self.btv.menu()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_MENU)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_MENU),
             )
 
             self.btv.mute_volume()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_MUTE)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_MUTE),
             )
 
             self.btv.media_play()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_PLAY)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_PLAY),
             )
 
             self.btv.media_pause()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_PAUSE)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_PAUSE),
             )
 
             self.btv.media_play_pause()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_PLAY_PAUSE)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_PLAY_PAUSE),
             )
 
             self.btv.media_stop()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_STOP)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_STOP),
             )
 
             self.btv.media_next_track()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_NEXT)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_NEXT),
             )
 
             self.btv.media_previous_track()
             self.assertEqual(
-                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd, "input keyevent {}".format(constants.KEY_PREVIOUS)
+                getattr(self.btv._adb, self.ADB_ATTR).shell_cmd,
+                "input keyevent {}".format(constants.KEY_PREVIOUS),
             )
 
     def test_get_device_properties(self):
         """Check that ``get_device_properties`` works correctly."""
         with patch.object(
-            self.btv._adb, "shell", side_effect=(DEVICE_PROPERTIES_OUTPUT1, ETHMAC_OUTPUT1, WIFIMAC_OUTPUT1)
+            self.btv._adb,
+            "shell",
+            side_effect=(DEVICE_PROPERTIES_OUTPUT1, ETHMAC_OUTPUT1, WIFIMAC_OUTPUT1),
         ):
             device_properties = self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT1, device_properties)
 
         with patch.object(
-            self.btv._adb, "shell", side_effect=(DEVICE_PROPERTIES_OUTPUT2, ETHMAC_OUTPUT1, WIFIMAC_OUTPUT1)
+            self.btv._adb,
+            "shell",
+            side_effect=(DEVICE_PROPERTIES_OUTPUT2, ETHMAC_OUTPUT1, WIFIMAC_OUTPUT1),
         ):
             device_properties = self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT2, device_properties)
 
         with patch.object(
-            self.btv._adb, "shell", side_effect=(DEVICE_PROPERTIES_OUTPUT3, ETHMAC_OUTPUT3, WIFIMAC_OUTPUT3)
+            self.btv._adb,
+            "shell",
+            side_effect=(DEVICE_PROPERTIES_OUTPUT3, ETHMAC_OUTPUT3, WIFIMAC_OUTPUT3),
         ):
             device_properties = self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT3, device_properties)
@@ -487,7 +583,9 @@ class TestBaseTVSyncPython(unittest.TestCase):
             self.assertDictEqual({"ethmac": None, "wifimac": None}, device_properties)
 
         with patch.object(
-            self.btv._adb, "shell", side_effect=(DEVICE_PROPERTIES_GOOGLE_TV, ETHMAC_GOOGLE, WIFIMAC_GOOGLE)
+            self.btv._adb,
+            "shell",
+            side_effect=(DEVICE_PROPERTIES_GOOGLE_TV, ETHMAC_GOOGLE, WIFIMAC_GOOGLE),
         ):
             self.btv = AndroidTVSync.from_base(self.btv)
             device_properties = self.btv.get_device_properties()
@@ -496,12 +594,18 @@ class TestBaseTVSyncPython(unittest.TestCase):
             self.assertEqual(self.btv.device_properties["manufacturer"], "Google")
             self.assertEqual(self.btv._cmd_current_app(), constants.CMD_CURRENT_APP_GOOGLE_TV)
             self.assertEqual(
-                self.btv._cmd_current_app_media_session_state(), constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV
+                self.btv._cmd_current_app_media_session_state(),
+                constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV,
             )
-            self.assertEqual(self.btv._cmd_launch_app("TEST"), constants.CMD_LAUNCH_APP_GOOGLE_TV.format("TEST"))
+            self.assertEqual(
+                self.btv._cmd_launch_app("TEST"),
+                constants.CMD_LAUNCH_APP_GOOGLE_TV.format("TEST"),
+            )
 
         with patch.object(
-            self.btv._adb, "shell", side_effect=(DEVICE_PROPERTIES_OUTPUT_SONY_TV, ETHMAC_SONY, WIFIMAC_SONY)
+            self.btv._adb,
+            "shell",
+            side_effect=(DEVICE_PROPERTIES_OUTPUT_SONY_TV, ETHMAC_SONY, WIFIMAC_SONY),
         ):
             device_properties = self.btv.get_device_properties()
             self.assertDictEqual(DEVICE_PROPERTIES_DICT_SONY_TV, device_properties)
@@ -509,7 +613,11 @@ class TestBaseTVSyncPython(unittest.TestCase):
         with patch.object(
             self.btv._adb,
             "shell",
-            side_effect=(DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_11, ETHMAC_SHIELD_TV_11, WIFIMAC_SHIELD_TV_11),
+            side_effect=(
+                DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_11,
+                ETHMAC_SHIELD_TV_11,
+                WIFIMAC_SHIELD_TV_11,
+            ),
         ):
             self.btv = AndroidTVSync.from_base(self.btv)
             device_properties = self.btv.get_device_properties()
@@ -518,16 +626,88 @@ class TestBaseTVSyncPython(unittest.TestCase):
             self.assertDictEqual(DEVICE_PROPERTIES_DICT_SHIELD_TV_11, device_properties)
             # _cmd_audio_state
             self.assertEqual(self.btv._cmd_audio_state(), constants.CMD_AUDIO_STATE11)
+            # _cmd_volume_set
+            self.assertEqual(self.btv._cmd_volume_set(), constants.CMD_VOLUME_SET_COMMAND11)
             # _cmd_current_app
             self.assertEqual(self.btv._cmd_current_app(), constants.CMD_CURRENT_APP11)
             # _cmd_current_app_media_session_state
             self.assertEqual(
-                self.btv._cmd_current_app_media_session_state(), constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE11
+                self.btv._cmd_current_app_media_session_state(),
+                constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE11,
             )
             # _cmd_hdmi_input
             self.assertEqual(self.btv._cmd_hdmi_input(), constants.CMD_HDMI_INPUT11)
             # _cmd_launch_app
-            self.assertEqual(self.btv._cmd_launch_app("TEST"), constants.CMD_LAUNCH_APP11.format("TEST"))
+            self.assertEqual(
+                self.btv._cmd_launch_app("TEST"),
+                constants.CMD_LAUNCH_APP11.format("TEST"),
+            )
+
+        with patch.object(
+            self.btv._adb,
+            "shell",
+            side_effect=(
+                DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_12,
+                ETHMAC_SHIELD_TV_12,
+                WIFIMAC_SHIELD_TV_12,
+            ),
+        ):
+            self.btv = AndroidTVSync.from_base(self.btv)
+            device_properties = self.btv.get_device_properties()
+            assert self.btv.device_properties.get("sw_version", "") == "12"
+            assert self.btv.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
+            self.assertDictEqual(DEVICE_PROPERTIES_DICT_SHIELD_TV_12, device_properties)
+            # _cmd_audio_state
+            self.assertEqual(self.btv._cmd_audio_state(), constants.CMD_AUDIO_STATE11)
+            # _cmd_volume_set
+            self.assertEqual(self.btv._cmd_volume_set(), constants.CMD_VOLUME_SET_COMMAND11)
+            # _cmd_current_app
+            self.assertEqual(self.btv._cmd_current_app(), constants.CMD_CURRENT_APP12)
+            # _cmd_current_app_media_session_state
+            self.assertEqual(
+                self.btv._cmd_current_app_media_session_state(),
+                constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE12,
+            )
+            # _cmd_hdmi_input
+            self.assertEqual(self.btv._cmd_hdmi_input(), constants.CMD_HDMI_INPUT11)
+            # _cmd_launch_app
+            self.assertEqual(
+                self.btv._cmd_launch_app("TEST"),
+                constants.CMD_LAUNCH_APP12.format("TEST"),
+            )
+
+        with patch.object(
+            self.btv._adb,
+            "shell",
+            side_effect=(
+                DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_13,
+                ETHMAC_SHIELD_TV_13,
+                WIFIMAC_SHIELD_TV_13,
+            ),
+        ):
+            self.btv = AndroidTVSync.from_base(self.btv)
+            device_properties = self.btv.get_device_properties()
+            assert self.btv.device_properties.get("sw_version", "") == "13"
+            assert self.btv.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
+            self.assertDictEqual(DEVICE_PROPERTIES_DICT_SHIELD_TV_13, device_properties)
+            # _cmd_audio_state
+            self.assertEqual(self.btv._cmd_audio_state(), constants.CMD_AUDIO_STATE11)
+            # _cmd_volume_set
+            self.assertEqual(self.btv._cmd_volume_set(), constants.CMD_VOLUME_SET_COMMAND11)
+            # _cmd_current_app
+            self.assertEqual(self.btv._cmd_current_app(), constants.CMD_CURRENT_APP13)
+            # _cmd_current_app_media_session_state
+            self.assertEqual(
+                self.btv._cmd_current_app_media_session_state(),
+                constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE13,
+            )
+            # _cmd_hdmi_input
+            self.assertEqual(self.btv._cmd_hdmi_input(), constants.CMD_HDMI_INPUT11)
+            # _cmd_launch_app
+            self.assertEqual(
+                self.btv._cmd_launch_app("TEST"),
+                constants.CMD_LAUNCH_APP13.format("TEST"),
+            )
 
     def test_get_installed_apps(self):
         """ "Check that `get_installed_apps` works correctly."""
@@ -632,9 +812,12 @@ class TestBaseTVSyncPython(unittest.TestCase):
         with patchers.patch_shell("11Wake Locks: size=2")[self.PATCH_KEY]:
             self.assertTupleEqual(self.btv.screen_on_awake_wake_lock_size(), (True, True, 2))
 
-        with patchers.patch_shell(["Failed to write while dumping serviceWake Locks: size=2", "11Wake Locks: size=2"])[
-            self.PATCH_KEY
-        ]:
+        with patchers.patch_shell(
+            [
+                "Failed to write while dumping serviceWake Locks: size=2",
+                "11Wake Locks: size=2",
+            ]
+        )[self.PATCH_KEY]:
             self.assertTupleEqual(self.btv.screen_on_awake_wake_lock_size(), (True, True, 2))
 
     def test_state_detection_rules_validator(self):
@@ -649,37 +832,114 @@ class TestBaseTVSyncPython(unittest.TestCase):
 
             # Make sure that an error is raised when the state detection rules are invalid
             self.assertRaises(
-                TypeError, BaseTVSync, "HOST", 5555, "", "", 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID1
+                TypeError,
+                BaseTVSync,
+                "HOST",
+                5555,
+                "",
+                "",
+                5037,
+                state_detection_rules=STATE_DETECTION_RULES_INVALID1,
             )
             self.assertRaises(
-                KeyError, BaseTVSync, "HOST", 5555, "", "", 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID2
+                KeyError,
+                BaseTVSync,
+                "HOST",
+                5555,
+                "",
+                "",
+                5037,
+                state_detection_rules=STATE_DETECTION_RULES_INVALID2,
             )
             self.assertRaises(
-                KeyError, BaseTVSync, "HOST", 5555, "", "", 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID3
+                KeyError,
+                BaseTVSync,
+                "HOST",
+                5555,
+                "",
+                "",
+                5037,
+                state_detection_rules=STATE_DETECTION_RULES_INVALID3,
             )
             self.assertRaises(
-                KeyError, BaseTVSync, "HOST", 5555, "", "", 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID4
+                KeyError,
+                BaseTVSync,
+                "HOST",
+                5555,
+                "",
+                "",
+                5037,
+                state_detection_rules=STATE_DETECTION_RULES_INVALID4,
             )
             self.assertRaises(
-                KeyError, BaseTVSync, "HOST", 5555, "", "", 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID5
+                KeyError,
+                BaseTVSync,
+                "HOST",
+                5555,
+                "",
+                "",
+                5037,
+                state_detection_rules=STATE_DETECTION_RULES_INVALID5,
             )
             self.assertRaises(
-                KeyError, BaseTVSync, "HOST", 5555, "", "", 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID6
+                KeyError,
+                BaseTVSync,
+                "HOST",
+                5555,
+                "",
+                "",
+                5037,
+                state_detection_rules=STATE_DETECTION_RULES_INVALID6,
             )
             self.assertRaises(
-                KeyError, BaseTVSync, "HOST", 5555, "", "", 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID7
+                KeyError,
+                BaseTVSync,
+                "HOST",
+                5555,
+                "",
+                "",
+                5037,
+                state_detection_rules=STATE_DETECTION_RULES_INVALID7,
             )
             self.assertRaises(
-                KeyError, BaseTVSync, "HOST", 5555, "", "", 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID8
+                KeyError,
+                BaseTVSync,
+                "HOST",
+                5555,
+                "",
+                "",
+                5037,
+                state_detection_rules=STATE_DETECTION_RULES_INVALID8,
             )
             self.assertRaises(
-                KeyError, BaseTVSync, "HOST", 5555, "", "", 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID9
+                KeyError,
+                BaseTVSync,
+                "HOST",
+                5555,
+                "",
+                "",
+                5037,
+                state_detection_rules=STATE_DETECTION_RULES_INVALID9,
             )
             self.assertRaises(
-                KeyError, BaseTVSync, "HOST", 5555, "", "", 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID10
+                KeyError,
+                BaseTVSync,
+                "HOST",
+                5555,
+                "",
+                "",
+                5037,
+                state_detection_rules=STATE_DETECTION_RULES_INVALID10,
             )
             self.assertRaises(
-                KeyError, BaseTVSync, "HOST", 5555, "", "", 5037, state_detection_rules=STATE_DETECTION_RULES_INVALID11
+                KeyError,
+                BaseTVSync,
+                "HOST",
+                5555,
+                "",
+                "",
+                5037,
+                state_detection_rules=STATE_DETECTION_RULES_INVALID11,
             )
 
     def test_wake_lock_size(self):

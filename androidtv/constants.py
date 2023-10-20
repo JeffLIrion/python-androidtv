@@ -89,7 +89,6 @@ CMD_PARSE_CURRENT_APP = "CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURR
 
 #: Parse current application for an Android 11 device
 CMD_PARSE_CURRENT_APP11 = "CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* }"
-
 #: Assign focused application identifier to ``CURRENT_APP`` variable
 CMD_DEFINE_CURRENT_APP_VARIABLE = (
     "CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && " + CMD_PARSE_CURRENT_APP
@@ -99,12 +98,29 @@ CMD_DEFINE_CURRENT_APP_VARIABLE11 = (
     "CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'mInputMethod(Input)?Target') && " + CMD_PARSE_CURRENT_APP11
 )
 
+#: Assign focused application identifier to ``CURRENT_APP`` variable for an Android 12 device
+CMD_DEFINE_CURRENT_APP_VARIABLE12 = (
+    "CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && "
+    + CMD_PARSE_CURRENT_APP11
+)
+
+#: Assign focused application identifier to ``CURRENT_APP`` variable for an Android 13 device
+CMD_DEFINE_CURRENT_APP_VARIABLE13 = (
+    "CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && "
+    + CMD_PARSE_CURRENT_APP11
+)
 
 #: Output identifier for current/focused application
 CMD_CURRENT_APP = CMD_DEFINE_CURRENT_APP_VARIABLE + " && echo $CURRENT_APP"
 
 #: Output identifier for current/focused application for an Android 11 device
 CMD_CURRENT_APP11 = CMD_DEFINE_CURRENT_APP_VARIABLE11 + " && echo $CURRENT_APP"
+
+#: Output identifier for current/focused application for an Android 12 device
+CMD_CURRENT_APP12 = CMD_DEFINE_CURRENT_APP_VARIABLE12 + " && echo $CURRENT_APP"
+
+#: Output identifier for current/focused application for an Android 13 device
+CMD_CURRENT_APP13 = CMD_DEFINE_CURRENT_APP_VARIABLE13 + " && echo $CURRENT_APP"
 
 #: Assign focused application identifier to ``CURRENT_APP`` variable (for a Google TV device)
 CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV = (
@@ -113,6 +129,12 @@ CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV = (
 
 #: Output identifier for current/focused application (for a Google TV device)
 CMD_CURRENT_APP_GOOGLE_TV = CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV + " && echo $CURRENT_APP"
+
+#: set volume
+CMD_VOLUME_SET_COMMAND = "media volume --show --stream 3 --set {}"
+
+#: set volume for an Android 11 & 12 & 13 device
+CMD_VOLUME_SET_COMMAND11 = "cmd media_session volume --show --stream 3 --set {}"
 
 #: Get the HDMI input
 CMD_HDMI_INPUT = (
@@ -145,6 +167,16 @@ CMD_LAUNCH_APP11 = (
     CMD_DEFINE_CURRENT_APP_VARIABLE11.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
 )
 
+#: Launch an app if it is not already the current app on an Android 12 device
+CMD_LAUNCH_APP12 = (
+    CMD_DEFINE_CURRENT_APP_VARIABLE12.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
+)
+
+#: Launch an app if it is not already the current app on an Android 11 device
+CMD_LAUNCH_APP13 = (
+    CMD_DEFINE_CURRENT_APP_VARIABLE13.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
+)
+
 #: Launch an app on a Fire TV device
 CMD_LAUNCH_APP_FIRETV = (
     CMD_DEFINE_CURRENT_APP_VARIABLE.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION_FIRETV
@@ -163,6 +195,12 @@ CMD_CURRENT_APP_MEDIA_SESSION_STATE = CMD_CURRENT_APP + " && " + CMD_MEDIA_SESSI
 
 #: Determine the current app and get the state from ``dumpsys media_session`` for an Android 11 device
 CMD_CURRENT_APP_MEDIA_SESSION_STATE11 = CMD_CURRENT_APP11 + " && " + CMD_MEDIA_SESSION_STATE
+
+#: Determine the current app and get the state from ``dumpsys media_session`` for an Android 12 device
+CMD_CURRENT_APP_MEDIA_SESSION_STATE12 = CMD_CURRENT_APP12 + " && " + CMD_MEDIA_SESSION_STATE
+
+#: Determine the current app and get the state from ``dumpsys media_session`` for an Android 13 device
+CMD_CURRENT_APP_MEDIA_SESSION_STATE13 = CMD_CURRENT_APP13 + " && " + CMD_MEDIA_SESSION_STATE
 
 #: Determine the current app and get the state from ``dumpsys media_session`` for a Google TV device
 CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV + " && " + CMD_MEDIA_SESSION_STATE
@@ -381,7 +419,11 @@ VALID_STATE_PROPERTIES = ("audio_state", "media_session_state")
 VALID_PROPERTIES = VALID_STATE_PROPERTIES + ("wake_lock_size",)
 
 #: The required type for each entry in :py:const:`VALID_PROPERTIES` (used by :func:`~androidtv.basetv.state_detection_rules_validator`)
-VALID_PROPERTIES_TYPES = {"audio_state": str, "media_session_state": int, "wake_lock_size": int}
+VALID_PROPERTIES_TYPES = {
+    "audio_state": str,
+    "media_session_state": int,
+    "wake_lock_size": int,
+}
 
 # https://developer.android.com/reference/android/media/session/PlaybackState.html
 #: States for the :attr:`~androidtv.basetv.basetv.BaseTV.media_session_state` property
@@ -483,6 +525,7 @@ APP_TWITCH = "tv.twitch.android.app"
 APP_TWITCH_FIRETV = "tv.twitch.android.viewer"
 APP_VEVO = "com.vevo.tv"
 APP_VH1 = "com.mtvn.vh1android"
+APP_VIKI = "com.viki.android"
 APP_VIMEO = "com.vimeo.android.videoapp"
 APP_VLC = "org.videolan.vlc"
 APP_VOYO = "com.phonegap.voyo"
@@ -590,6 +633,7 @@ APPS = {
     APP_TWITCH_FIRETV: "Twitch (FireTV)",
     APP_VEVO: "Vevo",
     APP_VH1: "VH1",
+    APP_VIKI: "Rakuten Viki",
     APP_VIMEO: "Vimeo",
     APP_VLC: "VLC",
     APP_VOYO: "VOYO",

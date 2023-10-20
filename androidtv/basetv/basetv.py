@@ -69,7 +69,14 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
     DEVICE_ENUM = constants.DeviceEnum.BASETV
 
     def __init__(
-        self, adb, host, port=5555, adbkey="", adb_server_ip="", adb_server_port=5037, state_detection_rules=None
+        self,
+        adb,
+        host,
+        port=5555,
+        adbkey="",
+        adb_server_ip="",
+        adb_server_port=5037,
+        state_detection_rules=None,
     ):
         self._adb = adb
         self.host = host
@@ -131,6 +138,14 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         # Is this an Android 11 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
             return constants.CMD_AUDIO_STATE11
+
+        # Is this an Android 12 device?
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "12":
+            return constants.CMD_AUDIO_STATE11
+
+        # Is this an Android 13 device?
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "13":
+            return constants.CMD_AUDIO_STATE11
         return constants.CMD_AUDIO_STATE
 
     def _cmd_current_app(self):
@@ -156,6 +171,14 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         # Is this an Android 11 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
             return constants.CMD_CURRENT_APP11
+
+        # Is this an Android 12 device?
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "12":
+            return constants.CMD_CURRENT_APP12
+
+        # Is this an Android 13 device?
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "13":
+            return constants.CMD_CURRENT_APP13
 
         return constants.CMD_CURRENT_APP
 
@@ -183,6 +206,14 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
             return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE11
 
+        # Is this an Android 12 device?
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "12":
+            return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE12
+
+        # Is this an Android 13 device?
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "13":
+            return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE13
+
         return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE
 
     def _cmd_hdmi_input(self):
@@ -201,7 +232,38 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
             return constants.CMD_HDMI_INPUT11
 
+        # Is this an Android 12 device?
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "12":
+            return constants.CMD_HDMI_INPUT11
+
+        # Is this an Android 13 device?
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "13":
+            return constants.CMD_HDMI_INPUT11
+
         return constants.CMD_HDMI_INPUT
+
+    def _cmd_volume_set(self):
+        """Get the command used to set volume for this device.
+
+        Returns
+        -------
+        str
+            The device-specific ADB shell command used to set volume
+
+        """
+        # Is this an Android 11 device?
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
+            return constants.CMD_VOLUME_SET_COMMAND11
+
+        # Is this an Android 12 device?
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "12":
+            return constants.CMD_VOLUME_SET_COMMAND11
+
+        # Is this an Android 13 device?
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "13":
+            return constants.CMD_VOLUME_SET_COMMAND11
+
+        return constants.CMD_VOLUME_SET_COMMAND
 
     def _cmd_launch_app(self, app):
         """Get the command to launch the specified app for this device.
@@ -234,6 +296,14 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         # Is this an Android 11 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
             return constants.CMD_LAUNCH_APP11.format(app)
+
+        # Is this an Android 12 device?
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "12":
+            return constants.CMD_LAUNCH_APP12.format(app)
+
+        # Is this an Android 13 device?
+        if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "13":
+            return constants.CMD_LAUNCH_APP13.format(app)
 
         return constants.CMD_LAUNCH_APP.format(app)
 
@@ -339,7 +409,12 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
 
         """
-        _LOGGER.debug("%s:%d `get_device_properties` response: %s", self.host, self.port, properties)
+        _LOGGER.debug(
+            "%s:%d `get_device_properties` response: %s",
+            self.host,
+            self.port,
+            properties,
+        )
 
         if not properties:
             self.device_properties = {}
@@ -353,7 +428,12 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         manufacturer, model, serialno, version = lines
 
         if not serialno.strip():
-            _LOGGER.warning("Could not obtain serialno for %s:%d, got: '%s'", self.host, self.port, serialno)
+            _LOGGER.warning(
+                "Could not obtain serialno for %s:%d, got: '%s'",
+                self.host,
+                self.port,
+                serialno,
+            )
             serialno = None
 
         self.device_properties = {
@@ -393,7 +473,11 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
     #                                                                         #
     # ======================================================================= #
     def _custom_state_detection(
-        self, current_app=None, media_session_state=None, wake_lock_size=None, audio_state=None
+        self,
+        current_app=None,
+        media_session_state=None,
+        wake_lock_size=None,
+        audio_state=None,
     ):
         """Use the rules in ``self._state_detection_rules`` to determine the state.
 
@@ -670,7 +754,11 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         if not stream_music_raw:
             return None
 
-        matches = re.findall(constants.STREAM_MUSIC_REGEX_PATTERN, stream_music_raw, re.DOTALL | re.MULTILINE)
+        matches = re.findall(
+            constants.STREAM_MUSIC_REGEX_PATTERN,
+            stream_music_raw,
+            re.DOTALL | re.MULTILINE,
+        )
         if matches:
             return matches[0]
 
@@ -747,7 +835,11 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             return None
 
         if not self.max_volume:
-            max_volume_matches = re.findall(constants.MAX_VOLUME_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE)
+            max_volume_matches = re.findall(
+                constants.MAX_VOLUME_REGEX_PATTERN,
+                stream_music,
+                re.DOTALL | re.MULTILINE,
+            )
             if max_volume_matches:
                 self.max_volume = float(max_volume_matches[0])
 
@@ -755,7 +847,9 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             return None
 
         volume_matches = re.findall(
-            audio_output_device + constants.VOLUME_REGEX_PATTERN, stream_music, re.DOTALL | re.MULTILINE
+            audio_output_device + constants.VOLUME_REGEX_PATTERN,
+            stream_music,
+            re.DOTALL | re.MULTILINE,
         )
         if volume_matches:
             return int(volume_matches[0])
@@ -899,7 +993,9 @@ def state_detection_rules_validator(rules, exc=KeyError):
                     if not isinstance(value, constants.VALID_PROPERTIES_TYPES[prop]):
                         raise exc(
                             "Conditional value for property '{0}' must be of type {1}, not {2}".format(
-                                prop, constants.VALID_PROPERTIES_TYPES[prop].__name__, type(value).__name__
+                                prop,
+                                constants.VALID_PROPERTIES_TYPES[prop].__name__,
+                                type(value).__name__,
                             )
                         )
 

@@ -89,6 +89,18 @@ class TestConstants(unittest.TestCase):
             r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'mInputMethod(Input)?Target') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
         )
 
+        # CMD_CURRENT_APP12
+        self.assertCommand(
+            constants.CMD_CURRENT_APP12,
+            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
+        )
+
+        # CMD_CURRENT_APP13
+        self.assertCommand(
+            constants.CMD_CURRENT_APP13,
+            r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
+        )
+
         # CMD_CURRENT_APP_GOOGLE_TV
         self.assertCommand(
             constants.CMD_CURRENT_APP_GOOGLE_TV,
@@ -105,6 +117,18 @@ class TestConstants(unittest.TestCase):
         self.assertCommand(
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE11,
             r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'mInputMethod(Input)?Target') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+        )
+
+        # CMD_CURRENT_APP_MEDIA_SESSION_STATE12
+        self.assertCommand(
+            constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE12,
+            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+        )
+
+        # CMD_CURRENT_APP_MEDIA_SESSION_STATE13
+        self.assertCommand(
+            constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE13,
+            r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
 
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV
@@ -144,6 +168,18 @@ class TestConstants(unittest.TestCase):
         self.assertCommand(
             constants.CMD_LAUNCH_APP11,
             r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'mInputMethod(Input)?Target') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
+        )
+
+        # CMD_LAUNCH_APP12
+        self.assertCommand(
+            constants.CMD_LAUNCH_APP12,
+            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
+        )
+
+        # CMD_LAUNCH_APP13
+        self.assertCommand(
+            constants.CMD_LAUNCH_APP13,
+            r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
         )
 
         # CMD_LAUNCH_APP_FIRETV
@@ -227,6 +263,15 @@ class TestConstants(unittest.TestCase):
         # CMD_VERSION
         self.assertCommand(constants.CMD_VERSION, r"getprop ro.build.version.release")
 
+        # CMD_VOLUME_SET_COMMAND
+        self.assertCommand(constants.CMD_VOLUME_SET_COMMAND, r"media volume --show --stream 3 --set {}")
+
+        # CMD_VOLUME_SET_COMMAND11
+        self.assertCommand(
+            constants.CMD_VOLUME_SET_COMMAND11,
+            r"cmd media_session volume --show --stream 3 --set {}",
+        )
+
         # CMD_WAKE_LOCK_SIZE
         self.assertCommand(constants.CMD_WAKE_LOCK_SIZE, r"dumpsys power | grep Locks | grep 'size='")
 
@@ -238,7 +283,10 @@ class TestConstants(unittest.TestCase):
         """Test that 'ANDROID_TV', 'BASE_TV', and 'FIRE_TV' do not appear in the code base."""
         cwd = os.path.join(os.path.dirname(__file__), "..")
         for underscore_name in ["ANDROID_TV", "BASE_TV", "FIRE_TV"]:
-            with subprocess.Popen(shlex.split("git grep -l {} -- androidtv/".format(underscore_name)), cwd=cwd) as p:
+            with subprocess.Popen(
+                shlex.split("git grep -l {} -- androidtv/".format(underscore_name)),
+                cwd=cwd,
+            ) as p:
                 self.assertEqual(p.wait(), 1)
 
     def test_current_app_extraction_atv_launcher(self):
