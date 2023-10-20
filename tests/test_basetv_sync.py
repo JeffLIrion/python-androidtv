@@ -35,7 +35,7 @@ DEVICE_PROPERTIES_DICT1 = {
 
 DEVICE_PROPERTIES_OUTPUT2 = """Amazon
 AFTT
- 
+
 5.1.1
 """
 
@@ -627,7 +627,7 @@ class TestBaseTVSyncPython(unittest.TestCase):
             # _cmd_audio_state
             self.assertEqual(self.btv._cmd_audio_state(), constants.CMD_AUDIO_STATE11)
             # _cmd_volume_set
-            self.assertEqual(self.btv._cmd_volume_set(), constants.CMD_VOLUME_SET_COMMAND11)
+            self.assertEqual(self.btv._cmd_volume_set(5), constants.CMD_VOLUME_SET_COMMAND11.format(5))
             # _cmd_current_app
             self.assertEqual(self.btv._cmd_current_app(), constants.CMD_CURRENT_APP11)
             # _cmd_current_app_media_session_state
@@ -660,7 +660,7 @@ class TestBaseTVSyncPython(unittest.TestCase):
             # _cmd_audio_state
             self.assertEqual(self.btv._cmd_audio_state(), constants.CMD_AUDIO_STATE11)
             # _cmd_volume_set
-            self.assertEqual(self.btv._cmd_volume_set(), constants.CMD_VOLUME_SET_COMMAND11)
+            self.assertEqual(self.btv._cmd_volume_set(5), constants.CMD_VOLUME_SET_COMMAND11.format(5))
             # _cmd_current_app
             self.assertEqual(self.btv._cmd_current_app(), constants.CMD_CURRENT_APP12)
             # _cmd_current_app_media_session_state
@@ -693,7 +693,7 @@ class TestBaseTVSyncPython(unittest.TestCase):
             # _cmd_audio_state
             self.assertEqual(self.btv._cmd_audio_state(), constants.CMD_AUDIO_STATE11)
             # _cmd_volume_set
-            self.assertEqual(self.btv._cmd_volume_set(), constants.CMD_VOLUME_SET_COMMAND11)
+            self.assertEqual(self.btv._cmd_volume_set(5), constants.CMD_VOLUME_SET_COMMAND11.format(5))
             # _cmd_current_app
             self.assertEqual(self.btv._cmd_current_app(), constants.CMD_CURRENT_APP13)
             # _cmd_current_app_media_session_state
