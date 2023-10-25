@@ -1,3 +1,2 @@
-sphinx==2.1.2
-androidtv
-aiofiles
+sphinx
+androidtv[async]
