@@ -216,7 +216,7 @@ docs: venv  ## Build the documentation
 release:  ## Make a release and upload it to pypi
 	rm -rf dist
 	scripts/git_tag.sh
-	$(PYTHON) setup.py sdist bdist_wheel
+	$(PYTHON) setup.py sdist
 	$(TWINE) upload dist/*
 
 
