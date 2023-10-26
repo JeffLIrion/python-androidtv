@@ -1,3 +1,6 @@
+# Standard requirements
 sphinx
-androidtv[async]
 sphinx-rtd-theme
+
+# Specific requirements for this project
+androidtv[async]
