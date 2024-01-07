@@ -209,7 +209,7 @@ CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV + " &&
 CMD_RUNNING_APPS_ANDROIDTV = "ps -A | grep u0_a"
 
 #: Get the running apps for a Fire TV device
-CMD_RUNNING_APPS_FIRETV = "ps | grep u0_a"
+CMD_RUNNING_APPS_FIRETV = "ps -A | grep u0_a"
 
 #: Get installed apps
 CMD_INSTALLED_APPS = "pm list packages"
