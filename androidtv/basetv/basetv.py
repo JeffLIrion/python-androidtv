@@ -324,10 +324,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         if constants.CUSTOM_RUNNING_APPS in self._custom_commands:
             return self._custom_commands[constants.CUSTOM_RUNNING_APPS]
 
-        if self.DEVICE_ENUM == constants.DeviceEnum.FIRETV:
-            return constants.CMD_RUNNING_APPS_FIRETV
-
-        return constants.CMD_RUNNING_APPS_ANDROIDTV
+        return constants.CMD_RUNNING_APPS
 
     def _cmd_turn_off(self):
         """Get the command used to turn off this device.
