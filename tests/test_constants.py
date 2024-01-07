@@ -212,11 +212,8 @@ class TestConstants(unittest.TestCase):
         # CMD_MODEL
         self.assertCommand(constants.CMD_MODEL, r"getprop ro.product.model")
 
-        # CMD_RUNNING_APPS_ANDROIDTV
-        self.assertCommand(constants.CMD_RUNNING_APPS_ANDROIDTV, r"ps -A | grep u0_a")
-
-        # CMD_RUNNING_APPS_FIRETV
-        self.assertCommand(constants.CMD_RUNNING_APPS_FIRETV, r"ps | grep u0_a")
+        # CMD_RUNNING_APPS
+        self.assertCommand(constants.CMD_RUNNING_APPS, r"ps -A | grep u0_a")
 
         # CMD_SCREEN_ON
         self.assertCommand(
