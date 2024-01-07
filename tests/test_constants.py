@@ -216,7 +216,7 @@ class TestConstants(unittest.TestCase):
         self.assertCommand(constants.CMD_RUNNING_APPS_ANDROIDTV, r"ps -A | grep u0_a")
 
         # CMD_RUNNING_APPS_FIRETV
-        self.assertCommand(constants.CMD_RUNNING_APPS_FIRETV, r"ps | grep u0_a")
+        self.assertCommand(constants.CMD_RUNNING_APPS_FIRETV, r"ps -A | grep u0_a")
 
         # CMD_SCREEN_ON
         self.assertCommand(
