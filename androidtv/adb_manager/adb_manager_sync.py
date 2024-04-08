@@ -5,7 +5,6 @@
 
 """
 
-
 from contextlib import contextmanager
 import logging
 import sys

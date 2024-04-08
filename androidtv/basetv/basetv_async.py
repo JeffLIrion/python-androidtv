@@ -3,7 +3,6 @@
 ADB Debugging must be enabled.
 """
 
-
 import logging
 
 from .basetv import BaseTV
