@@ -204,11 +204,8 @@ CMD_CURRENT_APP_MEDIA_SESSION_STATE13 = CMD_CURRENT_APP13 + " && " + CMD_MEDIA_S
 #: Determine the current app and get the state from ``dumpsys media_session`` for a Google TV device
 CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV + " && " + CMD_MEDIA_SESSION_STATE
 
-#: Get the running apps for an Android TV device
-CMD_RUNNING_APPS_ANDROIDTV = "ps -A | grep u0_a"
-
-#: Get the running apps for a Fire TV device
-CMD_RUNNING_APPS_FIRETV = "ps | grep u0_a"
+#: Get the running apps for an Android/Fire TV device
+CMD_RUNNING_APPS = "ps -A | grep u0_a"
 
 #: Get installed apps
 CMD_INSTALLED_APPS = "pm list packages"
