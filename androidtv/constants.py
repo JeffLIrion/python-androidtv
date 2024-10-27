@@ -94,7 +94,7 @@ CMD_DEFINE_CURRENT_APP_VARIABLE = (
 )
 #: Assign focused application identifier to ``CURRENT_APP`` variable for an Android 11 device
 CMD_DEFINE_CURRENT_APP_VARIABLE11 = (
-    "CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'mInputMethod(Input)?Target') && " + CMD_PARSE_CURRENT_APP11
+    "CURRENT_APP=$(dumpsys window windows | grep -E 'mInputMethod(Input)?Target') && " + CMD_PARSE_CURRENT_APP11
 )
 
 #: Assign focused application identifier to ``CURRENT_APP`` variable for an Android 12 device
