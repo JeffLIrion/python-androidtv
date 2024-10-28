@@ -33,7 +33,6 @@ class FireTVSync(BaseTVSync, BaseFireTV):
 
     """
 
-    # pylint: disable=too-many-positional-arguments, super-init-not-called
     def __init__(
         self,
         host,
@@ -43,7 +42,7 @@ class FireTVSync(BaseTVSync, BaseFireTV):
         adb_server_port=5037,
         state_detection_rules=None,
         signer=None,
-    ):
+    ):  # pylint: disable=super-init-not-called
         BaseTVSync.__init__(self, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules, signer)
 
     @classmethod

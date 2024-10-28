@@ -34,7 +34,6 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
     DEVICE_CLASS = "androidtv"
     DEVICE_ENUM = constants.DeviceEnum.ANDROIDTV
 
-    # pylint: disable=too-many-positional-arguments
     def __init__(self, host, port=5555, adbkey="", adb_server_ip="", adb_server_port=5037, state_detection_rules=None):
         BaseTV.__init__(self, None, host, port, adbkey, adb_server_ip, adb_server_port, state_detection_rules)
 
@@ -43,7 +42,6 @@ class BaseAndroidTV(BaseTV):  # pylint: disable=too-few-public-methods
     #                          Home Assistant Update                          #
     #                                                                         #
     # ======================================================================= #
-    # pylint: disable=too-many-positional-arguments
     def _update(
         self,
         screen_on,

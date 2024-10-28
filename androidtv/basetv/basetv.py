@@ -67,7 +67,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
     DEVICE_ENUM = constants.DeviceEnum.BASETV
 
-    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         adb,

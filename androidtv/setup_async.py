@@ -9,7 +9,6 @@ from .constants import DEFAULT_AUTH_TIMEOUT_S, DEFAULT_TRANSPORT_TIMEOUT_S
 from .firetv.firetv_async import FireTVAsync
 
 
-# pylint: disable=too-many-positional-arguments
 async def setup(
     host,
     port=5555,
