@@ -13,6 +13,7 @@ from .firetv.firetv_sync import FireTVSync
 __version__ = "0.0.73"
 
 
+# pylint: disable=too-many-positional-arguments
 def setup(
     host,
     port=5555,

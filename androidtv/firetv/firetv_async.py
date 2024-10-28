@@ -33,6 +33,7 @@ class FireTVAsync(BaseTVAsync, BaseFireTV):
 
     """
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         host,

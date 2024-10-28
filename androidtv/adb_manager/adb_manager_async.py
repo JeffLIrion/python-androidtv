@@ -43,6 +43,7 @@ class AdbDeviceUsbAsync:
         """Close the connection via the provided transport's ``close()`` method."""
         await asyncio.get_running_loop().run_in_executor(None, self._adb.close)
 
+    # pylint: disable=too-many-positional-arguments
     async def connect(
         self,
         rsa_keys=None,
@@ -56,6 +57,7 @@ class AdbDeviceUsbAsync:
             None, self._adb.connect, rsa_keys, transport_timeout_s, auth_timeout_s, read_timeout_s, auth_callback
         )
 
+    # pylint: disable=too-many-positional-arguments
     async def pull(
         self,
         device_path,
@@ -69,6 +71,7 @@ class AdbDeviceUsbAsync:
             None, self._adb.pull, device_path, local_path, progress_callback, transport_timeout_s, read_timeout_s
         )
 
+    # pylint: disable=too-many-positional-arguments
     async def push(
         self,
         local_path,
@@ -92,6 +95,7 @@ class AdbDeviceUsbAsync:
             read_timeout_s,
         )
 
+    # pylint: disable=too-many-positional-arguments
     async def shell(
         self, command, transport_timeout_s=None, read_timeout_s=DEFAULT_READ_TIMEOUT_S, timeout_s=None, decode=True
     ):
