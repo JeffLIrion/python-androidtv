@@ -121,6 +121,18 @@ CMD_CURRENT_APP12 = CMD_DEFINE_CURRENT_APP_VARIABLE12 + " && echo $CURRENT_APP"
 #: Output identifier for current/focused application for an Android 13 device
 CMD_CURRENT_APP13 = CMD_DEFINE_CURRENT_APP_VARIABLE13 + " && echo $CURRENT_APP"
 
+
+#: Assign focused application identifier to ``CURRENT_APP`` variable (for a Askey STI6130 )
+#: Tested on Bell Streamer which is sti6130. May also work the same on Walmart Onn android stick, which is the same hardware, but labelled Askey STI6140
+CMD_DEFINE_CURRENT_APP_VARIABLE_ASKEY_STI6130 = (
+    "CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && "
+    + CMD_PARSE_CURRENT_APP11
+)
+
+#: Output identifier for current/focused application (for a Askey STI6130)
+CMD_CURRENT_APP_ASKEY_STI6130 = CMD_DEFINE_CURRENT_APP_VARIABLE_ASKEY_STI6130 + " && echo $CURRENT_APP "
+
+
 #: Assign focused application identifier to ``CURRENT_APP`` variable (for a Google TV device)
 CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV = (
     "CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && " + CMD_PARSE_CURRENT_APP
@@ -201,6 +213,9 @@ CMD_CURRENT_APP_MEDIA_SESSION_STATE12 = CMD_CURRENT_APP12 + " && " + CMD_MEDIA_S
 #: Determine the current app and get the state from ``dumpsys media_session`` for an Android 13 device
 CMD_CURRENT_APP_MEDIA_SESSION_STATE13 = CMD_CURRENT_APP13 + " && " + CMD_MEDIA_SESSION_STATE
 
+#: Determine the current app and get the state from ``dumpsys media_session`` for a Askey STI6130
+CMD_CURRENT_APP_MEDIA_SESSION_STATE_ASKEY_STI6130 = CMD_CURRENT_APP_ASKEY_STI6130 + " && " + CMD_MEDIA_SESSION_STATE
+
 #: Determine the current app and get the state from ``dumpsys media_session`` for a Google TV device
 CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV + " && " + CMD_MEDIA_SESSION_STATE
 
@@ -241,13 +256,14 @@ CMD_MANUFACTURER = "getprop ro.product.manufacturer"
 CMD_MODEL = "getprop ro.product.model"
 CMD_SERIALNO = "getprop ro.serialno"
 CMD_VERSION = "getprop ro.build.version.release"
+CMD_PRODUCT_ID = "getprop ro.product.vendor.device"
 
 # Commands for getting the MAC address
 CMD_MAC_WLAN0 = "ip addr show wlan0 | grep -m 1 ether"
 CMD_MAC_ETH0 = "ip addr show eth0 | grep -m 1 ether"
 
 #: The command used for getting the device properties
-CMD_DEVICE_PROPERTIES = CMD_MANUFACTURER + " && " + CMD_MODEL + " && " + CMD_SERIALNO + " && " + CMD_VERSION
+CMD_DEVICE_PROPERTIES = CMD_MANUFACTURER + " && " + CMD_MODEL + " && " + CMD_SERIALNO + " && " + CMD_VERSION + " && " + CMD_PRODUCT_ID
 
 
 # ADB key event codes
