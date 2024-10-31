@@ -23,7 +23,6 @@ DEVICE_PROPERTIES_DICT1 = {
     "wifimac": None,
     "ethmac": None,
     "product_id": "amazon123",
-
 }
 
 DEVICE_PROPERTIES_OUTPUT2 = "Not Amazon\n\n\n456\nnotamazon456"
