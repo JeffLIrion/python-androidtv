@@ -17,7 +17,7 @@ from androidtv.firetv.firetv_sync import FireTVSync
 from . import patchers
 
 
-DEVICE_PROPERTIES_OUTPUT1 = "Amazon\n\n\n123"
+DEVICE_PROPERTIES_OUTPUT1 = "Amazon\n\n\n123\namazon123"
 
 DEVICE_PROPERTIES_DICT1 = {
     "manufacturer": "Amazon",
@@ -26,9 +26,10 @@ DEVICE_PROPERTIES_DICT1 = {
     "sw_version": "123",
     "wifimac": None,
     "ethmac": None,
+    "product_id": "amazon123",
 }
 
-DEVICE_PROPERTIES_OUTPUT2 = "Not Amazon\n\n\n456"
+DEVICE_PROPERTIES_OUTPUT2 = "Not Amazon\n\n\n456\nnotamazon456"
 
 DEVICE_PROPERTIES_DICT2 = {
     "manufacturer": "Not Amazon",
@@ -37,6 +38,7 @@ DEVICE_PROPERTIES_DICT2 = {
     "sw_version": "456",
     "wifimac": None,
     "ethmac": None,
+    "product_id": "notamazon456",
 }
 
 
