@@ -170,8 +170,8 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         # Is this an Askey STI6130 Device?
         if (
             self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
-            and "askey" in self.device_properties.get("manufacturer")
-            and "sti6130" in self.device_properties.get("product_id")
+            and "askey" in self.device_properties.get("manufacturer", "")
+            and "sti6130" in self.device_properties.get("product_id", "")
         ):
             return constants.CMD_CURRENT_APP_ASKEY_STI6130
 
@@ -200,7 +200,6 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         """
         if constants.CUSTOM_CURRENT_APP_MEDIA_SESSION_STATE in self._custom_commands:
             return self._custom_commands[constants.CUSTOM_CURRENT_APP_MEDIA_SESSION_STATE]
-
 
         # Is this an Askey STI6130 Device?
         if (
@@ -424,7 +423,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             The output of the ADB command that retrieves the device properties
 
         This method fills in the ``device_properties`` attribute, which is a dictionary with keys
-        ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
+        ``'serialno'``, ``'manufacturer'``, ``'model'``, ``'sw_version'`` and ``'product_id'``
 
         """
         _LOGGER.debug(
