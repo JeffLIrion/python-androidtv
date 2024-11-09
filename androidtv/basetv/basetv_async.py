@@ -203,7 +203,7 @@ class BaseTVAsync(BaseTV):
         Returns
         -------
         props : dict
-            A dictionary with keys ``'wifimac'``, ``'ethmac'``, ``'serialno'``, ``'manufacturer'``, ``'model'``, and ``'sw_version'``
+            A dictionary with keys ``'wifimac'``, ``'ethmac'``, ``'serialno'``, ``'manufacturer'``, ``'model'``, ``'sw_version'`` and ``'product_id'``
 
         """
         properties = await self._adb.shell(constants.CMD_DEVICE_PROPERTIES)

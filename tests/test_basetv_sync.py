@@ -19,6 +19,7 @@ DEVICE_PROPERTIES_OUTPUT1 = """Amazon
 AFTT
 SERIALNO
 5.1.1
+test123
 """
 
 WIFIMAC_OUTPUT1 = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
@@ -31,12 +32,14 @@ DEVICE_PROPERTIES_DICT1 = {
     "sw_version": "5.1.1",
     "wifimac": "ab:cd:ef:gh:ij:kl",
     "ethmac": None,
+    "product_id": "test123",
 }
 
 DEVICE_PROPERTIES_OUTPUT2 = """Amazon
 AFTT
 
 5.1.1
+test456
 """
 
 DEVICE_PROPERTIES_DICT2 = {
@@ -46,12 +49,14 @@ DEVICE_PROPERTIES_DICT2 = {
     "sw_version": "5.1.1",
     "wifimac": "ab:cd:ef:gh:ij:kl",
     "ethmac": None,
+    "product_id": "test456",
 }
 
 DEVICE_PROPERTIES_OUTPUT3 = """Not Amazon
 AFTT
 SERIALNO
 5.1.1
+test678
 """
 
 WIFIMAC_OUTPUT3 = 'Device "wlan0" does not exist.'
@@ -64,6 +69,7 @@ DEVICE_PROPERTIES_DICT3 = {
     "sw_version": "5.1.1",
     "wifimac": None,
     "ethmac": "ab:cd:ef:gh:ij:kl",
+    "product_id": "test678",
 }
 
 
@@ -72,6 +78,7 @@ DEVICE_PROPERTIES_GOOGLE_TV = """Google
 Chromecast
 SERIALNO
 10
+ccwgtv1
 """
 
 WIFIMAC_GOOGLE = "    link/ether ab:cd:ef:gh:ij:kl brd ff:ff:ff:ff:ff:ff"
@@ -81,6 +88,7 @@ DEVICE_PROPERTIES_OUTPUT_SONY_TV = """Sony
 BRAVIA 4K GB
 SERIALNO
 8.0.0
+sonytestproduct
 """
 
 WIFIMAC_SONY = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
@@ -93,12 +101,14 @@ DEVICE_PROPERTIES_DICT_SONY_TV = {
     "sw_version": "8.0.0",
     "wifimac": "11:22:33:44:55:66",
     "ethmac": "ab:cd:ef:gh:ij:kl",
+    "product_id": "sonytestproduct",
 }
 
 DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_11 = """NVIDIA
 SHIELD Android TV
 0123456789012
 11
+nvshield11
 """
 
 WIFIMAC_SHIELD_TV_11 = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
@@ -108,6 +118,7 @@ DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_12 = """NVIDIA
 SHIELD Android TV
 0123456789012
 12
+nvshield12
 """
 
 WIFIMAC_SHIELD_TV_12 = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
@@ -117,6 +128,7 @@ DEVICE_PROPERTIES_OUTPUT_SHIELD_TV_13 = """NVIDIA
 SHIELD Android TV
 0123456789012
 13
+nvshield13
 """
 
 WIFIMAC_SHIELD_TV_13 = "    link/ether 11:22:33:44:55:66 brd ff:ff:ff:ff:ff:ff"
@@ -129,6 +141,7 @@ DEVICE_PROPERTIES_DICT_SHIELD_TV_11 = {
     "sw_version": "11",
     "wifimac": "11:22:33:44:55:66",
     "ethmac": "ab:cd:ef:gh:ij:kl",
+    "product_id": "nvshield11",
 }
 
 DEVICE_PROPERTIES_DICT_SHIELD_TV_12 = {
@@ -138,6 +151,7 @@ DEVICE_PROPERTIES_DICT_SHIELD_TV_12 = {
     "sw_version": "12",
     "wifimac": "11:22:33:44:55:66",
     "ethmac": "ab:cd:ef:gh:ij:kl",
+    "product_id": "nvshield12",
 }
 
 DEVICE_PROPERTIES_DICT_SHIELD_TV_13 = {
@@ -147,6 +161,7 @@ DEVICE_PROPERTIES_DICT_SHIELD_TV_13 = {
     "sw_version": "13",
     "wifimac": "11:22:33:44:55:66",
     "ethmac": "ab:cd:ef:gh:ij:kl",
+    "product_id": "nvshield13",
 }
 
 INSTALLED_APPS_OUTPUT_1 = """package:org.example.app

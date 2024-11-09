@@ -100,6 +100,11 @@ class TestConstants(unittest.TestCase):
             constants.CMD_CURRENT_APP13,
             r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
         )
+        # CMD_CURRENT_APP_ASKEY_STI6130
+        self.assertCommand(
+            constants.CMD_CURRENT_APP_ASKEY_STI6130,
+            r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP ",
+        )
 
         # CMD_CURRENT_APP_GOOGLE_TV
         self.assertCommand(
@@ -130,6 +135,11 @@ class TestConstants(unittest.TestCase):
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE13,
             r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
+        # CMD_CURRENT_APP_MEDIA_SESSION_STATE_ASKEY_STI6130
+        self.assertCommand(
+            constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_ASKEY_STI6130,
+            r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP  && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+        )
 
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV
         self.assertCommand(
@@ -140,7 +150,7 @@ class TestConstants(unittest.TestCase):
         # CMD_DEVICE_PROPERTIES
         self.assertCommand(
             constants.CMD_DEVICE_PROPERTIES,
-            r"getprop ro.product.manufacturer && getprop ro.product.model && getprop ro.serialno && getprop ro.build.version.release",
+            r"getprop ro.product.manufacturer && getprop ro.product.model && getprop ro.serialno && getprop ro.build.version.release && getprop ro.product.vendor.device",
         )
 
         # CMD_HDMI_INPUT
@@ -211,6 +221,9 @@ class TestConstants(unittest.TestCase):
 
         # CMD_MODEL
         self.assertCommand(constants.CMD_MODEL, r"getprop ro.product.model")
+
+        # CMD_PRODUCT_ID
+        self.assertCommand(constants.CMD_PRODUCT_ID, r"getprop ro.product.vendor.device")
 
         # CMD_RUNNING_APPS
         self.assertCommand(constants.CMD_RUNNING_APPS, r"ps -A | grep u0_a")
