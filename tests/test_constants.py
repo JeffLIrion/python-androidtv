@@ -71,7 +71,7 @@ class TestConstants(unittest.TestCase):
         # CMD_AUDIO_STATE11
         self.assertCommand(
             constants.CMD_AUDIO_STATE11,
-            r"CURRENT_AUDIO_STATE=$(dumpsys audio | sed -r -n '/[0-9]{2}-[0-9]{2}.*player piid:.*state:.*$/h; ${x;p;}') && echo $CURRENT_AUDIO_STATE | grep -q paused && echo -e '1\c' || { echo $CURRENT_AUDIO_STATE | grep -q started && echo '2\c' || echo '0\c' ; }",
+            r"CURRENT_AUDIO_STATE=$(dumpsys audio | sed -r -n '/[0-9]{2}-[0-9]{2}.*player piid:.*(state|event):(started|paused|stopped).*$/h; ${x;p;}') && echo $CURRENT_AUDIO_STATE | grep -q paused && echo -e '1\c' || { echo $CURRENT_AUDIO_STATE | grep -q started && echo '2\c' || echo '0\c' ; }",
         )
 
         # CMD_AWAKE

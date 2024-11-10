@@ -74,9 +74,9 @@ CMD_SUCCESS1_FAILURE0 = r" && echo -e '1\c' || echo -e '0\c'"
 #: Get the audio state
 CMD_AUDIO_STATE = r"dumpsys audio | grep paused | grep -qv 'Buffer Queue' && echo -e '1\c' || (dumpsys audio | grep started | grep -qv 'Buffer Queue' && echo '2\c' || echo '0\c')"
 
-#: Get the audio state for an Android 11 device
+#: Get the audio state for an Android 11+ device
 CMD_AUDIO_STATE11 = (
-    "CURRENT_AUDIO_STATE=$(dumpsys audio | sed -r -n '/[0-9]{2}-[0-9]{2}.*player piid:.*state:.*$/h; ${x;p;}') && "
+    "CURRENT_AUDIO_STATE=$(dumpsys audio | sed -r -n '/[0-9]{2}-[0-9]{2}.*player piid:.*(state|event):(started|paused|stopped).*$/h; ${x;p;}') && "
     + r"echo $CURRENT_AUDIO_STATE | grep -q paused && echo -e '1\c' || { echo $CURRENT_AUDIO_STATE | grep -q started && echo '2\c' || echo '0\c' ; }"
 )
 
@@ -86,7 +86,7 @@ CMD_AWAKE = "dumpsys power | grep mWakefulness | grep -q Awake"
 #: Parse current application identifier from dumpsys output and assign it to ``CURRENT_APP`` variable (assumes dumpsys output is momentarily set to ``CURRENT_APP`` variable)
 CMD_PARSE_CURRENT_APP = "CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\\}*}"
 
-#: Parse current application for an Android 11 device
+#: Parse current application for an Android 11+ device
 CMD_PARSE_CURRENT_APP11 = "CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* }"
 #: Assign focused application identifier to ``CURRENT_APP`` variable
 CMD_DEFINE_CURRENT_APP_VARIABLE = (
@@ -103,7 +103,7 @@ CMD_DEFINE_CURRENT_APP_VARIABLE12 = (
     + CMD_PARSE_CURRENT_APP11
 )
 
-#: Assign focused application identifier to ``CURRENT_APP`` variable for an Android 13 device
+#: Assign focused application identifier to ``CURRENT_APP`` variable for an Android 13+ device
 CMD_DEFINE_CURRENT_APP_VARIABLE13 = (
     "CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && "
     + CMD_PARSE_CURRENT_APP11
@@ -118,7 +118,7 @@ CMD_CURRENT_APP11 = CMD_DEFINE_CURRENT_APP_VARIABLE11 + " && echo $CURRENT_APP"
 #: Output identifier for current/focused application for an Android 12 device
 CMD_CURRENT_APP12 = CMD_DEFINE_CURRENT_APP_VARIABLE12 + " && echo $CURRENT_APP"
 
-#: Output identifier for current/focused application for an Android 13 device
+#: Output identifier for current/focused application for an Android 13+ device
 CMD_CURRENT_APP13 = CMD_DEFINE_CURRENT_APP_VARIABLE13 + " && echo $CURRENT_APP"
 
 
@@ -144,7 +144,7 @@ CMD_CURRENT_APP_GOOGLE_TV = CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV + " && ech
 #: set volume
 CMD_VOLUME_SET_COMMAND = "media volume --show --stream 3 --set {}"
 
-#: set volume for an Android 11 & 12 & 13 device
+#: set volume for an Android 11+ device
 CMD_VOLUME_SET_COMMAND11 = "cmd media_session volume --show --stream 3 --set {}"
 
 #: Get the HDMI input
