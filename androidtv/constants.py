@@ -90,7 +90,7 @@ CMD_PARSE_CURRENT_APP = "CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURR
 CMD_PARSE_CURRENT_APP11 = "CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* }"
 #: Assign focused application identifier to ``CURRENT_APP`` variable
 CMD_DEFINE_CURRENT_APP_VARIABLE = (
-    "CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && " + CMD_PARSE_CURRENT_APP
+    "CURRENT_APP=$(dumpsys window windows | grep -E 'Window #1|mCurrentFocus|mFocusedApp') && " + CMD_PARSE_CURRENT_APP
 )
 #: Assign focused application identifier to ``CURRENT_APP`` variable for an Android 11 device
 CMD_DEFINE_CURRENT_APP_VARIABLE11 = (
