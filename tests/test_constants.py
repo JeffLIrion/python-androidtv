@@ -80,7 +80,7 @@ class TestConstants(unittest.TestCase):
         # CMD_CURRENT_APP
         self.assertCommand(
             constants.CMD_CURRENT_APP,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP",
+            r"CURRENT_APP=$(dumpsys window windows | grep -E 'Window #1|mCurrentFocus|mFocusedApp') && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP",
         )
 
         # CMD_CURRENT_APP11
