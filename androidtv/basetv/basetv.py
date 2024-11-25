@@ -423,6 +423,9 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         properties : str, None
             The output of the ADB command that retrieves the device properties
 
+        Returns
+        -------
+        None
         This method fills in the ``device_properties`` attribute, which is a dictionary with keys
         ``'serialno'``, ``'manufacturer'``, ``'model'``, ``'sw_version'`` and ``'product_id'``
 
