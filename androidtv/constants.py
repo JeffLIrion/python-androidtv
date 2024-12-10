@@ -257,6 +257,7 @@ CMD_MODEL = "getprop ro.product.model"
 CMD_SERIALNO = "getprop ro.serialno"
 CMD_VERSION = "getprop ro.build.version.release"
 CMD_PRODUCT_ID = "getprop ro.product.vendor.device"
+CMD_ECHO_PLACEHOLDER = "echo %"
 
 # Commands for getting the MAC address
 CMD_MAC_WLAN0 = "ip addr show wlan0 | grep -m 1 ether"
@@ -264,7 +265,7 @@ CMD_MAC_ETH0 = "ip addr show eth0 | grep -m 1 ether"
 
 #: The command used for getting the device properties
 CMD_DEVICE_PROPERTIES = (
-    CMD_MANUFACTURER + " && " + CMD_MODEL + " && " + CMD_SERIALNO + " && " + CMD_VERSION + " && " + CMD_PRODUCT_ID
+    CMD_ECHO_PLACEHOLDER + " && " + CMD_MANUFACTURER + " && " + CMD_MODEL + " && " + CMD_SERIALNO + " && " + CMD_VERSION + " && " + CMD_PRODUCT_ID + " && " + CMD_ECHO_PLACEHOLDER
 )
 
 
