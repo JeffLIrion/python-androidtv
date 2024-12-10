@@ -439,11 +439,17 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             return
 
         lines = properties.strip().splitlines()
-        if len(lines) != 5:
+        if len(lines) != 7:
+            _LOGGER.warning(
+                "%s:%d `get_device_properties` Invalid response length: %s",
+                self.host,
+                self.port,
+                properties,
+            )
             self.device_properties = {}
             return
 
-        manufacturer, model, serialno, version, product_id = lines
+        _, manufacturer, model, serialno, version, product_id, _ = lines
 
         if not serialno.strip():
             _LOGGER.warning(
