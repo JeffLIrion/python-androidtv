@@ -1,6 +1,4 @@
-"""Exceptions for use throughout the code.
-
-"""
+"""Exceptions for use throughout the code."""
 
 
 class LockNotAcquiredException(Exception):
