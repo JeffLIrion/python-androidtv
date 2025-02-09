@@ -113,18 +113,18 @@ pre-commit: .git/hooks/pre-commit  ## Create the pre-commit hook
 # Linting and code analysis
 .PHONY: black
 black: venv  ## Format the code using black
-	$(BLACK) --safe --line-length 120 --target-version py35 $(PACKAGE_DIR)
-	$(BLACK) --safe --line-length 120 --target-version py35 $(TEST_DIR)
+	$(BLACK) --safe --line-length 120 --target-version py38 $(PACKAGE_DIR)
+	$(BLACK) --safe --line-length 120 --target-version py38 $(TEST_DIR)
 ifneq ("$(wildcard setup.py)", "")
-	$(BLACK) --safe --line-length 120 --target-version py35 setup.py
+	$(BLACK) --safe --line-length 120 --target-version py38 setup.py
 endif
 
 .PHONY: lint-black
 lint-black: venv  ## Check that the code is formatted using black
-	$(BLACK) --check --line-length 120 --safe --target-version py35 $(PACKAGE_DIR)
-	$(BLACK) --check --line-length 120 --safe --target-version py35 $(TEST_DIR)
+	$(BLACK) --check --line-length 120 --safe --target-version py38 $(PACKAGE_DIR)
+	$(BLACK) --check --line-length 120 --safe --target-version py38 $(TEST_DIR)
 ifneq ("$(wildcard setup.py)", "")
-	$(BLACK) --check --line-length 120 --safe --target-version py35 setup.py
+	$(BLACK) --check --line-length 120 --safe --target-version py38 setup.py
 endif
 
 .PHONY: lint-flake8
