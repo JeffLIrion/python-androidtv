@@ -41,9 +41,11 @@ class TestFireTVSyncPython(unittest.TestCase):
     PATCH_KEY = "python"
 
     def setUp(self):
-        with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[
-            self.PATCH_KEY
-        ]:
+        with (
+            patchers.PATCH_ADB_DEVICE_TCP,
+            patchers.patch_connect(True)[self.PATCH_KEY],
+            patchers.patch_shell("")[self.PATCH_KEY],
+        ):
             self.ftv = FireTVSync("HOST", 5555)
             self.ftv.adb_connect()
 
@@ -109,45 +111,48 @@ class TestFireTVSyncPython(unittest.TestCase):
     def test_get_properties(self):
         """Check that ``get_properties()`` works correctly."""
         with patchers.patch_shell(None)[self.PATCH_KEY]:
-            with patchers.patch_calls(
-                self.ftv, self.ftv.screen_on_awake_wake_lock_size
-            ) as screen_on_awake_wake_lock_size, patchers.patch_calls(
-                self.ftv, self.ftv.current_app_media_session_state
-            ) as current_app_media_session_state, patchers.patch_calls(
-                self.ftv, self.ftv.running_apps
-            ) as running_apps, patchers.patch_calls(
-                self.ftv, self.ftv.get_hdmi_input
-            ) as get_hdmi_input:
+            with (
+                patchers.patch_calls(
+                    self.ftv, self.ftv.screen_on_awake_wake_lock_size
+                ) as screen_on_awake_wake_lock_size,
+                patchers.patch_calls(
+                    self.ftv, self.ftv.current_app_media_session_state
+                ) as current_app_media_session_state,
+                patchers.patch_calls(self.ftv, self.ftv.running_apps) as running_apps,
+                patchers.patch_calls(self.ftv, self.ftv.get_hdmi_input) as get_hdmi_input,
+            ):
                 self.ftv.get_properties(lazy=True)
                 assert screen_on_awake_wake_lock_size.called
                 assert not current_app_media_session_state.called
                 assert not running_apps.called
                 assert not get_hdmi_input.called
 
-            with patchers.patch_calls(
-                self.ftv, self.ftv.screen_on_awake_wake_lock_size
-            ) as screen_on_awake_wake_lock_size, patchers.patch_calls(
-                self.ftv, self.ftv.current_app_media_session_state
-            ) as current_app_media_session_state, patchers.patch_calls(
-                self.ftv, self.ftv.running_apps
-            ) as running_apps, patchers.patch_calls(
-                self.ftv, self.ftv.get_hdmi_input
-            ) as get_hdmi_input:
+            with (
+                patchers.patch_calls(
+                    self.ftv, self.ftv.screen_on_awake_wake_lock_size
+                ) as screen_on_awake_wake_lock_size,
+                patchers.patch_calls(
+                    self.ftv, self.ftv.current_app_media_session_state
+                ) as current_app_media_session_state,
+                patchers.patch_calls(self.ftv, self.ftv.running_apps) as running_apps,
+                patchers.patch_calls(self.ftv, self.ftv.get_hdmi_input) as get_hdmi_input,
+            ):
                 self.ftv.get_properties(lazy=False, get_running_apps=True)
                 assert screen_on_awake_wake_lock_size.called
                 assert current_app_media_session_state.called
                 assert running_apps.called
                 assert get_hdmi_input.called
 
-            with patchers.patch_calls(
-                self.ftv, self.ftv.screen_on_awake_wake_lock_size
-            ) as screen_on_awake_wake_lock_size, patchers.patch_calls(
-                self.ftv, self.ftv.current_app_media_session_state
-            ) as current_app_media_session_state, patchers.patch_calls(
-                self.ftv, self.ftv.running_apps
-            ) as running_apps, patchers.patch_calls(
-                self.ftv, self.ftv.get_hdmi_input
-            ) as get_hdmi_input:
+            with (
+                patchers.patch_calls(
+                    self.ftv, self.ftv.screen_on_awake_wake_lock_size
+                ) as screen_on_awake_wake_lock_size,
+                patchers.patch_calls(
+                    self.ftv, self.ftv.current_app_media_session_state
+                ) as current_app_media_session_state,
+                patchers.patch_calls(self.ftv, self.ftv.running_apps) as running_apps,
+                patchers.patch_calls(self.ftv, self.ftv.get_hdmi_input) as get_hdmi_input,
+            ):
                 self.ftv.get_properties(lazy=False, get_running_apps=False)
                 assert screen_on_awake_wake_lock_size.called
                 assert current_app_media_session_state.called

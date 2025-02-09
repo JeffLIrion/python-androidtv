@@ -198,9 +198,11 @@ class TestBaseTVSyncPython(unittest.TestCase):
     ADB_ATTR = "_adb"
 
     def setUp(self):
-        with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell("")[
-            self.PATCH_KEY
-        ]:
+        with (
+            patchers.PATCH_ADB_DEVICE_TCP,
+            patchers.patch_connect(True)[self.PATCH_KEY],
+            patchers.patch_shell("")[self.PATCH_KEY],
+        ):
             self.btv = BaseTVSync("HOST", 5555)
             self.btv.adb_connect()
 
