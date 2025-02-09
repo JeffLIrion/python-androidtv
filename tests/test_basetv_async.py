@@ -23,9 +23,11 @@ class TestBaseTVAsyncPython(unittest.TestCase):
 
     @awaiter
     async def setUp(self):
-        with async_patchers.PATCH_ADB_DEVICE_TCP, async_patchers.patch_connect(True)[
-            self.PATCH_KEY
-        ], async_patchers.patch_shell("")[self.PATCH_KEY]:
+        with (
+            async_patchers.PATCH_ADB_DEVICE_TCP,
+            async_patchers.patch_connect(True)[self.PATCH_KEY],
+            async_patchers.patch_shell("")[self.PATCH_KEY],
+        ):
             self.btv = BaseTVAsync("HOST", 5555)
             await self.btv.adb_connect()
 
