@@ -4,6 +4,7 @@ ADB Debugging must be enabled.
 """
 
 import logging
+import asyncio
 
 from .basetv import BaseTV
 from .. import constants
@@ -378,10 +379,12 @@ class BaseTVAsync(BaseTV):
 
         # Power service might sometimes reply with "Failed to write while dumping service". If this happens,
         # retry the request, up to three times.
-        retries_left = 3
+        retries_left = 20
         while output is not None and "Failed to write while dumping service" in output and retries_left > 0:
             output = await self._adb.shell(constants.CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE)
             retries_left -= 1
+            if "Failed to write while dumping service" in output and retries_left > 0:
+                await asyncio.sleep(0.5)
 
         return self._screen_on_awake_wake_lock_size(output)
 
