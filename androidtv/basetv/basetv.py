@@ -162,6 +162,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
             and "Google" in self.device_properties.get("manufacturer", "")
             and "Chromecast" in self.device_properties.get("model", "")
+            and int(self.device_properties.get("sw_version", "0")) < 14
         ):
             return constants.CMD_CURRENT_APP_GOOGLE_TV
 
@@ -215,6 +216,7 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
             and "Google" in self.device_properties.get("manufacturer", "")
             and "Chromecast" in self.device_properties.get("model", "")
+            and int(self.device_properties.get("sw_version", "0")) < 14
         ):
             return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV
 
