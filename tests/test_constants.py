@@ -100,6 +100,12 @@ class TestConstants(unittest.TestCase):
             constants.CMD_CURRENT_APP13,
             r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
         )
+        # CMD_CURRENT_APP_ASKEY_ADT3
+        self.assertCommand(
+            constants.CMD_CURRENT_APP_ASKEY_ADT3,
+            r"CURRENT_APP=$(dumpsys window | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
+        )
+
         # CMD_CURRENT_APP_ASKEY_STI6130
         self.assertCommand(
             constants.CMD_CURRENT_APP_ASKEY_STI6130,
@@ -135,6 +141,12 @@ class TestConstants(unittest.TestCase):
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE13,
             r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
+        # CMD_CURRENT_APP_MEDIA_SESSION_STATE_ASKEY_ADT3
+        self.assertCommand(
+            constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_ASKEY_ADT3,
+            r"CURRENT_APP=$(dumpsys window | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+        )
+
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE_ASKEY_STI6130
         self.assertCommand(
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_ASKEY_STI6130,
@@ -192,6 +204,12 @@ class TestConstants(unittest.TestCase):
             r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
         )
 
+        # CMD_LAUNCH_APP_ASKEY_ADT3
+        self.assertCommand(
+            constants.CMD_LAUNCH_APP_ASKEY_ADT3,
+            r"CURRENT_APP=$(dumpsys window | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
+        )
+
         # CMD_LAUNCH_APP_FIRETV
         self.assertCommand(
             constants.CMD_LAUNCH_APP_FIRETV,
@@ -231,13 +249,13 @@ class TestConstants(unittest.TestCase):
         # CMD_SCREEN_ON
         self.assertCommand(
             constants.CMD_SCREEN_ON,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON')",
+            r"""(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || echo "$(dumpsys display)" | grep -q 'mScreenState=ON')""",
         )
 
         # CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE
         self.assertCommand(
             constants.CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep Locks | grep 'size='",
+            r"""(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || echo "$(dumpsys display)" | grep -q 'mScreenState=ON') && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep Locks | grep 'size='""",
         )
 
         # CMD_SERIALNO
@@ -249,25 +267,25 @@ class TestConstants(unittest.TestCase):
         # CMD_TURN_OFF_ANDROIDTV
         self.assertCommand(
             constants.CMD_TURN_OFF_ANDROIDTV,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') && input keyevent 26",
+            r"""(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || echo "$(dumpsys display)" | grep -q 'mScreenState=ON') && input keyevent 26""",
         )
 
         # CMD_TURN_OFF_FIRETV
         self.assertCommand(
             constants.CMD_TURN_OFF_FIRETV,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') && input keyevent 223",
+            r"""(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || echo "$(dumpsys display)" | grep -q 'mScreenState=ON') && input keyevent 223""",
         )
 
         # CMD_TURN_ON_ANDROIDTV
         self.assertCommand(
             constants.CMD_TURN_ON_ANDROIDTV,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') || input keyevent 26",
+            r"""(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || echo "$(dumpsys display)" | grep -q 'mScreenState=ON') || input keyevent 26""",
         )
 
         # CMD_TURN_ON_FIRETV
         self.assertCommand(
             constants.CMD_TURN_ON_FIRETV,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') || (input keyevent 26 && input keyevent 3)",
+            r"""(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || echo "$(dumpsys display)" | grep -q 'mScreenState=ON') || (input keyevent 26 && input keyevent 3)""",
         )
 
         # CMD_VERSION

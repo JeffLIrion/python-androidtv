@@ -173,6 +173,14 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
         ):
             return constants.CMD_CURRENT_APP_ASKEY_STI6130
 
+        # Is this an Askey ADT-3 Device (e.g. HTC MagicubOS projectors)?
+        if (
+            self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
+            and "askey" in self.device_properties.get("manufacturer", "")
+            and "adt3" in self.device_properties.get("product_id", "")
+        ):
+            return constants.CMD_CURRENT_APP_ASKEY_ADT3
+
         # Is this an Android 11 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
             return constants.CMD_CURRENT_APP11
@@ -209,6 +217,14 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
             and "sti6130" in self.device_properties.get("product_id", "")
         ):
             return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_ASKEY_STI6130
+
+        # Is this an Askey ADT-3 Device (e.g. HTC MagicubOS projectors)?
+        if (
+            self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
+            and "askey" in self.device_properties.get("manufacturer", "")
+            and "adt3" in self.device_properties.get("product_id", "")
+        ):
+            return constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_ASKEY_ADT3
 
         # Is this a Google Chromecast Android TV?
         if (
@@ -310,6 +326,14 @@ class BaseTV(object):  # pylint: disable=too-few-public-methods
 
         if self.DEVICE_ENUM == constants.DeviceEnum.FIRETV:
             return constants.CMD_LAUNCH_APP_FIRETV.format(app)
+
+        # Is this an Askey ADT-3 Device (e.g. HTC MagicubOS projectors)?
+        if (
+            self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV
+            and "askey" in self.device_properties.get("manufacturer", "")
+            and "adt3" in self.device_properties.get("product_id", "")
+        ):
+            return constants.CMD_LAUNCH_APP_ASKEY_ADT3.format(app)
 
         # Is this an Android 11 device?
         if self.DEVICE_ENUM == constants.DeviceEnum.ANDROIDTV and self.device_properties.get("sw_version", "") == "11":
