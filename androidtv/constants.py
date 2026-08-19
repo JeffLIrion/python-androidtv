@@ -132,6 +132,17 @@ CMD_DEFINE_CURRENT_APP_VARIABLE_ASKEY_STI6130 = (
 #: Output identifier for current/focused application (for a Askey STI6130)
 CMD_CURRENT_APP_ASKEY_STI6130 = CMD_DEFINE_CURRENT_APP_VARIABLE_ASKEY_STI6130 + " && echo $CURRENT_APP "
 
+#: Assign focused application identifier to ``CURRENT_APP`` variable (for an Askey ADT-3, e.g. HTC MagicubOS projectors)
+#: On this device (Android 14, sdk 34), ``dumpsys window windows`` no longer includes ``mCurrentFocus``/
+#: ``mFocusedApp``/``mObscuringWindow``/``imeLayeringTarget`` etc. Those fields are only present in the
+#: unfiltered ``dumpsys window`` output.
+CMD_DEFINE_CURRENT_APP_VARIABLE_ASKEY_ADT3 = (
+    "CURRENT_APP=$(dumpsys window | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && " + CMD_PARSE_CURRENT_APP11
+)
+
+#: Output identifier for current/focused application (for an Askey ADT-3)
+CMD_CURRENT_APP_ASKEY_ADT3 = CMD_DEFINE_CURRENT_APP_VARIABLE_ASKEY_ADT3 + " && echo $CURRENT_APP"
+
 
 #: Assign focused application identifier to ``CURRENT_APP`` variable (for a Google TV device)
 CMD_DEFINE_CURRENT_APP_VARIABLE_GOOGLE_TV = (
@@ -188,6 +199,11 @@ CMD_LAUNCH_APP13 = (
     CMD_DEFINE_CURRENT_APP_VARIABLE13.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
 )
 
+#: Launch an app if it is not already the current app on an Askey ADT-3 device
+CMD_LAUNCH_APP_ASKEY_ADT3 = (
+    CMD_DEFINE_CURRENT_APP_VARIABLE_ASKEY_ADT3.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION
+)
+
 #: Launch an app on a Fire TV device
 CMD_LAUNCH_APP_FIRETV = (
     CMD_DEFINE_CURRENT_APP_VARIABLE.replace("{", "{{").replace("}", "}}") + " && " + CMD_LAUNCH_APP_CONDITION_FIRETV
@@ -216,6 +232,9 @@ CMD_CURRENT_APP_MEDIA_SESSION_STATE13 = CMD_CURRENT_APP13 + " && " + CMD_MEDIA_S
 #: Determine the current app and get the state from ``dumpsys media_session`` for a Askey STI6130
 CMD_CURRENT_APP_MEDIA_SESSION_STATE_ASKEY_STI6130 = CMD_CURRENT_APP_ASKEY_STI6130 + " && " + CMD_MEDIA_SESSION_STATE
 
+#: Determine the current app and get the state from ``dumpsys media_session`` for an Askey ADT-3
+CMD_CURRENT_APP_MEDIA_SESSION_STATE_ASKEY_ADT3 = CMD_CURRENT_APP_ASKEY_ADT3 + " && " + CMD_MEDIA_SESSION_STATE
+
 #: Determine the current app and get the state from ``dumpsys media_session`` for a Google TV device
 CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV = CMD_CURRENT_APP_GOOGLE_TV + " && " + CMD_MEDIA_SESSION_STATE
 
@@ -226,7 +245,12 @@ CMD_RUNNING_APPS = "ps -A | grep u0_a"
 CMD_INSTALLED_APPS = "pm list packages"
 
 #: Determine if the device is on
-CMD_SCREEN_ON = "(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON')"
+#: The ``dumpsys display`` fallback buffers output via command substitution before grepping it, rather than
+#: piping directly into ``grep -q``. On devices with large ``dumpsys display`` output, ``grep -q`` closes its
+#: end of the pipe as soon as it finds a match, and the still-writing ``dumpsys`` process can then fail with
+#: "Failed to write while dumping service display: Broken pipe" -- text which gets prepended to the result
+#: and corrupts callers (like ``screen_on_awake_wake_lock_size``) that parse it as a literal "1"/"0" string.
+CMD_SCREEN_ON = "(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || echo \"$(dumpsys display)\" | grep -q 'mScreenState=ON')"
 
 #: Get the "STREAM_MUSIC" block from ``dumpsys audio``
 CMD_STREAM_MUSIC = r"dumpsys audio | grep '\- STREAM_MUSIC:' -A 11"
