@@ -20,7 +20,6 @@ from ppadb.client import Client
 from ..constants import (
     DEFAULT_ADB_TIMEOUT_S,
     DEFAULT_AUTH_TIMEOUT_S,
-    DEFAULT_LOCK_TIMEOUT_S,
     DEFAULT_TRANSPORT_TIMEOUT_S,
 )
 from ..exceptions import LockNotAcquiredException
@@ -140,15 +139,16 @@ class ClientAsync:
 
 
 @asynccontextmanager
-async def _acquire(lock, timeout=DEFAULT_LOCK_TIMEOUT_S):
-    """Handle acquisition and release of an ``asyncio.Lock`` object with a timeout.
+async def _acquire(lock, timeout=None):
+    """Queue access to an ``asyncio.Lock``, with an optional acquisition timeout.
 
     Parameters
     ----------
     lock : asyncio.Lock
         The lock that we will try to acquire
-    timeout : float
-        The timeout in seconds
+    timeout : float, None
+        Optional acquisition timeout in seconds. Commands wait in order by default;
+        the ADB transport retains its own timeout.
 
     Yields
     ------

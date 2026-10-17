@@ -196,6 +196,41 @@ class TestADBPythonAsync(unittest.TestCase):
                 release.assert_not_called()
 
     @awaiter
+    async def test_adb_shell_waits_for_busy_connection(self):
+        """A valid command must survive a screenshot holding the lock over 3 s."""
+        with async_patchers.patch_connect(True)[self.PATCH_KEY], async_patchers.patch_shell("TEST")[self.PATCH_KEY]:
+            self.assertTrue(await self.adb.connect())
+            lock = asyncio.Lock()
+            await lock.acquire()
+            with patch.object(self.adb, "_adb_lock", lock):
+                command = asyncio.create_task(self.adb.shell("TEST"))
+                try:
+                    await asyncio.sleep(3.05)
+                    self.assertFalse(command.done())
+                finally:
+                    lock.release()
+                    result = await command
+                self.assertEqual(result, "TEST")
+                self.assertFalse(lock.locked())
+
+    @awaiter
+    async def test_cancelled_waiter_does_not_release_busy_connection(self):
+        """Cancelling a queued command must not unlock another command."""
+        with async_patchers.patch_connect(True)[self.PATCH_KEY], async_patchers.patch_shell("TEST")[self.PATCH_KEY]:
+            self.assertTrue(await self.adb.connect())
+            lock = asyncio.Lock()
+            await lock.acquire()
+            with patch.object(self.adb, "_adb_lock", lock):
+                command = asyncio.create_task(self.adb.shell("TEST"))
+                await asyncio.sleep(0)
+                command.cancel()
+                with self.assertRaises(asyncio.CancelledError):
+                    await command
+                self.assertTrue(lock.locked())
+                lock.release()
+                self.assertEqual(await self.adb.shell("TEST"), "TEST")
+
+    @awaiter
     async def test_adb_push_fail(self):
         """Test when an ADB push command is not executed because the device is unavailable."""
         self.assertFalse(self.adb.available)

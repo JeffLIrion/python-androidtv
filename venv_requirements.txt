@@ -1,5 +1,5 @@
 # Standard requirements
-black
+black==23.3.0
 coverage
 coveralls
 flake8
