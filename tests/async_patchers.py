@@ -1,5 +1,6 @@
 """Define patches used for androidtv tests."""
 
+from inspect import iscoroutinefunction
 from unittest.mock import patch
 
 try:
@@ -8,8 +9,13 @@ except ImportError:
     from unittest.mock import MagicMock
 
     class AsyncMock(MagicMock):
+        """Await async side effects like unittest.mock.AsyncMock on Python 3.8+."""
+
         async def __call__(self, *args, **kwargs):
-            return super(AsyncMock, self).__call__(*args, **kwargs)
+            result = super(AsyncMock, self).__call__(*args, **kwargs)
+            if iscoroutinefunction(self.side_effect):
+                return await result
+            return result
 
 
 KEY_PYTHON = "python"

@@ -439,6 +439,33 @@ class ADBPythonAsync(object):
             _LOGGER.debug("Sending command to %s:%d via adb-shell: %s", self.host, self.port, cmd)
             return await self._adb.shell(cmd)
 
+    async def shell_binary(self, cmd):
+        """Send an ADB command using the Python ADB implementation and return raw bytes.
+
+        Parameters
+        ----------
+        cmd : str
+            The ADB command to be sent
+
+        Returns
+        -------
+        bytes, None
+            The raw response from the device, if there is a response
+
+        """
+        if not self.available:
+            _LOGGER.debug(
+                "ADB binary command not sent to %s:%d because adb-shell connection is not established: %s",
+                self.host,
+                self.port,
+                cmd,
+            )
+            return None
+
+        async with _acquire(self._adb_lock):
+            _LOGGER.debug("Sending binary command to %s:%d via adb-shell: %s", self.host, self.port, cmd)
+            return await self._adb.shell(cmd, decode=False)
+
 
 class ADBServerAsync(object):
     """A manager for ADB connections that uses an ADB server.

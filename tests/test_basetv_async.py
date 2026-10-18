@@ -59,7 +59,10 @@ class TestBaseTVAsyncPython(unittest.TestCase):
     @awaiter
     async def test_adb_screencap(self):
         """Test that the ``adb_screencap`` method works correctly."""
-        with patch.object(self.btv._adb, "screencap", return_value=PNG_IMAGE, new_callable=async_patchers.AsyncMock):
+        # adb_shell returning "" means the device cannot compress; adb_screencap then falls back to _adb.screencap
+        with patch.object(self.btv, "adb_shell", return_value="", new_callable=async_patchers.AsyncMock), patch.object(
+            self.btv._adb, "screencap", return_value=PNG_IMAGE, new_callable=async_patchers.AsyncMock
+        ):
             self.assertEqual(await self.btv.adb_screencap(), PNG_IMAGE)
 
     @awaiter

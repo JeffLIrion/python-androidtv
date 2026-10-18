@@ -332,3 +332,33 @@ class TestADBPythonSyncClose(unittest.TestCase):
 
             self.adb.close()
             self.assertFalse(self.adb.available)
+
+
+class TestADBPythonSyncShellBinary(unittest.TestCase):
+    """Test the `ADBPythonSync.shell_binary` method."""
+
+    PATCH_KEY = "python"
+
+    def setUp(self):
+        """Create an `ADBPythonSync` instance."""
+        with patchers.PATCH_ADB_DEVICE_TCP, patchers.patch_connect(True)[self.PATCH_KEY]:
+            self.adb = ADBPythonSync("HOST", 5555)
+
+    def test_adb_shell_binary_returns_raw_bytes(self):
+        """Test that ``shell_binary`` returns the undecoded device output when connected."""
+        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(b"\x00\x01\x02")[self.PATCH_KEY]:
+            self.assertTrue(self.adb.connect())
+            self.assertEqual(self.adb.shell_binary("screencap"), b"\x00\x01\x02")
+
+    def test_adb_shell_binary_unavailable_returns_none(self):
+        """Test that ``shell_binary`` returns ``None`` when the adb-shell connection is not established."""
+        self.assertFalse(self.adb.available)
+        self.assertIsNone(self.adb.shell_binary("screencap"))
+
+    def test_adb_shell_binary_lock_not_acquired(self):
+        """Test that ``shell_binary`` raises when the ADB lock is held by another caller."""
+        with patchers.patch_connect(True)[self.PATCH_KEY], patchers.patch_shell(b"\x00")[self.PATCH_KEY]:
+            self.assertTrue(self.adb.connect())
+            with patch.object(self.adb, "_adb_lock", LockedLock()):
+                with self.assertRaises(LockNotAcquiredException):
+                    self.adb.shell_binary("screencap")

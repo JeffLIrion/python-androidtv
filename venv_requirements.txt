@@ -1,5 +1,6 @@
 # Standard requirements
-black
+# Async tests support Python 3.7 via tests.async_patchers.AsyncMock, which awaits async side effects.
+black==23.3.0
 coverage
 coveralls
 flake8

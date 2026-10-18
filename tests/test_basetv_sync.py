@@ -230,7 +230,10 @@ class TestBaseTVSyncPython(unittest.TestCase):
 
     def test_adb_screencap(self):
         """Test that the ``adb_screencap`` method works correctly."""
-        with patch.object(self.btv._adb, "screencap", return_value=PNG_IMAGE):
+        # adb_shell returning "" means the device cannot compress; adb_screencap then falls back to _adb.screencap
+        with patch.object(self.btv, "adb_shell", return_value=""), patch.object(
+            self.btv._adb, "screencap", return_value=PNG_IMAGE
+        ):
             self.assertEqual(self.btv.adb_screencap(), PNG_IMAGE)
 
     def test_keys(self):
