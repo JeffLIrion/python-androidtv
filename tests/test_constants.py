@@ -1,5 +1,6 @@
 import inspect
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -65,86 +66,86 @@ class TestConstants(unittest.TestCase):
         # CMD_AUDIO_STATE
         self.assertCommand(
             constants.CMD_AUDIO_STATE,
-            r"dumpsys audio | grep paused | grep -qv 'Buffer Queue' && echo -e '1\c' || (dumpsys audio | grep started | grep -qv 'Buffer Queue' && echo '2\c' || echo '0\c')",
+            r"dumpsys audio 2>/dev/null | grep paused | grep -qv 'Buffer Queue' && echo -e '1\c' || (dumpsys audio 2>/dev/null | grep started | grep -qv 'Buffer Queue' && echo '2\c' || echo '0\c')",
         )
 
         # CMD_AUDIO_STATE11
         self.assertCommand(
             constants.CMD_AUDIO_STATE11,
-            r"CURRENT_AUDIO_STATE=$(dumpsys audio | sed -r -n '/[0-9]{2}-[0-9]{2}.*player piid:.*(state|event):(started|paused|stopped).*$/h; ${x;p;}') && echo $CURRENT_AUDIO_STATE | grep -q paused && echo -e '1\c' || { echo $CURRENT_AUDIO_STATE | grep -q started && echo '2\c' || echo '0\c' ; }",
+            r"CURRENT_AUDIO_STATE=$(dumpsys audio 2>/dev/null | sed -r -n '/[0-9]{2}-[0-9]{2}.*player piid:.*(state|event):(started|paused|stopped).*$/h; ${x;p;}') && echo $CURRENT_AUDIO_STATE | grep -q paused && echo -e '1\c' || { echo $CURRENT_AUDIO_STATE | grep -q started && echo '2\c' || echo '0\c' ; }",
         )
 
         # CMD_AWAKE
-        self.assertCommand(constants.CMD_AWAKE, r"dumpsys power | grep mWakefulness | grep -q Awake")
+        self.assertCommand(constants.CMD_AWAKE, r"dumpsys power 2>/dev/null | grep mWakefulness | grep -q Awake")
 
         # CMD_CURRENT_APP
         self.assertCommand(
             constants.CMD_CURRENT_APP,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP",
         )
 
         # CMD_CURRENT_APP11
         self.assertCommand(
             constants.CMD_CURRENT_APP11,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mInputMethod(Input)?Target') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E 'mInputMethod(Input)?Target') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
         )
 
         # CMD_CURRENT_APP12
         self.assertCommand(
             constants.CMD_CURRENT_APP12,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
         )
 
         # CMD_CURRENT_APP13
         self.assertCommand(
             constants.CMD_CURRENT_APP13,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP",
         )
         # CMD_CURRENT_APP_ASKEY_STI6130
         self.assertCommand(
             constants.CMD_CURRENT_APP_ASKEY_STI6130,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP ",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP ",
         )
 
         # CMD_CURRENT_APP_GOOGLE_TV
         self.assertCommand(
             constants.CMD_CURRENT_APP_GOOGLE_TV,
-            r"CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP",
+            r"CURRENT_APP=$(dumpsys activity a . 2>/dev/null | grep mResumedActivity) && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP",
         )
 
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE
         self.assertCommand(
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP && dumpsys media_session 2>/dev/null | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
 
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE11
         self.assertCommand(
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE11,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mInputMethod(Input)?Target') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E 'mInputMethod(Input)?Target') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session 2>/dev/null | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
 
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE12
         self.assertCommand(
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE12,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session 2>/dev/null | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
 
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE13
         self.assertCommand(
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE13,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP && dumpsys media_session 2>/dev/null | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE_ASKEY_STI6130
         self.assertCommand(
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_ASKEY_STI6130,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP  && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP##* } && echo $CURRENT_APP  && dumpsys media_session 2>/dev/null | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
 
         # CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV
         self.assertCommand(
             constants.CMD_CURRENT_APP_MEDIA_SESSION_STATE_GOOGLE_TV,
-            r"CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP && dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+            r"CURRENT_APP=$(dumpsys activity a . 2>/dev/null | grep mResumedActivity) && CURRENT_APP=${CURRENT_APP#*ActivityRecord{* * } && CURRENT_APP=${CURRENT_APP#*{* * } && CURRENT_APP=${CURRENT_APP%%/*} && CURRENT_APP=${CURRENT_APP%\}*} && echo $CURRENT_APP && dumpsys media_session 2>/dev/null | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
 
         # CMD_DEVICE_PROPERTIES
@@ -156,13 +157,13 @@ class TestConstants(unittest.TestCase):
         # CMD_HDMI_INPUT
         self.assertCommand(
             constants.CMD_HDMI_INPUT,
-            r"dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'",
+            r"dumpsys activity starter 2>/dev/null | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'",
         )
 
         # CMD_HDMI_INPUT11
         self.assertCommand(
             constants.CMD_HDMI_INPUT11,
-            r"(HDMI=$(dumpsys tv_input | grep 'ResourceClientProfile {.*}' | grep -o -E '(hdmi_port=[0-9]|TV)') && { echo ${HDMI/hdmi_port=/HW} | cut -d' ' -f1 ; }) || dumpsys activity starter | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'",
+            r"(HDMI=$(dumpsys tv_input 2>/dev/null | grep 'ResourceClientProfile {.*}' | grep -o -E '(hdmi_port=[0-9]|TV)') && { echo ${HDMI/hdmi_port=/HW} | cut -d' ' -f1 ; }) || dumpsys activity starter 2>/dev/null | grep -E -o '(ExternalTv|HDMI)InputService/HW[0-9]' -m 1 | grep -o 'HW[0-9]'",
         )
 
         # CMD_INSTALLED_APPS
@@ -171,37 +172,37 @@ class TestConstants(unittest.TestCase):
         # CMD_LAUNCH_APP
         self.assertCommand(
             constants.CMD_LAUNCH_APP,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${{CURRENT_APP#*ActivityRecord{{* * }} && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP%\}}*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${{CURRENT_APP#*ActivityRecord{{* * }} && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP%\}}*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
         )
 
         # CMD_LAUNCH_APP11
         self.assertCommand(
             constants.CMD_LAUNCH_APP11,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mInputMethod(Input)?Target') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E 'mInputMethod(Input)?Target') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
         )
 
         # CMD_LAUNCH_APP12
         self.assertCommand(
             constants.CMD_LAUNCH_APP12,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E 'mCurrentFocus|mFocusedApp|mObscuringWindow') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
         )
 
         # CMD_LAUNCH_APP13
         self.assertCommand(
             constants.CMD_LAUNCH_APP13,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E -m 1 'imeLayeringTarget|imeInputTarget|imeControlTarget') && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP##* }} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
         )
 
         # CMD_LAUNCH_APP_FIRETV
         self.assertCommand(
             constants.CMD_LAUNCH_APP_FIRETV,
-            r"CURRENT_APP=$(dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${{CURRENT_APP#*ActivityRecord{{* * }} && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP%\}}*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LAUNCHER --pct-syskeys 0 1; fi",
+            r"CURRENT_APP=$(dumpsys window windows 2>/dev/null | grep -E 'mCurrentFocus|mFocusedApp') && CURRENT_APP=${{CURRENT_APP#*ActivityRecord{{* * }} && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP%\}}*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LAUNCHER --pct-syskeys 0 1; fi",
         )
 
         # CMD_LAUNCH_APP_GOOGLE_TV
         self.assertCommand(
             constants.CMD_LAUNCH_APP_GOOGLE_TV,
-            r"CURRENT_APP=$(dumpsys activity a . | grep mResumedActivity) && CURRENT_APP=${{CURRENT_APP#*ActivityRecord{{* * }} && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP%\}}*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
+            r"CURRENT_APP=$(dumpsys activity a . 2>/dev/null | grep mResumedActivity) && CURRENT_APP=${{CURRENT_APP#*ActivityRecord{{* * }} && CURRENT_APP=${{CURRENT_APP#*{{* * }} && CURRENT_APP=${{CURRENT_APP%%/*}} && CURRENT_APP=${{CURRENT_APP%\}}*}} && if [ $CURRENT_APP != '{0}' ]; then monkey -p {0} -c android.intent.category.LEANBACK_LAUNCHER --pct-syskeys 0 1; fi",
         )
 
         # CMD_MAC_ETH0
@@ -216,7 +217,7 @@ class TestConstants(unittest.TestCase):
         # CMD_MEDIA_SESSION_STATE
         self.assertCommand(
             constants.CMD_MEDIA_SESSION_STATE,
-            r"dumpsys media_session | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
+            r"dumpsys media_session 2>/dev/null | grep -A 100 'Sessions Stack' | grep -A 100 $CURRENT_APP | grep -m 1 'state=PlaybackState {'",
         )
 
         # CMD_MODEL
@@ -231,43 +232,43 @@ class TestConstants(unittest.TestCase):
         # CMD_SCREEN_ON
         self.assertCommand(
             constants.CMD_SCREEN_ON,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON')",
+            r"(dumpsys power 2>/dev/null | grep 'Display Power' | grep -q 'state=ON' || dumpsys power 2>/dev/null | grep -q 'mScreenOn=true' || dumpsys display 2>/dev/null | grep -q 'mScreenState=ON')",
         )
 
         # CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE
         self.assertCommand(
             constants.CMD_SCREEN_ON_AWAKE_WAKE_LOCK_SIZE,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep mWakefulness | grep -q Awake && echo -e '1\c' || echo -e '0\c' && dumpsys power | grep Locks | grep 'size='",
+            r"(dumpsys power 2>/dev/null | grep 'Display Power' | grep -q 'state=ON' || dumpsys power 2>/dev/null | grep -q 'mScreenOn=true' || dumpsys display 2>/dev/null | grep -q 'mScreenState=ON') && echo -e '1\c' || echo -e '0\c' && dumpsys power 2>/dev/null | grep mWakefulness | grep -q Awake && echo -e '1\c' || echo -e '0\c' && dumpsys power 2>/dev/null | grep Locks | grep 'size='",
         )
 
         # CMD_SERIALNO
         self.assertCommand(constants.CMD_SERIALNO, r"getprop ro.serialno")
 
         # CMD_STREAM_MUSIC
-        self.assertCommand(constants.CMD_STREAM_MUSIC, r"dumpsys audio | grep '\- STREAM_MUSIC:' -A 11")
+        self.assertCommand(constants.CMD_STREAM_MUSIC, r"dumpsys audio 2>/dev/null | grep '\- STREAM_MUSIC:' -A 11")
 
         # CMD_TURN_OFF_ANDROIDTV
         self.assertCommand(
             constants.CMD_TURN_OFF_ANDROIDTV,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') && input keyevent 26",
+            r"(dumpsys power 2>/dev/null | grep 'Display Power' | grep -q 'state=ON' || dumpsys power 2>/dev/null | grep -q 'mScreenOn=true' || dumpsys display 2>/dev/null | grep -q 'mScreenState=ON') && input keyevent 26",
         )
 
         # CMD_TURN_OFF_FIRETV
         self.assertCommand(
             constants.CMD_TURN_OFF_FIRETV,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') && input keyevent 223",
+            r"(dumpsys power 2>/dev/null | grep 'Display Power' | grep -q 'state=ON' || dumpsys power 2>/dev/null | grep -q 'mScreenOn=true' || dumpsys display 2>/dev/null | grep -q 'mScreenState=ON') && input keyevent 223",
         )
 
         # CMD_TURN_ON_ANDROIDTV
         self.assertCommand(
             constants.CMD_TURN_ON_ANDROIDTV,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') || input keyevent 26",
+            r"(dumpsys power 2>/dev/null | grep 'Display Power' | grep -q 'state=ON' || dumpsys power 2>/dev/null | grep -q 'mScreenOn=true' || dumpsys display 2>/dev/null | grep -q 'mScreenState=ON') || input keyevent 26",
         )
 
         # CMD_TURN_ON_FIRETV
         self.assertCommand(
             constants.CMD_TURN_ON_FIRETV,
-            r"(dumpsys power | grep 'Display Power' | grep -q 'state=ON' || dumpsys power | grep -q 'mScreenOn=true' || dumpsys display | grep -q 'mScreenState=ON') || (input keyevent 26 && input keyevent 3)",
+            r"(dumpsys power 2>/dev/null | grep 'Display Power' | grep -q 'state=ON' || dumpsys power 2>/dev/null | grep -q 'mScreenOn=true' || dumpsys display 2>/dev/null | grep -q 'mScreenState=ON') || (input keyevent 26 && input keyevent 3)",
         )
 
         # CMD_VERSION
@@ -283,10 +284,24 @@ class TestConstants(unittest.TestCase):
         )
 
         # CMD_WAKE_LOCK_SIZE
-        self.assertCommand(constants.CMD_WAKE_LOCK_SIZE, r"dumpsys power | grep Locks | grep 'size='")
+        self.assertCommand(constants.CMD_WAKE_LOCK_SIZE, r"dumpsys power 2>/dev/null | grep Locks | grep 'size='")
 
         # Assert that the keys were checked in alphabetical order
         self.assertEqual(self._cmds, sorted(cmds.keys()))
+
+    def test_dumpsys_stderr_discarded(self):
+        """Test that every ``dumpsys`` call discards its stderr.
+
+        When ``dumpsys`` is piped into ``grep -q`` or ``grep -m 1``, ``grep`` can exit early and ``dumpsys`` writes
+        "Failed to write while dumping service ...: Broken pipe" to stderr, which ends up in the ADB shell output and
+        breaks the parsing (https://github.com/JeffLIrion/python-androidtv/issues/373).
+        """
+        for name in dir(constants):
+            value = getattr(constants, name)
+            if not name.startswith("CMD_") or not isinstance(value, str):
+                continue
+            for call in re.findall(r"\bdumpsys\b[^|)]*", value):
+                self.assertIn("2>/dev/null", call, "{}: {}".format(name, call))
 
     @unittest.skipIf(sys.version_info.major == 2, "Test requires Python 3")
     def test_no_underscores(self):
