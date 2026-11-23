@@ -1,5 +1,5 @@
 # Standard requirements
-black
+black==23.3.0  # newer versions reformat the existing code; keep in sync with the formatting used in this repo
 coverage
 coveralls
 flake8
