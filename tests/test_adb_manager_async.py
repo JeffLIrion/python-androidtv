@@ -7,6 +7,7 @@ from unittest.mock import patch
 sys.path.insert(0, "..")
 
 from androidtv.adb_manager.adb_manager_async import _acquire, ADBPythonAsync, ADBServerAsync
+from androidtv.constants import DEFAULT_TRANSFER_TIMEOUT_S
 from androidtv.exceptions import LockNotAcquiredException
 
 from . import async_patchers
@@ -222,6 +223,15 @@ class TestADBPythonAsync(unittest.TestCase):
                 await self.adb.push("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
                 self.assertEqual(patch_push.call_count, 1)
 
+                # The adb-shell implementation uses a longer timeout for file transfers
+                if self.PATCH_KEY == "python":
+                    patch_push.assert_called_once_with(
+                        "TEST_LOCAL_PATH",
+                        "TEST_DEVICE_PATH",
+                        transport_timeout_s=DEFAULT_TRANSFER_TIMEOUT_S,
+                        read_timeout_s=DEFAULT_TRANSFER_TIMEOUT_S,
+                    )
+
     @awaiter
     async def test_adb_pull_fail(self):
         """Test when an ADB pull command is not executed because the device is unavailable."""
@@ -247,6 +257,15 @@ class TestADBPythonAsync(unittest.TestCase):
                 self.assertTrue(await self.adb.connect())
                 await self.adb.pull("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
                 self.assertEqual(patch_pull.call_count, 1)
+
+                # The adb-shell implementation uses a longer timeout for file transfers
+                if self.PATCH_KEY == "python":
+                    patch_pull.assert_called_once_with(
+                        "TEST_DEVICE_PATH",
+                        "TEST_LOCAL_PATH",
+                        transport_timeout_s=DEFAULT_TRANSFER_TIMEOUT_S,
+                        read_timeout_s=DEFAULT_TRANSFER_TIMEOUT_S,
+                    )
 
     @awaiter
     async def test_adb_screencap_fail_unavailable(self):

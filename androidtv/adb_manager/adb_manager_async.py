@@ -21,6 +21,7 @@ from ..constants import (
     DEFAULT_ADB_TIMEOUT_S,
     DEFAULT_AUTH_TIMEOUT_S,
     DEFAULT_LOCK_TIMEOUT_S,
+    DEFAULT_TRANSFER_TIMEOUT_S,
     DEFAULT_TRANSPORT_TIMEOUT_S,
 )
 from ..exceptions import LockNotAcquiredException
@@ -357,7 +358,12 @@ class ADBPythonAsync(object):
             _LOGGER.debug(
                 "Sending command to %s:%d via adb-shell: pull(%s, %s)", self.host, self.port, local_path, device_path
             )
-            await self._adb.pull(device_path, local_path)
+            await self._adb.pull(
+                device_path,
+                local_path,
+                transport_timeout_s=DEFAULT_TRANSFER_TIMEOUT_S,
+                read_timeout_s=DEFAULT_TRANSFER_TIMEOUT_S,
+            )
             return
 
     async def push(self, local_path, device_path):
@@ -385,7 +391,12 @@ class ADBPythonAsync(object):
             _LOGGER.debug(
                 "Sending command to %s:%d via adb-shell: push(%s, %s)", self.host, self.port, local_path, device_path
             )
-            await self._adb.push(local_path, device_path)
+            await self._adb.push(
+                local_path,
+                device_path,
+                transport_timeout_s=DEFAULT_TRANSFER_TIMEOUT_S,
+                read_timeout_s=DEFAULT_TRANSFER_TIMEOUT_S,
+            )
             return
 
     async def screencap(self):

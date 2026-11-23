@@ -11,6 +11,7 @@ sys.path.insert(0, "..")
 
 from adb_shell.transport.tcp_transport import TcpTransport
 from androidtv.adb_manager.adb_manager_sync import _acquire, ADBPythonSync, ADBServerSync
+from androidtv.constants import DEFAULT_TRANSFER_TIMEOUT_S
 from androidtv.exceptions import LockNotAcquiredException
 from . import patchers
 
@@ -196,6 +197,15 @@ class TestADBPythonSync(unittest.TestCase):
                 self.adb.push("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
                 self.assertEqual(patch_push.call_count, 1)
 
+                # The adb-shell implementation uses a longer timeout for file transfers
+                if self.PATCH_KEY == "python":
+                    patch_push.assert_called_once_with(
+                        "TEST_LOCAL_PATH",
+                        "TEST_DEVICE_PATH",
+                        transport_timeout_s=DEFAULT_TRANSFER_TIMEOUT_S,
+                        read_timeout_s=DEFAULT_TRANSFER_TIMEOUT_S,
+                    )
+
     def test_adb_pull_fail(self):
         """Test when an ADB pull command is not executed because the device is unavailable."""
         self.assertFalse(self.adb.available)
@@ -219,6 +229,15 @@ class TestADBPythonSync(unittest.TestCase):
                 self.assertTrue(self.adb.connect())
                 self.adb.pull("TEST_LOCAL_PATH", "TEST_DEVICE_PATH")
                 self.assertEqual(patch_pull.call_count, 1)
+
+                # The adb-shell implementation uses a longer timeout for file transfers
+                if self.PATCH_KEY == "python":
+                    patch_pull.assert_called_once_with(
+                        "TEST_DEVICE_PATH",
+                        "TEST_LOCAL_PATH",
+                        transport_timeout_s=DEFAULT_TRANSFER_TIMEOUT_S,
+                        read_timeout_s=DEFAULT_TRANSFER_TIMEOUT_S,
+                    )
 
     def test_adb_screencap_fail_unavailable(self):
         """Test when an ADB screencap command fails because the connection is unavailable."""

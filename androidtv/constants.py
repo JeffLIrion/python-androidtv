@@ -686,5 +686,10 @@ DEFAULT_TRANSPORT_TIMEOUT_S = 1.0
 #: Default timeout (in s) for :class:`adb_shell.handle.tcp_handle.TcpHandle` and :class:`adb_shell.handle.tcp_handle_async.TcpHandleAsync`
 DEFAULT_ADB_TIMEOUT_S = 9.0
 
+#: Default timeout (in s) for file transfers (:meth:`adb_shell.adb_device.AdbDevice.push` and
+#: :meth:`adb_shell.adb_device.AdbDevice.pull`), used as ``transport_timeout_s`` and ``read_timeout_s``.  On a weak
+#: Wi-Fi connection, a single read during a transfer of several MB can take longer than :const:`DEFAULT_ADB_TIMEOUT_S`.
+DEFAULT_TRANSFER_TIMEOUT_S = 60.0
+
 #: Default timeout for acquiring the lock that protects ADB commands
 DEFAULT_LOCK_TIMEOUT_S = 3.0
