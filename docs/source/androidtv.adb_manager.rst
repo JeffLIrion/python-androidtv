@@ -8,6 +8,7 @@ Submodules
 
    androidtv.adb_manager.adb_manager_async
    androidtv.adb_manager.adb_manager_sync
+   androidtv.adb_manager.screencap
 
 Module contents
 ---------------

@@ -21,6 +21,7 @@ from ..constants import (
     DEFAULT_TRANSPORT_TIMEOUT_S,
 )
 from ..exceptions import LockNotAcquiredException
+from .screencap import process_screencap_output
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -289,10 +290,7 @@ class ADBPythonSync(object):
 
         with _acquire(self._adb_lock):
             _LOGGER.debug("Taking screencap from %s:%d via adb-shell", self.host, self.port)
-            result = self._adb.shell("screencap -p", decode=False)
-            if result and result[5:6] == b"\r":
-                return result.replace(b"\r\n", b"\n")
-            return result
+            return process_screencap_output(self._adb.shell("screencap -p", decode=False))
 
     def shell(self, cmd):
         """Send an ADB command using the Python ADB implementation.
@@ -549,7 +547,7 @@ class ADBServerSync(object):
                 self.adb_server_ip,
                 self.adb_server_port,
             )
-            return self._adb_device.screencap()
+            return process_screencap_output(self._adb_device.screencap())
 
     def shell(self, cmd):
         """Send an ADB command using an ADB server.

@@ -31,6 +31,9 @@ PNG_IMAGE = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\n\x00\x00\x00\n\x0
 
 PNG_IMAGE_NEEDS_REPLACING = PNG_IMAGE[:5] + b"\r" + PNG_IMAGE[5:]
 
+# Fire OS writes a text line to stdout before the PNG data (python-androidtv#377)
+SCREENCAP_PREFIX = b"Init wrapper sys mutex successful. Pid:9508\n"
+
 
 @asynccontextmanager
 async def open_priv(infile):
@@ -282,9 +285,31 @@ class TestADBPythonAsync(unittest.TestCase):
                 with async_patchers.patch_shell(PNG_IMAGE_NEEDS_REPLACING)[self.PATCH_KEY]:
                     self.assertEqual(await self.adb.screencap(), PNG_IMAGE)
 
+                with async_patchers.patch_shell(SCREENCAP_PREFIX + PNG_IMAGE)[self.PATCH_KEY]:
+                    self.assertEqual(await self.adb.screencap(), PNG_IMAGE)
+
+                with async_patchers.patch_shell(SCREENCAP_PREFIX + PNG_IMAGE_NEEDS_REPLACING)[self.PATCH_KEY]:
+                    self.assertEqual(await self.adb.screencap(), PNG_IMAGE)
+
             else:
                 with patch.object(
                     self.adb._adb_device, "screencap", return_value=PNG_IMAGE, new_callable=async_patchers.AsyncMock
+                ):
+                    self.assertEqual(await self.adb.screencap(), PNG_IMAGE)
+
+                with patch.object(
+                    self.adb._adb_device,
+                    "screencap",
+                    return_value=SCREENCAP_PREFIX + PNG_IMAGE,
+                    new_callable=async_patchers.AsyncMock,
+                ):
+                    self.assertEqual(await self.adb.screencap(), PNG_IMAGE)
+
+                with patch.object(
+                    self.adb._adb_device,
+                    "screencap",
+                    return_value=SCREENCAP_PREFIX + PNG_IMAGE_NEEDS_REPLACING,
+                    new_callable=async_patchers.AsyncMock,
                 ):
                     self.assertEqual(await self.adb.screencap(), PNG_IMAGE)
 
